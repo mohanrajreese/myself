@@ -1,5 +1,6 @@
 import '../../../core/errors/result.dart';
 import '../../../core/units/units.dart';
+import '../../../core/utils/local_date.dart';
 import 'weight_entry.dart';
 
 abstract interface class WeightRepository {
@@ -12,6 +13,10 @@ abstract interface class WeightRepository {
 
   /// The most recent entry, or null when there is none.
   Future<WeightEntry?> latest();
+  Stream<WeightEntry?> watchLatest();
+
+  /// Entries recorded on [date], oldest first.
+  Stream<List<WeightEntry>> watchOn(LocalDate date);
 
   Future<Result<void>> delete(String id);
 }

@@ -47,6 +47,7 @@ Toolchain facts checked on 16 November 2026 (orientation only; versions are re-r
 | D3 | Starter food catalogue | **INDB plus a USDA subset**, bundled read-only. INDB's data licence is confirmed before its file enters the repository (09-food-dataset-options.md §5) | Decided |
 | D4 | Project location | Flutter project at the repository root | Decided |
 | D5 | Distribution | Personal sideloaded APK (plus a signed AAB build). No Play Store work | Decided |
+| D7 | Starting targets | **Calories, protein and water are pre-filled from body weight** on the Goals step (per-kilogram rules of thumb, shown as editable estimates). This overrides the PRD's "no calorie prescription" non-goal (§1.3) by owner decision. Rules: `lib/features/profile/domain/goal_suggestions.dart` | Decided |
 | D6 | Screen design review | **Every screen's design is shown to the owner and approved before the screen is built.** Designs live on the design canvas linked from the status file | Decided |
 
 ### Consequences of D1 and D2 worth knowing

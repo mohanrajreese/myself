@@ -29,6 +29,15 @@ class AppDatabase extends _$AppDatabase {
     },
   );
 
+  /// Removes every row from every table (used when the device is handed to
+  /// a different account; call C11).
+  Future<void> eraseAllData() => transaction(() async {
+        await customStatement('PRAGMA defer_foreign_keys = ON');
+        for (final table in allTables) {
+          await delete(table).go();
+        }
+      });
+
   /// Rebuilt on every open so it always matches [syncedTableNames].
   Future<void> _installOutboxAllowList() async {
     final allowed = syncedTableNames.map((name) => "'$name'").join(', ');

@@ -57,3 +57,6 @@ key.properties
 # Generated code (run build_runner; see README)
 *.g.dart
 *.freezed.dart
+
+# Generated localisations (flutter gen-l10n)
+lib/l10n/generated/

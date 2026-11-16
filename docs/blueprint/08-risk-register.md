@@ -63,4 +63,5 @@ Reported as §13.1 item 9 requires.
 | §3.2 six bottom destinations | Material recommends three to five | Kept as specified, with layout tests |
 | §4.1 camera/photo permission explanation | System camera and photo picker need no permission | Explanation states that no permission prompt will appear |
 | §2.1 "SQLCipher-compatible SQLite" | The SQLCipher Flutter package is end-of-life | SQLite3MultipleCiphers through the `sqlite3` build hook |
+| §1.3 "not a calorie prescription application" | Owner decision D7 asks for targets calculated from weight | Offered as editable estimates with the rule shown and a "not medical advice" note; never applied without the user seeing them |
 | §4.1 onboarding has no sign-in; §9 core features work without internet | Owner decision D2 makes Google sign-in mandatory, which needs internet once | Sign-in is step 1 of onboarding; everything after the first sign-in works offline |

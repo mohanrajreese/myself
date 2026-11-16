@@ -9,8 +9,8 @@ Resume point for every work session. Update it when a task changes state; keep i
 | Item | Value |
 |---|---|
 | Phase | 1 — Foundation (approved 16 Nov 2026) |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 screens, awaiting owner approval) |
-| Blocked on | Design approval for screen tasks; owner's Supabase and Google OAuth setup for a phone build |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 screens approved 16 Nov 2026, with D7: targets calculated from weight) |
+| Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
 ## Phases
