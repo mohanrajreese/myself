@@ -53,3 +53,7 @@ env/*.json
 android/app/google-services.json
 *.jks
 key.properties
+
+# Generated code (run build_runner; see README)
+*.g.dart
+*.freezed.dart

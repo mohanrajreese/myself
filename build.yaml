@@ -1,0 +1,11 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          store_date_time_values_as_text: true
+          databases:
+            app: lib/core/database/app_database.dart
+            private: lib/core/database/private_database.dart
+          schema_dir: drift_schemas/
+          test_dir: test/unit/database/migrations/

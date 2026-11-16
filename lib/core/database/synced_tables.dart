@@ -1,0 +1,6 @@
+/// The only tables whose rows may enter the sync outbox (PRD §7.2).
+///
+/// A database trigger rebuilt from this list on every open rejects any other
+/// table name, so local-only and private tables cannot be queued for upload
+/// even by mistake. Parents come before children: this is also push order.
+const syncedTableNames = <String>['profiles', 'user_goals', 'nutrition_goals', 'weight_logs'];

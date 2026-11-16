@@ -1,8 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Google sign-in and Supabase sync. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
-        android:label="fitbuddy"
+        android:label="FitBuddy"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:usesCleartextTraffic="false"
+        android:networkSecurityConfig="@xml/network_security_config">
+        <!-- No analytics are collected, whichever Firebase libraries are present. -->
+        <meta-data
+            android:name="firebase_analytics_collection_deactivated"
+            android:value="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

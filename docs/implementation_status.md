@@ -36,6 +36,8 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | F-02 | ☑ | All planned plugins built together once; `flutter_timezone` dropped (fails on AGP 9); `firebase_core` and `workmanager_android` build but warn about old Kotlin setup; later-phase plugins removed from pubspec until needed |
 | F-03 | ☑ | Lint settings, boundary rules with tests, CI workflow (CI run itself not yet observed) |
 | F-04 | ☑ | Clock, LocalDate, Result/Failure, redacting logger, unit conversions (36 tests) |
+| F-05 | ⏳ | Two encrypted Drift databases, key manager, schema v1 dumps (17 tests on the build machine); opening on the phone not yet verified |
+| F-06 | ⏳ | Backups off, extraction rules, cleartext off, analytics deactivated (manifest tests); `adb backup` check pending |
 | F-07, F-08, F-09, F-12, F-13, F-14a, F-15 | ✋ | Designs published on the canvas |
 
 ## Device verification backlog
@@ -44,3 +46,5 @@ Features implemented but not yet confirmed on the phone. Test numbers refer to `
 
 | Feature | Device tests | Result |
 |---|---|---|
+| Encrypted databases open and persist across restarts | Launch, add data, force-stop, relaunch | Pending |
+| Backup exclusion | `adb backup` yields no app data | Pending |
