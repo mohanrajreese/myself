@@ -2,23 +2,22 @@
 
 Resume point for every work session. Update it when a task changes state; keep it short.
 
-**Legend:** ☐ not started · ◐ in progress · ☑ verified by automated tests · 📱 verified on device · ⏳ implemented, device verification pending
+**Legend:** ☐ not started · ◐ in progress · ☑ verified by automated tests · 📱 verified on device · ⏳ implemented, device verification pending · ✋ waiting for design approval
 
 ## Current position
 
 | Item | Value |
 |---|---|
-| Phase | 0 — planning complete |
-| Next task | F-00 (Phase 1), after owner approval |
-| Blocked on | Owner approval to start Phase 1 |
-| Open decisions | D3 food dataset (Phase 2 task C-16 only) |
+| Phase | 1 — Foundation (approved 16 Nov 2026) |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 screens, awaiting owner approval) |
+| Blocked on | Design approval for screen tasks; owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
 ## Phases
 
 | Phase | Status | Report |
 |---|---|---|
-| 1 Foundation | ☐ | — |
+| 1 Foundation | ◐ | — |
 | 2 Core tracking | ☐ | — |
 | 3 Activities and reminders | ☐ | — |
 | 4 Fitness | ☐ | — |
@@ -28,10 +27,13 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 ## Task log
 
-Add one row per task as it starts. Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
+Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 
 | Task | State | Notes (one line) |
 |---|---|---|
+| F-00 | ◐ | PRD, rules, skills committed; README and docs skeleton with F-01 |
+| F-01 | ◐ | Toolchain install and project creation |
+| F-07, F-08, F-09, F-12, F-13, F-14a, F-15 | ✋ | Designs published on the canvas |
 
 ## Device verification backlog
 

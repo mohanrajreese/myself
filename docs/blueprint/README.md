@@ -1,6 +1,6 @@
 # FitBuddy — Implementation Blueprint
 
-**Status:** decisions recorded; awaiting explicit approval to start Phase 1. No application code has been written.
+**Status:** Phase 1 approved and in progress (16 November 2026). Progress is tracked in [`docs/implementation_status.md`](../implementation_status.md).
 **Source of truth:** [`docs/PRD.md`](../PRD.md) (FitBuddy PRD v2.0, 16 November 2026). References such as "§5.6" point into the PRD.
 **Prepared:** 16 November 2026
 
@@ -44,9 +44,10 @@ Toolchain facts checked on 16 November 2026 (orientation only; versions are re-r
 |---|---|---|---|
 | D1 | Phone and Android version | **Android 10.** `minSdk 29`. Phone model still unknown (wanted for battery-manager guidance, not blocking) | Decided |
 | D2 | Sign-in model | **Mandatory sign-in with Google** before onboarding. See 01-architecture.md §7 | Decided |
-| D3 | Starter food catalogue | A catalogue is wanted. Options and a recommendation are in 09-food-dataset-options.md | **Open — pick a dataset** |
+| D3 | Starter food catalogue | **INDB plus a USDA subset**, bundled read-only. INDB's data licence is confirmed before its file enters the repository (09-food-dataset-options.md §5) | Decided |
 | D4 | Project location | Flutter project at the repository root | Decided |
 | D5 | Distribution | Personal sideloaded APK (plus a signed AAB build). No Play Store work | Decided |
+| D6 | Screen design review | **Every screen's design is shown to the owner and approved before the screen is built.** Designs live on the design canvas linked from the status file | Decided |
 
 ### Consequences of D1 and D2 worth knowing
 
@@ -85,7 +86,6 @@ None adds a feature; each fills a gap the PRD leaves open. Overrule any of them.
 | Firebase project (`google-services.json`; a service account for the server function) | FCM | Phase 6 push tasks |
 | Physical Android phone and someone to run the device test script | §11.3 device tests | Sign-off of Phases 3, 4, 5 and 7 |
 | Release keystore (created by you, kept out of the repo) | Signed APK/AAB | Phase 7 |
-| Choice of food dataset (D3) | Food catalogue | Phase 2 task C-16 only |
 
 Automated tests use a fake sign-in, so development and CI do not need these credentials. A phone build does.
 
@@ -93,4 +93,4 @@ Automated tests use a fake sign-in, so development and CI do not need these cred
 
 ## 5. Approval
 
-Phase 1 starts only on an explicit go-ahead from the owner.
+Phase 1 was approved on 16 November 2026. Each later phase needs its own go-ahead, and each screen needs design approval first (D6).

@@ -34,6 +34,7 @@ One task at a time, smallest complete slice, tests first, status file updated.
 
 ## Stop and ask when
 
+- The task builds or changes a screen whose design the owner has not approved (decision D6). Draw it on the design canvas, show it, wait.
 - The task needs a decision not in `docs/blueprint/README.md` §2–3.
 - A platform restriction conflicts with the PRD (add it to `08-risk-register.md` §3).
 - The task would need a feature the PRD does not describe.

@@ -23,12 +23,13 @@ Single-user Android health and lifestyle tracker. Flutter + Kotlin, Drift (encry
 
 1. **The PRD is the source of truth.** Do not add features it does not ask for. Do not reopen a recorded decision; if one must change, ask the owner, then update `docs/blueprint/README.md`.
 2. **No implementation before the owner approves the phase.** One phase at a time; never start the next while tests fail.
-3. **Private data never leaves the device** (PRD §7.1). Sync, networking, logging and push code must not touch `PrivateDatabase`. See `.claude/rules/privacy.md`.
-4. **Every visible control works.** No placeholder buttons, no example data shown as user data, no mock as a final implementation.
-5. **Test with the feature.** Write the failing test first. "Done" means the PRD §11.5 definition, not "a screen exists".
-6. **Report honestly in three states:** verified by automated tests / verified on device / implemented, device verification pending. Hardware features cannot be verified in the cloud environment.
-7. **Secrets:** nothing but the Supabase URL and publishable key in the app. Never commit `env/*.json`, `google-services.json`, or a release keystore.
-8. **Commit small, push often** to the working branch; the cloud workspace is ephemeral.
+3. **No screen before its design is approved.** Show the owner the screen design on the design canvas (link in the status file) and wait for approval before writing any presentation code for it.
+4. **Private data never leaves the device** (PRD §7.1). Sync, networking, logging and push code must not touch `PrivateDatabase`. See `.claude/rules/privacy.md`.
+5. **Every visible control works.** No placeholder buttons, no example data shown as user data, no mock as a final implementation.
+6. **Test with the feature.** Write the failing test first. "Done" means the PRD §11.5 definition, not "a screen exists".
+7. **Report honestly in three states:** verified by automated tests / verified on device / implemented, device verification pending. Hardware features cannot be verified in the cloud environment.
+8. **Secrets:** nothing but the Supabase URL and publishable key in the app. Never commit `env/*.json`, `google-services.json`, or a release keystore.
+9. **Commit small, push often** to the working branch; the cloud workspace is ephemeral.
 
 Path-specific rules load automatically from `.claude/rules/` when matching files are touched. Procedures are skills in `.claude/skills/`.
 

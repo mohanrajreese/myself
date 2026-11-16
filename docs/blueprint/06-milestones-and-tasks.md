@@ -12,6 +12,8 @@ Task status is tracked in `docs/implementation_status.md`.
 
 **Deliverable:** a running app with theme, navigation, encrypted storage, onboarding, profile and a dashboard skeleton.
 
+Screen tasks (F-07, F-08, F-09, F-12, F-13, F-14a, F-15) wait for design approval (decision D6); the others do not.
+
 | ID | Task | Verified by |
 |---|---|---|
 | F-00 | Create `README.md` and the documentation skeleton (§13.3). (`docs/PRD.md`, agent rules and skills are already committed) | Review |

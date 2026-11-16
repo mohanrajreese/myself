@@ -14,6 +14,8 @@ Licence notes below were checked on 16 November 2026. Anything marked **unconfir
 | **IFCT 2017** (ICMR–National Institute of Nutrition) | Raw Indian foods, lab-analysed | 528 foods | Per 100 g | Copyright of ICMR–NIN; **no open licence found** | Authoritative, but not safe to bundle |
 | UK CoFID, French CIQUAL, Canadian Nutrient File | National tables | About 3,000 each | Per 100 g | Open government licences | Not regionally useful here |
 
+**Decided 16 November 2026: INDB plus USDA.**
+
 ## 2. Recommendation
 
 **INDB for dishes plus a trimmed USDA subset for ingredients, bundled as a read-only catalogue.** Open Food Facts is left out of v1.
