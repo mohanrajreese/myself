@@ -9,8 +9,9 @@ const _key = 'theme_mode';
 /// Loaded at start-up so the first frame already uses the right theme.
 final initialThemeModeProvider = Provider<AppThemeMode>((ref) => AppThemeMode.system);
 
-final themeModeProvider =
-    NotifierProvider<ThemeModeController, AppThemeMode>(ThemeModeController.new);
+final themeModeProvider = NotifierProvider<ThemeModeController, AppThemeMode>(
+  ThemeModeController.new,
+);
 
 AppThemeMode themeModeFromSetting(Object? stored) =>
     AppThemeMode.values.where((m) => m.name == stored).firstOrNull ?? AppThemeMode.system;

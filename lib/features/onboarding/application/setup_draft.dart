@@ -42,25 +42,28 @@ final class SetupDraft {
   });
 
   factory SetupDraft.fromJson(Map<String, Object?> json) => SetupDraft(
-        imperial: json['imperial'] == true,
-        name: json['name'] as String? ?? '',
-        dateOfBirth: switch (json['dob']) { final String s => LocalDate.parse(s), _ => null },
-        heightText: json['height'] as String? ?? '',
-        weightText: json['weight'] as String? ?? '',
-        targetWeightText: json['target'] as String? ?? '',
-        stepsText: json['steps'] as String? ?? '',
-        kcalText: json['kcal'] as String? ?? '',
-        proteinText: json['protein'] as String? ?? '',
-        waterText: json['water'] as String? ?? '',
-        fitnessGoals: (json['fitness'] as List<Object?>? ?? const []).cast<String>(),
-        wakeTime: json['wake'] as String?,
-        sleepHoursText: json['sleep'] as String? ?? '',
-        workoutDays: (json['days'] as List<Object?>? ?? const []).cast<int>().toSet(),
-        remindWater: json['r_water'] == true,
-        remindWorkout: json['r_workout'] == true,
-        remindBedtime: json['r_bed'] == true,
-        suggestionsApplied: json['suggested'] == true,
-      );
+    imperial: json['imperial'] == true,
+    name: json['name'] as String? ?? '',
+    dateOfBirth: switch (json['dob']) {
+      final String s => LocalDate.parse(s),
+      _ => null,
+    },
+    heightText: json['height'] as String? ?? '',
+    weightText: json['weight'] as String? ?? '',
+    targetWeightText: json['target'] as String? ?? '',
+    stepsText: json['steps'] as String? ?? '',
+    kcalText: json['kcal'] as String? ?? '',
+    proteinText: json['protein'] as String? ?? '',
+    waterText: json['water'] as String? ?? '',
+    fitnessGoals: (json['fitness'] as List<Object?>? ?? const []).cast<String>(),
+    wakeTime: json['wake'] as String?,
+    sleepHoursText: json['sleep'] as String? ?? '',
+    workoutDays: (json['days'] as List<Object?>? ?? const []).cast<int>().toSet(),
+    remindWater: json['r_water'] == true,
+    remindWorkout: json['r_workout'] == true,
+    remindBedtime: json['r_bed'] == true,
+    suggestionsApplied: json['suggested'] == true,
+  );
 
   final bool imperial;
   final String name;
@@ -96,30 +99,30 @@ final class SetupDraft {
 
   /// Tenths of an hour, so `7.5` hours is 450 minutes.
   int? get sleepMinutes => switch (parseScaled(sleepHoursText, 1)) {
-        null => null,
-        final tenths => tenths * 6,
-      };
+    null => null,
+    final tenths => tenths * 6,
+  };
 
   Map<String, Object?> toJson() => {
-        'imperial': imperial,
-        'name': name,
-        'dob': dateOfBirth?.toString(),
-        'height': heightText,
-        'weight': weightText,
-        'target': targetWeightText,
-        'steps': stepsText,
-        'kcal': kcalText,
-        'protein': proteinText,
-        'water': waterText,
-        'fitness': fitnessGoals,
-        'wake': wakeTime,
-        'sleep': sleepHoursText,
-        'days': workoutDays.toList()..sort(),
-        'r_water': remindWater,
-        'r_workout': remindWorkout,
-        'r_bed': remindBedtime,
-        'suggested': suggestionsApplied,
-      };
+    'imperial': imperial,
+    'name': name,
+    'dob': dateOfBirth?.toString(),
+    'height': heightText,
+    'weight': weightText,
+    'target': targetWeightText,
+    'steps': stepsText,
+    'kcal': kcalText,
+    'protein': proteinText,
+    'water': waterText,
+    'fitness': fitnessGoals,
+    'wake': wakeTime,
+    'sleep': sleepHoursText,
+    'days': workoutDays.toList()..sort(),
+    'r_water': remindWater,
+    'r_workout': remindWorkout,
+    'r_bed': remindBedtime,
+    'suggested': suggestionsApplied,
+  };
 
   SetupDraft copyWith({
     bool? imperial,
@@ -140,39 +143,45 @@ final class SetupDraft {
     bool? remindWorkout,
     bool? remindBedtime,
     bool? suggestionsApplied,
-  }) =>
-      SetupDraft(
-        imperial: imperial ?? this.imperial,
-        name: name ?? this.name,
-        dateOfBirth: dateOfBirth == null ? this.dateOfBirth : dateOfBirth(),
-        heightText: heightText ?? this.heightText,
-        weightText: weightText ?? this.weightText,
-        targetWeightText: targetWeightText ?? this.targetWeightText,
-        stepsText: stepsText ?? this.stepsText,
-        kcalText: kcalText ?? this.kcalText,
-        proteinText: proteinText ?? this.proteinText,
-        waterText: waterText ?? this.waterText,
-        fitnessGoals: fitnessGoals ?? this.fitnessGoals,
-        wakeTime: wakeTime == null ? this.wakeTime : wakeTime(),
-        sleepHoursText: sleepHoursText ?? this.sleepHoursText,
-        workoutDays: workoutDays ?? this.workoutDays,
-        remindWater: remindWater ?? this.remindWater,
-        remindWorkout: remindWorkout ?? this.remindWorkout,
-        remindBedtime: remindBedtime ?? this.remindBedtime,
-        suggestionsApplied: suggestionsApplied ?? this.suggestionsApplied,
-      );
+  }) => SetupDraft(
+    imperial: imperial ?? this.imperial,
+    name: name ?? this.name,
+    dateOfBirth: dateOfBirth == null ? this.dateOfBirth : dateOfBirth(),
+    heightText: heightText ?? this.heightText,
+    weightText: weightText ?? this.weightText,
+    targetWeightText: targetWeightText ?? this.targetWeightText,
+    stepsText: stepsText ?? this.stepsText,
+    kcalText: kcalText ?? this.kcalText,
+    proteinText: proteinText ?? this.proteinText,
+    waterText: waterText ?? this.waterText,
+    fitnessGoals: fitnessGoals ?? this.fitnessGoals,
+    wakeTime: wakeTime == null ? this.wakeTime : wakeTime(),
+    sleepHoursText: sleepHoursText ?? this.sleepHoursText,
+    workoutDays: workoutDays ?? this.workoutDays,
+    remindWater: remindWater ?? this.remindWater,
+    remindWorkout: remindWorkout ?? this.remindWorkout,
+    remindBedtime: remindBedtime ?? this.remindBedtime,
+    suggestionsApplied: suggestionsApplied ?? this.suggestionsApplied,
+  );
 
   /// Switches between metric and imperial, converting what is already typed.
   SetupDraft withImperial(bool value) {
     if (value == imperial) return this;
     final next = value ? UnitPreferences.imperial : UnitPreferences.metric;
-    String mass(int? grams, String original) => grams == null ? original : formatMass(grams, next.mass);
+    String mass(int? grams, String original) =>
+        grams == null ? original : formatMass(grams, next.mass);
     return copyWith(
       imperial: value,
       weightText: mass(weightG, weightText),
       targetWeightText: mass(targetWeightG, targetWeightText),
-      heightText: switch (heightMm) { null => heightText, final mm => formatLength(mm, next.length) },
-      waterText: switch (waterMl) { null => waterText, final ml => formatVolume(ml, next.volume) },
+      heightText: switch (heightMm) {
+        null => heightText,
+        final mm => formatLength(mm, next.length),
+      },
+      waterText: switch (waterMl) {
+        null => waterText,
+        final ml => formatVolume(ml, next.volume),
+      },
     );
   }
 
@@ -194,26 +203,32 @@ final class SetupDraft {
   }
 
   ProfileDraft toProfileDraft() => ProfileDraft(
-        displayName: name,
-        dateOfBirth: dateOfBirth,
-        heightMm: heightText.trim().isEmpty ? null : heightMm,
-        units: units,
-        wakeTime: wakeTime,
-        workoutDays: workoutDays,
-      );
+    displayName: name,
+    dateOfBirth: dateOfBirth,
+    heightMm: heightText.trim().isEmpty ? null : heightMm,
+    units: units,
+    wakeTime: wakeTime,
+    workoutDays: workoutDays,
+  );
 
   DailyGoals toDailyGoals() => DailyGoals(
-        targetWeightG: targetWeightG,
-        dailySteps: steps,
-        dailyWaterMl: waterMl,
-        sleepTargetMin: sleepMinutes,
-        fitnessGoals: fitnessGoals,
-      );
+    targetWeightG: targetWeightG,
+    dailySteps: steps,
+    dailyWaterMl: waterMl,
+    sleepTargetMin: sleepMinutes,
+    fitnessGoals: fitnessGoals,
+  );
 
   NutritionTargets toNutritionTargets() => NutritionTargets(
-        energyKcalMilli: switch (kcal) { null => null, final v => v * 1000 },
-        proteinMg: switch (proteinG) { null => null, final v => v * 1000 },
-      );
+    energyKcalMilli: switch (kcal) {
+      null => null,
+      final v => v * 1000,
+    },
+    proteinMg: switch (proteinG) {
+      null => null,
+      final v => v * 1000,
+    },
+  );
 
   bool get hasNutritionTargets => kcalText.trim().isNotEmpty || proteinText.trim().isNotEmpty;
 

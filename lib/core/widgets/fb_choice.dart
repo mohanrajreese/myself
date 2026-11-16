@@ -45,7 +45,7 @@ class FbSegmented<T> extends StatelessWidget {
                       child: InkWell(
                         onTap: () => onChanged(entry.key),
                         child: SizedBox(
-                          height: 44,
+                          height: FbSize.touch,
                           child: Center(
                             child: Text(
                               entry.value,
@@ -101,6 +101,7 @@ class FbToggleChip extends StatelessWidget {
       button: true,
       selected: selected,
       label: semanticLabel ?? label,
+      onTap: onTap,
       excludeSemantics: true,
       child: Material(
         color: background,
@@ -109,7 +110,10 @@ class FbToggleChip extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: 44, minWidth: circular ? 44 : 0),
+            constraints: BoxConstraints(
+              minHeight: FbSize.touch,
+              minWidth: circular ? FbSize.touch : 0,
+            ),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: circular ? 0 : FbSpace.lg),
               child: Row(
@@ -150,30 +154,30 @@ class FbSwitchRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MergeSemantics(
-        child: InkWell(
-          onTap: () => onChanged(!value),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 60),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg, vertical: FbSpace.sm),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(title, style: context.text.body.copyWith(fontWeight: FontWeight.w500)),
-                        if (subtitle != null) Text(subtitle!, style: context.text.caption),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: FbSpace.md),
-                  Switch(value: value, onChanged: onChanged),
-                ],
+    child: InkWell(
+      onTap: () => onChanged(!value),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 60),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg, vertical: FbSpace.sm),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(title, style: context.text.body.copyWith(fontWeight: FontWeight.w500)),
+                    if (subtitle != null) Text(subtitle!, style: context.text.caption),
+                  ],
+                ),
               ),
-            ),
+              const SizedBox(width: FbSpace.md),
+              Switch(value: value, onChanged: onChanged),
+            ],
           ),
         ),
-      );
+      ),
+    ),
+  );
 }

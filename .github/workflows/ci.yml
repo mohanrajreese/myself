@@ -26,7 +26,7 @@ jobs:
           cache: true
       - run: flutter pub get
       # Format check runs before code generation so it covers hand-written code only.
-      - run: dart format --output=none --set-exit-if-changed lib test
+      - run: dart format --output=none --set-exit-if-changed $(git ls-files 'lib/*.dart' 'test/*.dart' | grep -v '/generated/')
       - run: dart run build_runner build --delete-conflicting-outputs
       - run: flutter analyze
       - run: flutter test -r failures-only

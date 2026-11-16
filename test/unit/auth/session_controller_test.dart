@@ -17,13 +17,13 @@ void main() {
   late ProviderContainer container;
 
   ProviderContainer build([SessionState initial = const SessionState()]) => ProviderContainer(
-        overrides: [
-          appDatabaseProvider.overrideWithValue(db),
-          authRepositoryProvider.overrideWithValue(auth),
-          initialSessionProvider.overrideWithValue(initial),
-          timeZoneSourceProvider.overrideWithValue(const FixedTimeZone()),
-        ],
-      );
+    overrides: [
+      appDatabaseProvider.overrideWithValue(db),
+      authRepositoryProvider.overrideWithValue(auth),
+      initialSessionProvider.overrideWithValue(initial),
+      timeZoneSourceProvider.overrideWithValue(const FixedTimeZone()),
+    ],
+  );
 
   setUp(() {
     db = memoryDatabase();

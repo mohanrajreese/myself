@@ -148,57 +148,57 @@ class FbTextStyles {
   static const _tabular = [FontFeature.tabularFigures()];
 
   TextStyle get displayMetric => TextStyle(
-        fontFamily: FbFont.text,
-        fontSize: 40,
-        height: 44 / 40,
-        fontWeight: FontWeight.w700,
-        color: _c.textPrimary,
-        fontFeatures: _tabular,
-      );
+    fontFamily: FbFont.text,
+    fontSize: 40,
+    height: 44 / 40,
+    fontWeight: FontWeight.w700,
+    color: _c.textPrimary,
+    fontFeatures: _tabular,
+  );
   TextStyle get headline => TextStyle(
-        fontFamily: FbFont.heading,
-        fontSize: 24,
-        height: 30 / 24,
-        fontWeight: FontWeight.w700,
-        color: _c.textPrimary,
-      );
+    fontFamily: FbFont.heading,
+    fontSize: 24,
+    height: 30 / 24,
+    fontWeight: FontWeight.w700,
+    color: _c.textPrimary,
+  );
   TextStyle get title => TextStyle(
-        fontFamily: FbFont.heading,
-        fontSize: 18,
-        height: 24 / 18,
-        fontWeight: FontWeight.w600,
-        color: _c.textPrimary,
-      );
+    fontFamily: FbFont.heading,
+    fontSize: 18,
+    height: 24 / 18,
+    fontWeight: FontWeight.w600,
+    color: _c.textPrimary,
+  );
   TextStyle get metric => TextStyle(
-        fontFamily: FbFont.text,
-        fontSize: 22,
-        height: 26 / 22,
-        fontWeight: FontWeight.w600,
-        color: _c.textPrimary,
-        fontFeatures: _tabular,
-      );
+    fontFamily: FbFont.text,
+    fontSize: 22,
+    height: 26 / 22,
+    fontWeight: FontWeight.w600,
+    color: _c.textPrimary,
+    fontFeatures: _tabular,
+  );
   TextStyle get body => TextStyle(
-        fontFamily: FbFont.text,
-        fontSize: 16,
-        height: 24 / 16,
-        fontWeight: FontWeight.w400,
-        color: _c.textPrimary,
-      );
+    fontFamily: FbFont.text,
+    fontSize: 16,
+    height: 24 / 16,
+    fontWeight: FontWeight.w400,
+    color: _c.textPrimary,
+  );
   TextStyle get bodyStrong => body.copyWith(fontWeight: FontWeight.w600);
   TextStyle get bodySmall => TextStyle(
-        fontFamily: FbFont.text,
-        fontSize: 14,
-        height: 20 / 14,
-        fontWeight: FontWeight.w400,
-        color: _c.textSecondary,
-      );
+    fontFamily: FbFont.text,
+    fontSize: 14,
+    height: 20 / 14,
+    fontWeight: FontWeight.w400,
+    color: _c.textSecondary,
+  );
   TextStyle get label => TextStyle(
-        fontFamily: FbFont.text,
-        fontSize: 12,
-        height: 16 / 12,
-        fontWeight: FontWeight.w600,
-        color: _c.textSecondary,
-      );
+    fontFamily: FbFont.text,
+    fontSize: 12,
+    height: 16 / 12,
+    fontWeight: FontWeight.w600,
+    color: _c.textSecondary,
+  );
   TextStyle get caption => label.copyWith(fontWeight: FontWeight.w400);
 }
 

@@ -23,9 +23,9 @@ void main() {
   });
 
   Future<List<String>> order() async => [
-        for (final item in await container.read(homeLayoutProvider.future))
-          '${item.section.name}${item.visible ? '' : ' (hidden)'}',
-      ];
+    for (final item in await container.read(homeLayoutProvider.future))
+      '${item.section.name}${item.visible ? '' : ' (hidden)'}',
+  ];
 
   test('default order shows every section', () async {
     expect(await order(), ['progress', 'quickAdd', 'essentials', 'timeline']);

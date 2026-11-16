@@ -21,22 +21,22 @@ class FbErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(FbSpace.xxl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.error_outline_rounded, color: context.colors.error, size: FbSpace.x4),
-              const SizedBox(height: FbSpace.md),
-              Text(message, style: context.text.body, textAlign: TextAlign.center),
-              if (onRetry != null && retryLabel != null) ...[
-                const SizedBox(height: FbSpace.lg),
-                OutlinedButton(onPressed: onRetry, child: Text(retryLabel!)),
-              ],
-            ],
-          ),
-        ),
-      );
+    child: Padding(
+      padding: const EdgeInsets.all(FbSpace.xxl),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.error_outline_rounded, color: context.colors.error, size: FbSpace.x4),
+          const SizedBox(height: FbSpace.md),
+          Text(message, style: context.text.body, textAlign: TextAlign.center),
+          if (onRetry != null && retryLabel != null) ...[
+            const SizedBox(height: FbSpace.lg),
+            OutlinedButton(onPressed: onRetry, child: Text(retryLabel!)),
+          ],
+        ],
+      ),
+    ),
+  );
 }
 
 /// Quiet explanation of what will appear in an empty area.

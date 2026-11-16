@@ -176,7 +176,9 @@ class FbPickerField extends StatelessWidget {
                         child: ExcludeSemantics(
                           child: Text(
                             valueText ?? hint ?? '',
-                            style: valueText == null ? t.body.copyWith(color: c.textDisabled) : t.body,
+                            style: valueText == null
+                                ? t.body.copyWith(color: c.textDisabled)
+                                : t.body,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),

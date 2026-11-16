@@ -15,9 +15,16 @@ Design and rationale: [`blueprint/01-architecture.md`](blueprint/01-architecture
 | Data layer | Settings, profile, goals (effective-dated) and weight repositories; each synced write queues an outbox entry in the same transaction |
 | Platform channel | `SystemInfoApi.timeZoneId` (Pigeon) |
 | Boundary tests | `test/architecture/`: layer rules, privacy rule, injected clock, manifest hardening |
+| App | Theme and tokens, components, router, sign-in, onboarding, Home, Settings (Phase 1 screens) |
+| Strings | `lib/l10n/app_en.arb`, generated with `flutter gen-l10n` |
 
 ## Deviations from the blueprint
 
 | Item | Blueprint | As built | Reason |
 |---|---|---|---|
 | Timezone ID | `flutter_timezone` package | Own Kotlin call through a Pigeon API | The package still applies Kotlin Gradle Plugin 1.7.10 and does not build with AGP 9 |
+| Riverpod providers | Code-generated | Hand-written, with all repository providers in `lib/app/providers.dart` | One composition root keeps features from importing each other; no generator needed |
+| Material library | `package:flutter/material.dart` | `package:material_ui/material_ui.dart` | Flutter 3.47+ moved Material into its own package |
+| Touch targets | 44 dp on the design canvas | 48 dp | Android accessibility guideline, enforced by tests |
+| Bottom navigation text | Follows system text size | Capped at 1.15× | Six labels cannot grow without clipping; screen-reader labels are unaffected |
+| Feature-to-feature navigation | — | Through routes only (for example Home opens the weight sheet by path) | Keeps the "another feature only through its domain" rule |

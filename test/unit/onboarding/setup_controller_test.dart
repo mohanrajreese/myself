@@ -17,17 +17,17 @@ void main() {
   late ProviderContainer container;
 
   ProviderContainer build() => ProviderContainer(
-        overrides: [
-          appDatabaseProvider.overrideWithValue(db),
-          authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
-          initialSessionProvider.overrideWithValue(
-            const SessionState(account: testAccount, signedIn: true),
-          ),
-          clockProvider.overrideWithValue(time.clock),
-          idGeneratorProvider.overrideWithValue(SequentialIds()),
-          timeZoneSourceProvider.overrideWithValue(const FixedTimeZone()),
-        ],
-      );
+    overrides: [
+      appDatabaseProvider.overrideWithValue(db),
+      authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
+      initialSessionProvider.overrideWithValue(
+        const SessionState(account: testAccount, signedIn: true),
+      ),
+      clockProvider.overrideWithValue(time.clock),
+      idGeneratorProvider.overrideWithValue(SequentialIds()),
+      timeZoneSourceProvider.overrideWithValue(const FixedTimeZone()),
+    ],
+  );
 
   setUp(() {
     db = memoryDatabase();
@@ -174,14 +174,17 @@ void main() {
     expect(await settings.read(SetupKeys.draft), isNull);
   });
 
-  test('only a name is needed to finish; no weight is logged and no nutrition goal is made', () async {
-    final controller = await ready();
-    controller.edit((d) => d.copyWith(name: 'Asha'));
-    controller.prepareGoals();
-    expect((await controller.finishOnboarding()).isOk, isTrue);
-    expect(await container.read(weightRepositoryProvider).latest(), isNull);
-    expect(await db.select(db.nutritionGoals).get(), isEmpty);
-  });
+  test(
+    'only a name is needed to finish; no weight is logged and no nutrition goal is made',
+    () async {
+      final controller = await ready();
+      controller.edit((d) => d.copyWith(name: 'Asha'));
+      controller.prepareGoals();
+      expect((await controller.finishOnboarding()).isOk, isTrue);
+      expect(await container.read(weightRepositoryProvider).latest(), isNull);
+      expect(await db.select(db.nutritionGoals).get(), isEmpty);
+    },
+  );
 
   test('invalid input stops the save and reports the field', () async {
     final controller = await ready();

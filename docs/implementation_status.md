@@ -10,14 +10,14 @@ Resume point for every work session. Update it when a task changes state; keep i
 |---|---|
 | Phase | 1 — Foundation (approved 16 Nov 2026) |
 | Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 screens approved 16 Nov 2026, with D7: targets calculated from weight) |
-| Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
+| Blocked on | Owner's Supabase and Google OAuth setup for a phone build; owner approval to start Phase 2 |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
 ## Phases
 
 | Phase | Status | Report |
 |---|---|---|
-| 1 Foundation | ◐ | — |
+| 1 Foundation | ⏳ built, phone verification pending | [phase-1.md](reports/phase-1.md) |
 | 2 Core tracking | ☐ | — |
 | 3 Activities and reminders | ☐ | — |
 | 4 Fitness | ☐ | — |
@@ -41,8 +41,13 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | F-10 | ☑ | Settings, profile, effective-dated goals and weight repositories with validation (data layer only; screens wait for design approval) |
 | F-11 | ☑ | Every synced write and its outbox entry share one transaction; one entry per row |
 | — | ⏳ | Device timezone through a Pigeon/Kotlin call (Dart wrapper tested; Kotlin side builds, not run on a phone) |
-| F-14 | ◐ | Migrations for profiles, goals and weight written and checked on a local PostgreSQL (35 checks); not applied to a real Supabase project yet |
-| F-07, F-08, F-09, F-12, F-13, F-14a, F-15 | ✋ | Designs published on the canvas |
+| F-14 | ◐ | Migrations written and checked on a local PostgreSQL (35 checks); not applied to a real Supabase project |
+| F-07, F-08, F-09 | ☑ | Tokens, themes, fonts, components, router with six tabs |
+| F-12, F-13 | ⏳ | Onboarding and Settings editing; screen tests pass; not seen on a phone |
+| F-14a | ⏳ | Google sign-in and account binding; logic and screens tested with a fake; real sign-in unverified |
+| F-15 | ⏳ | Home with targets, weight quick add, timeline, customisation |
+| D7 | ☑ | Targets calculated from weight |
+| F-16 | ☑ | Docs updated; report in `docs/reports/phase-1.md` |
 
 ## Device verification backlog
 
@@ -52,3 +57,5 @@ Features implemented but not yet confirmed on the phone. Test numbers refer to `
 |---|---|---|
 | Encrypted databases open and persist across restarts | Launch, add data, force-stop, relaunch | Pending |
 | Backup exclusion | `adb backup` yields no app data | Pending |
+| Google sign-in, onboarding, Home | Fresh install, sign in, finish onboarding, relaunch in airplane mode (test 19) | Pending |
+| Timezone through Kotlin | Weight entry shows the phone's timezone in the database | Pending |

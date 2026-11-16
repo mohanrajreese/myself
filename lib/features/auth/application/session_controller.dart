@@ -27,8 +27,9 @@ final class DifferentAccount extends SignInOutcome {
   final Account incoming;
 }
 
-final sessionControllerProvider =
-    NotifierProvider<SessionController, SessionState>(SessionController.new);
+final sessionControllerProvider = NotifierProvider<SessionController, SessionState>(
+  SessionController.new,
+);
 
 class SessionController extends Notifier<SessionState> {
   @override

@@ -13,20 +13,25 @@ class FbProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ClipRRect(
-        borderRadius: BorderRadius.circular(3),
-        child: LinearProgressIndicator(
-          value: fraction.clamp(0, 1).toDouble(),
-          minHeight: 6,
-          backgroundColor: context.colors.surfaceVariant,
-          color: color ?? context.colors.primary,
-        ),
-      );
+    borderRadius: BorderRadius.circular(3),
+    child: LinearProgressIndicator(
+      value: fraction.clamp(0, 1).toDouble(),
+      minHeight: 6,
+      backgroundColor: context.colors.surfaceVariant,
+      color: color ?? context.colors.primary,
+    ),
+  );
 }
 
 /// Ring with an optional percentage in the middle. With a null [fraction]
 /// only the empty track is drawn.
 class FbProgressRing extends StatelessWidget {
-  const FbProgressRing({required this.fraction, required this.semanticLabel, this.size = 76, super.key});
+  const FbProgressRing({
+    required this.fraction,
+    required this.semanticLabel,
+    this.size = 76,
+    super.key,
+  });
 
   final double? fraction;
   final String semanticLabel;
@@ -85,5 +90,6 @@ class _RingPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_RingPainter old) => old.value != value || old.track != track || old.color != color;
+  bool shouldRepaint(_RingPainter old) =>
+      old.value != value || old.track != track || old.color != color;
 }

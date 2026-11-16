@@ -1,0 +1,357 @@
+{
+  "@@locale": "en",
+  "appName": "FitBuddy",
+  "continueLabel": "Continue",
+  "save": "Save",
+  "cancel": "Cancel",
+  "back": "Back",
+  "edit": "Edit",
+  "retry": "Try again",
+  "optional": "optional",
+  "notSet": "Not set",
+  "add": "Add",
+  "clear": "Clear",
+  "loading": "Loading",
+  "signInTagline": "Your steps, food, sleep, workouts and daily routines, in one private place.",
+  "signInPoint1": "Log anything in a tap or two",
+  "signInPoint2": "Works offline after your first sign-in",
+  "signInPoint3": "Private records never leave this phone",
+  "continueWithGoogle": "Continue with Google",
+  "signInFooter": "Sign-in needs internet once. It keeps your synced records safe if you change phones.",
+  "signInOffline": "You are offline. Connect to the internet to sign in for the first time.",
+  "signInNotConfigured": "Sign-in is not set up in this build of FitBuddy.",
+  "signInFailedGoogle": "Google sign-in did not complete. Try again.",
+  "signInFailedBackend": "FitBuddy could not confirm your account. Try again in a moment.",
+  "replaceTitle": "Use a different account?",
+  "replaceMessage": "This phone holds FitBuddy data for {existing}. To continue as {incoming}, that data must be erased from this phone first. This cannot be undone.",
+  "@replaceMessage": {
+    "placeholders": {
+      "existing": {
+        "type": "String"
+      },
+      "incoming": {
+        "type": "String"
+      }
+    }
+  },
+  "replaceConfirm": "Erase and continue",
+  "thisAccount": "this account",
+  "stepOf": "{current} of {total}",
+  "@stepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "stepSemantics": "Step {current} of {total}",
+  "@stepSemantics": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "unitKg": "kg",
+  "unitLb": "lb",
+  "unitCm": "cm",
+  "unitIn": "in",
+  "unitMl": "ml",
+  "unitFlOz": "fl oz",
+  "unitSteps": "steps",
+  "unitKcal": "kcal",
+  "unitG": "g",
+  "unitHours": "hours",
+  "profileTitle": "About you",
+  "profileSubtitle": "Only your name is required. You can fill in the rest later.",
+  "unitsLabel": "Units",
+  "unitsMetric": "kg · cm · ml",
+  "unitsImperial": "lb · in · fl oz",
+  "nameLabel": "Name",
+  "dobLabel": "Date of birth",
+  "dobHint": "Choose a date",
+  "heightLabel": "Height",
+  "weightLabel": "Current weight",
+  "goalsTitle": "Your goals",
+  "goalsSubtitle": "All optional and editable. Your history is never rewritten.",
+  "targetWeightLabel": "Target weight",
+  "dailyStepsLabel": "Daily steps",
+  "dailyCaloriesLabel": "Daily calories",
+  "dailyProteinLabel": "Daily protein",
+  "dailyWaterLabel": "Daily water",
+  "estimateNotice": "Calories, protein and water are estimated from your weight. Adjust them to suit you. Not medical advice.",
+  "estimateNeedsWeight": "Add your weight on the previous step to estimate calories, protein and water.",
+  "estimateNeedsWeightEdit": "Log a weight from Home to estimate calories, protein and water.",
+  "recalculate": "Recalculate",
+  "fitnessGoalsLabel": "Fitness goals",
+  "goalLoseWeight": "Lose weight",
+  "goalBuildStrength": "Build strength",
+  "goalImproveStamina": "Improve stamina",
+  "goalStayActive": "Stay active",
+  "addYourOwn": "Add your own",
+  "addGoalTitle": "Add a fitness goal",
+  "addGoalHint": "For example: run 5 km",
+  "dayTitle": "Your day",
+  "daySubtitle": "Used to time reminders and to read your sleep. All optional.",
+  "wakeLabel": "Wake-up time",
+  "wakeHint": "Choose a time",
+  "sleepTargetLabel": "Sleep target",
+  "workoutDaysLabel": "Workout days",
+  "remindWaterTitle": "Water reminders",
+  "remindWaterSubtitle": "Through the day, not in quiet hours",
+  "remindWorkoutTitle": "Workout reminders",
+  "remindWorkoutSubtitle": "On your workout days",
+  "remindBedtimeTitle": "Bedtime reminder",
+  "remindBedtimeSubtitle": "Worked out from wake-up and sleep target",
+  "remindersLater": "Reminders begin once the reminder feature is added. Your choices are saved now.",
+  "permTitle": "Permissions, when needed",
+  "permSubtitle": "Nothing is requested now. FitBuddy asks only when you turn a feature on.",
+  "permActivityTitle": "Physical activity",
+  "permActivityBody": "Counts steps. Asked when you turn on step tracking.",
+  "permNotificationsTitle": "Notifications",
+  "permNotificationsBody": "Shows reminders. Asked when you create your first one.",
+  "permAlarmsTitle": "Exact alarms",
+  "permAlarmsBody": "Rings on the minute. Asked only for alarms you mark as exact.",
+  "permUsageTitle": "Usage access",
+  "permUsageBody": "Reads screen time. Stays on this phone. Asked in Digital wellbeing.",
+  "permLocationTitle": "Location",
+  "permLocationBody": "Only for GPS workouts you start. Manual logging never needs it.",
+  "permCameraTitle": "Camera and photos",
+  "permCameraBody": "Uses your phone's own camera and picker. No permission prompt.",
+  "summaryTitle": "Check your setup",
+  "summarySubtitle": "Everything here can be changed later in Settings.",
+  "summaryProfile": "Profile",
+  "summaryGoals": "Goals",
+  "summaryReminders": "Reminders",
+  "finishSetup": "Finish setup",
+  "editSection": "Edit {section}",
+  "@editSection": {
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
+  "none": "None",
+  "reminderWaterShort": "Water",
+  "reminderWorkoutShort": "Workout",
+  "reminderBedtimeShort": "Bedtime",
+  "hoursValue": "{hours} hours",
+  "@hoursValue": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "errNameRequired": "Enter your name.",
+  "errInvalidNumber": "Enter a number.",
+  "errOutOfRange": "That value is outside the allowed range.",
+  "errTooLong": "That is too long.",
+  "errSaveFailed": "Couldn't save. Try again.",
+  "errCheckFields": "Check the highlighted fields.",
+  "changesSaved": "Changes saved",
+  "greetingMorning": "Good morning, {name}",
+  "@greetingMorning": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingAfternoon": "Good afternoon, {name}",
+  "@greetingAfternoon": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingEvening": "Good evening, {name}",
+  "@greetingEvening": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingMorningNoName": "Good morning",
+  "greetingAfternoonNoName": "Good afternoon",
+  "greetingEveningNoName": "Good evening",
+  "profileAndSettings": "Profile and settings",
+  "progressLabel": "Today's progress",
+  "cardSteps": "Steps",
+  "stepsNotSetUp": "Not set up yet",
+  "stepsGoal": "Goal {goal} steps",
+  "@stepsGoal": {
+    "placeholders": {
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "stepsRingLabel": "Step tracking is not set up",
+  "cardWater": "Water",
+  "cardCalories": "Calories",
+  "cardProtein": "Protein",
+  "cardSleep": "Sleep",
+  "cardWorkout": "Workout",
+  "valueMl": "{value} ml",
+  "@valueMl": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "valueFlOz": "{value} fl oz",
+  "@valueFlOz": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "valueKcal": "{value} kcal",
+  "@valueKcal": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "valueG": "{value} g",
+  "@valueG": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "ofTarget": "of {target}",
+  "@ofTarget": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "noTarget": "No target set",
+  "notLogged": "Not logged",
+  "sleepTargetValue": "Target {hours} h",
+  "@sleepTargetValue": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "workoutPlanned": "Planned today",
+  "workoutRest": "Rest day",
+  "workoutNoDays": "No workout days set",
+  "quickAdd": "Quick add",
+  "quickAddWeight": "Weight",
+  "essentialToday": "Essential today",
+  "essentialsEmpty": "Routines you mark as essential, such as brushing or a walk, will show here each day.",
+  "todayTitle": "Today",
+  "timelineEmpty": "Nothing logged yet. Everything you record today appears here in time order.",
+  "timelineWeight": "Weight · {value}",
+  "@timelineWeight": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "valueKg": "{value} kg",
+  "@valueKg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "valueLb": "{value} lb",
+  "@valueLb": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "addWeightTitle": "Add weight",
+  "weightFieldLabel": "Weight",
+  "weightSaved": "Weight saved",
+  "lastWeight": "Last: {value}",
+  "@lastWeight": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "tabHome": "Home",
+  "tabFitness": "Fitness",
+  "tabNutrition": "Nutrition",
+  "tabHealth": "Health",
+  "tabHabits": "Habits",
+  "tabInsights": "Insights",
+  "notBuiltBody": "{feature} isn't available yet. It will appear here in a later update.",
+  "@notBuiltBody": {
+    "placeholders": {
+      "feature": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsTitle": "Settings",
+  "sectionYou": "You",
+  "sectionApp": "App",
+  "sectionAccount": "Account",
+  "rowProfile": "Profile",
+  "rowProfileValue": "Name, birth date, height, units",
+  "rowGoals": "Goals",
+  "rowGoalsValue": "Steps, water, nutrition",
+  "rowDay": "Your day",
+  "rowDayValue": "Wake-up, sleep, workout days",
+  "theme": "Theme",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "customiseHome": "Customise Home",
+  "customiseHomeValue": "Reorder or hide",
+  "customiseHomeHelp": "Drag to reorder. Switch a section off to hide it.",
+  "sectionProgress": "Daily progress",
+  "sectionQuickAdd": "Quick add",
+  "sectionEssentials": "Essential today",
+  "sectionTimeline": "Today's timeline",
+  "showSection": "Show {section}",
+  "@showSection": {
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
+  "sync": "Sync",
+  "syncNothingWaiting": "Nothing waiting",
+  "syncPending": "{count, plural, one{1 change saved on this phone, waiting to upload} other{{count} changes saved on this phone, waiting to upload}}",
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "signOut": "Sign out",
+  "signOutTitle": "Sign out?",
+  "signOutMessage": "Your records stay on this phone, encrypted. Sign in with the same account to continue.",
+  "signOutNote": "Signing out keeps your records on this phone, encrypted. Sign in with the same account to continue.",
+  "startupError": "FitBuddy can't open its secure storage on this phone. Your data has not been changed."
+}

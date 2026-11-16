@@ -11,10 +11,14 @@ import 'setup_draft.dart';
 abstract final class SetupKeys {
   static const draft = 'onboarding_draft';
   static const reminderPrefs = 'reminder_prefs';
+
+  /// Route of the onboarding step to reopen after a restart.
+  static const resumePath = 'onboarding_step';
 }
 
-final setupControllerProvider =
-    AsyncNotifierProvider<SetupController, SetupDraft>(SetupController.new);
+final setupControllerProvider = AsyncNotifierProvider<SetupController, SetupDraft>(
+  SetupController.new,
+);
 
 /// Holds what the user is entering during onboarding, and what they are
 /// editing later in Settings. Progress through onboarding is saved after each
@@ -50,13 +54,25 @@ class SetupController extends AsyncNotifier<SetupDraft> {
       imperial: units.mass == MassUnit.lb,
       name: profile.displayName,
       dateOfBirth: profile.dateOfBirth,
-      heightText: switch (profile.heightMm) { null => '', final mm => formatLength(mm, units.length) },
+      heightText: switch (profile.heightMm) {
+        null => '',
+        final mm => formatLength(mm, units.length),
+      },
       weightText: mass(weight?.weightG),
       targetWeightText: mass(goals?.targetWeightG),
       stepsText: goals?.dailySteps?.toString() ?? '',
-      kcalText: switch (nutrition?.energyKcalMilli) { null => '', final v => '${v ~/ 1000}' },
-      proteinText: switch (nutrition?.proteinMg) { null => '', final v => '${v ~/ 1000}' },
-      waterText: switch (goals?.dailyWaterMl) { null => '', final ml => formatVolume(ml, units.volume) },
+      kcalText: switch (nutrition?.energyKcalMilli) {
+        null => '',
+        final v => '${v ~/ 1000}',
+      },
+      proteinText: switch (nutrition?.proteinMg) {
+        null => '',
+        final v => '${v ~/ 1000}',
+      },
+      waterText: switch (goals?.dailyWaterMl) {
+        null => '',
+        final ml => formatVolume(ml, units.volume),
+      },
       fitnessGoals: goals?.fitnessGoals ?? const [],
       wakeTime: profile.wakeTime,
       sleepHoursText: switch (goals?.sleepTargetMin) {
@@ -75,9 +91,12 @@ class SetupController extends AsyncNotifier<SetupDraft> {
 
   void edit(SetupDraft Function(SetupDraft draft) change) => state = AsyncData(change(_draft));
 
-  /// Saves onboarding progress so it can be resumed.
-  Future<void> persistDraft() =>
-      ref.read(settingsRepositoryProvider).write(SetupKeys.draft, _draft.toJson());
+  /// Saves onboarding progress so it can be resumed at [nextPath].
+  Future<void> persistDraft({String? nextPath}) async {
+    final settings = ref.read(settingsRepositoryProvider);
+    await settings.write(SetupKeys.draft, _draft.toJson());
+    if (nextPath != null) await settings.write(SetupKeys.resumePath, nextPath);
+  }
 
   /// Called when the Goals step opens: fills weight-based targets once.
   void prepareGoals() {
@@ -111,6 +130,7 @@ class SetupController extends AsyncNotifier<SetupDraft> {
     final done = await ref.read(profileRepositoryProvider).completeOnboarding(_accountId);
     if (!done.isOk) return done;
     await ref.read(settingsRepositoryProvider).remove(SetupKeys.draft);
+    await ref.read(settingsRepositoryProvider).remove(SetupKeys.resumePath);
     return const Ok(null);
   }
 
@@ -120,13 +140,19 @@ class SetupController extends AsyncNotifier<SetupDraft> {
   Future<Result<void>> _save({required bool recordWeight}) async {
     final draft = _draft;
     final today = ref.read(todayProvider);
-    final errors = {...draft.profileErrors(today: today), ...draft.goalErrors(), ...draft.dayErrors()};
+    final errors = {
+      ...draft.profileErrors(today: today),
+      ...draft.goalErrors(),
+      ...draft.dayErrors(),
+    };
     if (errors.isNotEmpty) {
       final first = errors.entries.first;
       return Err(ValidationFailure(first.key, first.value));
     }
 
-    final profile = await ref.read(profileRepositoryProvider).save(_accountId, draft.toProfileDraft());
+    final profile = await ref
+        .read(profileRepositoryProvider)
+        .save(_accountId, draft.toProfileDraft());
     if (!profile.isOk) return Err(profile.failureOrNull!);
 
     final weightG = draft.weightG;

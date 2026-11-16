@@ -20,8 +20,9 @@ const _default = [
   HomeSectionSetting(HomeSection.timeline),
 ];
 
-final homeLayoutProvider =
-    AsyncNotifierProvider<HomeLayoutController, List<HomeSectionSetting>>(HomeLayoutController.new);
+final homeLayoutProvider = AsyncNotifierProvider<HomeLayoutController, List<HomeSectionSetting>>(
+  HomeLayoutController.new,
+);
 
 /// Order and visibility of the Home sections (PRD §4.2, dashboard
 /// customisation). Stored on the device.
@@ -46,14 +47,14 @@ class HomeLayoutController extends AsyncNotifier<List<HomeSectionSetting>> {
   }
 
   Future<void> setVisible(HomeSection section, bool visible) => _update([
-        for (final item in state.value ?? _default)
-          item.section == section ? HomeSectionSetting(section, visible: visible) : item,
-      ]);
+    for (final item in state.value ?? _default)
+      item.section == section ? HomeSectionSetting(section, visible: visible) : item,
+  ]);
 
+  /// Moves the item at [oldIndex] so that it ends up at [newIndex].
   Future<void> move(int oldIndex, int newIndex) {
     final items = [...state.value ?? _default];
-    final target = newIndex > oldIndex ? newIndex - 1 : newIndex;
-    items.insert(target, items.removeAt(oldIndex));
+    items.insert(newIndex.clamp(0, items.length - 1), items.removeAt(oldIndex));
     return _update(items);
   }
 

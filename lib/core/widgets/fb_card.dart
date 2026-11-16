@@ -41,13 +41,15 @@ class FbSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          Expanded(child: Semantics(header: true, child: Text(title, style: context.text.title))),
-          if (trailing != null) Text(trailing!, style: context.text.label),
-        ],
-      );
+    crossAxisAlignment: CrossAxisAlignment.baseline,
+    textBaseline: TextBaseline.alphabetic,
+    children: [
+      Expanded(
+        child: Semantics(header: true, child: Text(title, style: context.text.title)),
+      ),
+      if (trailing != null) Text(trailing!, style: context.text.label),
+    ],
+  );
 }
 
 /// A tappable row inside a card: title on the left, value and chevron right.
@@ -60,28 +62,28 @@ class FbNavRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 56),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg, vertical: FbSpace.sm),
-            child: Row(
-              children: [
-                Text(title, style: context.text.body),
-                const SizedBox(width: FbSpace.md),
-                Expanded(
-                  child: Text(
-                    value ?? '',
-                    style: context.text.bodySmall,
-                    textAlign: TextAlign.end,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                Icon(Icons.chevron_right_rounded, color: context.colors.textSecondary),
-              ],
+    onTap: onTap,
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 56),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg, vertical: FbSpace.sm),
+        child: Row(
+          children: [
+            Text(title, style: context.text.body),
+            const SizedBox(width: FbSpace.md),
+            Expanded(
+              child: Text(
+                value ?? '',
+                style: context.text.bodySmall,
+                textAlign: TextAlign.end,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
+            Icon(Icons.chevron_right_rounded, color: context.colors.textSecondary),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 }

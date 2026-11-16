@@ -53,3 +53,9 @@ flutter test test/unit/path_test.dart -r failures-only
 dart run build_runner build --delete-conflicting-outputs
 flutter build apk --debug --dart-define-from-file=env/dev.json
 ```
+
+Screen renders for visual review (written to `test/visual/renders/`, not committed):
+
+```bash
+FLUTTER_ROOT="$(dirname "$(dirname "$(command -v flutter)")")" flutter test --run-skipped --tags visual --update-goldens test/visual
+```

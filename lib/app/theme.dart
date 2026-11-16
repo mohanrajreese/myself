@@ -27,9 +27,9 @@ ThemeData buildTheme(Brightness brightness) {
   );
 
   OutlineInputBorder border(Color color, [double width = 1]) => OutlineInputBorder(
-        borderRadius: BorderRadius.circular(FbRadius.input),
-        borderSide: BorderSide(color: color, width: width),
-      );
+    borderRadius: BorderRadius.circular(FbRadius.input),
+    borderSide: BorderSide(color: color, width: width),
+  );
 
   return ThemeData(
     useMaterial3: true,

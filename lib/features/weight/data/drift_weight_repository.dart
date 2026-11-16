@@ -70,10 +70,11 @@ final class DriftWeightRepository implements WeightRepository {
     }, onError: (_) => const StorageFailure('weight_write'));
   }
 
-  SimpleSelectStatement<$WeightLogsTable, WeightLogRow> get _latestQuery => _db.select(_db.weightLogs)
-    ..where((t) => t.deletedAt.isNull())
-    ..orderBy([(t) => OrderingTerm.desc(t.occurredAt)])
-    ..limit(1);
+  SimpleSelectStatement<$WeightLogsTable, WeightLogRow> get _latestQuery =>
+      _db.select(_db.weightLogs)
+        ..where((t) => t.deletedAt.isNull())
+        ..orderBy([(t) => OrderingTerm.desc(t.occurredAt)])
+        ..limit(1);
 
   @override
   Future<WeightEntry?> latest() async => _toDomain(await _latestQuery.getSingleOrNull());
@@ -82,11 +83,12 @@ final class DriftWeightRepository implements WeightRepository {
   Stream<WeightEntry?> watchLatest() => _latestQuery.watchSingleOrNull().map(_toDomain);
 
   @override
-  Stream<List<WeightEntry>> watchOn(LocalDate date) => (_db.select(_db.weightLogs)
-        ..where((t) => t.localDate.equalsValue(date) & t.deletedAt.isNull())
-        ..orderBy([(t) => OrderingTerm.asc(t.occurredAt)]))
-      .watch()
-      .map((rows) => [for (final row in rows) _toDomain(row)!]);
+  Stream<List<WeightEntry>> watchOn(LocalDate date) =>
+      (_db.select(_db.weightLogs)
+            ..where((t) => t.localDate.equalsValue(date) & t.deletedAt.isNull())
+            ..orderBy([(t) => OrderingTerm.asc(t.occurredAt)]))
+          .watch()
+          .map((rows) => [for (final row in rows) _toDomain(row)!]);
 
   WeightEntry? _toDomain(WeightLogRow? row) => row == null
       ? null
