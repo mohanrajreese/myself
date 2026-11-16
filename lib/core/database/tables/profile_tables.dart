@@ -7,6 +7,7 @@ import 'package:drift/drift.dart';
 import '../converters.dart';
 import 'synced_columns.dart';
 
+@DataClassName('ProfileRow')
 class Profiles extends Table with SyncedColumns {
   TextColumn get displayName => text()();
   TextColumn get dateOfBirth => text().map(const LocalDateConverter()).nullable()();
@@ -29,6 +30,7 @@ class Profiles extends Table with SyncedColumns {
 /// One row per change. The row in force on a day is the latest one whose
 /// `effectiveFrom` is on or before that day, so history is never rewritten
 /// when a goal changes (PRD §5.1).
+@DataClassName('UserGoalRow')
 class UserGoals extends Table with SyncedColumns {
   TextColumn get effectiveFrom => text().map(const LocalDateConverter())();
   IntColumn get targetWeightG => integer().nullable().check(targetWeightG.isBiggerThanValue(0))();
@@ -41,6 +43,7 @@ class UserGoals extends Table with SyncedColumns {
   TextColumn get fitnessGoals => text().withDefault(const Constant('[]'))();
 }
 
+@DataClassName('NutritionGoalRow')
 class NutritionGoals extends Table with SyncedColumns {
   TextColumn get effectiveFrom => text().map(const LocalDateConverter())();
   IntColumn get energyKcalMilli =>
@@ -52,6 +55,7 @@ class NutritionGoals extends Table with SyncedColumns {
 }
 
 @TableIndex(name: 'weight_logs_local_date', columns: {#localDate})
+@DataClassName('WeightLogRow')
 class WeightLogs extends Table with SyncedColumns {
   IntColumn get weightG => integer().check(weightG.isBetweenValues(1000, 700000))();
   TextColumn get entryUnit => text().check(entryUnit.isIn(const ['kg', 'lb']))();

@@ -10,6 +10,11 @@ Design and rationale: [`blueprint/01-architecture.md`](blueprint/01-architecture
 | Android build | AGP 9.3.1, built-in Kotlin, `compileSdk`/`targetSdk` 37, `minSdk` 29, core-library desugaring |
 | SQLite | SQLite3MultipleCiphers bundled through the `sqlite3` build hook (`libsqlite3mc.so` confirmed in the debug APK) |
 | Signing | Project debug keystore `android/app/debug.keystore` |
+| Core | `Clock`, `LocalDate`, `Result`/`Failure`, redacting `AppLogger`, integer unit conversions, UUID v7 ids |
+| Databases | `AppDatabase` and `PrivateDatabase`, encrypted, schema v1; outbox allow-list triggers |
+| Data layer | Settings, profile, goals (effective-dated) and weight repositories; each synced write queues an outbox entry in the same transaction |
+| Platform channel | `SystemInfoApi.timeZoneId` (Pigeon) |
+| Boundary tests | `test/architecture/`: layer rules, privacy rule, injected clock, manifest hardening |
 
 ## Deviations from the blueprint
 

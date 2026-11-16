@@ -12,6 +12,8 @@ enum LengthUnit { cm, inch }
 
 enum VolumeUnit { ml, flOz }
 
+enum DistanceUnit { km, mi }
+
 // 1 lb = 453.59237 g (exact). 1 in = 25.4 mm (exact).
 // 1 US fl oz = 29.5735295625 ml (exact).
 const _gramsPerLbE5 = 45359237;
