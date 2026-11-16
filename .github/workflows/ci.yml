@@ -31,3 +31,15 @@ jobs:
       - run: flutter analyze
       - run: flutter test -r failures-only
       - run: flutter build apk --debug
+
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply migrations and run access-rule checks
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql >/dev/null
+          sudo chmod -R a+rX "$GITHUB_WORKSPACE"
+          sudo -u postgres env PATH="$(dirname "$(ls /usr/lib/postgresql/*/bin/initdb | tail -n 1)"):$PATH" bash supabase/tests/run_local.sh | tee result.txt
+          grep -q "ALL CHECKS PASSED" result.txt

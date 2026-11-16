@@ -10,7 +10,7 @@ Tests are written with each feature, not after it (§13.2). A phase closes only 
 | Architecture | Plain Dart tests over `lib/` imports and the manifest | Cloud, CI | Layer boundaries, privacy boundaries, banned APIs, manifest hardening |
 | Widget | `flutter_test`, golden images | Cloud, CI | Screens, components, states, accessibility guidelines |
 | Migration | Drift schema verifier against committed schema dumps | Cloud, CI | Every local schema version upgrades correctly |
-| Database policy | pgTAP through the Supabase CLI | Local Supabase stack or a dedicated test project | Row Level Security, constraints, triggers |
+| Database policy | Plain SQL assertion scripts run with `psql` (`supabase/tests/`) | Throwaway local PostgreSQL, or a dedicated test project | Row Level Security, constraints, triggers |
 | Kotlin unit | JUnit, Robolectric | Cloud, CI | Buffer store, boot-session logic, usage-event pairing |
 | Integration | `integration_test` | Physical device (or emulator where one is available) | End-to-end flows through the real app |
 | Physical device | Scripted manual tests | Your phone | Sensors, alarms, reboot, permissions, battery behaviour, FCM |

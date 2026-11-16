@@ -151,7 +151,8 @@ SQL-first (§13.2). One file per logical step in `supabase/migrations/`, applied
 |---|---|---|---|
 | 1 | `…_extensions_and_helpers.sql` | Trigger functions `set_server_updated_at()` and `reject_stale_write()`, helper to attach both to a table | 1 |
 | 2 | `…_profiles_and_goals.sql` | `profiles`, `user_goals`, `nutrition_goals` | 1 |
-| 3 | `…_body.sql` | `weight_logs`, `body_measurements` | 2 |
+| 2a | `…_weight_logs.sql` | `weight_logs` (moved from Phase 2: onboarding records the first weight) | 1 |
+| 3 | `…_body.sql` | `body_measurements` | 2 |
 | 4 | `…_nutrition.sql` | `food_items`, `meal_logs`, `meal_food_items`, `saved_meals`, `water_logs` | 2 |
 | 5 | `…_sleep_wellness.sql` | `sleep_logs`, `daily_health_checkins` | 2 |
 | 6 | `…_activities.sql` | `activity_definitions`, `activity_logs` | 3 |

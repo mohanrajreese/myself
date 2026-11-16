@@ -26,8 +26,8 @@ Unsure which tier? Stop and ask. Default is never "synced".
 | 3 | Bump that database's `schemaVersion`; add a step migration | ✔ | ✔ | ✔ |
 | 4 | Export the schema dump to `drift_schemas/` and extend the migration test | ✔ | ✔ | ✔ |
 | 5 | New SQL file in `supabase/migrations/` from the template in `03-database.md` §5.2 (RLS, four policies, triggers, composite FK for children) | ✔ | — | — |
-| 6 | pgTAP test: other user blocked on all four operations | ✔ | — | — |
-| 7 | Add the table to the outbox allow-list `CHECK` and to the sync table order (parents before children) | ✔ | — | — |
+| 6 | Add the table to `supabase/tests/rls_checks.sql`: owner allowed; other user and anon blocked on all four operations | ✔ | — | — |
+| 7 | Add the table to `syncedTableNames` in `lib/core/database/synced_tables.dart` (outbox allow-list and push order, parents before children) | ✔ | — | — |
 | 8 | DTO and mapper both ways; mapper round-trip test | ✔ | — | — |
 | 9 | Confirm the table is **absent** from the outbox allow-list and from every remote source | — | ✔ | ✔ |
 
@@ -37,7 +37,7 @@ Unsure which tier? Stop and ask. Default is never "synced".
 dart run build_runner build --delete-conflicting-outputs
 dart run drift_dev schema dump lib/core/database/app_database.dart drift_schemas/app/
 flutter test test/unit/database -r failures-only
-supabase test db
+bash supabase/tests/run_local.sh
 ```
 
 ## Never

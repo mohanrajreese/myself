@@ -41,6 +41,7 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | F-10 | ☑ | Settings, profile, effective-dated goals and weight repositories with validation (data layer only; screens wait for design approval) |
 | F-11 | ☑ | Every synced write and its outbox entry share one transaction; one entry per row |
 | — | ⏳ | Device timezone through a Pigeon/Kotlin call (Dart wrapper tested; Kotlin side builds, not run on a phone) |
+| F-14 | ◐ | Migrations for profiles, goals and weight written and checked on a local PostgreSQL (35 checks); not applied to a real Supabase project yet |
 | F-07, F-08, F-09, F-12, F-13, F-14a, F-15 | ✋ | Designs published on the canvas |
 
 ## Device verification backlog
