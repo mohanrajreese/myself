@@ -27,3 +27,6 @@ linter:
     require_trailing_commas: true
     unawaited_futures: true
     use_super_parameters: true
+
+formatter:
+  page_width: 100

@@ -31,8 +31,11 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 
 | Task | State | Notes (one line) |
 |---|---|---|
-| F-00 | ◐ | PRD, rules, skills committed; README and docs skeleton with F-01 |
-| F-01 | ◐ | Toolchain install and project creation |
+| F-00 | ☑ | PRD, rules, skills, README, docs skeleton |
+| F-01 | ☑ | Flutter 3.50 project, AGP 9.3.1, SDK 37/29, debug keystore; debug APK builds |
+| F-02 | ☑ | All planned plugins built together once; `flutter_timezone` dropped (fails on AGP 9); `firebase_core` and `workmanager_android` build but warn about old Kotlin setup; later-phase plugins removed from pubspec until needed |
+| F-03 | ☑ | Lint settings, boundary rules with tests, CI workflow (CI run itself not yet observed) |
+| F-04 | ☑ | Clock, LocalDate, Result/Failure, redacting logger, unit conversions (36 tests) |
 | F-07, F-08, F-09, F-12, F-13, F-14a, F-15 | ✋ | Designs published on the canvas |
 
 ## Device verification backlog

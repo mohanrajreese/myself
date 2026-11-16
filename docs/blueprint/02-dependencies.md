@@ -15,7 +15,7 @@ Versions are **not** pinned here (§2.1). The "Seen" column is the newest releas
 | Sign in with Google | `google_sign_in` | 7.2.0 | Native account chooser through Credential Manager; returns the ID token given to Supabase |
 | Push | `firebase_core`, `firebase_messaging` | 5.1.0 / 17.0.1 | No Analytics, no Crashlytics |
 | Local notifications | `flutter_local_notifications` | 23.0.2 | Channels, scheduling, actions, boot reschedule |
-| Timezones | `timezone`, `flutter_timezone` | 0.11.2 / 5.1.1 | Calendar-rule scheduling, DST |
+| Timezones | `timezone` | 0.11.2 | Calendar-rule scheduling, DST. The device's timezone ID comes from a small Kotlin call (see rejected packages) |
 | Background work | `workmanager` | 0.10.10 | Sync, reminder top-up, roll-ups |
 | Charts | `fl_chart` | 1.3.1 | §2.1 |
 | Connectivity | `connectivity_plus` | 7.3.2 | §2.1 |
@@ -45,6 +45,7 @@ Versions are **not** pinned here (§2.1). The "Seen" column is the newest releas
 | Package | Reason |
 |---|---|
 | `sqlcipher_flutter_libs`, `sqlite3_flutter_libs` | End-of-life; superseded by the `sqlite3` build hook |
+| `flutter_timezone` | Still applies Kotlin Gradle Plugin 1.7.10; fails to build with AGP 9 (found in the F-02 smoke build) |
 | `android_alarm_manager_plus` | The notification plugin already schedules through `AlarmManager`; a second scheduler would create two sources of truth |
 | `flutter_foreground_task`, step-counter plugins | The PRD assigns step collection to Kotlin (§5.6) and the service must run without a Flutter engine |
 | `usage_stats` plugin | The PRD assigns screen time to Kotlin (§5.17); a small first-party plugin gives control over event-based aggregation |
