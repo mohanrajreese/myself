@@ -43,6 +43,10 @@ Likelihood and impact: High, Medium, Low. "Device" in the last column means the 
 | R-31 | **Health-related wording** could read as diagnosis or advice | L | M | Tone rules (04 §7); insight wording test; medication dosage shown only as entered |
 | R-32 | **Play Store policy**, if distribution ever changes from sideloading: usage access, exact alarms, health foreground service and health-data declarations | L | M | Out of scope for v1 (D5); permissions already limited to the minimum, which keeps a later submission possible |
 | R-33 | **Photo storage** grows and adds an encryption path of its own | L | M | Downscale before encrypting; per-file keys derived from one master key; delete files with their records |
+| R-35 | **Google sign-in misconfiguration.** A wrong SHA-1, package name or client ID fails with an opaque error; a debug key that changes per machine breaks sign-in | H | H | Committed project debug keystore; setup checklist with the exact fingerprints; clear on-screen error with the likely cause |
+| R-36 | **Mandatory sign-in blocks first use** without internet or without Google Play services | M | M | Offline notice on the sign-in screen; after first sign-in the gate is local and never needs the network |
+| R-37 | **Only an Android 10 phone is available.** Restrictions introduced in Android 12–14 cannot be device-tested | H | M | Version-gated code paths; unit tests on the gating logic; marked "not device-verified" until a newer device or emulator is used |
+| R-38 | **Food dataset licence or quality.** INDB's data licence is unconfirmed and its values are recipe estimates | M | M | USDA (public domain) as the safe baseline; INDB kept out of the repository until its licence is confirmed; estimates labelled in the UI |
 | R-34 | **Ephemeral cloud workspace.** Uncommitted work is lost when the session container is reclaimed | M | M | Small commits pushed to the development branch after every task |
 
 ## 3. Conflicts between the PRD and the platform
@@ -59,3 +63,4 @@ Reported as §13.1 item 9 requires.
 | §3.2 six bottom destinations | Material recommends three to five | Kept as specified, with layout tests |
 | §4.1 camera/photo permission explanation | System camera and photo picker need no permission | Explanation states that no permission prompt will appear |
 | §2.1 "SQLCipher-compatible SQLite" | The SQLCipher Flutter package is end-of-life | SQLite3MultipleCiphers through the `sqlite3` build hook |
+| §4.1 onboarding has no sign-in; §9 core features work without internet | Owner decision D2 makes Google sign-in mandatory, which needs internet once | Sign-in is step 1 of onboarding; everything after the first sign-in works offline |

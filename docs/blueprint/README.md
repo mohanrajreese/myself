@@ -1,12 +1,12 @@
 # FitBuddy — Implementation Blueprint
 
-**Status:** awaiting implementation approval. No application code has been written.
-**Source of truth:** FitBuddy PRD v2.0 (16 November 2026). Section references such as "§5.6" point into the PRD.
+**Status:** decisions recorded; awaiting explicit approval to start Phase 1. No application code has been written.
+**Source of truth:** [`docs/PRD.md`](../PRD.md) (FitBuddy PRD v2.0, 16 November 2026). References such as "§5.6" point into the PRD.
 **Prepared:** 16 November 2026
 
 | # | Document | Covers |
 |---|---|---|
-| 1 | [01-architecture.md](01-architecture.md) | Repository analysis, toolchain and Android configuration, layering rules, folder structure, data boundaries, sync, security, approaches considered |
+| 1 | [01-architecture.md](01-architecture.md) | Toolchain and Android configuration, layering rules, folder structure, data boundaries, sign-in, sync, security |
 | 2 | [02-dependencies.md](02-dependencies.md) | Flutter packages, native Android integrations, external services |
 | 3 | [03-database.md](03-database.md) | Drift schema (two databases), Supabase PostgreSQL schema, SQL migration plan, RLS, sync protocol |
 | 4 | [04-ui-ux-spec.md](04-ui-ux-spec.md) | Design tokens, component library, navigation map, screen inventory, UX rules |
@@ -14,19 +14,21 @@
 | 6 | [06-milestones-and-tasks.md](06-milestones-and-tasks.md) | Seven phases, task checklist, acceptance criteria, PRD traceability matrix |
 | 7 | [07-testing.md](07-testing.md) | Unit, widget, integration, migration, RLS, privacy and physical-device test plans |
 | 8 | [08-risk-register.md](08-risk-register.md) | Android platform limitations and implementation risks |
+| 9 | [09-food-dataset-options.md](09-food-dataset-options.md) | Candidate food datasets, licences, recommendation (decision D3) |
+
+Agent rules and skills for working in this repository are in `CLAUDE.md`, `.claude/rules/` and `.claude/skills/`.
 
 ---
 
-## 1. What the repository contains today
+## 1. Repository state
 
 | Finding | Detail |
 |---|---|
 | Repository | `mohanrajreese/myself`, branch `dev/bold-galileo-ssmrkj` |
-| Contents | **Empty.** No commits, no files, no Flutter project, no Android project, no default branch |
-| Consequence | Everything is greenfield. There is no existing Flutter/Android setup to conform to, and nothing to migrate |
-| PRD in repo | Not present. It must be committed as `docs/PRD.md` so later work sessions can read it (task F-00) |
+| Contents before this work | Empty: no commits, no Flutter or Android project, no default branch |
+| Now | PRD, this blueprint, agent rules and skills. Still no application code |
 
-Toolchain facts checked on 16 November 2026 (recorded for orientation only; versions are re-resolved when implementation begins, per §2.1):
+Toolchain facts checked on 16 November 2026 (orientation only; versions are re-resolved when implementation begins, per §2.1):
 
 | Item | Current |
 |---|---|
@@ -36,21 +38,28 @@ Toolchain facts checked on 16 November 2026 (recorded for orientation only; vers
 | AGP 9 | uses built-in Kotlin; the separate `kotlin-android` plugin is no longer applied |
 | `sqlcipher_flutter_libs`, `sqlite3_flutter_libs` | **end-of-life.** Encryption now comes from the `sqlite3` package's build hook (`source: sqlite3mc`) |
 
-## 2. Decisions that need your answer
+## 2. Decisions
 
-These change what gets built. Each has a recommended default, which is what the blueprint assumes.
-
-| # | Decision | Recommended default | Why it matters |
+| # | Decision | Outcome | Status |
 |---|---|---|---|
-| D1 | **Your phone model and Android version** | — (needed) | Sets `minSdk`, tells us which manufacturer battery manager we are up against, and whether the step sensor exists. Blueprint assumes `minSdk 29` (Android 10) |
-| D2 | **Sign-in model** | App works fully without an account. Sign-in (email and password) is offered at the end of onboarding and in Settings, and turns sync on | The PRD's onboarding has no sign-in screen, but sync needs Supabase Auth. A mandatory sign-in would block offline first use |
-| D3 | **Starter food catalogue** | None bundled. Food diary runs on custom foods, saved foods, saved meals and recents | The PRD names no nutrition data source, and I will not invent nutrition values. If you want a catalogue, name the dataset (and confirm its licence) and it becomes a Phase 2 task |
-| D4 | **Project location in the repo** | Flutter project at the repository root | The repo is called `myself`, not `fitbuddy`. If it will hold other things, say so and the project goes in `fitbuddy/` |
-| D5 | **Distribution** | Personal sideloaded APK (plus a signed AAB build) | Google Play would add policy declarations for usage access, exact alarms and the health foreground service |
+| D1 | Phone and Android version | **Android 10.** `minSdk 29`. Phone model still unknown (wanted for battery-manager guidance, not blocking) | Decided |
+| D2 | Sign-in model | **Mandatory sign-in with Google** before onboarding. See 01-architecture.md §7 | Decided |
+| D3 | Starter food catalogue | A catalogue is wanted. Options and a recommendation are in 09-food-dataset-options.md | **Open — pick a dataset** |
+| D4 | Project location | Flutter project at the repository root | Decided |
+| D5 | Distribution | Personal sideloaded APK (plus a signed AAB build). No Play Store work | Decided |
 
-## 3. Calls I made where the PRD is silent
+### Consequences of D1 and D2 worth knowing
 
-Stated so you can overrule them. None adds a feature; each fills a gap the PRD leaves open.
+| Consequence | Detail |
+|---|---|
+| First launch needs internet | Sign-in cannot happen offline. After the first sign-in the app works fully offline (§9), even if the session later expires |
+| Google Play services required | Sign in with Google uses the phone's Google account through Play services |
+| A fixed debug signing key is needed | Google only issues a sign-in token to builds signed with a registered key. A project debug keystore is committed so every debug build has the same fingerprint |
+| Newer-Android behaviour cannot be checked on your phone | Exact-alarm denial, notification permission and foreground-service typing only exist on Android 12–14 and later. They are implemented from the documentation and version-gated, and verified only if a newer phone or emulator becomes available |
+
+## 3. Calls made where the PRD is silent
+
+None adds a feature; each fills a gap the PRD leaves open. Overrule any of them.
 
 | # | Gap | Call | Reason |
 |---|---|---|---|
@@ -64,18 +73,24 @@ Stated so you can overrule them. None adds a feature; each fills a gap the PRD l
 | C8 | App lock mechanism is unspecified | App PIN (hashed) with optional biometric unlock | Works on a phone with no screen lock, and does not lose data when fingerprints change |
 | C9 | Android shows at most three notification buttons; §5.15C lists five actions | Buttons: Complete, Snooze, Skip. Tap opens the activity. Dismiss is the swipe (or a button on reminders with no activity) | Platform limit |
 | C10 | Exercise library needs starting content | A seeded list of common exercises (name, category, muscle group, equipment, instructions) | Reference data, not user data. Custom exercises remain available |
+| C11 | Signing in on a phone that already holds another account's data | Offer an export, then erase all local FitBuddy data (both databases) before binding the new account | Single-user app; one device holds one person's data |
 
-## 4. What I need from you before specific tasks
+## 4. What is needed from the owner
 
 | Needed | For | Blocks |
 |---|---|---|
-| A Supabase project (URL and publishable key), and a way to apply migrations | Auth, sync | Phase 1 Supabase tasks, Phase 6 |
-| A Firebase project (`google-services.json`; a service account for the server function) | FCM | Phase 6 push tasks |
-| A physical Android phone and someone to run the device test script | §11.3 device tests | Sign-off of Phases 3, 4, 5 and 7 |
-| A release keystore (created by you, kept out of the repo) | Signed APK/AAB | Phase 7 |
+| Supabase project: URL, publishable key, Google provider enabled | Sign-in, sync | Running the app on a phone at all (sign-in is the first screen) |
+| Google Cloud OAuth clients: one **Web** client (ID and secret go into Supabase), one **Android** client for `com.mysticstack.fitbuddy` with the debug key's SHA-1 (and later the release key's) | Sign in with Google | Same |
+| A way to apply migrations (Supabase access token for the CLI, or run `supabase db push` yourself) | Database schema | Sync, RLS tests |
+| Firebase project (`google-services.json`; a service account for the server function) | FCM | Phase 6 push tasks |
+| Physical Android phone and someone to run the device test script | §11.3 device tests | Sign-off of Phases 3, 4, 5 and 7 |
+| Release keystore (created by you, kept out of the repo) | Signed APK/AAB | Phase 7 |
+| Choice of food dataset (D3) | Food catalogue | Phase 2 task C-16 only |
 
-**What cannot be verified from this cloud environment:** there is no phone, sensor, or emulator here. I can build the app and run static analysis, unit tests, widget tests and Kotlin JVM tests. Step counting, alarms, reboot recovery, usage access, FCM delivery and manufacturer battery behaviour can only be confirmed on your device. Features that depend on them will be reported as "implemented, device verification pending" until you run the script in [07-testing.md](07-testing.md) §6.
+Automated tests use a fake sign-in, so development and CI do not need these credentials. A phone build does.
+
+**What cannot be verified from the cloud development environment:** there is no phone, sensor or emulator. Builds, static analysis, unit tests, widget tests and Kotlin JVM tests run there. Step counting, alarms, reboot recovery, usage access, Google sign-in, FCM delivery and manufacturer battery behaviour can only be confirmed on the phone. Features that depend on them are reported as "implemented, device verification pending" until the script in [07-testing.md](07-testing.md) §6 has been run.
 
 ## 5. Approval
 
-Implementation of Phase 1 starts only after you approve this blueprint (with any changes to D1–D5 and C1–C10).
+Phase 1 starts only on an explicit go-ahead from the owner.

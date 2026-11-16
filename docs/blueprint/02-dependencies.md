@@ -12,6 +12,7 @@ Versions are **not** pinned here (§2.1). The "Seen" column is the newest releas
 | SQLite with encryption | `sqlite3` with hook option `source: sqlite3mc` | 3.9.1 | Replaces the end-of-life `sqlcipher_flutter_libs` |
 | Secure storage | `flutter_secure_storage` | 11.2.0 | Database keys, PIN hash, Supabase session |
 | Backend | `supabase_flutter` | 2.18.3 | Auth, PostgREST, Edge Function calls |
+| Sign in with Google | `google_sign_in` | 7.2.0 | Native account chooser through Credential Manager; returns the ID token given to Supabase |
 | Push | `firebase_core`, `firebase_messaging` | 5.1.0 / 17.0.1 | No Analytics, no Crashlytics |
 | Local notifications | `flutter_local_notifications` | 23.0.2 | Channels, scheduling, actions, boot reschedule |
 | Timezones | `timezone`, `flutter_timezone` | 0.11.2 / 5.1.1 | Calendar-rule scheduling, DST |
@@ -73,7 +74,8 @@ Native dependencies (Gradle): `androidx.work:work-runtime-ktx`, `androidx.core:c
 
 | Service | Use | Supplied by |
 |---|---|---|
-| Supabase project | Auth, PostgreSQL, Edge Functions (`delete-account`, `send-push`) | You (URL, publishable key). Service-role key and FCM service account are stored as function secrets, never in the app |
+| Supabase project | Auth with the Google provider, PostgreSQL, Edge Functions (`delete-account`, `send-push`) | You (URL, publishable key). Service-role key and FCM service account are stored as function secrets, never in the app |
+| Google Cloud OAuth | Web client (ID and secret configured in Supabase) and Android client (package name plus signing-key SHA-1) | You. Client IDs are not secrets; the Web client secret lives only in Supabase |
 | Firebase project | Cloud Messaging only | You (`google-services.json`, git-ignored with an example file) |
 | Supabase CLI | Applying SQL migrations, running pgTAP tests, deploying functions | Installed in the dev environment at Phase 1 |
 
@@ -84,4 +86,5 @@ Native dependencies (Gradle): `androidx.work:work-runtime-ktx`, `androidx.core:c
 | Fonts: Inter (text, numerals), Plus Jakarta Sans (headings) | Bundled files | SIL Open Font Licence; licence files shipped in `assets/fonts/` |
 | Icons | Material Symbols plus a small custom set in `assets/icons/` | Apache 2.0 / first-party |
 | Exercise seed list | First-party JSON in `assets/seed/` | First-party |
+| Food catalogue | Dataset chosen under decision D3 (09-food-dataset-options.md), converted at build time | Per dataset; attribution shown in About |
 | Reminder sounds | System sounds by default; any bundled sound must be first-party or CC0 | Verified before adding |

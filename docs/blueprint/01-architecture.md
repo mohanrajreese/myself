@@ -24,11 +24,12 @@ Versions are resolved when implementation starts (§2.1). Constraints that are a
 | Application ID / namespace | `com.mysticstack.fitbuddy` | From the PRD's Kotlin path (§2.3) |
 | `compileSdk` | 37 | Required by the notification plugin |
 | `targetSdk` | 37 | Current platform behaviour is what gets tested |
-| `minSdk` | 29 (Android 10), pending decision D1 | `ACTIVITY_RECOGNITION` became a runtime permission in API 29; one code path for permissions |
+| `minSdk` | 29 (Android 10, the owner's phone) | `ACTIVITY_RECOGNITION` became a runtime permission in API 29 |
 | Build system | Gradle Kotlin DSL, AGP 9.1.1 or newer, built-in Kotlin, JDK 17+ | Required by current plugins |
 | Java/Kotlin target | 17, core-library desugaring enabled | Required by the notification plugin |
 | Main activity | `FlutterFragmentActivity` | Required by biometric prompt |
 | Build flavours | `dev` and `prod`, configured through `--dart-define-from-file=env/<flavour>.json` (git-ignored) | No keys in source (§13.2) |
+| Debug signing | A project debug keystore committed at `android/app/debug.keystore` | Google sign-in only works for builds signed with a registered key; the fingerprint must not change between build machines |
 | SQLite build | `hooks.user_defines.sqlite3.source: sqlite3mc` in `pubspec.yaml` | Encrypted database (§2.1) |
 | Backups | `android:allowBackup="false"`, `dataExtractionRules` excluding all app data from cloud backup and device transfer | §7.3 |
 | Firebase | `firebase_messaging` only. Analytics collection deactivated in the manifest. No Crashlytics, no Analytics SDK | §5.12, §7.3 |
@@ -55,7 +56,23 @@ Each permission is requested in context, when the user turns on the feature that
 
 Deliberately **not** declared: `USE_EXACT_ALARM` (reserved for alarm-clock apps), `ACCESS_BACKGROUND_LOCATION`, `CAMERA` and media-read permissions (the system camera and photo picker need none), `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` (the app links to the system settings page instead), `SYSTEM_ALERT_WINDOW`.
 
-### 2.2 Broadcast receivers and services (Kotlin)
+### 2.2 Running on Android 10 while targeting API 37
+
+The app must behave correctly from API 29 to API 37. Every newer capability is checked at run time.
+
+| Capability | On Android 10 (API 29) | On newer versions |
+|---|---|---|
+| Notification permission | Granted at install; no prompt | Runtime prompt from API 33 |
+| Exact alarms | Always allowed | Special access from API 31; denied by default from API 34 |
+| Foreground-service type `health` | Not required; service starts without a type | Required from API 34 |
+| Background start of a foreground service | Allowed | Restricted from API 31 |
+| Full-screen alarm display | Allowed by manifest | Special access from API 34 |
+| Photo picker | Falls back to the system document picker | Built-in from API 33 |
+| Approximate location choice | Not offered | Offered from API 31 |
+
+The owner's phone exercises the left column only. The right column is implemented from the Android documentation and is marked "not device-verified" until a newer phone or emulator is available.
+
+### 2.3 Broadcast receivers and services (Kotlin)
 
 | Component | Trigger | Action |
 |---|---|---|
@@ -207,13 +224,46 @@ Five independent barriers. A leak requires all of them to fail.
 | Notifications from sensitive modules | Generic title ("FitBuddy reminder"), `VISIBILITY_SECRET`, no record text. The real title stays in the private database (§3.4 rule 14) |
 | Private text fields | Keyboard suggestions and personalised learning disabled |
 | Photos | Stored in app-private storage, encrypted per file |
-| Session tokens | Supabase session kept in secure storage, not shared preferences |
+| Sign-in | Sign in with Google only (§7). Supabase session kept in secure storage, not shared preferences |
 | Secrets | Only the Supabase URL and publishable key are in the app. The service-role key and FCM credentials live in Supabase function secrets (§6.5) |
 | Export | Zip of JSON and CSV. Optional passphrase encryption. Private data is included only after unlock and an explicit tick box (§7.3) |
 | Deletion | Local: delete both database files and their keys. Cloud: `delete-account` function removes the auth user, cascading to every row |
 | Transport | HTTPS only; cleartext traffic disabled in the network security config |
 
-## 7. Synchronisation
+## 7. Sign-in (decision D2)
+
+Sign-in with Google is mandatory and comes before onboarding. There is no email-and-password path.
+
+```text
+Launch ── account bound on this device? ── yes ──> Home (works offline)
+                    │
+                    no
+                    v
+        Welcome ─> Continue with Google ─> Google account chooser
+                    v
+        Google ID token ─> Supabase Auth (sign in with ID token)
+                    v
+        Bind account locally ─> pull the account's data
+                    v
+        Completed profile found? ── yes ──> Home (data restored)
+                    │
+                    no ──> Onboarding steps 2–6
+```
+
+| Aspect | Design |
+|---|---|
+| Mechanism | `google_sign_in` (Android Credential Manager) returns a Google ID token; Supabase exchanges it with `signInWithIdToken`. No browser redirect |
+| Gate | Routing depends on the locally stored bound account, **not** on whether the access token is currently valid. Once signed in, the app opens and logs offline indefinitely (§9) |
+| Expired or revoked session | Sync pauses and a banner offers "Sign in again". Logging continues |
+| First launch | Needs internet and Google Play services. The sign-in screen says so when offline |
+| Returning user, new install | Synced data is pulled and onboarding is skipped. Local-only data (§7.1) is not restorable by design |
+| Name | Pre-filled from the Google profile, editable |
+| Sign out | Returns to the sign-in screen. Local data stays encrypted on the phone; signing in with the same account resumes |
+| Different account | Offer an export, then erase both local databases before binding the new account (call C11) |
+| Account deletion | `delete-account` function removes the Supabase user and rows; the Google grant is revoked on the device |
+| Tests | An `AuthRepository` interface with a fake implementation; no test calls Google |
+
+## 8. Synchronisation
 
 Detailed protocol in 03-database.md §6. Summary:
 
@@ -226,7 +276,7 @@ Detailed protocol in 03-database.md §6. Summary:
 7. **Failures:** exponential backoff with jitter. An entry stays in the outbox until the server confirms it (§9).
 8. **Status:** pending count, last successful sync and last error are shown in Settings and as a small indicator on Home.
 
-### 7.1 Approaches considered: sync
+### 8.1 Approaches considered: sync
 
 | Option | Trade-off | Verdict |
 |---|---|---|
@@ -234,7 +284,7 @@ Detailed protocol in 03-database.md §6. Summary:
 | Hosted sync service (PowerSync, ElectricSQL) | Less code, but adds a vendor the PRD does not name | Rejected |
 | CRDT merge | Solves concurrent multi-device edits, which a single-user app does not have | Rejected |
 
-## 8. Background execution map
+## 9. Background execution map
 
 Four places run Dart or Kotlin without the UI. All database access from Dart goes through one shared Drift isolate, so there is a single writer.
 

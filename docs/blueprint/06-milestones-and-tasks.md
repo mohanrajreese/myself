@@ -14,8 +14,8 @@ Task status is tracked in `docs/implementation_status.md`.
 
 | ID | Task | Verified by |
 |---|---|---|
-| F-00 | Commit the PRD as `docs/PRD.md`; create `README.md` and the documentation skeleton (§13.3) | Review |
-| F-01 | Install the toolchain; create the Flutter project (`com.mysticstack.fitbuddy`); Gradle Kotlin DSL, SDK levels, desugaring, flavours, `.gitignore`, env example files | Debug APK builds |
+| F-00 | Create `README.md` and the documentation skeleton (§13.3). (`docs/PRD.md`, agent rules and skills are already committed) | Review |
+| F-01 | Install the toolchain; create the Flutter project (`com.mysticstack.fitbuddy`); Gradle Kotlin DSL, SDK levels, desugaring, flavours, committed debug keystore, `.gitignore`, env example files | Debug APK builds |
 | F-02 | Dependency smoke build: add every planned plugin and confirm the Android build succeeds | Debug APK builds |
 | F-03 | Analysis options, import-boundary tests, CI workflow (analyse, test, build) | CI green |
 | F-04 | Core utilities: `Clock`, `LocalDate`, `Result`/`Failure`, logger with redaction, unit types and conversions | Unit tests |
@@ -26,13 +26,14 @@ Task status is tracked in `docs/implementation_status.md`.
 | F-09 | GoRouter shell with six tabs and Settings; route guards | Widget tests |
 | F-10 | `local_app_settings` repository; tables `profiles`, `user_goals`, `nutrition_goals` with effective-dating | Unit tests |
 | F-11 | Outbox table with allow-list constraint; repository base class that writes row and outbox entry in one transaction | Unit tests |
-| F-12 | Onboarding flow, six steps, resumable; creates profile, goals and first weight entry | Widget tests |
+| F-12 | Onboarding flow, sign-in then five steps, resumable; creates profile, goals and first weight entry; skipped for a returning user | Widget tests |
 | F-13 | Profile and goals screens; goal change keeps history | Unit and widget tests |
-| F-14 | Supabase: project configuration, first two migrations, RLS tests; auth feature (sign up, sign in, sign out, session in secure storage) | pgTAP; widget tests |
+| F-14 | Supabase: project configuration, first two migrations, RLS tests | pgTAP |
+| F-14a | Auth feature: `AuthRepository` with fake; mandatory Sign in with Google; account binding; offline gate; expired-session banner; sign out; different-account erase flow | Unit and widget tests; device sign-in |
 | F-15 | Dashboard skeleton: header, empty progress cards, quick-action sheet shell, customisation storage | Widget tests |
 | F-16 | Documentation: `architecture.md`, `database.md`, `permissions.md`, `privacy.md`; Phase 1 report | Review |
 
-**Exit criteria:** fresh install → onboarding → dashboard; data survives restart; database files are unreadable without the key; all tests green.
+**Exit criteria:** fresh install → Google sign-in → onboarding → dashboard; app reopens offline; data survives restart; database files are unreadable without the key; all tests green. Device sign-in needs the owner's Supabase and Google OAuth setup; until then it is "implemented, device verification pending".
 
 ---
 
@@ -57,6 +58,7 @@ Task status is tracked in `docs/implementation_status.md`.
 | C-13 | Dashboard: live progress cards, today's timeline, working quick actions | §4.2 |
 | C-14 | Supabase migrations 3–5 with RLS tests | §6.2 |
 | C-15 | History pagination and indexes; Phase 2 report and docs | §10 |
+| C-16 | Food catalogue: build-time import of the chosen dataset, read-only table with full-text search, source and estimate labels, attribution in About (needs decision D3) | §5.4 |
 
 **Exit criteria:** every record type can be created, edited and deleted offline; totals match hand-calculated fixtures; the dashboard reflects a new entry immediately.
 
@@ -160,7 +162,7 @@ Task status is tracked in `docs/implementation_status.md`.
 | R-03 | Insight sentences: period comparisons, descriptive only | §5.20 |
 | R-04 | Private history report, on device, after unlock | §5.20 |
 | R-05 | Sync engine: push, pull, backoff, conflict policy, tombstones, connectivity recovery | §6.7, §9 |
-| R-06 | First-sign-in upload, account binding, account-switch flow | §6.7 |
+| R-06 | Initial pull and restore for a returning user; upload of everything queued since Phase 1 | §6.7 |
 | R-07 | Background sync job; sync status UI | §9 |
 | R-08 | FCM: token lifecycle, foreground, background, tap handling, preferences | §5.15I |
 | R-09 | `send-push` and `delete-account` Edge Functions; migration 10 | §5.15I, §7.3 |
@@ -199,13 +201,13 @@ Every functional section of the PRD maps to at least one task.
 | §3.2 | Six-tab navigation, Settings from Home | F-09 |
 | §3.3 | Global states, no placeholder controls | F-08, all feature tasks |
 | §3.4 | UX rules | F-08, A-04, P-05 |
-| §4.1 | Onboarding | F-12 |
+| §4.1 | Onboarding (with mandatory sign-in, decision D2) | F-12, F-14a |
 | §4.2 | Home dashboard | F-15, C-13, A-05, S-12 |
 | §4.3–4.7 | Tab screens | Feature tasks per tab |
 | §5.1 | Profile and goals | F-10, F-13 |
 | §5.2 | Weight | C-01 |
 | §5.3 | Body measurements, photos | C-03, P-12 |
-| §5.4 | Nutrition, food database, junk food | C-04, C-06 – C-10 |
+| §5.4 | Nutrition, food database, junk food | C-04, C-06 – C-10, C-16 |
 | §5.5 | Water | C-05, A-15 |
 | §5.6 | Step counting | S-01 – S-05 |
 | §5.7 | Walking, running, cycling | S-06, S-07 |
@@ -235,4 +237,4 @@ Every functional section of the PRD maps to at least one task.
 | Note | Reason |
 |---|---|
 | The outbox is written from Phase 1 (F-11), although the sync engine arrives in Phase 6 | Everything logged before Phase 6 is then uploaded the first time sync is switched on, with no backfill step |
-| Supabase Auth and the first migrations are in Phase 1 (F-14) | The PRD lists Supabase under Phase 1. These tasks wait for your Supabase project; the rest of Phase 1 does not depend on them |
+| Supabase and sign-in are in Phase 1 (F-14, F-14a) | The PRD lists Supabase under Phase 1, and sign-in is now the first screen. Code and automated tests use a fake sign-in and need no credentials; running on a phone needs the owner's Supabase and Google OAuth setup |

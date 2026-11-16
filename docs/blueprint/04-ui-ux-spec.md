@@ -118,7 +118,7 @@ Insights ─ Daily · Weekly · Monthly · Custom range
            Weight · Nutrition · Fitness · Sleep · Habits · Records
 ```
 
-Route guards: onboarding not finished → onboarding; protected route while locked → lock screen, then the requested route.
+Route guards: no account bound on this device → sign-in; onboarding not finished → onboarding; protected route while locked → lock screen, then the requested route.
 
 ## 5. Screen inventory
 
@@ -126,12 +126,12 @@ Route guards: onboarding not finished → onboarding; protected route while lock
 
 | Step | Content | Notes |
 |---|---|---|
-| 1 Welcome | Logo, two-line introduction, Get Started | |
-| 2 Profile | Name, date of birth, height, current weight, units | Units chosen first so fields show the right unit. Only name is required |
+| 1 Welcome and sign-in | Logo, two-line introduction, **Continue with Google** | Mandatory (decision D2). Needs internet; an offline notice replaces the button's action when there is no connection. A returning user's data is restored and the remaining steps are skipped |
+| 2 Profile | Name, date of birth, height, current weight, units | Name pre-filled from the Google account. Units chosen first so fields show the right unit. Only name is required |
 | 3 Goals | Target weight, steps, calories, protein, water, optional fitness goals | Sensible defaults pre-filled; every field skippable |
 | 4 Routines | Wake-up time, sleep target, workout days, reminder preferences | |
 | 5 Permissions | One card per permission explaining why and when it will be asked | Nothing is requested here (§4.1) |
-| 6 Summary | Review with Edit links per section; Finish | Optional "Back up and sync" sign-in offered after Finish (decision D2) |
+| 6 Summary | Review with Edit links per section; Finish | |
 
 Progress is saved per step; closing the app resumes where the user stopped.
 
@@ -190,7 +190,7 @@ Progress is saved per step; closing the app resumes where the user stopped.
 |---|---|
 | Diary | Day selector, meals grouped by category, calories and macros against targets, remaining calories |
 | Add meal | Category defaults from the time of day; add items by search, recent, saved food, saved meal, or custom; quantity and unit; optional photo and notes; duplicate a past meal |
-| Food search | Instant local search over the user's foods and recents; works offline |
+| Food search | Instant local search over the user's foods and recents, then the bundled catalogue (decision D3) with each result's source shown; works offline |
 | Custom food | Name, serving, calories, macros, category, junk-food category |
 | Saved meals | Create from a logged meal; one tap to log again |
 | Summary | Calories, protein, carbohydrate, fat, fibre, meal distribution, weekly averages |

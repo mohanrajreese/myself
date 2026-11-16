@@ -123,6 +123,7 @@ Present in `AppDatabase` and in Supabase with the same columns, plus `user_id` a
 | `local_workout_route_points` † | `session_id`, `seq`, `lat_e7`, `lon_e7`, `accuracy_dm`, `recorded_at` | Optional GPS route |
 | `local_meal_photos` † | `id`, `meal_log_id`, `file_name`, `taken_at` | Index of encrypted photo files |
 | `local_recovery_logs` † | `id`, `local_date`, `is_rest_day`, `soreness?` (1–5), `recovery?` (1–5), `notes` | §5.19 |
+| `local_food_catalogue` † | `id`, `name`, `category`, `serving_label`, `serving_weight_mg?`, `energy_kcal_milli`, `protein_mg`, `carbs_mg`, `fat_mg`, `fibre_mg`, `source`, `is_estimate`, plus a full-text index on `name` | Read-only reference foods (decision D3). Present only if a dataset is chosen |
 
 ## 4. Private tables (`PrivateDatabase`, never synced)
 
@@ -269,8 +270,8 @@ end $$;
 | No lost records | A row leaves the outbox only on confirmed success; local data is never deleted because a request failed (§9) |
 | Conflict resolution | Per-row last write wins on `updated_at`, enforced on the server |
 | Tombstones | Deletes are `deleted_at` updates. Locally, tombstones that are synced and older than 90 days are purged |
-| User scoping | The device is bound to one account. Signing in as a different account requires an explicit "replace local synced data" confirmation; private data is untouched |
-| First sign-in | Existing local rows are all enqueued, then a full pull runs |
+| User scoping | The device is bound to one account. Signing in as a different account offers an export, then erases both local databases before binding (call C11) |
+| First sign-in | Sign-in precedes onboarding, so the device is empty: a full pull runs first. A completed profile means a returning user and onboarding is skipped |
 | Privacy | The engine has no reference to `PrivateDatabase` (01-architecture.md §5.1) |
 
 ## 7. Drift migrations

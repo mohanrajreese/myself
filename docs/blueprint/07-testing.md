@@ -51,6 +51,7 @@ Tests are written with each feature, not after it (§13.2). A phase closes only 
 
 | Screen | Cases |
 |---|---|
+| Sign-in | Unsigned launch shows sign-in only; success leads to onboarding; returning user skips onboarding; offline notice; failure message; bound account opens Home offline; expired session shows banner and still allows logging; different account requires erase confirmation |
 | Onboarding | Step order; validation; skip optional fields; resume after restart; edit from summary |
 | Dashboard | Loading, empty and populated; quick actions open and save; essential activity complete and snooze; customise order and visibility |
 | Weight entry | Add, edit, delete with confirmation; unit switch; chart range |
@@ -82,7 +83,7 @@ Run on a device with a local or test Supabase project.
 
 | Flow | Steps |
 |---|---|
-| First run | Install → onboarding → dashboard shows profile and goals |
+| First run | Install → Google sign-in → onboarding → dashboard shows profile and goals |
 | A day of logging | Weight, three meals, water, workout, sleep, check-in → dashboard and daily report agree |
 | Offline then online | Log with networking off → reconnect → rows in Supabase, no duplicates, outbox empty |
 | Restore | Reinstall → sign in → synced data restored, private data absent |
@@ -114,6 +115,7 @@ Recorded per device: model, Android version, battery-saver state, result, notes.
 | 16 | Log everything offline | All saved and visible |
 | 17 | Reconnect | Sync completes; no duplicates |
 | 18 | FCM with app in foreground and background | Delivered; tap opens the right screen; payload has no health data |
+| 19 | Google sign-in on a fresh install, then airplane mode and relaunch | Signs in; app opens and logs offline |
 
 Additional checks on your specific phone: manufacturer battery manager with default settings and with the app exempted; reminders overnight in Doze; lock-screen appearance of a sensitive reminder; usage access grant and a comparison of totals with the system's own screen-time figure.
 
