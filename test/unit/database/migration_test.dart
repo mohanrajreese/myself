@@ -23,12 +23,12 @@ void main() {
     final schema = await verifier.schemaAt(1);
     final old = v1.DatabaseAtV1(schema.newConnection());
     await old.customStatement(
-      "INSERT INTO weight_logs (id, created_at, updated_at, weight_g, entry_unit, occurred_at, "
+      'INSERT INTO weight_logs (id, created_at, updated_at, weight_g, entry_unit, occurred_at, '
       "local_date, tz) VALUES ('w1', '2026-11-16T03:30:00.000Z', '2026-11-16T03:30:00.000Z', "
       "91800, 'kg', '2026-11-16T03:30:00.000Z', '2026-11-16', 'Asia/Kolkata')",
     );
     await old.customStatement(
-      "INSERT INTO local_app_settings (key, value_json, updated_at) "
+      'INSERT INTO local_app_settings (key, value_json, updated_at) '
       "VALUES ('theme_mode', '\"dark\"', '2026-11-16T03:30:00.000Z')",
     );
     await old.close();
@@ -40,12 +40,12 @@ void main() {
 
     // The new tables exist and accept rows; the outbox accepts them too.
     await db.customStatement(
-      "INSERT INTO water_logs (id, created_at, updated_at, amount_ml, occurred_at, local_date, tz) "
+      'INSERT INTO water_logs (id, created_at, updated_at, amount_ml, occurred_at, local_date, tz) '
       "VALUES ('x1', '2026-11-17T03:30:00.000Z', '2026-11-17T03:30:00.000Z', 250, "
       "'2026-11-17T03:30:00.000Z', '2026-11-17', 'Asia/Kolkata')",
     );
     await db.customStatement(
-      "INSERT INTO sync_outbox (entity_table, entity_id, enqueued_at, next_attempt_at) "
+      'INSERT INTO sync_outbox (entity_table, entity_id, enqueued_at, next_attempt_at) '
       "VALUES ('water_logs', 'x1', '2026-11-17T03:30:00.000Z', '2026-11-17T03:30:00.000Z')",
     );
     await db.close();

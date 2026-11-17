@@ -50,6 +50,10 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | F-16 | ☑ | Docs updated; report in `docs/reports/phase-1.md` |
 | C-14 | ☑ | Supabase migrations for measurements, water, foods, meals, saved meals, sleep, check-ins; 84 access-rule checks pass locally; not applied to a real project |
 | Schema v2 | ☑ | Phase 2 tables added locally with an upgrade from version 1, tested with rows preserved |
+| Calculations | ☑ | Nutrition totals, scaling, meal shares, averages; sleep averages and consistency; weight change (29 tests) |
+| Storage: water, sleep | ☑ | Repositories with outbox, validation and tests |
+| Storage: measurements, check-ins, weight editing, foods, meals, saved meals, photos | ☐ | Next |
+| C-16 food catalogue | ☐ | USDA import next; INDB waits for licence confirmation |
 | C-01 to C-13 screens | ✋ | Ten designs on the canvas |
 
 ## Device verification backlog
