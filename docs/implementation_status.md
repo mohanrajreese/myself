@@ -9,8 +9,8 @@ Resume point for every work session. Update it when a task changes state; keep i
 | Item | Value |
 |---|---|
 | Phase | 3 — Activities and reminders (approved 17 Nov 2026); Phases 1–2 phone verification pending |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens published 17 Nov 2026, awaiting approval) |
-| Blocked on | Owner's Supabase and Google OAuth setup for a phone build; design approval for Phase 3 screens |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026) |
+| Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
 ## Phases
@@ -65,7 +65,7 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | A-02 to A-04 storage and rules | ◐ | Activity entity, validation, permitted tracking-type changes, schedule history, Done / Due / Not logged / Skipped / Not scheduled per occurrence, targets and checklists; repository with outbox (39 tests). Screens wait for design approval |
 | A-17 timer engine | ◐ | Ready → Running → Paused → Running → Completed, cancel, countdown end time, rebuild from events; local repository, never synced (10 tests). Screen, completion notification and activity log on finish follow the design approval and A-06 |
 | A-08, A-12 planning rules | ◐ | `ReminderPlanner`: 7-day window, quiet hours (wait, drop, ring anyway; overnight periods), "only if not done", start and end dates, stable occurrence keys, 400 budget with interval reminders shortened first (10 tests). Scheduling through Android, reminder storage and the notification plugin are next |
-| Phase 3 screens | ✋ | Eleven designs on the canvas |
+| Phase 3 screens | ◐ | Designs approved 17 Nov 2026 |
 
 ## Device verification backlog
 

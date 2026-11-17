@@ -18,4 +18,5 @@ const syncedTableNames = <String>[
   'daily_health_checkins',
   'activity_definitions',
   'activity_logs',
+  'reminders',
 ];

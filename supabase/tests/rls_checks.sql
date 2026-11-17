@@ -144,7 +144,7 @@ reset role;
 create function t.phase2_tables() returns text[] language sql as $$
   select array['body_measurements', 'water_logs', 'food_items', 'meal_logs', 'meal_food_items',
                'saved_meals', 'sleep_logs', 'daily_health_checkins',
-               'activity_definitions', 'activity_logs']
+               'activity_definitions', 'activity_logs', 'reminders']
 $$;
 create function t.count_visible(tbl text) returns bigint language plpgsql as $$
 declare n bigint;
@@ -184,12 +184,16 @@ insert into public.activity_definitions (id, name, category, icon_key, tracking_
 values ('48000000-0000-0000-0000-000000000001', 'Walking', 'movement', 'walk', 'duration', 'essential', '{"type":"daily","times":[480]}', 'active', now(), now());
 insert into public.activity_logs (id, activity_definition_id, status, occurred_at, local_date, tz, duration_s, source, created_at, updated_at)
 values ('49000000-0000-0000-0000-000000000001', '48000000-0000-0000-0000-000000000001', 'completed', now(), '2026-11-16', 'UTC', 1800, 'manual', now(), now());
+insert into public.reminders (id, kind, title, activity_definition_id, schedule, condition, channel_key, priority, quiet_hours_behaviour, created_at, updated_at)
+values ('4a000000-0000-0000-0000-000000000001', 'activity', 'Walk', '48000000-0000-0000-0000-000000000001', '{"type":"daily","times":[480]}', 'always', 'routines', 'normal', 'defer', now(), now());
 
 select t.eq(t.count_visible(tbl), 1, 'owner sees own ' || tbl) from unnest(t.phase2_tables()) tbl;
 select t.refused($$update public.activity_definitions set tracking_type = 'streak', updated_at = now() + interval '1 hour'$$,
   'unknown tracking type is rejected');
 select t.refused($$update public.activity_logs set status = 'missed', updated_at = now() + interval '1 hour'$$,
   'missed is never stored');
+select t.refused($$update public.reminders set channel_key = 'bowel', updated_at = now() + interval '1 hour'$$,
+  'unknown channel is rejected');
 
 select t.refused($$update public.sleep_logs set quality = 9, updated_at = now() + interval '1 hour'$$,
   'sleep quality outside 1 to 5 is rejected');
@@ -242,6 +246,8 @@ select t.eq((select count(*) from public.meal_food_items), 0, 'deleting a meal r
 -- Deleting an activity removes its logs.
 delete from public.activity_definitions where id = '48000000-0000-0000-0000-000000000001';
 select t.eq((select count(*) from public.activity_logs), 0, 'deleting an activity removes its logs');
+select t.eq((select count(*) from public.reminders where activity_definition_id is null), 1,
+            'deleting an activity keeps its reminder, unlinked');
 
 -- ---------------------------------------------------------------- account deletion
 reset role;

@@ -32,6 +32,7 @@ void main() {
       'local_step_readings',
       'local_timer_sessions',
       'local_timer_events',
+      'local_notification_state',
       'anything_else',
     ]) {
       await expectLater(enqueue(table), throwsA(anything), reason: table);

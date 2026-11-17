@@ -116,3 +116,69 @@ class LocalTimerEvents extends Table {
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
+
+const reminderKindCodes = ['custom', 'activity', 'water', 'workout', 'sleep', 'posture'];
+const channelKeys = ['alarms', 'routines', 'hydration', 'fitness', 'medication', 'sleep', 'system'];
+
+/// An ordinary reminder (§5.15). Sensitive reminders live in
+/// `PrivateDatabase` (§7.1).
+@DataClassName('ReminderRow')
+class Reminders extends Table with SyncedColumns {
+  TextColumn get kind => text().check(kind.isIn(reminderKindCodes))();
+  TextColumn get title => text()();
+  TextColumn get description => text().nullable()();
+  TextColumn get activityDefinitionId =>
+      text().nullable().references(ActivityDefinitions, #id, onDelete: KeyAction.setNull)();
+
+  /// Schedule rule as JSON (`ScheduleRule`).
+  TextColumn get schedule => text()();
+  TextColumn get condition => text().check(condition.isIn(const ['always', 'if_incomplete']))();
+  TextColumn get channelKey => text().check(channelKey.isIn(channelKeys))();
+  TextColumn get soundKey => text().nullable()();
+  BoolColumn get vibrate => boolean().withDefault(const Constant(true))();
+  IntColumn get snoozeDefaultMin =>
+      integer().withDefault(const Constant(10)).check(snoozeDefaultMin.isBetweenValues(1, 720))();
+  TextColumn get priority => text().check(priority.isIn(const ['normal', 'alarm']))();
+  TextColumn get quietHoursBehaviour =>
+      text().check(quietHoursBehaviour.isIn(const ['defer', 'suppress', 'bypass']))();
+  BoolColumn get exact => boolean().withDefault(const Constant(false))();
+  BoolColumn get enabled => boolean().withDefault(const Constant(true))();
+  TextColumn get startDate => text().map(const LocalDateConverter()).nullable()();
+  TextColumn get endDate => text().map(const LocalDateConverter()).nullable()();
+}
+
+/// Every planned or shown notification: stable integer ids for Android and
+/// the history shown in the notification centre. Holds no titles or text.
+@DataClassName('NotificationStateRow')
+@TableIndex(name: 'local_notification_state_reminder', columns: {#reminderId, #occurrenceLocal})
+@TableIndex(name: 'local_notification_state_at', columns: {#occurrenceAt})
+class LocalNotificationState extends Table {
+  IntColumn get notificationId => integer()();
+  TextColumn get reminderStore => text().check(reminderStore.isIn(const ['main', 'private']))();
+  TextColumn get reminderId => text()();
+
+  /// When it is (or was) due to fire, after any quiet-hours deferral.
+  DateTimeColumn get occurrenceAt => dateTime()();
+
+  /// The scheduled wall-clock time, `YYYY-MM-DDTHH:MM`.
+  TextColumn get occurrenceLocal => text()();
+  TextColumn get channelId => text()();
+  TextColumn get mode => text().check(mode.isIn(const ['exact', 'inexact']))();
+  TextColumn get status => text().check(
+    status.isIn(const [
+      'scheduled',
+      'snoozed',
+      'completed',
+      'skipped',
+      'dismissed',
+      'cancelled',
+      'expired',
+    ]),
+  )();
+  BoolColumn get deferred => boolean().withDefault(const Constant(false))();
+  IntColumn get snoozeCount => integer().withDefault(const Constant(0))();
+  DateTimeColumn get actedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {notificationId};
+}

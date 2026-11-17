@@ -34,6 +34,8 @@ part 'app_database.g.dart';
     ActivityLogs,
     LocalTimerSessions,
     LocalTimerEvents,
+    Reminders,
+    LocalNotificationState,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -47,8 +49,13 @@ class AppDatabase extends _$AppDatabase {
     'local_timer_events_session',
   };
 
+  static const _version6Indexes = {
+    'local_notification_state_reminder',
+    'local_notification_state_at',
+  };
+
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -72,6 +79,7 @@ class AppDatabase extends _$AppDatabase {
             'weight_logs_local_date',
             'local_food_catalogue_name',
             ..._version5Indexes,
+            ..._version6Indexes,
           };
           if (!notInVersion2.contains(index.entityName)) await migrator.create(index);
         }
@@ -110,6 +118,14 @@ class AppDatabase extends _$AppDatabase {
         }
         for (final index in allSchemaEntities.whereType<Index>()) {
           if (_version5Indexes.contains(index.entityName)) await migrator.create(index);
+        }
+      }
+      if (from < 6) {
+        // Phase 3: reminders and notification state.
+        await migrator.createTable(reminders);
+        await migrator.createTable(localNotificationState);
+        for (final index in allSchemaEntities.whereType<Index>()) {
+          if (_version6Indexes.contains(index.entityName)) await migrator.create(index);
         }
       }
     },
