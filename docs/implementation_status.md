@@ -8,9 +8,9 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 1 — Foundation (approved 16 Nov 2026) |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 screens approved 16 Nov 2026, with D7: targets calculated from weight) |
-| Blocked on | Owner's Supabase and Google OAuth setup for a phone build; owner approval to start Phase 2 |
+| Phase | 2 — Core tracking (approved 17 Nov 2026); Phase 1 built, phone verification pending |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens published 17 Nov 2026, awaiting approval) |
+| Blocked on | Owner's Supabase and Google OAuth setup for a phone build; design approval for Phase 2 screens |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
 ## Phases
@@ -18,7 +18,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | Phase | Status | Report |
 |---|---|---|
 | 1 Foundation | ⏳ built, phone verification pending | [phase-1.md](reports/phase-1.md) |
-| 2 Core tracking | ☐ | — |
+| 2 Core tracking | ◐ | — |
 | 3 Activities and reminders | ☐ | — |
 | 4 Fitness | ☐ | — |
 | 5 Lifestyle and privacy | ☐ | — |
@@ -48,6 +48,9 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | F-15 | ⏳ | Home with targets, weight quick add, timeline, customisation |
 | D7 | ☑ | Targets calculated from weight |
 | F-16 | ☑ | Docs updated; report in `docs/reports/phase-1.md` |
+| C-14 | ☑ | Supabase migrations for measurements, water, foods, meals, saved meals, sleep, check-ins; 84 access-rule checks pass locally; not applied to a real project |
+| Schema v2 | ☑ | Phase 2 tables added locally with an upgrade from version 1, tested with rows preserved |
+| C-01 to C-13 screens | ✋ | Ten designs on the canvas |
 
 ## Device verification backlog
 

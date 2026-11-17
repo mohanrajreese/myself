@@ -8,7 +8,7 @@ Both files are encrypted with SQLite3MultipleCiphers using the SQLCipher scheme 
 
 | Database | File | Schema version | Tables |
 |---|---|---|---|
-| `AppDatabase` | `fitbuddy.sqlite` | 1 | `profiles`, `user_goals`, `nutrition_goals`, `weight_logs`, `sync_outbox`, `local_app_settings` |
+| `AppDatabase` | `fitbuddy.sqlite` | 2 | v1: `profiles`, `user_goals`, `nutrition_goals`, `weight_logs`, `sync_outbox`, `local_app_settings`. v2 adds `body_measurements`, `water_logs`, `food_items`, `meal_logs`, `meal_food_items`, `saved_meals`, `sleep_logs`, `daily_health_checkins` |
 | `PrivateDatabase` | `fitbuddy_private.sqlite` | 1 | None yet (Phase 5) |
 
 Schema dumps: `drift_schemas/app/`, `drift_schemas/private/`.
@@ -28,8 +28,11 @@ Schema dumps: `drift_schemas/app/`, `drift_schemas/private/`.
 | `20261116000100_helpers.sql` | Not yet (needs the owner's project) | `set_server_updated_at()`, `reject_stale_write()` |
 | `20261116000200_profiles_and_goals.sql` | Not yet | `profiles`, `user_goals`, `nutrition_goals` with RLS and triggers |
 | `20261116000300_weight_logs.sql` | Not yet | `weight_logs` with RLS and triggers |
+| `20261117000100_body_measurements.sql` | Not yet | `body_measurements` |
+| `20261117000200_nutrition_and_water.sql` | Not yet | `water_logs`, `food_items`, `meal_logs`, `meal_food_items` (owner-scoped foreign keys), `saved_meals` |
+| `20261117000300_sleep_and_wellness.sql` | Not yet | `sleep_logs`, `daily_health_checkins` |
 
-Checked with `bash supabase/tests/run_local.sh`: applies every migration to a throwaway local PostgreSQL 16 with a small stand-in for Supabase's `auth` schema and roles, then runs `supabase/tests/rls_checks.sql` (35 checks: owner access, other-user and anonymous denial on all four operations, constraints, last-write-wins, account-deletion cascade). Not yet run against a real Supabase project.
+Checked with `bash supabase/tests/run_local.sh`: applies every migration to a throwaway local PostgreSQL 16 with a small stand-in for Supabase's `auth` schema and roles, then runs `supabase/tests/rls_checks.sql` (84 checks: owner access, other-user and anonymous denial on all four operations, constraints, last-write-wins, account-deletion cascade). Not yet run against a real Supabase project.
 
 ### Deviation from the blueprint
 
