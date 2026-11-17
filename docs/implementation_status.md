@@ -8,9 +8,9 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 2 — Core tracking built 17 Nov 2026; Phases 1–2 phone verification pending; Phase 3 waits for approval |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026) |
-| Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
+| Phase | 3 — Activities and reminders (approved 17 Nov 2026); Phases 1–2 phone verification pending |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens published 17 Nov 2026, awaiting approval) |
+| Blocked on | Owner's Supabase and Google OAuth setup for a phone build; design approval for Phase 3 screens |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
 ## Phases
@@ -19,7 +19,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 |---|---|---|
 | 1 Foundation | ⏳ built, phone verification pending | [phase-1.md](reports/phase-1.md) |
 | 2 Core tracking | ⏳ built, phone verification pending | [phase-2.md](reports/phase-2.md) |
-| 3 Activities and reminders | ☐ | — |
+| 3 Activities and reminders | ◐ | — |
 | 4 Fitness | ☐ | — |
 | 5 Lifestyle and privacy | ☐ | — |
 | 6 Reports and synchronisation | ☐ | — |
@@ -60,6 +60,8 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | C-01 to C-13 screens | ☑ | Health tab, weight (chart, edit, delete, paging), measurements (custom types, history), sleep, check-in and history, water, food diary, add/edit meal (portions, photo, saved meal, duplicate, discard), food search and editor, saved meals, summary; About. Widget tests in `test/widget/health_test.dart`, `nutrition_test.dart`; all 30 screens pass contrast, tap-target, label and 2× text checks in light and dark |
 | D8 fibre target | ☑ | Goals, Home tile and nutrition summary |
 | Home in Phase 2 | ☑ | Live water, calories, protein, fibre and sleep tiles; quick add for meal, water, weight, sleep; timeline merges all of them |
+| A-01 schedule rules | ☑ | Seven rule types as JSON; `OccurrenceCalculator` with DST gap and overlap handling (25 tests). Production time-zone rules arrive with the scheduler (A-08) |
+| Phase 3 screens | ✋ | Eleven designs on the canvas |
 
 ## Device verification backlog
 
