@@ -63,6 +63,7 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | A-01 schedule rules | ☑ | Seven rule types as JSON; `OccurrenceCalculator` with DST gap and overlap handling (25 tests). Production time-zone rules arrive with the scheduler (A-08) |
 | Schema v5 | ☑ | Activities and logs (synced, Supabase migration and access-rule checks), timer sessions and events (local); upgrades from v1–v4 tested |
 | A-02 to A-04 storage and rules | ◐ | Activity entity, validation, permitted tracking-type changes, schedule history, Done / Due / Not logged / Skipped / Not scheduled per occurrence, targets and checklists; repository with outbox (39 tests). Screens wait for design approval |
+| A-17 timer engine | ◐ | Ready → Running → Paused → Running → Completed, cancel, countdown end time, rebuild from events; local repository, never synced (10 tests). Screen, completion notification and activity log on finish follow the design approval and A-06 |
 | Phase 3 screens | ✋ | Eleven designs on the canvas |
 
 ## Device verification backlog
