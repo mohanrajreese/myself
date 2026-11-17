@@ -102,8 +102,9 @@ class ReminderPlanner {
       for (final o in _calc.between(r.rule, firstDay, lastDay)) {
         if (r.startDate != null && o.date.isBefore(r.startDate!)) continue;
         if (r.endDate != null && o.date.isAfter(r.endDate!)) continue;
-        if (r.onlyIfIncomplete && r.activityId != null && done.contains((r.activityId!, o.date)))
+        if (r.onlyIfIncomplete && r.activityId != null && done.contains((r.activityId!, o.date))) {
           continue;
+        }
 
         var fireLocal = o;
         var deferred = false;
