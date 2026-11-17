@@ -85,9 +85,9 @@
   "dailyCaloriesLabel": "Daily calories",
   "dailyProteinLabel": "Daily protein",
   "dailyWaterLabel": "Daily water",
-  "estimateNotice": "Calories, protein and water are estimated from your weight. Adjust them to suit you. Not medical advice.",
-  "estimateNeedsWeight": "Add your weight on the previous step to estimate calories, protein and water.",
-  "estimateNeedsWeightEdit": "Log a weight from Home to estimate calories, protein and water.",
+  "estimateNotice": "Calories, protein, fibre and water are estimated from your weight. Adjust them to suit you. Not medical advice.",
+  "estimateNeedsWeight": "Add your weight on the previous step to estimate calories, protein, fibre and water.",
+  "estimateNeedsWeightEdit": "Log a weight from Home to estimate calories, protein, fibre and water.",
   "recalculate": "Recalculate",
   "fitnessGoalsLabel": "Fitness goals",
   "goalLoseWeight": "Lose weight",
@@ -353,5 +353,7 @@
   "signOutTitle": "Sign out?",
   "signOutMessage": "Your records stay on this phone, encrypted. Sign in with the same account to continue.",
   "signOutNote": "Signing out keeps your records on this phone, encrypted. Sign in with the same account to continue.",
-  "startupError": "FitBuddy can't open its secure storage on this phone. Your data has not been changed."
+  "startupError": "FitBuddy can't open its secure storage on this phone. Your data has not been changed.",
+  "dailyFibreLabel": "Daily fibre",
+  "cardFibre": "Fibre"
 }

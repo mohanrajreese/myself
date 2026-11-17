@@ -61,6 +61,7 @@ void main() {
       expect(draft().kcalText, '2750');
       expect(draft().proteinText, '110');
       expect(draft().waterText, '3200');
+      expect(draft().fibreText, '40');
 
       controller.edit((d) => d.copyWith(kcalText: '2400'));
       controller.prepareGoals();
@@ -164,6 +165,7 @@ void main() {
     final nutrition = (await container.read(goalsRepositoryProvider).nutritionGoalsOn(today))!;
     expect(nutrition.energyKcalMilli, 2300000);
     expect(nutrition.proteinMg, 145000);
+    expect(nutrition.fibreMg, 30000);
 
     final settings = container.read(settingsRepositoryProvider);
     expect(await settings.read(SetupKeys.reminderPrefs), {

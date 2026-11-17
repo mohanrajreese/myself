@@ -11,6 +11,7 @@ void main() {
     expect(s.energyKcalMilli, 2750000); // 2,754 -> nearest 50
     expect(s.proteinMg, 110000); // 110.2 g -> nearest 5
     expect(s.dailyWaterMl, 3200); // 3,213 -> nearest 50
+    expect(s.fibreMg, 40000); // 14 g x 2.75 = 38.5 -> 40
     expect(s.direction, WeightDirection.maintain);
   });
 
@@ -19,6 +20,7 @@ void main() {
     expect(s.direction, WeightDirection.lose);
     expect(s.energyKcalMilli, 2300000); // 2,295
     expect(s.proteinMg, 145000); // 146.9 g
+    expect(s.fibreMg, 30000); // 14 g x 2.3 = 32.2 -> 30
   });
 
   test('a higher target weight uses 35 kcal per kg', () {
@@ -44,6 +46,7 @@ void main() {
     final light = suggestGoals(weightG: 40000, targetWeightG: 35000)!;
     expect(light.energyKcalMilli, 1500000);
     expect(light.dailyWaterMl, 1500);
+    expect(light.fibreMg, 25000); // 21 g -> at least 25
     final heavy = suggestGoals(weightG: 160000, targetWeightG: 170000)!;
     expect(heavy.energyKcalMilli, 4000000);
     expect(heavy.proteinMg, 190000); // 192 g

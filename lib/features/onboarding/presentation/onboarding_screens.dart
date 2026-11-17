@@ -209,6 +209,7 @@ class _Summary extends StatelessWidget {
             l10n.dailyStepsLabel: orNotSet(draft.stepsText),
             l10n.dailyCaloriesLabel: orNotSet(draft.kcalText, l10n.unitKcal),
             l10n.dailyProteinLabel: orNotSet(draft.proteinText, l10n.unitG),
+            l10n.dailyFibreLabel: orNotSet(draft.fibreText, l10n.unitG),
             l10n.dailyWaterLabel: orNotSet(draft.waterText, volume),
             if (draft.fitnessGoals.isNotEmpty)
               l10n.fitnessGoalsLabel: draft.fitnessGoals

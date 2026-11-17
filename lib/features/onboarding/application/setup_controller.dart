@@ -69,6 +69,10 @@ class SetupController extends AsyncNotifier<SetupDraft> {
         null => '',
         final v => '${v ~/ 1000}',
       },
+      fibreText: switch (nutrition?.fibreMg) {
+        null => '',
+        final v => '${v ~/ 1000}',
+      },
       waterText: switch (goals?.dailyWaterMl) {
         null => '',
         final ml => formatVolume(ml, units.volume),

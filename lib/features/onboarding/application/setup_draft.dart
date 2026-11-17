@@ -30,6 +30,7 @@ final class SetupDraft {
     this.stepsText = '8000',
     this.kcalText = '',
     this.proteinText = '',
+    this.fibreText = '',
     this.waterText = '',
     this.fitnessGoals = const [],
     this.wakeTime,
@@ -54,6 +55,7 @@ final class SetupDraft {
     stepsText: json['steps'] as String? ?? '',
     kcalText: json['kcal'] as String? ?? '',
     proteinText: json['protein'] as String? ?? '',
+    fibreText: json['fibre'] as String? ?? '',
     waterText: json['water'] as String? ?? '',
     fitnessGoals: (json['fitness'] as List<Object?>? ?? const []).cast<String>(),
     wakeTime: json['wake'] as String?,
@@ -74,6 +76,7 @@ final class SetupDraft {
   final String stepsText;
   final String kcalText;
   final String proteinText;
+  final String fibreText;
   final String waterText;
   final List<String> fitnessGoals;
   final String? wakeTime;
@@ -96,6 +99,7 @@ final class SetupDraft {
   int? get steps => int.tryParse(stepsText);
   int? get kcal => int.tryParse(kcalText);
   int? get proteinG => int.tryParse(proteinText);
+  int? get fibreG => int.tryParse(fibreText);
 
   /// Tenths of an hour, so `7.5` hours is 450 minutes.
   int? get sleepMinutes => switch (parseScaled(sleepHoursText, 1)) {
@@ -113,6 +117,7 @@ final class SetupDraft {
     'steps': stepsText,
     'kcal': kcalText,
     'protein': proteinText,
+    'fibre': fibreText,
     'water': waterText,
     'fitness': fitnessGoals,
     'wake': wakeTime,
@@ -134,6 +139,7 @@ final class SetupDraft {
     String? stepsText,
     String? kcalText,
     String? proteinText,
+    String? fibreText,
     String? waterText,
     List<String>? fitnessGoals,
     String? Function()? wakeTime,
@@ -153,6 +159,7 @@ final class SetupDraft {
     stepsText: stepsText ?? this.stepsText,
     kcalText: kcalText ?? this.kcalText,
     proteinText: proteinText ?? this.proteinText,
+    fibreText: fibreText ?? this.fibreText,
     waterText: waterText ?? this.waterText,
     fitnessGoals: fitnessGoals ?? this.fitnessGoals,
     wakeTime: wakeTime == null ? this.wakeTime : wakeTime(),
@@ -197,6 +204,7 @@ final class SetupDraft {
     return copyWith(
       kcalText: '${suggestion.energyKcalMilli ~/ 1000}',
       proteinText: '${suggestion.proteinMg ~/ 1000}',
+      fibreText: '${suggestion.fibreMg ~/ 1000}',
       waterText: formatVolume(suggestion.dailyWaterMl, units.volume),
       suggestionsApplied: true,
     );
@@ -228,9 +236,14 @@ final class SetupDraft {
       null => null,
       final v => v * 1000,
     },
+    fibreMg: switch (fibreG) {
+      null => null,
+      final v => v * 1000,
+    },
   );
 
-  bool get hasNutritionTargets => kcalText.trim().isNotEmpty || proteinText.trim().isNotEmpty;
+  bool get hasNutritionTargets =>
+      kcalText.trim().isNotEmpty || proteinText.trim().isNotEmpty || fibreText.trim().isNotEmpty;
 
   /// Field name to error code for the profile step.
   Map<String, String> profileErrors({required LocalDate today}) {
@@ -255,6 +268,7 @@ final class SetupDraft {
     number('dailySteps', stepsText, steps);
     number('energyKcalMilli', kcalText, kcal);
     number('proteinMg', proteinText, proteinG);
+    number('fibreMg', fibreText, fibreG);
     number('dailyWaterMl', waterText, waterMl);
     for (final failure in [toDailyGoals().validate(), toNutritionTargets().validate()]) {
       if (failure != null) errors.putIfAbsent(failure.field, () => failure.code);
