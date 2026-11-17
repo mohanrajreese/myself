@@ -1,21 +1,28 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/database/app_database.dart';
 import '../core/database/encrypted_connection.dart';
 import '../core/database/settings_repository.dart';
 import '../core/encryption/database_key_manager.dart';
+import '../core/encryption/file_cipher.dart';
+import '../core/platform/device_time_zone.dart';
+import '../core/utils/id_generator.dart';
 import '../core/encryption/secure_secret_store.dart';
 import '../core/utils/clock.dart';
 import '../core/utils/logger.dart';
 import '../features/auth/application/session.dart';
 import '../features/food_database/data/catalogue_importer.dart';
+import '../features/nutrition/data/drift_meal_repository.dart';
+import '../features/nutrition/data/encrypted_meal_photo_store.dart';
 import '../features/auth/application/session_controller.dart';
 import '../features/auth/data/supabase_google_auth_repository.dart';
 import '../features/auth/data/unconfigured_auth_repository.dart';
@@ -25,6 +32,7 @@ import '../features/settings/presentation/settings_screen.dart';
 import 'app.dart';
 import 'app_config.dart';
 import 'providers.dart';
+import 'tracking_providers.dart';
 
 /// Opens encrypted storage, restores the session and starts the app.
 Future<void> bootstrap() async {
@@ -44,6 +52,34 @@ Future<void> bootstrap() async {
     openEncryptedDatabase(name: AppDatabase.databaseName, hexKey: hexKey),
   );
   final settings = SettingsRepository(database, clock: systemClock);
+
+  // Meal photos: encrypted files in app-private storage (never synced).
+  final fileKey = (await DatabaseKeyManager(secrets).keyFor(DatabaseId.files)).valueOrNull;
+  final photoStore = fileKey == null
+      ? null
+      : EncryptedMealPhotoStore(
+          db: database,
+          directory: Directory('${(await getApplicationSupportDirectory()).path}/meal_photos'),
+          cipher: FileCipher([
+            for (var i = 0; i < fileKey.length; i += 2)
+              int.parse(fileKey.substring(i, i + 2), radix: 16),
+          ]),
+          meals: DriftMealRepository(
+            database,
+            clock: systemClock,
+            ids: const UuidV7Generator(),
+            timeZone: DeviceTimeZone(),
+          ),
+          clock: systemClock,
+          ids: const UuidV7Generator(),
+        );
+  LicenseRegistry.addLicense(() async* {
+    for (final font in const ['Inter', 'PlusJakartaSans']) {
+      yield LicenseEntryWithLineBreaks([
+        font,
+      ], await rootBundle.loadString('assets/fonts/$font-OFL.txt'));
+    }
+  });
   // Bundled food catalogues; each is imported once per version, in the background.
   final importer = CatalogueImporter(database, settings);
   unawaited(() async {
@@ -70,6 +106,7 @@ Future<void> bootstrap() async {
         initialSessionProvider.overrideWithValue(session),
         initialThemeModeProvider.overrideWithValue(themeMode),
         onlineProvider.overrideWith((ref) => _online()),
+        if (photoStore != null) mealPhotoStoreProvider.overrideWithValue(photoStore),
         signOutActionProvider.overrideWith(
           (ref) =>
               () => ref.read(sessionControllerProvider.notifier).signOut(),

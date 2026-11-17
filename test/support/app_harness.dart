@@ -1,5 +1,6 @@
 import 'package:fitbuddy/app/app.dart';
 import 'package:fitbuddy/app/providers.dart';
+import 'package:fitbuddy/app/tracking_providers.dart';
 import 'package:fitbuddy/core/database/app_database.dart';
 import 'package:fitbuddy/features/auth/application/session.dart';
 import 'package:fitbuddy/features/auth/application/session_controller.dart';
@@ -31,6 +32,8 @@ class AppHarness {
   /// One generator for the whole test, so ids stay unique across restarts.
   final SequentialIds ids = SequentialIds();
   bool online = true;
+  final MemoryPhotoStore photos = MemoryPhotoStore();
+  final FakePhotoPicker picker = FakePhotoPicker();
 
   List<Override> overrides({
     SessionState session = const SessionState(),
@@ -44,6 +47,8 @@ class AppHarness {
     idGeneratorProvider.overrideWithValue(ids),
     timeZoneSourceProvider.overrideWithValue(const FixedTimeZone()),
     onlineProvider.overrideWith((ref) => Stream.value(online)),
+    mealPhotoStoreProvider.overrideWithValue(photos),
+    photoPickerProvider.overrideWithValue(picker),
     signOutActionProvider.overrideWith(
       (ref) =>
           () => ref.read(sessionControllerProvider.notifier).signOut(),

@@ -203,7 +203,7 @@ class FbBarChart extends StatelessWidget {
         minY: 0,
         gridData: const FlGridData(show: false),
         borderData: FlBorderData(show: false),
-        barTouchData: BarTouchData(enabled: false),
+        barTouchData: const BarTouchData(enabled: false),
         titlesData: _titles(
           context,
           bottom: (x) => x.toInt() % every == 0 ? bottomLabel(x.toInt()) : '',

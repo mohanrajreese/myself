@@ -9,7 +9,18 @@ import '../features/auth/application/session_controller.dart';
 import '../features/auth/presentation/sign_in_screen.dart';
 import '../features/dashboard/presentation/customise_home_screen.dart';
 import '../features/onboarding/application/setup_controller.dart';
+import '../features/body_measurements/presentation/measurement_screens.dart';
 import '../features/dashboard/presentation/home_screen.dart';
+import '../features/food_database/presentation/food_screens.dart';
+import '../features/health_hub/presentation/health_screen.dart';
+import '../features/nutrition/domain/meals.dart';
+import '../features/nutrition/presentation/meal_form_screen.dart';
+import '../features/nutrition/presentation/nutrition_screens.dart';
+import '../features/settings/presentation/about_screen.dart';
+import '../features/sleep/presentation/sleep_screens.dart';
+import '../features/water/presentation/water_screens.dart';
+import '../features/weight/presentation/weight_screen.dart';
+import '../features/wellness/presentation/wellness_screens.dart';
 import '../features/onboarding/presentation/edit_setup_screen.dart';
 import '../features/onboarding/presentation/onboarding_screens.dart';
 import '../features/settings/presentation/settings_screen.dart';
@@ -73,27 +84,112 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [GoRoute(path: Routes.home, builder: (context, state) => const HomeScreen())],
           ),
-          for (final (path, title) in const [
-            (Routes.fitness, _Tab.fitness),
-            (Routes.nutrition, _Tab.nutrition),
-            (Routes.health, _Tab.health),
-            (Routes.habits, _Tab.habits),
-            (Routes.insights, _Tab.insights),
-          ])
-            StatefulShellBranch(
-              routes: [
-                GoRoute(
-                  path: path,
-                  builder: (context, state) => FbNotBuiltYet(title: title.label(context.l10n)),
-                ),
-              ],
-            ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.fitness,
+                builder: (context, state) => FbNotBuiltYet(title: _Tab.fitness.label(context.l10n)),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.nutrition,
+                builder: (context, state) => const DiaryScreen(),
+                routes: [
+                  GoRoute(path: 'water', builder: (context, state) => const WaterScreen()),
+                  GoRoute(
+                    path: 'saved-meals',
+                    builder: (context, state) => const SavedMealsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'summary',
+                    builder: (context, state) => const NutritionSummaryScreen(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.health,
+                builder: (context, state) => const HealthScreen(),
+                routes: [
+                  GoRoute(path: 'weight', builder: (context, state) => const WeightScreen()),
+                  GoRoute(
+                    path: 'measurements',
+                    builder: (context, state) => const MeasurementsScreen(),
+                    routes: [
+                      GoRoute(
+                        path: ':type',
+                        builder: (context, state) =>
+                            MeasurementHistoryScreen(type: state.pathParameters['type']!),
+                      ),
+                    ],
+                  ),
+                  GoRoute(path: 'sleep', builder: (context, state) => const SleepScreen()),
+                  GoRoute(
+                    path: 'checkin',
+                    builder: (context, state) => const CheckinScreen(),
+                    routes: [
+                      GoRoute(
+                        path: 'history',
+                        builder: (context, state) => const CheckinHistoryScreen(),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.habits,
+                builder: (context, state) => FbNotBuiltYet(title: _Tab.habits.label(context.l10n)),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.insights,
+                builder: (context, state) =>
+                    FbNotBuiltYet(title: _Tab.insights.label(context.l10n)),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
         path: Routes.addWeight,
         pageBuilder: (context, state) =>
             _SheetPage<void>(key: state.pageKey, builder: (_) => const AddWeightSheet()),
+      ),
+      GoRoute(
+        path: Routes.addWater,
+        pageBuilder: (context, state) =>
+            _SheetPage<void>(key: state.pageKey, builder: (_) => const WaterSheet()),
+      ),
+      GoRoute(
+        path: Routes.addSleep,
+        pageBuilder: (context, state) =>
+            _SheetPage<void>(key: state.pageKey, builder: (_) => const SleepSheet()),
+      ),
+      GoRoute(
+        path: Routes.foods,
+        builder: (context, state) =>
+            FoodSearchScreen(pick: state.uri.queryParameters['pick'] == '1'),
+      ),
+      GoRoute(path: Routes.addMeal, builder: (context, state) => const MealFormScreen()),
+      GoRoute(
+        path: '/meal/:id',
+        builder: (context, state) => switch (state.extra) {
+          final Meal meal => MealFormScreen(existing: meal),
+          _ => const MealMissingScreen(),
+        },
       ),
       GoRoute(
         path: Routes.settings,
@@ -112,6 +208,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const EditSetupScreen(section: SetupSection.day),
           ),
           GoRoute(path: 'home-layout', builder: (context, state) => const CustomiseHomeScreen()),
+          GoRoute(path: 'about', builder: (context, state) => const AboutScreen()),
         ],
       ),
     ],
@@ -122,15 +219,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 enum _Tab {
   fitness,
-  nutrition,
-  health,
   habits,
   insights;
 
   String label(AppLocalizations l10n) => switch (this) {
     _Tab.fitness => l10n.tabFitness,
-    _Tab.nutrition => l10n.tabNutrition,
-    _Tab.health => l10n.tabHealth,
     _Tab.habits => l10n.tabHabits,
     _Tab.insights => l10n.tabInsights,
   };

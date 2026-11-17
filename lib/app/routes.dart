@@ -17,6 +17,22 @@ abstract final class Routes {
   static const habits = '/habits';
   static const insights = '/insights';
   static const addWeight = '/add-weight';
+  static const weight = '/health/weight';
+  static const measurements = '/health/measurements';
+  static String measurementHistory(String type) =>
+      '/health/measurements/${Uri.encodeComponent(type)}';
+  static const sleep = '/health/sleep';
+  static const addSleep = '/add-sleep';
+  static const checkin = '/health/checkin';
+  static const checkinHistory = '/health/checkin/history';
+  static const water = '/nutrition/water';
+  static const addWater = '/add-water';
+  static const addMeal = '/add-meal';
+  static String editMeal(String id) => '/meal/$id';
+  static const foods = '/foods';
+  static const savedMeals = '/nutrition/saved-meals';
+  static const nutritionSummary = '/nutrition/summary';
+  static const about = '/settings/about';
   static const settings = '/settings';
   static const settingsProfile = '/settings/profile';
   static const settingsGoals = '/settings/goals';

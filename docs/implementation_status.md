@@ -9,8 +9,8 @@ Resume point for every work session. Update it when a task changes state; keep i
 | Item | Value |
 |---|---|
 | Phase | 2 — Core tracking (approved 17 Nov 2026); Phase 1 built, phone verification pending |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens published 17 Nov 2026, awaiting approval) |
-| Blocked on | Owner's Supabase and Google OAuth setup for a phone build; design approval for Phase 2 screens |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026) |
+| Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
 ## Phases
@@ -18,7 +18,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | Phase | Status | Report |
 |---|---|---|
 | 1 Foundation | ⏳ built, phone verification pending | [phase-1.md](reports/phase-1.md) |
-| 2 Core tracking | ◐ | — |
+| 2 Core tracking | ⏳ built, phone verification pending | — |
 | 3 Activities and reminders | ☐ | — |
 | 4 Fitness | ☐ | — |
 | 5 Lifestyle and privacy | ☐ | — |
@@ -56,8 +56,10 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | Storage: water, sleep, check-ins, measurements, weight edit and paging | ☑ | Repositories with outbox, validation and tests |
 | Storage: foods, meals (snapshot items), duplicate, saved meals, junk history | ☑ | Tested, including "editing a food never changes past meals" |
 | C-04 meal photos | ☑ | AES-256-GCM encrypted files, local index, never synced; key in Keystore-backed storage (phone pending) |
-| C-16 food catalogue | ◐ | USDA (7,793 foods) and INDB (all 1,014 Indian dishes, estimates, household servings; 34 flagged as self-contradicting); any catalogue food editable as the user's own linked copy bundled and imported at start-up; search tested. Owner chose to add INDB without a licence file (17 Nov 2026). About attribution comes with the screens |
-| C-01 to C-13 screens | ✋ | Ten designs on the canvas |
+| C-16 food catalogue | ☑ | USDA (7,793 foods) and INDB (all 1,014 Indian dishes, estimates, household servings; 34 flagged as self-contradicting); any catalogue food editable as the user's own linked copy bundled and imported at start-up; search tested. Owner chose to add INDB without a licence file (17 Nov 2026). Credits on the About screen (Settings → About) |
+| C-01 to C-13 screens | ☑ | Health tab, weight (chart, edit, delete, paging), measurements (custom types, history), sleep, check-in and history, water, food diary, add/edit meal (portions, photo, saved meal, duplicate, discard), food search and editor, saved meals, summary; About. Widget tests in `test/widget/health_test.dart`, `nutrition_test.dart`; all 30 screens pass contrast, tap-target, label and 2× text checks in light and dark |
+| D8 fibre target | ☑ | Goals, Home tile and nutrition summary |
+| Home in Phase 2 | ☑ | Live water, calories, protein, fibre and sleep tiles; quick add for meal, water, weight, sleep; timeline merges all of them |
 
 ## Device verification backlog
 
@@ -69,3 +71,5 @@ Features implemented but not yet confirmed on the phone. Test numbers refer to `
 | Backup exclusion | `adb backup` yields no app data | Pending |
 | Google sign-in, onboarding, Home | Fresh install, sign in, finish onboarding, relaunch in airplane mode (test 19) | Pending |
 | Timezone through Kotlin | Weight entry shows the phone's timezone in the database | Pending |
+| Phase 2 tracking screens | Log water, a meal with a camera photo, sleep, a check-in; restart; values and photo still there | Pending |
+| Meal photo camera and gallery | Take a photo and pick one; the stored file is not a readable image | Pending |

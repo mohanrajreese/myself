@@ -88,6 +88,8 @@ flutter:
   assets:
     - assets/catalogue/usda_sr_legacy.json
     - assets/catalogue/indb.json
+    - assets/fonts/Inter-OFL.txt
+    - assets/fonts/PlusJakartaSans-OFL.txt
 
   fonts:
     - family: Inter

@@ -4,8 +4,12 @@ import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/labels.dart';
 import '../../../app/routes.dart';
-import '../../../core/units/units.dart';
+import '../../../app/tracking_providers.dart';
+import '../../../core/widgets/fb_format.dart';
+import '../../nutrition/domain/nutrition_math.dart';
+import '../../sleep/domain/sleep_math.dart';
 import '../../../core/widgets/fb_card.dart';
 import '../../../core/widgets/fb_progress.dart';
 import '../../../core/widgets/fb_states.dart';
@@ -109,7 +113,7 @@ class _Header extends ConsumerWidget {
   }
 }
 
-class _Progress extends StatelessWidget {
+class _Progress extends ConsumerWidget {
   const _Progress({required this.profile, required this.goals, required this.nutrition});
 
   final Profile profile;
@@ -117,47 +121,74 @@ class _Progress extends StatelessWidget {
   final NutritionTargets? nutrition;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final number = NumberFormat.decimalPattern();
-    final metric = profile.units.volume == VolumeUnit.ml;
-    String volume(int ml) => metric
-        ? l10n.valueMl(number.format(ml))
-        : l10n.valueFlOz(formatVolume(ml, VolumeUnit.flOz));
+    final today = ref.watch(todayProvider);
+    final volumeUnit = profile.units.volume;
     String target(String? value) => value == null ? l10n.noTarget : l10n.ofTarget(value);
 
     final steps = goals?.dailySteps;
-    final water = goals?.dailyWaterMl;
-    final kcal = nutrition?.energyKcalMilli;
-    final protein = nutrition?.proteinMg;
-    final sleep = goals?.sleepTargetMin;
+    final waterTarget = goals?.dailyWaterMl;
+    final nutritionTarget = nutrition;
+    final sleepTarget = goals?.sleepTargetMin;
+    final water = ref.watch(waterTotalOnProvider(today));
+    final eaten = ref.watch(nutritionOnProvider(today));
+    final slept = ref.watch(sleepOnProvider(today));
 
     final tiles = [
       _MetricTile(
         label: l10n.cardWater,
-        value: volume(0),
-        caption: target(water == null ? null : volume(water)),
+        value: context.volume(water, volumeUnit),
+        caption: target(waterTarget == null ? null : context.volume(waterTarget, volumeUnit)),
+        fraction: progressFraction(eaten: water, target: waterTarget),
         barColor: context.colors.secondary,
+        onTap: () => context.push(Routes.water),
       ),
       _MetricTile(
         label: l10n.cardCalories,
-        value: l10n.valueKcal('0'),
-        caption: target(kcal == null ? null : l10n.valueKcal(number.format(kcal ~/ 1000))),
+        value: context.kcal(eaten.energyKcalMilli),
+        caption: target(
+          nutritionTarget?.energyKcalMilli == null
+              ? null
+              : context.kcal(nutritionTarget!.energyKcalMilli!),
+        ),
+        fraction: progressFraction(
+          eaten: eaten.energyKcalMilli,
+          target: nutritionTarget?.energyKcalMilli,
+        ),
+        onTap: () => context.go(Routes.nutrition),
       ),
       _MetricTile(
         label: l10n.cardProtein,
-        value: l10n.valueG('0'),
-        caption: target(protein == null ? null : l10n.valueG(number.format(protein ~/ 1000))),
+        value: context.grams(eaten.proteinMg),
+        caption: target(
+          nutritionTarget?.proteinMg == null ? null : context.grams(nutritionTarget!.proteinMg!),
+        ),
+        fraction: progressFraction(eaten: eaten.proteinMg, target: nutritionTarget?.proteinMg),
+        onTap: () => context.push(Routes.nutritionSummary),
+      ),
+      _MetricTile(
+        label: l10n.cardFibre,
+        value: context.grams(eaten.fibreMg),
+        caption: target(
+          nutritionTarget?.fibreMg == null ? null : context.grams(nutritionTarget!.fibreMg!),
+        ),
+        fraction: progressFraction(eaten: eaten.fibreMg, target: nutritionTarget?.fibreMg),
+        onTap: () => context.push(Routes.nutritionSummary),
       ),
       _MetricTile(
         label: l10n.cardSleep,
-        value: l10n.notLogged,
-        caption: sleep == null
+        value: slept == null ? l10n.notLogged : context.duration(slept),
+        caption: sleepTarget == null
             ? l10n.noTarget
             : l10n.sleepTargetValue(
-                sleep % 60 == 0 ? '${sleep ~/ 60}' : (sleep / 60).toStringAsFixed(1),
+                sleepTarget % 60 == 0
+                    ? '${sleepTarget ~/ 60}'
+                    : (sleepTarget / 60).toStringAsFixed(1),
               ),
+        fraction: slept == null ? 0 : progressFraction(eaten: slept.inMinutes, target: sleepTarget),
         barColor: context.colors.secondary,
+        onTap: () => context.push(Routes.sleep),
       ),
     ];
 
@@ -182,7 +213,7 @@ class _Progress extends StatelessWidget {
                         Text(l10n.stepsNotSetUp, style: context.text.title),
                         const SizedBox(height: FbSpace.xs),
                         Text(
-                          steps == null ? l10n.noTarget : l10n.stepsGoal(number.format(steps)),
+                          steps == null ? l10n.noTarget : l10n.stepsGoal(context.number(steps)),
                           style: context.text.bodySmall,
                         ),
                       ],
@@ -220,29 +251,43 @@ class _MetricTile extends StatelessWidget {
     required this.label,
     required this.value,
     required this.caption,
+    required this.onTap,
+    this.fraction = 0,
     this.barColor,
   });
 
   final String label;
   final String value;
   final String caption;
+  final double fraction;
+  final VoidCallback onTap;
   final Color? barColor;
 
   @override
   Widget build(BuildContext context) => FbCard(
-    padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg, vertical: 14),
-    child: MergeSemantics(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: context.text.label),
-          const SizedBox(height: 6),
-          Text(value, style: context.text.metric, maxLines: 1, overflow: TextOverflow.ellipsis),
-          const SizedBox(height: 6),
-          ExcludeSemantics(child: FbProgressBar(fraction: 0, color: barColor)),
-          const SizedBox(height: 6),
-          Text(caption, style: context.text.caption),
-        ],
+    padding: EdgeInsets.zero,
+    child: Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(FbRadius.card),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg, vertical: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: context.text.label),
+              const SizedBox(height: 6),
+              Text(value, style: context.text.metric, maxLines: 1, overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 6),
+              ExcludeSemantics(
+                child: FbProgressBar(fraction: fraction, color: barColor),
+              ),
+              const SizedBox(height: 6),
+              Text(caption, style: context.text.caption),
+            ],
+          ),
+        ),
       ),
     ),
   );
@@ -304,11 +349,17 @@ class _QuickAdd extends StatelessWidget {
           spacing: FbSpace.sm,
           runSpacing: FbSpace.sm,
           children: [
-            OutlinedButton.icon(
-              onPressed: () => context.push(Routes.addWeight),
-              icon: const Icon(Icons.add_rounded, size: FbSpace.xl),
-              label: Text(l10n.quickAddWeight),
-            ),
+            for (final (label, route) in [
+              (l10n.quickAddMeal, Routes.addMeal),
+              (l10n.quickAddWater, Routes.addWater),
+              (l10n.quickAddWeight, Routes.addWeight),
+              (l10n.quickAddSleep, Routes.addSleep),
+            ])
+              OutlinedButton.icon(
+                onPressed: () => context.push(route),
+                icon: const Icon(Icons.add_rounded, size: FbSpace.xl),
+                label: Text(label),
+              ),
           ],
         ),
       ],
@@ -337,38 +388,46 @@ class _Timeline extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final time = DateFormat.jm();
+    final today = ref.watch(todayProvider);
+    final units = ref.watch(unitsProvider);
+    final water = ref.watch(waterOnProvider(today)).value ?? const [];
+    final meals = ref.watch(mealsOnProvider(today)).value ?? const [];
+    final sleep = ref.watch(sleepBetweenProvider((from: today, to: today))).value ?? const [];
+    final checkins = ref.watch(wellnessBetweenProvider((from: today, to: today))).value ?? const [];
+
+    final events = <(DateTime, String)>[
+      for (final e in entries)
+        (e.occurredAt, l10n.timelineWeight(context.mass(e.weightG, e.entryUnit))),
+      for (final w in water)
+        (w.occurredAt, l10n.timelineWater(context.volume(w.amountMl, units.volume))),
+      for (final m in meals)
+        (
+          m.occurredAt,
+          l10n.timelineMeal(mealName(l10n, m.category), context.kcal(m.total.energyKcalMilli)),
+        ),
+      for (final s in sleep.where(
+        (s) => s.period.kind == SleepKind.night && s.period.wakeDate == today,
+      ))
+        (s.period.end, l10n.timelineWoke(context.duration(s.period.duration))),
+      for (final c in checkins) (c.occurredAt, l10n.timelineCheckin),
+    ]..sort((a, b) => a.$1.compareTo(b.$1));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         FbSectionTitle(l10n.todayTitle),
         const SizedBox(height: 10),
-        if (entries.isEmpty)
+        if (events.isEmpty)
           FbEmptyHint(l10n.timelineEmpty)
         else
-          for (final entry in entries)
+          for (final (at, text) in events)
             ConstrainedBox(
               constraints: const BoxConstraints(minHeight: 40),
               child: MergeSemantics(
                 child: Row(
                   children: [
-                    SizedBox(
-                      width: 76,
-                      child: Text(
-                        time.format(entry.occurredAt.toLocal()),
-                        style: context.text.label,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        l10n.timelineWeight(
-                          entry.entryUnit == MassUnit.kg
-                              ? l10n.valueKg(formatMass(entry.weightG, MassUnit.kg))
-                              : l10n.valueLb(formatMass(entry.weightG, MassUnit.lb)),
-                        ),
-                        style: context.text.body.copyWith(fontSize: 15),
-                      ),
-                    ),
+                    SizedBox(width: 76, child: Text(context.time(at), style: context.text.label)),
+                    Expanded(child: Text(text, style: context.text.body.copyWith(fontSize: 15))),
                   ],
                 ),
               ),

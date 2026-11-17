@@ -18,6 +18,14 @@ void main() {
     await app.pump(tester, session: signedInSession);
   }
 
+  Future<void> tapQuickAdd(WidgetTester tester, String label) async {
+    final button = find.widgetWithText(OutlinedButton, label);
+    await tester.ensureVisible(button);
+    await tester.pumpAndSettle();
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+  }
+
   group('Home', () {
     testWidgets('shows the greeting, date and targets from onboarding', (tester) async {
       await start(tester);
@@ -27,6 +35,8 @@ void main() {
       expect(find.text('of 3,200 ml'), findsOneWidget);
       expect(find.text('of 2,750 kcal'), findsOneWidget);
       expect(find.text('of 110 g'), findsOneWidget);
+      expect(find.text('Fibre'), findsOneWidget);
+      expect(find.text('of 40 g'), findsOneWidget);
       expect(find.text('Target 8 h'), findsOneWidget);
       expect(find.text('Planned today'), findsOneWidget);
       await app.dispose(tester);
@@ -45,7 +55,7 @@ void main() {
         tester,
         draft: const SetupDraft(name: 'Asha', stepsText: '', sleepHoursText: ''),
       );
-      expect(find.text('No target set'), findsNWidgets(4));
+      expect(find.text('No target set'), findsNWidgets(5));
       expect(find.text('No workout days set'), findsOneWidget);
       await app.dispose(tester);
     });
@@ -59,8 +69,7 @@ void main() {
 
     testWidgets('quick add saves a weight and the timeline updates', (tester) async {
       await start(tester);
-      await tester.scrollUntilVisible(find.text('Weight'), 200);
-      await tester.tap(find.text('Weight'));
+      await tapQuickAdd(tester, 'Weight');
       await tester.pumpAndSettle();
       expect(find.text('Add weight'), findsOneWidget);
       expect(find.text('Last: 91.8 kg'), findsOneWidget);
@@ -77,8 +86,7 @@ void main() {
 
     testWidgets('quick add rejects an impossible weight and keeps the sheet open', (tester) async {
       await start(tester);
-      await tester.scrollUntilVisible(find.text('Weight'), 200);
-      await tester.tap(find.text('Weight'));
+      await tapQuickAdd(tester, 'Weight');
       await tester.pumpAndSettle();
       await tester.enterText(field('Weight'), '0.3');
       await tester.tap(find.text('Save'));
@@ -91,7 +99,7 @@ void main() {
 
     testWidgets('each tab opens; unbuilt tabs say so and offer no controls', (tester) async {
       await start(tester);
-      for (final tab in ['Fitness', 'Nutrition', 'Health', 'Habits', 'Insights']) {
+      for (final tab in ['Fitness', 'Habits', 'Insights']) {
         await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text(tab)));
         await tester.pumpAndSettle();
         expect(
@@ -99,6 +107,16 @@ void main() {
           findsOneWidget,
         );
       }
+      await tester.tap(
+        find.descendant(of: find.byType(NavigationBar), matching: find.text('Nutrition')),
+      );
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Today, '), findsOneWidget);
+      await tester.tap(
+        find.descendant(of: find.byType(NavigationBar), matching: find.text('Health')),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Body measurements'), findsOneWidget);
       await tester.tap(
         find.descendant(of: find.byType(NavigationBar), matching: find.text('Home')),
       );

@@ -151,9 +151,10 @@
     }
   },
   "errNameRequired": "Enter your name.",
+  "errRequired": "This field is required.",
   "errInvalidNumber": "Enter a number.",
   "errOutOfRange": "That value is outside the allowed range.",
-  "errTooLong": "That is too long.",
+  "errTooLong": "A sleep cannot be longer than 24 hours.",
   "errSaveFailed": "Couldn't save. Try again.",
   "errCheckFields": "Check the highlighted fields.",
   "changesSaved": "Changes saved",
@@ -355,5 +356,719 @@
   "signOutNote": "Signing out keeps your records on this phone, encrypted. Sign in with the same account to continue.",
   "startupError": "FitBuddy can't open its secure storage on this phone. Your data has not been changed.",
   "dailyFibreLabel": "Daily fibre",
-  "cardFibre": "Fibre"
+  "cardFibre": "Fibre",
+  "delete": "Delete",
+  "remove": "Remove",
+  "addEntry": "Add",
+  "done": "Done",
+  "history": "History",
+  "note": "Note",
+  "noteHint": "Anything worth remembering",
+  "loadMore": "Load more",
+  "dateLabel": "Date",
+  "timeLabel": "Time",
+  "now": "Now",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "durationHm": "{hours} h {minutes} min",
+  "@durationHm": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "durationM": "{minutes} min",
+  "@durationM": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "deleteEntryTitle": "Delete this entry?",
+  "deleteEntryMessage": "It is removed from your history. This cannot be undone.",
+  "deleted": "Deleted",
+  "saved": "Saved",
+  "errInFuture": "That time is in the future.",
+  "errEndBeforeStart": "Wake-up must be after bedtime.",
+  "range7": "7 days",
+  "range30": "30 days",
+  "range90": "90 days",
+  "range365": "1 year",
+  "rangeLabel": "Range",
+  "healthTitle": "Health",
+  "cardWeight": "Weight",
+  "cardMeasurements": "Body measurements",
+  "cardCheckin": "Wellness check-in",
+  "noWeightYet": "No weight logged yet",
+  "weightChange7": "{change} in 7 days",
+  "@weightChange7": {
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "weightTargetSuffix": "target {value}",
+  "@weightTargetSuffix": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "measurementsNone": "Nothing recorded yet",
+  "measurementsTracked": "{count, plural, one{1 type tracked} other{{count} types tracked}}",
+  "@measurementsTracked": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepLastNight": "Last night",
+  "sleepNone": "No sleep logged",
+  "sleepWeeklyAverage": "Weekly average {value}",
+  "@sleepWeeklyAverage": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "checkinNotToday": "Not checked in today",
+  "checkinCountToday": "{count, plural, one{Checked in once today} other{Checked in {count} times today}}",
+  "@checkinCountToday": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "checkinSubtitle": "Energy, mood, stress and how you feel",
+  "checkIn": "Check in",
+  "weightTitle": "Weight",
+  "statCurrent": "Current",
+  "statTarget": "Target",
+  "statChange": "{days}-day change",
+  "@statChange": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "weightChartSummary": "Weight over the last {days} days, from {first} to {last}.",
+  "@weightChartSummary": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "weightChartEmpty": "Log at least two weights to see a chart.",
+  "weightFluctuationNote": "Day-to-day changes are normal. A single reading does not show fat loss or gain.",
+  "entriesTitle": "Entries",
+  "editWeightTitle": "Edit weight",
+  "editEntryLabel": "Edit entry of {date}",
+  "@editEntryLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "noEntries": "No entries yet.",
+  "changeDown": "Down {value}",
+  "@changeDown": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "changeUp": "Up {value}",
+  "@changeUp": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "changeSame": "No change",
+  "measurementsTitle": "Measurements",
+  "addMeasurementTitle": "Add measurement",
+  "measurementType": "Type",
+  "valueLabel": "Value",
+  "mWaist": "Waist",
+  "mChest": "Chest",
+  "mHips": "Hips",
+  "mNeck": "Neck",
+  "mArm": "Arm",
+  "mThigh": "Thigh",
+  "mBodyFat": "Body fat",
+  "mYourOwn": "Your own",
+  "customTypeTitle": "Name your measurement",
+  "customTypeHint": "For example: calf",
+  "measurementSince": "{change} since {date}",
+  "@measurementSince": {
+    "placeholders": {
+      "change": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "measurementNoEarlier": "no earlier entry",
+  "measurementsHelp": "Tap a measurement for its history and chart. Only types you have recorded are listed.",
+  "measurementChartSummary": "{type} over time, {count} entries, latest {value}.",
+  "@measurementChartSummary": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "unitPercent": "%",
+  "sleepTitle": "Sleep",
+  "addSleepTitle": "Add sleep",
+  "editSleepTitle": "Edit sleep",
+  "sleepNight": "Night",
+  "sleepNap": "Nap",
+  "bedtimeLabel": "Bedtime",
+  "wakeTimeLabel": "Wake-up",
+  "qualityLabel": "Quality (1 poor to 5 very good)",
+  "qualityValue": "Quality {value} of 5",
+  "@qualityValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "sleep7Avg": "7-day average",
+  "sleep30Avg": "30-day: {value}",
+  "@sleep30Avg": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "sleepUsualTimes": "Usual times",
+  "sleepSpread": "Bedtime varies by about {minutes} min",
+  "@sleepSpread": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepNeedTwo": "Needs two nights",
+  "sleepTargetH": "target {hours} h",
+  "@sleepTargetH": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "sleepChartSummary": "Sleep for the last 7 nights.",
+  "napLength": "{value} nap",
+  "@napLength": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "sleepHelp": "A night counts towards the day you woke up. Times are entered by you; FitBuddy does not measure sleep stages.",
+  "sleepRange": "{start} to {end}",
+  "@sleepRange": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "checkinTitle": "Check-in",
+  "checkinIntro": "How are you right now? 1 is low, 5 is high. You can check in more than once a day.",
+  "scaleEnergy": "Energy",
+  "scaleMood": "Mood",
+  "scaleStress": "Stress",
+  "scaleOverall": "Overall",
+  "saveCheckin": "Save check-in",
+  "scoreLabel": "{scale} {value}",
+  "@scoreLabel": {
+    "placeholders": {
+      "scale": {
+        "type": "String"
+      },
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "checkinIncomplete": "Choose a score for each scale.",
+  "checkinSaved": "Check-in saved",
+  "wellnessHistoryTitle": "Check-in history",
+  "wellnessHistoryNote": "Daily averages of what you logged, shown next to your sleep. It describes your entries; it does not explain causes.",
+  "wellnessChartSummary": "{scale}, daily average over {days} days.",
+  "@wellnessChartSummary": {
+    "placeholders": {
+      "scale": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "checkinRow": "Energy {energy} · Mood {mood} · Stress {stress} · Overall {overall}",
+  "@checkinRow": {
+    "placeholders": {
+      "energy": {
+        "type": "int"
+      },
+      "mood": {
+        "type": "int"
+      },
+      "stress": {
+        "type": "int"
+      },
+      "overall": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepHoursChart": "Sleep (hours)",
+  "waterTitle": "Water",
+  "addWaterTitle": "Add water",
+  "waterToday": "Today",
+  "waterToGo": "of {target} · {left} to go",
+  "@waterToGo": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "waterOfTarget": "of {target}",
+  "@waterOfTarget": {
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "waterGoalReached": "Goal reached",
+  "waterRingLabel": "{percent} percent of water goal",
+  "@waterRingLabel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "waterOther": "Other",
+  "otherAmount": "Other amount",
+  "waterOneTap": "One tap on an amount saves it straight away.",
+  "waterAdded": "{amount} added",
+  "@waterAdded": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "waterWeek": "Week",
+  "waterMonth": "Month",
+  "waterChartSummary": "Water per day for the last {days} days.",
+  "@waterChartSummary": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "waterEntriesToday": "Today's entries",
+  "removeWaterLabel": "Remove {amount} at {time}",
+  "@removeWaterLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "removeEntryTitle": "Remove this entry?",
+  "quickAddAmount": "Add {amount}",
+  "@quickAddAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "nutritionTitle": "Nutrition",
+  "addMeal": "Add meal",
+  "previousDay": "Previous day",
+  "nextDay": "Next day",
+  "chooseDay": "Choose a day",
+  "caloriesLeft": "Calories left",
+  "caloriesOver": "Over target by",
+  "caloriesEaten": "Calories eaten",
+  "eatenOf": "{eaten} eaten of {target}",
+  "@eatenOf": {
+    "placeholders": {
+      "eaten": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "macroProtein": "Protein",
+  "macroCarbs": "Carbs",
+  "macroFat": "Fat",
+  "macroFibre": "Fibre",
+  "myFoods": "My foods",
+  "savedMeals": "Saved meals",
+  "mealsEmpty": "Nothing logged for this day yet. Add a meal to start.",
+  "mealCardLabel": "{meal}, {time}, {kcal}",
+  "@mealCardLabel": {
+    "placeholders": {
+      "meal": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      },
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "diaryHelp": "Meals with nothing logged are not listed. Tap a meal to edit, duplicate or delete it.",
+  "mealEarlyMorning": "Early morning",
+  "mealBreakfast": "Breakfast",
+  "mealMidMorning": "Mid-morning",
+  "mealLunch": "Lunch",
+  "mealEveningSnack": "Evening snack",
+  "mealDinner": "Dinner",
+  "mealLateNight": "Late-night",
+  "mealOther": "Other",
+  "junkFastFood": "Fast food",
+  "junkFriedSnacks": "Fried snack",
+  "junkSweets": "Sweets",
+  "junkSugaryDrinks": "Sugary drink",
+  "junkPackagedSnacks": "Packaged snack",
+  "junkOther": "Other junk food",
+  "junkNone": "Not junk food",
+  "mealPhoto": "Meal photo",
+  "editMealTitle": "Edit meal",
+  "mealLabel": "Meal",
+  "mealCategoryHint": "The meal is picked from the time of day; change it if needed.",
+  "itemsTitle": "Items",
+  "addFood": "Add food",
+  "itemsHelp": "Tap an item to type an exact quantity, change its unit, mark it as junk food, or remove it.",
+  "itemsEmpty": "No items yet.",
+  "lessOf": "Less {food}",
+  "@lessOf": {
+    "placeholders": {
+      "food": {
+        "type": "String"
+      }
+    }
+  },
+  "moreOf": "More {food}",
+  "@moreOf": {
+    "placeholders": {
+      "food": {
+        "type": "String"
+      }
+    }
+  },
+  "addPhoto": "Add photo",
+  "changePhoto": "Change photo",
+  "removePhoto": "Remove photo",
+  "takePhoto": "Take a photo",
+  "choosePhoto": "Choose from photos",
+  "addNote": "Add note",
+  "keepAsSaved": "Also keep as a saved meal",
+  "savedMealName": "Saved meal name",
+  "saveMeal": "Save meal",
+  "duplicateMeal": "Duplicate",
+  "mealDuplicated": "Meal copied to now",
+  "deleteMealTitle": "Delete this meal?",
+  "mealSaved": "Meal saved",
+  "errAddItem": "Add at least one food.",
+  "itemTitle": "{food}",
+  "@itemTitle": {
+    "placeholders": {
+      "food": {
+        "type": "String"
+      }
+    }
+  },
+  "quantityLabel": "Quantity",
+  "unitLabel": "Unit",
+  "junkLabel": "Junk food",
+  "unitServing": "serving",
+  "unitGrams": "g",
+  "estimateTag": "estimate",
+  "valuesPerServing": "{kcal} · {protein} protein",
+  "@valuesPerServing": {
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      },
+      "protein": {
+        "type": "String"
+      }
+    }
+  },
+  "discardTitle": "Discard this meal?",
+  "discardMessage": "The items you added will not be saved.",
+  "discard": "Discard",
+  "keepEditing": "Keep editing",
+  "searchFoods": "Search foods",
+  "filterAll": "All",
+  "filterRecent": "Recent",
+  "filterSaved": "Saved",
+  "filterMine": "Mine",
+  "yourFoods": "Your foods",
+  "catalogue": "Catalogue",
+  "noFoodsFound": "No foods found. Create one with its values.",
+  "searchHint": "Type a food name",
+  "catalogueNote": "Catalogue values come from the named dataset and are shown as published. Search works offline.",
+  "createFood": "Create a food",
+  "editFood": "Edit food",
+  "editFoodLabel": "Edit {food}",
+  "@editFoodLabel": {
+    "placeholders": {
+      "food": {
+        "type": "String"
+      }
+    }
+  },
+  "conflictTag": "values disagree",
+  "timesUsed": "{count, plural, one{used once} other{used {count} times}}",
+  "@timesUsed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sourceUsda": "USDA",
+  "sourceIndb": "INDB",
+  "sourceMine": "Your food",
+  "newFoodTitle": "New food",
+  "foodName": "Name",
+  "servingLabelField": "Serving",
+  "servingHint": "For example: 1 bowl",
+  "servingWeight": "Weight of one serving",
+  "valuesPer": "Values per {serving}",
+  "@valuesPer": {
+    "placeholders": {
+      "serving": {
+        "type": "String"
+      }
+    }
+  },
+  "energyLabel": "Calories",
+  "proteinLabel": "Protein",
+  "carbsLabel": "Carbohydrates",
+  "fatLabel": "Fat",
+  "fibreLabel": "Fibre",
+  "keepSaved": "Keep in saved foods",
+  "foodSaved": "Food saved",
+  "deleteFoodTitle": "Delete this food?",
+  "deleteFoodMessage": "Meals already logged keep their values.",
+  "catalogueEditNote": "Your changes are saved as your own copy. The original stays in the catalogue; delete your copy to see it again.",
+  "conflictWarning": "In the source data, the calories do not match the protein, carbohydrate and fat (which add up to about {kcal}). Check the values before relying on them.",
+  "@conflictWarning": {
+    "placeholders": {
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "estimateWarning": "These values are calculated from a recipe, so they are an estimate.",
+  "householdServing": "{label} is about {grams} g",
+  "@householdServing": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "grams": {
+        "type": "String"
+      }
+    }
+  },
+  "howMuch": "How much?",
+  "addToMeal": "Add to meal",
+  "savedMealsEmpty": "No saved meals yet. Tick \"Also keep as a saved meal\" when saving a meal.",
+  "logSavedMeal": "Log now",
+  "savedMealLogged": "{name} logged",
+  "@savedMealLogged": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "savedMealItems": "{count, plural, one{1 item} other{{count} items}} · {kcal}",
+  "@savedMealItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteSavedTitle": "Delete this saved meal?",
+  "deleteSavedMessage": "Meals already logged from it are kept.",
+  "summaryNutritionTitle": "Nutrition summary",
+  "todayVsTargets": "Today against targets",
+  "ofTargetValue": "{value} of {target}",
+  "@ofTargetValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "noTargetSuffix": "{value} · no target",
+  "@noTargetSuffix": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "caloriesFromMeals": "Where today's calories came from",
+  "mealShare": "{meal} {kcal}",
+  "@mealShare": {
+    "placeholders": {
+      "meal": {
+        "type": "String"
+      },
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "mealShareSummary": "{meal} {percent} percent",
+  "@mealShareSummary": {
+    "placeholders": {
+      "meal": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "average7": "Daily average, last 7 days",
+  "averagedOver": "{count, plural, =0{No meals logged in the last 7 days.} one{Averaged over the 1 day that has meals logged.} other{Averaged over the {count} days that have meals logged.}}",
+  "@averagedOver": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "junk7": "Junk food, last 7 days",
+  "junkCount": "{count, plural, one{1 item} other{{count} items}} · {kcal}",
+  "@junkCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "junkNoneLogged": "None logged.",
+  "junkNote": "These are the same diary items, shown by category. Their calories are already in the totals above and are not counted again.",
+  "quickAddMeal": "Meal",
+  "quickAddWater": "Water",
+  "quickAddSleep": "Sleep",
+  "timelineWater": "Water · {amount}",
+  "@timelineWater": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "timelineMeal": "{meal} · {kcal}",
+  "@timelineMeal": {
+    "placeholders": {
+      "meal": {
+        "type": "String"
+      },
+      "kcal": {
+        "type": "String"
+      }
+    }
+  },
+  "timelineWoke": "Woke up · {duration} sleep",
+  "@timelineWoke": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "timelineCheckin": "Check-in",
+  "rowAbout": "About",
+  "aboutTitle": "About FitBuddy",
+  "aboutVersion": "Version {version}",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutFoodData": "Food data",
+  "aboutUsda": "USDA FoodData Central, SR Legacy. U.S. Department of Agriculture, Agricultural Research Service. Public domain.",
+  "aboutIndb": "Indian Nutrient Databank (INDB). Vijayakumar A, Dubasi HB, Awasthi A, Jaacks LM. Current Developments in Nutrition, 2024. Values are calculated from recipes and shown as estimates.",
+  "aboutLicences": "Open-source licences"
 }
