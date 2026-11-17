@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import '../utils/local_date.dart';
 import 'converters.dart';
 import 'synced_tables.dart';
+import 'tables/activity_tables.dart';
 import 'tables/local_tables.dart';
 import 'tables/profile_tables.dart';
 import 'tables/tracking_tables.dart';
@@ -29,6 +30,10 @@ part 'app_database.g.dart';
     DailyHealthCheckins,
     LocalFoodCatalogue,
     LocalMealPhotos,
+    ActivityDefinitions,
+    ActivityLogs,
+    LocalTimerSessions,
+    LocalTimerEvents,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -36,8 +41,14 @@ class AppDatabase extends _$AppDatabase {
 
   static const databaseName = 'fitbuddy';
 
+  static const _version5Indexes = {
+    'activity_logs_local_date',
+    'activity_logs_definition',
+    'local_timer_events_session',
+  };
+
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -57,7 +68,11 @@ class AppDatabase extends _$AppDatabase {
           await migrator.createTable(table);
         }
         for (final index in allSchemaEntities.whereType<Index>()) {
-          const notInVersion2 = {'weight_logs_local_date', 'local_food_catalogue_name'};
+          const notInVersion2 = {
+            'weight_logs_local_date',
+            'local_food_catalogue_name',
+            ..._version5Indexes,
+          };
           if (!notInVersion2.contains(index.entityName)) await migrator.create(index);
         }
       }
@@ -82,6 +97,20 @@ class AppDatabase extends _$AppDatabase {
           await migrator.addColumn(localFoodCatalogue, localFoodCatalogue.hasConflict);
         }
         if (from >= 2) await migrator.addColumn(foodItems, foodItems.catalogueRef);
+      }
+      if (from < 5) {
+        // Phase 3: activities, their logs, and device-only timers.
+        for (final table in <TableInfo<Table, Object?>>[
+          activityDefinitions,
+          activityLogs,
+          localTimerSessions,
+          localTimerEvents,
+        ]) {
+          await migrator.createTable(table);
+        }
+        for (final index in allSchemaEntities.whereType<Index>()) {
+          if (_version5Indexes.contains(index.entityName)) await migrator.create(index);
+        }
       }
     },
     beforeOpen: (details) async {

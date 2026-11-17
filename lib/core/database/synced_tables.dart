@@ -16,4 +16,6 @@ const syncedTableNames = <String>[
   'saved_meals',
   'sleep_logs',
   'daily_health_checkins',
+  'activity_definitions',
+  'activity_logs',
 ];

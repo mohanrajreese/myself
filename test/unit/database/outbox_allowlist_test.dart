@@ -30,6 +30,8 @@ void main() {
       'local_medication_logs',
       'local_screen_time_apps',
       'local_step_readings',
+      'local_timer_sessions',
+      'local_timer_events',
       'anything_else',
     ]) {
       await expectLater(enqueue(table), throwsA(anything), reason: table);

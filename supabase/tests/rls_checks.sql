@@ -143,7 +143,8 @@ select t.eq((select count(*) from public.weight_logs where server_updated_at > c
 reset role;
 create function t.phase2_tables() returns text[] language sql as $$
   select array['body_measurements', 'water_logs', 'food_items', 'meal_logs', 'meal_food_items',
-               'saved_meals', 'sleep_logs', 'daily_health_checkins']
+               'saved_meals', 'sleep_logs', 'daily_health_checkins',
+               'activity_definitions', 'activity_logs']
 $$;
 create function t.count_visible(tbl text) returns bigint language plpgsql as $$
 declare n bigint;
@@ -179,7 +180,16 @@ values ('46000000-0000-0000-0000-000000000001', 'night', '2026-11-15T17:40:00Z',
 insert into public.daily_health_checkins (id, energy, mood, stress, wellness, occurred_at, local_date, tz, created_at, updated_at)
 values ('47000000-0000-0000-0000-000000000001', 4, 3, 2, 4, now(), '2026-11-16', 'UTC', now(), now());
 
+insert into public.activity_definitions (id, name, category, icon_key, tracking_type, priority, schedule, status, created_at, updated_at)
+values ('48000000-0000-0000-0000-000000000001', 'Walking', 'movement', 'walk', 'duration', 'essential', '{"type":"daily","times":[480]}', 'active', now(), now());
+insert into public.activity_logs (id, activity_definition_id, status, occurred_at, local_date, tz, duration_s, source, created_at, updated_at)
+values ('49000000-0000-0000-0000-000000000001', '48000000-0000-0000-0000-000000000001', 'completed', now(), '2026-11-16', 'UTC', 1800, 'manual', now(), now());
+
 select t.eq(t.count_visible(tbl), 1, 'owner sees own ' || tbl) from unnest(t.phase2_tables()) tbl;
+select t.refused($$update public.activity_definitions set tracking_type = 'streak', updated_at = now() + interval '1 hour'$$,
+  'unknown tracking type is rejected');
+select t.refused($$update public.activity_logs set status = 'missed', updated_at = now() + interval '1 hour'$$,
+  'missed is never stored');
 
 select t.refused($$update public.sleep_logs set quality = 9, updated_at = now() + interval '1 hour'$$,
   'sleep quality outside 1 to 5 is rejected');
@@ -207,6 +217,9 @@ select t.eq(t.count_changed(format('delete from public.%I', tbl)), 0,
 select t.refused($$insert into public.meal_food_items (id, meal_log_id, food_name, quantity_milli, unit, energy_kcal_milli, protein_mg, carbs_mg, fat_mg, fibre_mg, created_at, updated_at)
   values ('44000000-0000-0000-0000-000000000002', '43000000-0000-0000-0000-000000000001', 'x', 1000, 'g', 0, 0, 0, 0, 0, now(), now())$$,
   'cannot attach an item to another user''s meal');
+select t.refused($$insert into public.activity_logs (id, activity_definition_id, status, occurred_at, local_date, tz, source, created_at, updated_at)
+  values ('49000000-0000-0000-0000-000000000002', '48000000-0000-0000-0000-000000000001', 'completed', now(), '2026-11-16', 'UTC', 'manual', now(), now())$$,
+  'cannot log against another user''s activity');
 select t.refused($$insert into public.water_logs (id, user_id, amount_ml, occurred_at, local_date, tz, created_at, updated_at)
   values ('41000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-00000000000a', 250, now(), '2026-11-16', 'UTC', now(), now())$$,
   'cannot insert water owned by someone else');
@@ -225,6 +238,10 @@ select t.eq((select count(*) from public.meal_food_items where food_item_id is n
 -- Deleting a meal removes its items.
 delete from public.meal_logs where id = '43000000-0000-0000-0000-000000000001';
 select t.eq((select count(*) from public.meal_food_items), 0, 'deleting a meal removes its items');
+
+-- Deleting an activity removes its logs.
+delete from public.activity_definitions where id = '48000000-0000-0000-0000-000000000001';
+select t.eq((select count(*) from public.activity_logs), 0, 'deleting an activity removes its logs');
 
 -- ---------------------------------------------------------------- account deletion
 reset role;
