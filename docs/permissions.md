@@ -7,6 +7,12 @@ Plan: [`blueprint/01-architecture.md`](blueprint/01-architecture.md) §2.1. A pe
 | Permission | Added in | Requested when | Feature |
 |---|---|---|---|
 | `INTERNET` | Phase 1 | — (normal permission) | Google sign-in, Supabase |
+| `POST_NOTIFICATIONS` | Phase 3 | When the first reminder is saved or switched on, after a rationale; Android 13+ only shows a prompt. Denied: settings page opens and Habits shows a notice | Reminders |
+| `SCHEDULE_EXACT_ALARM` | Phase 3 | Special access, only for reminders marked "Important alarm", after a rationale; Settings → Notifications and reminders shows the state. Denied: scheduled inexactly with "may be late" wording | Important alarms |
+| `RECEIVE_BOOT_COMPLETED` | Phase 3 | — (normal permission) | Reschedule after reboot |
+| `VIBRATE` | Phase 3 | — (normal permission) | Reminder vibration, test vibration |
+
+Never declared: `USE_EXACT_ALARM`, `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` (the app only opens the battery-optimisation list), `USE_FULL_SCREEN_INTENT` (the lock-screen alarm display is not built). The manifest test enforces the allow-list.
 
 ## Debug signing key (for the Google Cloud Android OAuth client)
 

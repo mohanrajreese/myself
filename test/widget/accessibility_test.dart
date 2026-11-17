@@ -99,7 +99,58 @@ final List<_Screen> _screens = [
   (name: 'saved meals', setUp: true, open: (tester) => _go(tester, Routes.savedMeals)),
   (name: 'nutrition summary', setUp: true, open: (tester) => _go(tester, Routes.nutritionSummary)),
   (name: 'about', setUp: true, open: (tester) => _go(tester, Routes.about)),
+  (name: 'habits today', setUp: true, open: (tester) => _tab(tester, Routes.habits)),
+  (
+    name: 'habits activities',
+    setUp: true,
+    open: (tester) async {
+      await _tab(tester, Routes.habits);
+      await _tapText(tester, 'Activities');
+    },
+  ),
+  (
+    name: 'habits reminders',
+    setUp: true,
+    open: (tester) async {
+      await _tab(tester, Routes.habits);
+      await _tapText(tester, 'Reminders');
+    },
+  ),
+  (name: 'activity builder', setUp: true, open: (tester) => _go(tester, Routes.newActivity)),
+  (name: 'activity detail', setUp: true, open: _createActivity),
+  (
+    name: 'log sheet',
+    setUp: true,
+    open: (tester) async {
+      await _createActivity(tester);
+      await tester.tap(find.text('Log'));
+      await tester.pumpAndSettle();
+    },
+  ),
+  (name: 'reminder editor', setUp: true, open: (tester) => _go(tester, Routes.newReminder)),
+  (
+    name: 'notification settings',
+    setUp: true,
+    open: (tester) => _go(tester, Routes.notificationSettings),
+  ),
+  (
+    name: 'notification history',
+    setUp: true,
+    open: (tester) => _go(tester, Routes.notificationHistory),
+  ),
 ];
+
+/// Creates a yes/no activity through the builder; ends on its detail screen.
+Future<void> _createActivity(WidgetTester tester) async {
+  await _go(tester, Routes.newActivity);
+  await tester.enterText(find.byType(EditableText).first, 'Walking');
+  await tester.tap(find.widgetWithText(FilledButton, 'Save'));
+  for (var i = 0; i < 20; i++) {
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 5)));
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+  await tester.pumpAndSettle();
+}
 
 void main() {
   for (final mode in [AppThemeMode.light, AppThemeMode.dark]) {

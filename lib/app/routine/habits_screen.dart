@@ -341,14 +341,15 @@ class _ActivityListState extends ConsumerState<_ActivityList> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg),
-          child: Row(
+          child: Wrap(
+            spacing: FbSpace.sm,
+            runSpacing: FbSpace.sm,
             children: [
               FbToggleChip(
                 label: l10n.activeCount(active.length),
                 selected: !_archived,
                 onTap: () => setState(() => _archived = false),
               ),
-              const SizedBox(width: FbSpace.sm),
               FbToggleChip(
                 label: l10n.archivedCount(archived.length),
                 selected: _archived,

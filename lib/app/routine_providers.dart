@@ -54,6 +54,7 @@ final notificationGatewayProvider = Provider<NotificationGateway>(
 );
 final alarmCapabilitiesProvider = Provider<AlarmCapabilities>((ref) => DeviceAlarmCapabilities());
 
+/// One service per app, so its re-plan queue is shared.
 final reminderServiceProvider = Provider<ReminderService>(
   (ref) => ReminderService(
     reminders: ref.watch(reminderRepositoryProvider),

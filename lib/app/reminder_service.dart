@@ -82,8 +82,17 @@ final class ReminderService {
     await replan();
   }
 
-  /// Re-plans every enabled reminder. Safe to call any time.
-  Future<ScheduleSummary> replan() async {
+  Future<void> _last = Future<void>.value();
+
+  /// Re-plans every enabled reminder. Safe to call any time: runs one at a
+  /// time, so concurrent callers cannot hand out the same notification id.
+  Future<ScheduleSummary> replan() {
+    final run = _last.then((_) => _replan(), onError: (_) => _replan());
+    _last = run.then((_) {}, onError: (_) {});
+    return run;
+  }
+
+  Future<ScheduleSummary> _replan() async {
     // Reminders of archived or deleted activities stay quiet.
     final live = {
       for (final a in await activities.watchAll().first)

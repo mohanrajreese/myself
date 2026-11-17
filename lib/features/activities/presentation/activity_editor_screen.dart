@@ -203,16 +203,17 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
 
   void _failed(Failure? f) {
     final l10n = context.l10n;
+    final message = switch (f) {
+      ValidationFailure(field: 'trackingType') => l10n.errTrackingTypeChange,
+      ValidationFailure() => l10n.errCheckFields,
+      _ => l10n.errSaveFailed,
+    };
     setState(() {
       _busy = false;
-      _errors = {
-        'form': switch (f) {
-          ValidationFailure(field: 'trackingType') => l10n.errTrackingTypeChange,
-          ValidationFailure() => l10n.errCheckFields,
-          _ => l10n.errSaveFailed,
-        },
-      };
+      _errors = {'form': message};
     });
+    // The form may be scrolled; say it where it is seen.
+    showFbSnackBar(context, message);
   }
 
   Future<bool> _confirmLeave() async {

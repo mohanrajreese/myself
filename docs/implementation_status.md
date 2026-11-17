@@ -8,7 +8,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 3 — Activities and reminders (approved 17 Nov 2026); Phases 1–2 phone verification pending |
+| Phase | 3 — Activities and reminders built 17 Nov 2026; Phases 1–3 phone verification pending; Phase 4 waits for approval |
 | Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026) |
 | Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
@@ -19,7 +19,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 |---|---|---|
 | 1 Foundation | ⏳ built, phone verification pending | [phase-1.md](reports/phase-1.md) |
 | 2 Core tracking | ⏳ built, phone verification pending | [phase-2.md](reports/phase-2.md) |
-| 3 Activities and reminders | ◐ | — |
+| 3 Activities and reminders | ⏳ built, phone verification pending | [phase-3.md](reports/phase-3.md) |
 | 4 Fitness | ☐ | — |
 | 5 Lifestyle and privacy | ☐ | — |
 | 6 Reports and synchronisation | ☐ | — |
@@ -60,12 +60,22 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | C-01 to C-13 screens | ☑ | Health tab, weight (chart, edit, delete, paging), measurements (custom types, history), sleep, check-in and history, water, food diary, add/edit meal (portions, photo, saved meal, duplicate, discard), food search and editor, saved meals, summary; About. Widget tests in `test/widget/health_test.dart`, `nutrition_test.dart`; all 30 screens pass contrast, tap-target, label and 2× text checks in light and dark |
 | D8 fibre target | ☑ | Goals, Home tile and nutrition summary |
 | Home in Phase 2 | ☑ | Live water, calories, protein, fibre and sleep tiles; quick add for meal, water, weight, sleep; timeline merges all of them |
-| A-01 schedule rules | ☑ | Seven rule types as JSON; `OccurrenceCalculator` with DST gap and overlap handling (25 tests). Production time-zone rules arrive with the scheduler (A-08) |
-| Schema v5 | ☑ | Activities and logs (synced, Supabase migration and access-rule checks), timer sessions and events (local); upgrades from v1–v4 tested |
-| A-02 to A-04 storage and rules | ◐ | Activity entity, validation, permitted tracking-type changes, schedule history, Done / Due / Not logged / Skipped / Not scheduled per occurrence, targets and checklists; repository with outbox (39 tests). Screens wait for design approval |
-| A-17 timer engine | ◐ | Ready → Running → Paused → Running → Completed, cancel, countdown end time, rebuild from events; local repository, never synced (10 tests). Screen, completion notification and activity log on finish follow the design approval and A-06 |
-| A-08, A-12 planning rules | ◐ | `ReminderPlanner`: 7-day window, quiet hours (wait, drop, ring anyway; overnight periods), "only if not done", start and end dates, stable occurrence keys, 400 budget with interval reminders shortened first (10 tests). Scheduling through Android, reminder storage and the notification plugin are next |
-| Phase 3 screens | ◐ | Designs approved 17 Nov 2026 |
+| A-01 schedule rules | ☑ | Seven rule types; DST gap and overlap |
+| Schema v5, v6 | ☑ | Activities, logs, reminders (synced; Supabase migrations and access-rule checks); timers and notification state (local); upgrades from v1–v5 tested |
+| A-02 to A-05 activities | ☑ | Builder with every field, edit, duplicate, archive, restore, delete, reschedule, priority, permitted type changes, history; logging per type, several per day; five states; Home essentials with Done, Snooze, open |
+| A-06 permission and channels | ⏳ | Rationale then prompt; denial notice; seven channels |
+| A-07 reminders | ☑ | All types and presets; title, description, repeat, sound (channel), vibration, snooze, priority, quiet-hour behaviour, linked activity, "only if not done" |
+| A-08 planner and scheduler | ☑ logic · ⏳ delivery | Rolling 7-day window, stable ids, diffing, budget; serialised re-plans |
+| A-09 exact alarms | ⏳ | `AlarmPlugin` capability, rationale, settings page, inexact fallback |
+| A-10 notification actions | ☑ logic · ⏳ | Complete, Snooze, Skip in foreground and background isolate |
+| A-11 snooze | ☑ | 5/10/15/30 min and custom |
+| A-12 quiet hours | ☑ | Wait, skip, ring anyway; overnight periods |
+| A-13 sound and vibration | ⏳ | Channel sound via Android's channel settings, test sound, test vibration. No in-app sound picker or custom sound file (see notifications.md) |
+| A-14 recovery | ⏳ | Plugin boot receiver, SystemEventReceiver, WorkManager top-up every 6 h, re-plan on start and resume |
+| A-15 "if not done" and presets | ☑ | Water, workout, sleep and posture presets |
+| A-16 notification centre | ☑ | 30-day history; limitation notices on Habits and in Settings |
+| A-17 stopwatch and timers | ☑ · ⏳ notification | State machine, persistence, history, completion notification, activity log on finish, cancel logs nothing |
+| A-18 migrations, docs, report | ☑ | Device test run pending |
 
 ## Device verification backlog
 
@@ -79,3 +89,7 @@ Features implemented but not yet confirmed on the phone. Test numbers refer to `
 | Timezone through Kotlin | Weight entry shows the phone's timezone in the database | Pending |
 | Phase 2 tracking screens | Log water, a meal with a camera photo, sleep, a check-in; restart; values and photo still there | Pending |
 | Meal photo camera and gallery | Take a photo and pick one; the stored file is not a readable image | Pending |
+| Reminders deliver and buttons work | Tests 10–14 in `blueprint/07-testing.md` §6 | Pending |
+| Reminders survive a reboot | Test 15 | Pending |
+| Background WorkManager top-up and button presses with the app closed | Leave the phone overnight with reminders; press Complete from the shade with the app swiped away | Pending |
+| Stopwatch survives the app being closed and the phone restarting | Start, swipe away, restart phone, reopen | Pending |

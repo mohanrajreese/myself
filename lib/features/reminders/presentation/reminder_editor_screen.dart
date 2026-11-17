@@ -47,7 +47,7 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
   @override
   void initState() {
     super.initState();
-    unawaited(_load());
+    WidgetsBinding.instance.addPostFrameCallback((_) => unawaited(_load()));
   }
 
   Future<void> _load() async {
