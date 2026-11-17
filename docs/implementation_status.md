@@ -61,6 +61,8 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | D8 fibre target | ☑ | Goals, Home tile and nutrition summary |
 | Home in Phase 2 | ☑ | Live water, calories, protein, fibre and sleep tiles; quick add for meal, water, weight, sleep; timeline merges all of them |
 | A-01 schedule rules | ☑ | Seven rule types as JSON; `OccurrenceCalculator` with DST gap and overlap handling (25 tests). Production time-zone rules arrive with the scheduler (A-08) |
+| Schema v5 | ☑ | Activities and logs (synced, Supabase migration and access-rule checks), timer sessions and events (local); upgrades from v1–v4 tested |
+| A-02 to A-04 storage and rules | ◐ | Activity entity, validation, permitted tracking-type changes, schedule history, Done / Due / Not logged / Skipped / Not scheduled per occurrence, targets and checklists; repository with outbox (39 tests). Screens wait for design approval |
 | Phase 3 screens | ✋ | Eleven designs on the canvas |
 
 ## Device verification backlog
