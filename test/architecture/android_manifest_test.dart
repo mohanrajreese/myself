@@ -4,7 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Permissions the app may declare. Extend this list only together with
 /// docs/permissions.md and docs/blueprint/01-architecture.md §2.1.
-const _allowedPermissions = {'android.permission.INTERNET'};
+const _allowedPermissions = {
+  'android.permission.INTERNET',
+  'android.permission.POST_NOTIFICATIONS',
+  'android.permission.SCHEDULE_EXACT_ALARM',
+  'android.permission.RECEIVE_BOOT_COMPLETED',
+  'android.permission.VIBRATE',
+};
 
 /// Never declared (docs/blueprint/01-architecture.md §2.1).
 const _forbiddenPermissions = {

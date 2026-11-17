@@ -2,6 +2,8 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:fitbuddy/core/database/app_database.dart';
 import 'package:fitbuddy/core/errors/result.dart';
+import 'package:fitbuddy/core/notifications/notification_gateway.dart';
+import 'package:fitbuddy/core/platform/alarm_capabilities.dart';
 import 'package:fitbuddy/core/platform/photo_picker.dart';
 import 'package:fitbuddy/core/platform/time_zone_source.dart';
 import 'package:fitbuddy/core/utils/clock.dart';
@@ -73,5 +75,66 @@ class FakePhotoPicker implements PhotoPicker {
   Future<List<int>?> pick(PhotoSource source) async {
     lastSource = source;
     return next;
+  }
+}
+
+/// Records what would be sent to Android.
+class FakeNotificationGateway implements NotificationGateway {
+  final Map<int, NotificationRequest> pending = {};
+  final List<NotificationRequest> shown = [];
+  bool allowed = true;
+  bool exactAllowed = true;
+  bool grantOnRequest = true;
+  int requests = 0;
+
+  @override
+  Future<void> schedule(NotificationRequest request) async => pending[request.id] = request;
+  @override
+  Future<void> show(NotificationRequest request) async => shown.add(request);
+  @override
+  Future<void> cancel(int id) async => pending.remove(id);
+  @override
+  Future<bool> notificationsAllowed() async => allowed;
+  @override
+  Future<bool> requestPermission() async {
+    requests++;
+    if (grantOnRequest) allowed = true;
+    return allowed;
+  }
+
+  @override
+  Future<bool> canScheduleExact() async => exactAllowed;
+}
+
+class FakeAlarmCapabilities implements AlarmCapabilities {
+  bool exact = true;
+  bool batteryExempt = false;
+  List<String> disabled = const [];
+  String? pendingEvent;
+  final List<String> opened = [];
+
+  @override
+  Future<bool> canScheduleExactAlarms() async => exact;
+  @override
+  Future<void> openExactAlarmSettings() async => opened.add('exact');
+  @override
+  Future<bool> isIgnoringBatteryOptimizations() async => batteryExempt;
+  @override
+  Future<void> openBatterySettings() async => opened.add('battery');
+  @override
+  Future<List<String>> disabledChannels() async => disabled;
+  @override
+  Future<void> openChannelSettings(String channelId) async => opened.add('channel:$channelId');
+  @override
+  Future<void> openNotificationSettings() async => opened.add('notifications');
+  @override
+  Future<void> playTestSound(String channelId) async => opened.add('sound:$channelId');
+  @override
+  Future<void> testVibration() async => opened.add('vibrate');
+  @override
+  Future<String?> takePendingSystemEvent() async {
+    final e = pendingEvent;
+    pendingEvent = null;
+    return e;
   }
 }

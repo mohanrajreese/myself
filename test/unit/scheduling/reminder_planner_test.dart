@@ -1,4 +1,4 @@
-import 'package:fitbuddy/core/notifications/reminder_planner.dart';
+import 'package:fitbuddy/core/scheduling/reminder_planner.dart';
 import 'package:fitbuddy/core/scheduling/occurrence_calculator.dart';
 import 'package:fitbuddy/core/scheduling/schedule_rule.dart';
 import 'package:fitbuddy/core/utils/local_date.dart';

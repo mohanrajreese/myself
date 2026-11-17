@@ -1,5 +1,6 @@
 import 'package:fitbuddy/app/app.dart';
 import 'package:fitbuddy/app/providers.dart';
+import 'package:fitbuddy/app/routine_providers.dart';
 import 'package:fitbuddy/app/tracking_providers.dart';
 import 'package:fitbuddy/core/database/app_database.dart';
 import 'package:fitbuddy/features/auth/application/session.dart';
@@ -34,6 +35,8 @@ class AppHarness {
   bool online = true;
   final MemoryPhotoStore photos = MemoryPhotoStore();
   final FakePhotoPicker picker = FakePhotoPicker();
+  final FakeNotificationGateway notifications = FakeNotificationGateway();
+  final FakeAlarmCapabilities alarms = FakeAlarmCapabilities();
 
   List<Override> overrides({
     SessionState session = const SessionState(),
@@ -49,6 +52,8 @@ class AppHarness {
     onlineProvider.overrideWith((ref) => Stream.value(online)),
     mealPhotoStoreProvider.overrideWithValue(photos),
     photoPickerProvider.overrideWithValue(picker),
+    notificationGatewayProvider.overrideWithValue(notifications),
+    alarmCapabilitiesProvider.overrideWithValue(alarms),
     signOutActionProvider.overrideWith(
       (ref) =>
           () => ref.read(sessionControllerProvider.notifier).signOut(),

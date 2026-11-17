@@ -14,6 +14,8 @@ import '../core/database/encrypted_connection.dart';
 import '../core/database/settings_repository.dart';
 import '../core/encryption/database_key_manager.dart';
 import '../core/encryption/file_cipher.dart';
+import '../core/notifications/notification_gateway.dart';
+import '../core/platform/alarm_capabilities.dart';
 import '../core/platform/device_time_zone.dart';
 import '../core/utils/id_generator.dart';
 import '../core/encryption/secure_secret_store.dart';
@@ -31,7 +33,10 @@ import '../features/settings/application/theme_mode_controller.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import 'app.dart';
 import 'app_config.dart';
+import 'background.dart';
+import 'notification_setup.dart';
 import 'providers.dart';
+import 'routine_providers.dart';
 import 'tracking_providers.dart';
 
 /// Opens encrypted storage, restores the session and starts the app.
@@ -94,6 +99,28 @@ Future<void> bootstrap() async {
       }
     }
   }());
+  // Reminders: channels, taps, and the six-hourly top-up (05 §A5).
+  // Lives as long as the app; never closed.
+  // ignore: close_sinks
+  final taps = StreamController<NotificationTap>.broadcast();
+  NotificationGateway gateway = const DisabledNotificationGateway();
+  NotificationTap? launchTap;
+  try {
+    final local = await createNotificationGateway(
+      onTap: taps.add,
+      onBackgroundTap: notificationTapBackground,
+    );
+    launchTap = await local.launchTap();
+    gateway = local;
+    await DeviceAlarmCapabilities().takePendingSystemEvent();
+  } on Object catch (error) {
+    logger.failure('notifications_init_failed', error);
+  }
+  unawaited(
+    registerReminderTopUp().catchError(
+      (Object error) => logger.failure('reminder_top_up_failed', error),
+    ),
+  );
   final session = await loadSession(settings);
   final themeMode = themeModeFromSetting(await settings.read(themeModeSettingKey));
   final auth = await _createAuth(AppConfig.fromEnvironment, secrets, logger);
@@ -107,6 +134,9 @@ Future<void> bootstrap() async {
         initialThemeModeProvider.overrideWithValue(themeMode),
         onlineProvider.overrideWith((ref) => _online()),
         if (photoStore != null) mealPhotoStoreProvider.overrideWithValue(photoStore),
+        notificationGatewayProvider.overrideWithValue(gateway),
+        notificationTapsProvider.overrideWith((ref) => taps.stream),
+        launchTapProvider.overrideWithValue(launchTap),
         signOutActionProvider.overrideWith(
           (ref) =>
               () => ref.read(sessionControllerProvider.notifier).signOut(),

@@ -1,5 +1,6 @@
 package com.mysticstack.fitbuddy
 
+import com.mysticstack.fitbuddy.generated.AlarmApi
 import com.mysticstack.fitbuddy.generated.SystemInfoApi
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -15,5 +16,6 @@ class MainActivity : FlutterFragmentActivity() {
                 override fun timeZoneId(): String = TimeZone.getDefault().id
             },
         )
+        AlarmApi.setUp(flutterEngine.dartExecutor.binaryMessenger, AlarmPlugin(applicationContext))
     }
 }

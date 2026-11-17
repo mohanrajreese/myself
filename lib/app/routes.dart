@@ -32,6 +32,16 @@ abstract final class Routes {
   static const foods = '/foods';
   static const savedMeals = '/nutrition/saved-meals';
   static const nutritionSummary = '/nutrition/summary';
+  static const habitActivities = '/habits/activities';
+  static const habitReminders = '/habits/reminders';
+  static const newActivity = '/activity-new';
+  static String activity(String id) => '/activity/$id';
+  static String editActivity(String id) => '/activity/$id/edit';
+  static String activityTimer(String id) => '/activity/$id/timer';
+  static const newReminder = '/reminder-new';
+  static String editReminder(String id) => '/reminder/$id';
+  static const notificationHistory = '/habits/reminders/history';
+  static const notificationSettings = '/settings/notifications';
   static const about = '/settings/about';
   static const settings = '/settings';
   static const settingsProfile = '/settings/profile';

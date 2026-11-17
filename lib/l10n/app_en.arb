@@ -1070,5 +1070,34 @@
   "aboutFoodData": "Food data",
   "aboutUsda": "USDA FoodData Central, SR Legacy. U.S. Department of Agriculture, Agricultural Research Service. Public domain.",
   "aboutIndb": "Indian Nutrient Databank (INDB). Vijayakumar A, Dubasi HB, Awasthi A, Jaacks LM. Current Developments in Nutrition, 2024. Values are calculated from recipes and shown as estimates.",
-  "aboutLicences": "Open-source licences"
+  "aboutLicences": "Open-source licences",
+  "channelAlarms": "Important alarms",
+  "channelAlarmsDesc": "Reminders you marked as important. They use exact timing.",
+  "channelRoutines": "Daily routines",
+  "channelRoutinesDesc": "Activity and custom reminders.",
+  "channelHydration": "Hydration",
+  "channelHydrationDesc": "Water reminders.",
+  "channelFitness": "Fitness",
+  "channelFitnessDesc": "Workout reminders and timers.",
+  "channelMedication": "Medication",
+  "channelMedicationDesc": "Hidden on the lock screen.",
+  "channelSleep": "Sleep",
+  "channelSleepDesc": "Bedtime and wake-up reminders.",
+  "channelSystem": "System",
+  "channelSystemDesc": "Sync and account messages.",
+  "actionComplete": "Complete",
+  "actionSnooze": "Snooze",
+  "actionSkip": "Skip",
+  "timerDoneTitle": "Timer finished",
+  "timerDoneBody": "{name}: {duration}",
+  "@timerDoneBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  }
 }

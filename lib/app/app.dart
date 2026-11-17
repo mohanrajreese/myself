@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../core/widgets/l10n.dart';
 import '../features/settings/application/theme_mode_controller.dart';
+import 'reminder_lifecycle.dart';
 import 'router.dart';
 import 'theme.dart';
 
@@ -23,6 +24,7 @@ class FitBuddyApp extends ConsumerWidget {
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     routerConfig: ref.watch(routerProvider),
+    builder: (context, child) => ReminderLifecycle(child: child ?? const SizedBox.shrink()),
   );
 }
 
