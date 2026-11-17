@@ -8,7 +8,7 @@ Both files are encrypted with SQLite3MultipleCiphers using the SQLCipher scheme 
 
 | Database | File | Schema version | Tables |
 |---|---|---|---|
-| `AppDatabase` | `fitbuddy.sqlite` | 2 | v1: `profiles`, `user_goals`, `nutrition_goals`, `weight_logs`, `sync_outbox`, `local_app_settings`. v2 adds `body_measurements`, `water_logs`, `food_items`, `meal_logs`, `meal_food_items`, `saved_meals`, `sleep_logs`, `daily_health_checkins` |
+| `AppDatabase` | `fitbuddy.sqlite` | 3 | v1: `profiles`, `user_goals`, `nutrition_goals`, `weight_logs`, `sync_outbox`, `local_app_settings`. v2 adds `body_measurements`, `water_logs`, `food_items`, `meal_logs`, `meal_food_items`, `saved_meals`, `sleep_logs`, `daily_health_checkins`. v3 adds local-only `local_food_catalogue` and `local_meal_photos` |
 | `PrivateDatabase` | `fitbuddy_private.sqlite` | 1 | None yet (Phase 5) |
 
 Schema dumps: `drift_schemas/app/`, `drift_schemas/private/`.
@@ -41,3 +41,7 @@ Checked with `bash supabase/tests/run_local.sh`: applies every migration to a th
 | RLS tests | pgTAP through the Supabase CLI | Plain SQL assertions run with `psql` | Runs anywhere PostgreSQL is installed, including against a test project; no extension needed |
 | `weight_logs` migration | Phase 2 | Phase 1 | Onboarding records the first weight |
 | Table grants | Supabase defaults | `anon` revoked, `authenticated` granted explicitly | Does not depend on project default privileges |
+
+## Food catalogue
+
+`assets/catalogue/usda_sr_legacy.json` is built by `python3 -I tool/build_food_catalogue.py <SR Legacy CSV zip> <out.json>` from the USDA FoodData Central SR Legacy download (public domain, CC0 1.0). 7,793 foods, values per 100 g converted to integer base units. Imported into `local_food_catalogue` on first start and again only when the file's `version` changes. INDB will be added the same way once its licence is confirmed.

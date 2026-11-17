@@ -51,10 +51,13 @@ final class Measurement {
 
 ValidationFailure? validateMeasurement(String type, int valueMilli) {
   final name = type.startsWith('custom:') ? type.substring(7) : type;
-  if (name.trim().isEmpty || name.length > 40) return const ValidationFailure('type', 'invalid');
+  if (name.trim().isEmpty || name.length > 40) {
+    return const ValidationFailure('type', 'invalid');
+  }
   final max = MeasurementTypes.isPercent(type) ? 75000 : 300000; // 75 % or 300 cm
-  if (valueMilli < 1000 || valueMilli > max)
+  if (valueMilli < 1000 || valueMilli > max) {
     return const ValidationFailure('valueMilli', 'out_of_range');
+  }
   return null;
 }
 

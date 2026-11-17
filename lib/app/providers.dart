@@ -21,7 +21,19 @@ import '../features/profile/domain/goals.dart';
 import '../features/profile/domain/goals_repository.dart';
 import '../features/profile/domain/profile.dart';
 import '../features/profile/domain/profile_repository.dart';
+import '../features/body_measurements/data/drift_measurement_repository.dart';
+import '../features/body_measurements/domain/measurements.dart';
+import '../features/food_database/data/drift_food_repository.dart';
+import '../features/food_database/domain/food.dart';
+import '../features/nutrition/data/drift_meal_repository.dart';
+import '../features/nutrition/domain/meals.dart';
+import '../features/sleep/data/drift_sleep_repository.dart';
+import '../features/sleep/domain/sleep_repository.dart';
+import '../features/water/data/drift_water_repository.dart';
+import '../features/water/domain/water.dart';
 import '../features/weight/data/drift_weight_repository.dart';
+import '../features/wellness/data/drift_wellness_repository.dart';
+import '../features/wellness/domain/wellness.dart';
 import '../features/weight/domain/weight_entry.dart';
 import '../features/weight/domain/weight_repository.dart';
 
@@ -105,3 +117,56 @@ final pendingSyncCountProvider = StreamProvider<int>((ref) {
       .watchSingle()
       .map((row) => row.read<int>('n'));
 });
+
+final waterRepositoryProvider = Provider<WaterRepository>(
+  (ref) => DriftWaterRepository(
+    ref.watch(appDatabaseProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+    timeZone: ref.watch(timeZoneSourceProvider),
+  ),
+);
+
+final sleepRepositoryProvider = Provider<SleepRepository>(
+  (ref) => DriftSleepRepository(
+    ref.watch(appDatabaseProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+    timeZone: ref.watch(timeZoneSourceProvider),
+  ),
+);
+
+final wellnessRepositoryProvider = Provider<WellnessRepository>(
+  (ref) => DriftWellnessRepository(
+    ref.watch(appDatabaseProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+    timeZone: ref.watch(timeZoneSourceProvider),
+  ),
+);
+
+final measurementRepositoryProvider = Provider<MeasurementRepository>(
+  (ref) => DriftMeasurementRepository(
+    ref.watch(appDatabaseProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+    timeZone: ref.watch(timeZoneSourceProvider),
+  ),
+);
+
+final foodRepositoryProvider = Provider<FoodRepository>(
+  (ref) => DriftFoodRepository(
+    ref.watch(appDatabaseProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+  ),
+);
+
+final mealRepositoryProvider = Provider<MealRepository>(
+  (ref) => DriftMealRepository(
+    ref.watch(appDatabaseProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+    timeZone: ref.watch(timeZoneSourceProvider),
+  ),
+);

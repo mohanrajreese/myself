@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -12,6 +15,7 @@ import '../core/encryption/secure_secret_store.dart';
 import '../core/utils/clock.dart';
 import '../core/utils/logger.dart';
 import '../features/auth/application/session.dart';
+import '../features/food_database/data/catalogue_importer.dart';
 import '../features/auth/application/session_controller.dart';
 import '../features/auth/data/supabase_google_auth_repository.dart';
 import '../features/auth/data/unconfigured_auth_repository.dart';
@@ -40,6 +44,16 @@ Future<void> bootstrap() async {
     openEncryptedDatabase(name: AppDatabase.databaseName, hexKey: hexKey),
   );
   final settings = SettingsRepository(database, clock: systemClock);
+  // Bundled food catalogue; imported once per version, in the background.
+  unawaited(
+    rootBundle
+        .loadString('assets/catalogue/usda_sr_legacy.json')
+        .then(CatalogueImporter(database, settings).importIfNeeded)
+        .catchError((Object error) {
+          logger.failure('catalogue_import_failed', error);
+          return 0;
+        }),
+  );
   final session = await loadSession(settings);
   final themeMode = themeModeFromSetting(await settings.read(themeModeSettingKey));
   final auth = await _createAuth(AppConfig.fromEnvironment, secrets, logger);

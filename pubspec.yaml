@@ -83,6 +83,9 @@ flutter:
   uses-material-design: true
   generate: true
 
+  assets:
+    - assets/catalogue/usda_sr_legacy.json
+
   fonts:
     - family: Inter
       fonts:

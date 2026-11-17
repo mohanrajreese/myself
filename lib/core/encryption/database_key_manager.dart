@@ -6,7 +6,10 @@ import 'secret_store.dart';
 
 enum DatabaseId {
   app('db_key_app'),
-  private('db_key_private');
+  private('db_key_private'),
+
+  /// Encrypts photo files kept in app storage.
+  files('file_key');
 
   const DatabaseId(this.storageKey);
   final String storageKey;

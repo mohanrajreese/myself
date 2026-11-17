@@ -48,12 +48,15 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | F-15 | ⏳ | Home with targets, weight quick add, timeline, customisation |
 | D7 | ☑ | Targets calculated from weight |
 | F-16 | ☑ | Docs updated; report in `docs/reports/phase-1.md` |
+| Schema v3 | ☑ | Catalogue table and meal photo index (local only); upgrades from v1 and v2 tested |
 | C-14 | ☑ | Supabase migrations for measurements, water, foods, meals, saved meals, sleep, check-ins; 84 access-rule checks pass locally; not applied to a real project |
 | Schema v2 | ☑ | Phase 2 tables added locally with an upgrade from version 1, tested with rows preserved |
 | Calculations | ☑ | Nutrition totals, scaling, meal shares, averages; sleep averages and consistency; weight change (29 tests) |
 | Storage: water, sleep | ☑ | Repositories with outbox, validation and tests |
-| Storage: measurements, check-ins, weight editing, foods, meals, saved meals, photos | ☐ | Next |
-| C-16 food catalogue | ☐ | USDA import next; INDB waits for licence confirmation |
+| Storage: water, sleep, check-ins, measurements, weight edit and paging | ☑ | Repositories with outbox, validation and tests |
+| Storage: foods, meals (snapshot items), duplicate, saved meals, junk history | ☑ | Tested, including "editing a food never changes past meals" |
+| C-04 meal photos | ☑ | AES-256-GCM encrypted files, local index, never synced; key in Keystore-backed storage (phone pending) |
+| C-16 food catalogue | ◐ | USDA SR Legacy (7,793 foods, public domain) bundled and imported at start-up; search tested; INDB waits for licence confirmation; About attribution comes with the screens |
 | C-01 to C-13 screens | ✋ | Ten designs on the canvas |
 
 ## Device verification backlog
