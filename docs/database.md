@@ -8,7 +8,7 @@ Both files are encrypted with SQLite3MultipleCiphers using the SQLCipher scheme 
 
 | Database | File | Schema version | Tables |
 |---|---|---|---|
-| `AppDatabase` | `fitbuddy.sqlite` | 3 | v1: `profiles`, `user_goals`, `nutrition_goals`, `weight_logs`, `sync_outbox`, `local_app_settings`. v2 adds `body_measurements`, `water_logs`, `food_items`, `meal_logs`, `meal_food_items`, `saved_meals`, `sleep_logs`, `daily_health_checkins`. v3 adds local-only `local_food_catalogue` and `local_meal_photos` |
+| `AppDatabase` | `fitbuddy.sqlite` | 4 | v1: `profiles`, `user_goals`, `nutrition_goals`, `weight_logs`, `sync_outbox`, `local_app_settings`. v2 adds `body_measurements`, `water_logs`, `food_items`, `meal_logs`, `meal_food_items`, `saved_meals`, `sleep_logs`, `daily_health_checkins`. v3 adds local-only `local_food_catalogue` and `local_meal_photos`. v4 adds household serving and conflict flag to the catalogue, and `catalogue_ref` to `food_items` |
 | `PrivateDatabase` | `fitbuddy_private.sqlite` | 1 | None yet (Phase 5) |
 
 Schema dumps: `drift_schemas/app/`, `drift_schemas/private/`.
@@ -31,6 +31,7 @@ Schema dumps: `drift_schemas/app/`, `drift_schemas/private/`.
 | `20261117000100_body_measurements.sql` | Not yet | `body_measurements` |
 | `20261117000200_nutrition_and_water.sql` | Not yet | `water_logs`, `food_items`, `meal_logs`, `meal_food_items` (owner-scoped foreign keys), `saved_meals` |
 | `20261117000300_sleep_and_wellness.sql` | Not yet | `sleep_logs`, `daily_health_checkins` |
+| `20261117000400_food_catalogue_ref.sql` | Not yet | `food_items.catalogue_ref` |
 
 Checked with `bash supabase/tests/run_local.sh`: applies every migration to a throwaway local PostgreSQL 16 with a small stand-in for Supabase's `auth` schema and roles, then runs `supabase/tests/rls_checks.sql` (84 checks: owner access, other-user and anonymous denial on all four operations, constraints, last-write-wins, account-deletion cascade). Not yet run against a real Supabase project.
 
@@ -44,4 +45,4 @@ Checked with `bash supabase/tests/run_local.sh`: applies every migration to a th
 
 ## Food catalogue
 
-`assets/catalogue/usda_sr_legacy.json` is built by `python3 -I tool/build_food_catalogue.py <SR Legacy CSV zip> <out.json>` from the USDA FoodData Central SR Legacy download (public domain, CC0 1.0). 7,793 foods, values per 100 g converted to integer base units. Imported into `local_food_catalogue` on first start and again only when the file's `version` changes. `assets/catalogue/indb.json` (980 Indian dishes) is built the same way from INDB.xlsx with `indb` as the first argument. Sources, terms and the exclusion rule: `assets/catalogue/SOURCES.md`.
+`assets/catalogue/usda_sr_legacy.json` is built by `python3 -I tool/build_food_catalogue.py <SR Legacy CSV zip> <out.json>` from the USDA FoodData Central SR Legacy download (public domain, CC0 1.0). 7,793 foods, values per 100 g converted to integer base units. Imported into `local_food_catalogue` on first start and again only when the file's `version` changes. `assets/catalogue/indb.json` (1,014 Indian dishes) is built the same way from INDB.xlsx with `indb` as the first argument. Sources, terms and the exclusion rule: `assets/catalogue/SOURCES.md`.

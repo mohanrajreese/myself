@@ -191,6 +191,11 @@ select t.refused($$update public.food_items set junk_category = 'crisps', update
   'unknown junk-food category is rejected');
 select t.refused($$update public.water_logs set amount_ml = 0, updated_at = now() + interval '1 hour'$$,
   'zero water amount is rejected');
+update public.food_items set catalogue_ref = 'indb:ASC144', updated_at = now() + interval '1 hour';
+select t.eq((select count(*) from public.food_items where catalogue_ref = 'indb:ASC144'), 1,
+            'an edited catalogue food keeps its reference');
+select t.refused($$update public.food_items set catalogue_ref = 'not a ref', updated_at = now() + interval '2 hours'$$,
+  'a malformed catalogue reference is rejected');
 
 reset role;
 select t.login('b');

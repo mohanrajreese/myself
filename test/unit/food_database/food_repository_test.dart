@@ -110,7 +110,7 @@ void main() {
     final count = await importer.importIfNeeded(
       File('assets/catalogue/indb.json').readAsStringSync(),
     );
-    expect(count, 980);
+    expect(count, 1014);
     final idli = await (db.select(
       db.localFoodCatalogue,
     )..where((t) => t.id.equals('indb:ASC144'))).getSingle();
@@ -119,11 +119,15 @@ void main() {
     expect(idli.isEstimate, isTrue);
     expect(idli.servingLabel, '100 g');
 
-    // A dish left out for contradicting itself is not there.
+    expect(idli.householdLabel, '1 idli');
+    expect(idli.householdWeightMg, 25063);
+    expect(idli.hasConflict, isFalse);
+
+    // A dish whose energy contradicts its macronutrients is kept, and flagged.
     final soup = await (db.select(
       db.localFoodCatalogue,
-    )..where((t) => t.id.equals('indb:ASC087'))).getSingleOrNull();
-    expect(soup, isNull);
+    )..where((t) => t.id.equals('indb:ASC087'))).getSingle();
+    expect(soup.hasConflict, isTrue);
 
     final results = await foods.search('dal makhani');
     expect(results.single.source, FoodSources.indb);
@@ -140,7 +144,7 @@ void main() {
         .get();
     expect(
       {for (final r in bySource) r.read<String>('source'): r.read<int>('n')},
-      {'indb': 980, 'usda': 7793},
+      {'indb': 1014, 'usda': 7793},
     );
     expect(await importer.importIfNeeded(File('assets/catalogue/indb.json').readAsStringSync()), 0);
     expect(await outboxEntries(db), isEmpty);
@@ -224,5 +228,81 @@ void main() {
     expect(first.values, lentils.values);
     expect(first.servingQtyMilli, 100000);
     expect(first.servingUnit, 'g');
+  });
+
+  group('editing catalogue foods', () {
+    setUp(() => importer.importIfNeeded(File('assets/catalogue/indb.json').readAsStringSync()));
+
+    Future<Food> find(String query) async => (await foods.search(query)).first;
+
+    test('editing saves your own copy, which replaces the original in search', () async {
+      final soup = await find('chicken sweet corn soup');
+      expect(soup.source, FoodSources.indb);
+      expect(soup.hasConflict, isTrue);
+
+      final fixed = FoodDraft.from(soup).copyWith(
+        values: const NutritionValues(
+          energyKcalMilli: 178000,
+          proteinMg: 14475,
+          carbsMg: 1633,
+          fatMg: 12593,
+          fibreMg: 466,
+        ),
+      );
+      final copy = (await foods.edit(soup, fixed)).valueOrNull!;
+      expect(copy.isMine, isTrue);
+      expect(copy.catalogueRef, 'indb:ASC087');
+
+      final results = await foods.search('chicken sweet corn soup');
+      expect(results.single.id, copy.id);
+      expect(results.single.values.energyKcalMilli, 178000);
+      expect(await outboxEntries(db), [(table: 'food_items', id: copy.id)]);
+    });
+
+    test('editing again changes the same copy; renaming keeps the original hidden', () async {
+      final idli = await find('idli');
+      final first = (await foods.edit(
+        idli,
+        FoodDraft.from(idli).copyWith(name: 'Idli (mine)'),
+      )).valueOrNull!;
+      final second = (await foods.edit(
+        idli,
+        FoodDraft.from(idli).copyWith(name: 'Idli, home'),
+      )).valueOrNull!;
+      expect(second.id, first.id);
+      expect(
+        (await foods.search('idli')).where((f) => f.source == FoodSources.indb && f.name == 'Idli'),
+        isEmpty,
+      );
+    });
+
+    test('deleting your copy brings the original back', () async {
+      final idli = (await foods.search('idli')).firstWhere((f) => f.name == 'Idli');
+      final copy = (await foods.edit(
+        idli,
+        FoodDraft.from(idli).copyWith(name: 'Idli, home'),
+      )).valueOrNull!;
+      await foods.delete(copy.id);
+      expect((await foods.search('idli')).any((f) => f.id == 'indb:ASC144'), isTrue);
+    });
+
+    test('logging a catalogue food reuses the copy made when editing it', () async {
+      final idli = (await foods.search('idli')).firstWhere((f) => f.name == 'Idli');
+      final copy = (await foods.edit(idli, FoodDraft.from(idli))).valueOrNull!;
+      expect((await foods.adopt(idli)).valueOrNull!.id, copy.id);
+    });
+
+    test('an edit is validated like any food', () async {
+      final idli = await find('idli');
+      final result = await foods.edit(idli, FoodDraft.from(idli).copyWith(name: ' '));
+      expect(result.failureOrNull?.code, 'required');
+      expect(await db.select(db.foodItems).get(), isEmpty);
+    });
+
+    test('the household serving travels with the food', () async {
+      final idli = (await foods.search('idli')).firstWhere((f) => f.name == 'Idli');
+      expect(idli.householdLabel, '1 idli');
+      expect(FoodDraft.from(idli).householdWeightMg, 25063);
+    });
   });
 }

@@ -37,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   static const databaseName = 'fitbuddy';
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -70,6 +70,18 @@ class AppDatabase extends _$AppDatabase {
             (index) => index.entityName == 'local_food_catalogue_name',
           ),
         );
+      }
+      if (from < 4) {
+        // Household servings and conflict flag on the catalogue; link from
+        // the user's edited copy of a catalogue food.
+        // Tables created by an earlier step of this same upgrade already have
+        // these columns; only add them to tables that existed before.
+        if (from >= 3) {
+          await migrator.addColumn(localFoodCatalogue, localFoodCatalogue.householdLabel);
+          await migrator.addColumn(localFoodCatalogue, localFoodCatalogue.householdWeightMg);
+          await migrator.addColumn(localFoodCatalogue, localFoodCatalogue.hasConflict);
+        }
+        if (from >= 2) await migrator.addColumn(foodItems, foodItems.catalogueRef);
       }
     },
     beforeOpen: (details) async {

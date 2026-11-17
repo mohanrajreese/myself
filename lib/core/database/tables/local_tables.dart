@@ -49,6 +49,13 @@ class LocalFoodCatalogue extends Table {
   /// True for values calculated from a recipe rather than measured.
   BoolColumn get isEstimate => boolean().withDefault(const Constant(false))();
 
+  /// A household serving as published, for example "1 idli", and its weight.
+  TextColumn get householdLabel => text().nullable()();
+  IntColumn get householdWeightMg => integer().nullable()();
+
+  /// True when the stated energy contradicts the macronutrients in the source.
+  BoolColumn get hasConflict => boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }

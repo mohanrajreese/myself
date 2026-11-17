@@ -23,6 +23,10 @@ final class Food {
     this.isSaved = false,
     this.isEstimate = false,
     this.useCount = 0,
+    this.householdLabel,
+    this.householdWeightMg,
+    this.hasConflict = false,
+    this.catalogueRef,
   });
 
   final String id;
@@ -41,6 +45,16 @@ final class Food {
   final bool isSaved;
   final bool isEstimate;
   final int useCount;
+
+  /// A household serving such as "1 idli", with its weight, when known.
+  final String? householdLabel;
+  final int? householdWeightMg;
+
+  /// The source's energy contradicts its macronutrients; check before relying on it.
+  final bool hasConflict;
+
+  /// For the user's edited copy of a catalogue food: the original's id.
+  final String? catalogueRef;
 
   bool get isMine => source == FoodSources.mine;
 }
@@ -65,7 +79,25 @@ final class FoodDraft {
     this.servingWeightMg,
     this.junk,
     this.isSaved = false,
+    this.householdLabel,
+    this.householdWeightMg,
   });
+
+  /// Starts an edit from any food, including a catalogue food.
+  factory FoodDraft.from(Food food) => FoodDraft(
+    name: food.name,
+    brand: food.brand,
+    category: food.category,
+    servingLabel: food.servingLabel,
+    servingQtyMilli: food.servingQtyMilli,
+    servingUnit: food.servingUnit,
+    servingWeightMg: food.servingWeightMg,
+    values: food.values,
+    junk: food.junk,
+    isSaved: food.isSaved,
+    householdLabel: food.householdLabel,
+    householdWeightMg: food.householdWeightMg,
+  );
 
   final String name;
   final String? brand;
@@ -77,6 +109,26 @@ final class FoodDraft {
   final NutritionValues values;
   final JunkCategory? junk;
   final bool isSaved;
+
+  /// Not stored on the user's food; kept so an edit can show it.
+  final String? householdLabel;
+  final int? householdWeightMg;
+
+  FoodDraft copyWith({String? name, NutritionValues? values, JunkCategory? junk, bool? isSaved}) =>
+      FoodDraft(
+        name: name ?? this.name,
+        brand: brand,
+        category: category,
+        servingLabel: servingLabel,
+        servingQtyMilli: servingQtyMilli,
+        servingUnit: servingUnit,
+        servingWeightMg: servingWeightMg,
+        values: values ?? this.values,
+        junk: junk ?? this.junk,
+        isSaved: isSaved ?? this.isSaved,
+        householdLabel: householdLabel,
+        householdWeightMg: householdWeightMg,
+      );
 
   ValidationFailure? validate() {
     final trimmed = name.trim();
@@ -109,9 +161,15 @@ abstract interface class FoodRepository {
   Future<Result<void>> delete(String id);
   Future<Result<void>> setSaved(String id, bool saved);
 
-  /// Copies a catalogue food into the user's foods so it can be edited and
+  /// Copies a catalogue food into the user's foods so it can be logged and
   /// saved. Returns the existing copy if there is one.
   Future<Result<Food>> adopt(Food catalogueFood);
+
+  /// Edits any food. For one of the user's foods this is [update]. For a
+  /// catalogue food it saves the user's own copy (linked to the original),
+  /// which then replaces the original in search. Deleting that copy brings
+  /// the original back.
+  Future<Result<Food>> edit(Food food, FoodDraft draft);
 
   /// The user's foods first (most used first), then catalogue matches.
   /// Works offline.

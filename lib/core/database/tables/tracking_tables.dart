@@ -72,6 +72,10 @@ class FoodItems extends Table with SyncedColumns {
   BoolColumn get isSaved => boolean().withDefault(const Constant(false))();
   IntColumn get useCount => integer().withDefault(const Constant(0))();
   DateTimeColumn get lastUsedAt => dateTime().nullable()();
+
+  /// Set when this food is the user's edited copy of a catalogue food
+  /// (`<source>:<id>`). The catalogue original is then hidden from search.
+  TextColumn get catalogueRef => text().nullable()();
 }
 
 @DataClassName('MealLogRow')

@@ -38,6 +38,7 @@ final class DriftFoodRepository implements FoodRepository {
     source: FoodSources.mine,
     isSaved: r.isSaved,
     useCount: r.useCount,
+    catalogueRef: r.catalogueRef,
   );
 
   Food _catalogue(CatalogueFoodRow r) => Food(
@@ -58,6 +59,9 @@ final class DriftFoodRepository implements FoodRepository {
     ),
     source: r.source,
     isEstimate: r.isEstimate,
+    householdLabel: r.householdLabel,
+    householdWeightMg: r.householdWeightMg,
+    hasConflict: r.hasConflict,
   );
 
   FoodItemsCompanion _fields(FoodDraft d, DateTime now) => FoodItemsCompanion(
@@ -123,28 +127,56 @@ final class DriftFoodRepository implements FoodRepository {
         onError: (_) => const StorageFailure('food_write'),
       );
 
+  Future<FoodItemRow?> _copyOf(String catalogueId) =>
+      (_db.select(_db.foodItems)
+            ..where((t) => t.catalogueRef.equals(catalogueId) & t.deletedAt.isNull())
+            ..limit(1))
+          .getSingleOrNull();
+
+  Future<Result<Food>> _createCopy(String catalogueId, FoodDraft draft) async {
+    final failure = draft.validate();
+    if (failure != null) return Err(failure);
+    return Result.guard(() async {
+      final now = clock.now().toUtc();
+      final id = ids.newId();
+      await _db.transaction(() async {
+        await _db
+            .into(_db.foodItems)
+            .insert(
+              _fields(
+                draft,
+                now,
+              ).copyWith(id: Value(id), createdAt: Value(now), catalogueRef: Value(catalogueId)),
+            );
+        await _db.enqueueForSync(_table, id, now);
+      });
+      return _mine(await (_db.select(_db.foodItems)..where((t) => t.id.equals(id))).getSingle());
+    }, onError: (_) => const StorageFailure('food_write'));
+  }
+
   @override
   Future<Result<Food>> adopt(Food catalogueFood) async {
     if (catalogueFood.isMine) return Ok(catalogueFood);
-    final existing =
-        await (_db.select(_db.foodItems)..where(
-              (t) =>
-                  t.name.equals(catalogueFood.name) &
-                  t.category.equals(catalogueFood.category) &
-                  t.deletedAt.isNull(),
-            ))
-            .getSingleOrNull();
+    final existing = await _copyOf(catalogueFood.id);
     if (existing != null) return Ok(_mine(existing));
-    return create(
-      FoodDraft(
-        name: catalogueFood.name,
-        category: catalogueFood.category,
-        servingLabel: catalogueFood.servingLabel,
-        servingQtyMilli: catalogueFood.servingQtyMilli,
-        servingUnit: catalogueFood.servingUnit,
-        servingWeightMg: catalogueFood.servingWeightMg,
-        values: catalogueFood.values,
-      ),
+    return _createCopy(catalogueFood.id, FoodDraft.from(catalogueFood));
+  }
+
+  @override
+  Future<Result<Food>> edit(Food food, FoodDraft draft) async {
+    if (food.isMine) {
+      final result = await update(food.id, draft);
+      if (!result.isOk) return Err(result.failureOrNull!);
+      return Ok(
+        _mine(await (_db.select(_db.foodItems)..where((t) => t.id.equals(food.id))).getSingle()),
+      );
+    }
+    final existing = await _copyOf(food.id);
+    if (existing == null) return _createCopy(food.id, draft);
+    final result = await update(existing.id, draft);
+    if (!result.isOk) return Err(result.failureOrNull!);
+    return Ok(
+      _mine(await (_db.select(_db.foodItems)..where((t) => t.id.equals(existing.id))).getSingle()),
     );
   }
 
@@ -199,9 +231,13 @@ final class DriftFoodRepository implements FoodRepository {
 
     if (filter != FoodFilter.all || words.isEmpty || mine.length >= limit) return mine;
 
+    // Catalogue foods the user has their own copy of are shown as that copy.
+    final replaced = _db.selectOnly(_db.foodItems)
+      ..addColumns([_db.foodItems.catalogueRef])
+      ..where(_db.foodItems.catalogueRef.isNotNull() & _db.foodItems.deletedAt.isNull());
     final catalogue =
         await (_db.select(_db.localFoodCatalogue)
-              ..where((t) => matches(t.name))
+              ..where((t) => matches(t.name) & t.id.isNotInQuery(replaced))
               ..orderBy([(t) => OrderingTerm.asc(t.name.length), (t) => OrderingTerm.asc(t.name)])
               ..limit(limit - mine.length))
             .get();

@@ -56,7 +56,7 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | Storage: water, sleep, check-ins, measurements, weight edit and paging | ☑ | Repositories with outbox, validation and tests |
 | Storage: foods, meals (snapshot items), duplicate, saved meals, junk history | ☑ | Tested, including "editing a food never changes past meals" |
 | C-04 meal photos | ☑ | AES-256-GCM encrypted files, local index, never synced; key in Keystore-backed storage (phone pending) |
-| C-16 food catalogue | ◐ | USDA (7,793 foods) and INDB (980 Indian dishes, marked as estimates; 34 self-contradicting dishes left out) bundled and imported at start-up; search tested. Owner chose to add INDB without a licence file (17 Nov 2026). About attribution comes with the screens |
+| C-16 food catalogue | ◐ | USDA (7,793 foods) and INDB (all 1,014 Indian dishes, estimates, household servings; 34 flagged as self-contradicting); any catalogue food editable as the user's own linked copy bundled and imported at start-up; search tested. Owner chose to add INDB without a licence file (17 Nov 2026). About attribution comes with the screens |
 | C-01 to C-13 screens | ✋ | Ten designs on the canvas |
 
 ## Device verification backlog

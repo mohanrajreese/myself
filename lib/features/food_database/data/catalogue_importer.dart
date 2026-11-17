@@ -28,6 +28,8 @@ final class CatalogueImporter {
     final iId = col('source_id'), iName = col('name'), iCat = col('category');
     final iKcal = col('energy_kcal_milli'), iP = col('protein_mg'), iC = col('carbs_mg');
     final iF = col('fat_mg'), iFi = col('fibre_mg');
+    final iHl = col('household_label'), iHw = col('household_weight_mg'), iCo = col('has_conflict');
+    Object? at(List<Object?> row, int i) => i < 0 || i >= row.length ? null : row[i];
     final estimate = doc['is_estimate'] == true;
     final per = doc['per'] as String? ?? '100 g';
     final perGrams = int.tryParse(per.split(' ').first) ?? 100;
@@ -51,6 +53,9 @@ final class CatalogueImporter {
               fatMg: f[iF]! as int,
               fibreMg: f[iFi]! as int,
               isEstimate: Value(estimate),
+              householdLabel: Value(at(f, iHl) as String?),
+              householdWeightMg: Value(at(f, iHw) as int?),
+              hasConflict: Value(at(f, iCo) == true),
             ),
         ]);
       });

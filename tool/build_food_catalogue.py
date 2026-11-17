@@ -60,45 +60,62 @@ def build_indb(xlsx_path, out_path):
     def value(row, column):
         cell = row[header[column]]
         if cell in (None, "", "NA"):
-            return Decimal(0)
+            return None
         return Decimal(str(cell))
 
     foods = []
-    skipped = []
+    flagged = []
     for row in rows:
-        code, name, kcal = row[header["food_code"]], row[header["food_name"]], row[header["energy_kcal"]]
-        # Dishes without an energy value cannot be logged meaningfully.
-        if not code or not name or kcal in (None, "", "NA"):
+        code, name = row[header["food_code"]], row[header["food_name"]]
+        if not code or not name:
             continue
-        kcal_d, protein, carbs, fat = (value(row, c) for c in ("energy_kcal", "protein_g", "carb_g", "fat_g"))
+        kcal = value(row, "energy_kcal") or Decimal(0)
+        protein = value(row, "protein_g") or Decimal(0)
+        carbs = value(row, "carb_g") or Decimal(0)
+        fat = value(row, "fat_g") or Decimal(0)
+        fibre = value(row, "fibre_g") or Decimal(0)
+
+        # Flag (do not drop) dishes whose stated energy contradicts their own
+        # macronutrients by more than 25 % and 30 kcal: one of the numbers is
+        # wrong. The app shows a warning and the user can correct the values.
         from_macros = 4 * protein + 4 * carbs + 9 * fat
-        # Leave out dishes whose stated energy contradicts their own macronutrients
-        # (more than 25 % and more than 30 kcal apart): one of the two is wrong and
-        # there is no way to tell which.
-        if abs(kcal_d - from_macros) > 30 and abs(kcal_d - from_macros) > Decimal("0.25") * kcal_d:
-            skipped.append(str(code))
-            continue
+        conflict = abs(kcal - from_macros) > 30 and abs(kcal - from_macros) > Decimal("0.25") * kcal
+        if conflict:
+            flagged.append(str(code))
+
+        # Household serving ("1 bowl"), weight derived from per-serving vs
+        # per-100 g energy, as published. Left empty when it cannot be derived.
+        unit = (row[header["servings_unit"]] or "").strip()
+        per_serving_kcal = value(row, "unit_serving_energy_kcal")
+        household_label, household_mg = None, None
+        if unit and per_serving_kcal and kcal > 0:
+            household_label = f"1 {unit}"
+            household_mg = scaled(per_serving_kcal / kcal * 100, 1000)
+
         foods.append([
             str(code),
             str(name).strip(),
             "Indian dishes",
-            scaled(value(row, "energy_kcal"), 1000),
-            scaled(value(row, "protein_g"), 1000),
-            scaled(value(row, "carb_g"), 1000),
-            scaled(value(row, "fat_g"), 1000),
-            scaled(value(row, "fibre_g"), 1000),
+            scaled(kcal, 1000),
+            scaled(protein, 1000),
+            scaled(carbs, 1000),
+            scaled(fat, 1000),
+            scaled(fibre, 1000),
+            household_label,
+            household_mg,
+            conflict,
         ])
     foods.sort(key=lambda r: r[1].lower())
-    print(f"{len(skipped)} dishes left out (energy contradicts macronutrients): {', '.join(skipped)}")
+    print(f"{len(flagged)} dishes flagged (energy contradicts macronutrients): {', '.join(flagged)}")
     write(out_path, {
         "source": "Indian Nutrient Databank (INDB), Vijayakumar et al., Current Developments in Nutrition 2024",
         "source_code": "indb",
         "licence": "Published as open access by its authors; no licence file in the source repository",
-        "version": 1,
+        "version": 2,
         "per": "100 g",
         "is_estimate": True,
-        "excluded": "Dishes whose stated energy differs from 4/4/9 kcal per g of protein, carbohydrate and fat by more than 25 % and 30 kcal",
-        "columns": COLUMNS,
+        "conflict_rule": "Stated energy differs from 4/4/9 kcal per g of protein, carbohydrate and fat by more than 25 % and 30 kcal",
+        "columns": COLUMNS + ["household_label", "household_weight_mg", "has_conflict"],
         "foods": foods,
     })
 
