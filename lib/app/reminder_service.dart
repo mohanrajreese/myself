@@ -84,7 +84,15 @@ final class ReminderService {
 
   /// Re-plans every enabled reminder. Safe to call any time.
   Future<ScheduleSummary> replan() async {
-    final list = await reminders.enabled();
+    // Reminders of archived or deleted activities stay quiet.
+    final live = {
+      for (final a in await activities.watchAll().first)
+        if (!a.archived) a.id,
+    };
+    final list = [
+      for (final r in await reminders.enabled())
+        if (r.activityId == null || live.contains(r.activityId)) r,
+    ];
     final today = LocalDate.fromDateTime(clock.now().toLocal());
     final done = await _doneDays(list, today);
     final zone = zoneFor(await timeZone.currentTimeZoneId());
@@ -146,10 +154,14 @@ final class ReminderService {
     final record = await store.byId(tap.notificationId);
     if (record == null) return null;
     final reminder = await reminders.byId(record.reminderId);
+    // Ad-hoc "remind me again" from Home carries the activity id.
+    final linkedActivity =
+        reminder?.activityId ??
+        (record.reminderId.startsWith('activity:') ? record.reminderId.substring(9) : null);
     final now = clock.now();
     switch (tap.action) {
       case null:
-        return reminder?.activityId;
+        return linkedActivity;
       case ReminderAction.snooze:
         final minutes = snoozeMinutes ?? reminder?.snoozeMinutes ?? 10;
         final until = now.add(Duration(minutes: minutes));
@@ -174,7 +186,7 @@ final class ReminderService {
           complete ? NotificationStatus.completed : NotificationStatus.skipped,
           actedAt: now,
         );
-        final activityId = reminder?.activityId;
+        final activityId = linkedActivity;
         if (activityId != null) {
           final slot = record.occurrenceLocal.split('T');
           final date = LocalDate.parse(slot.first);

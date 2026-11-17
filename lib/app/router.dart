@@ -9,7 +9,12 @@ import '../features/auth/application/session_controller.dart';
 import '../features/auth/presentation/sign_in_screen.dart';
 import '../features/dashboard/presentation/customise_home_screen.dart';
 import '../features/onboarding/application/setup_controller.dart';
+import '../features/activities/presentation/activity_detail_screen.dart';
+import '../features/activities/presentation/activity_editor_screen.dart';
 import '../features/body_measurements/presentation/measurement_screens.dart';
+import '../features/reminders/presentation/notification_screens.dart';
+import '../features/reminders/presentation/reminder_editor_screen.dart';
+import '../features/timers/presentation/timer_screen.dart';
 import '../features/dashboard/presentation/home_screen.dart';
 import '../features/food_database/presentation/food_screens.dart';
 import '../features/health_hub/presentation/health_screen.dart';
@@ -28,6 +33,7 @@ import '../features/weight/presentation/add_weight_sheet.dart';
 import 'app_shell.dart';
 import 'providers.dart';
 import 'routes.dart';
+import 'routine/habits_screen.dart';
 
 /// Whether the signed-in account still has to go through onboarding.
 final setupStatusProvider = Provider<SetupStatus>((ref) {
@@ -148,7 +154,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.habits,
-                builder: (context, state) => FbNotBuiltYet(title: _Tab.habits.label(context.l10n)),
+                builder: (context, state) => const HabitsScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'reminders/history',
+                    builder: (context, state) => const NotificationHistoryScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -183,6 +195,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             FoodSearchScreen(pick: state.uri.queryParameters['pick'] == '1'),
       ),
+      GoRoute(path: Routes.newActivity, builder: (context, state) => const ActivityEditorScreen()),
+      GoRoute(
+        path: '/activity/:id',
+        builder: (context, state) => ActivityDetailScreen(id: state.pathParameters['id']!),
+        routes: [
+          GoRoute(
+            path: 'edit',
+            builder: (context, state) => ActivityEditorScreen(id: state.pathParameters['id']),
+          ),
+          GoRoute(
+            path: 'timer',
+            builder: (context, state) => TimerScreen(activityId: state.pathParameters['id']!),
+          ),
+        ],
+      ),
+      GoRoute(path: Routes.newReminder, builder: (context, state) => const ReminderEditorScreen()),
+      GoRoute(
+        path: '/reminder/:id',
+        builder: (context, state) => ReminderEditorScreen(id: state.pathParameters['id']),
+      ),
       GoRoute(path: Routes.addMeal, builder: (context, state) => const MealFormScreen()),
       GoRoute(
         path: '/meal/:id',
@@ -209,6 +241,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(path: 'home-layout', builder: (context, state) => const CustomiseHomeScreen()),
           GoRoute(path: 'about', builder: (context, state) => const AboutScreen()),
+          GoRoute(
+            path: 'notifications',
+            builder: (context, state) => const NotificationSettingsScreen(),
+          ),
         ],
       ),
     ],
@@ -219,12 +255,10 @@ final routerProvider = Provider<GoRouter>((ref) {
 
 enum _Tab {
   fitness,
-  habits,
   insights;
 
   String label(AppLocalizations l10n) => switch (this) {
     _Tab.fitness => l10n.tabFitness,
-    _Tab.habits => l10n.tabHabits,
     _Tab.insights => l10n.tabInsights,
   };
 }

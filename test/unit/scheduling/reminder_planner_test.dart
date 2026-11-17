@@ -105,7 +105,7 @@ void main() {
   });
 
   test('several deferred occurrences collapse into one', () {
-    final rule = Interval(everyMinutes: 30, start: hm(22, 0), end: hm(23, 30));
+    final rule = IntervalRule(everyMinutes: 30, start: hm(22, 0), end: hm(23, 30));
     expect(plan([r('w', rule)], quietHours: quiet), [
       'w 11-16T06:30 deferred',
       'w 11-16T22:00',
@@ -130,7 +130,7 @@ void main() {
   });
 
   test('over budget, interval reminders shrink first but keep 48 hours', () {
-    final water = r('w', Interval(everyMinutes: 60, start: hm(8, 0), end: hm(20, 0)));
+    final water = r('w', IntervalRule(everyMinutes: 60, start: hm(8, 0), end: hm(20, 0)));
     final walk = r('k', Daily(times: [hm(8, 0)]));
     final planned = planner.plan([water, walk], now: now, days: 7, zone: const Utc(), budget: 40);
     final waterTimes = planned.where((o) => o.reminderId == 'w').map((o) => o.fireAt);

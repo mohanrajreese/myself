@@ -149,6 +149,10 @@ class SettingsScreen extends ConsumerWidget {
               value: l10n.customiseHomeValue,
               onTap: () => context.push(Routes.settingsHome),
             ),
+            FbNavRow(
+              title: l10n.notificationSettingsTitle,
+              onTap: () => context.push(Routes.notificationSettings),
+            ),
             FbNavRow(title: l10n.rowAbout, onTap: () => context.push(Routes.about)),
           ]),
           const SizedBox(height: FbSpace.xl),

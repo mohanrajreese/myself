@@ -26,7 +26,7 @@ void main() {
 
   test('presets start from sensible schedules on the right channel', () {
     final water = reminderPreset(ReminderKind.water, title: 'Drink water', today: today);
-    expect(water.rule, isA<Interval>());
+    expect(water.rule, isA<IntervalRule>());
     expect(water.channel, NotificationChannelKey.hydration);
     expect(
       reminderPreset(ReminderKind.sleep, title: 'Bedtime', today: today).channel,

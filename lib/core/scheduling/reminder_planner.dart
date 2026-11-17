@@ -141,7 +141,7 @@ class ReminderPlanner {
     // Over budget: interval reminders keep only their first 48 hours.
     final intervalIds = {
       for (final r in reminders)
-        if (r.rule is Interval) r.id,
+        if (r.rule is IntervalRule) r.id,
     };
     final cutoff = from.add(minimumIntervalWindow);
     out.removeWhere((o) => intervalIds.contains(o.reminderId) && !o.fireAt.isBefore(cutoff));

@@ -110,7 +110,7 @@ void main() {
     });
 
     test('interval between a start and end time, end included', () {
-      final rule = Interval(everyMinutes: 90, start: hm(8, 0), end: hm(12, 30));
+      final rule = IntervalRule(everyMinutes: 90, start: hm(8, 0), end: hm(12, 30));
       expect(at(rule, mon, mon), [
         '2026-11-16 08:00',
         '2026-11-16 09:30',
@@ -120,7 +120,7 @@ void main() {
     });
 
     test('interval limited to weekdays', () {
-      final rule = Interval(everyMinutes: 240, start: hm(9, 0), end: hm(17, 0), weekdays: {6});
+      final rule = IntervalRule(everyMinutes: 240, start: hm(9, 0), end: hm(17, 0), weekdays: {6});
       expect(at(rule, mon, mon.addDays(6)), [
         '2026-11-21 09:00',
         '2026-11-21 13:00',
@@ -141,10 +141,13 @@ void main() {
       expect(Weekdays(weekdays: {8}, times: [0]).problems, contains('weekday_out_of_range'));
       expect(EveryNDays(days: 0, anchor: mon, times: [0]).problems, contains('every_out_of_range'));
       expect(
-        Interval(everyMinutes: 60, start: hm(10, 0), end: hm(9, 0)).problems,
+        IntervalRule(everyMinutes: 60, start: hm(10, 0), end: hm(9, 0)).problems,
         contains('end_before_start'),
       );
-      expect(Interval(everyMinutes: 4, start: 0, end: 60).problems, contains('every_out_of_range'));
+      expect(
+        IntervalRule(everyMinutes: 4, start: 0, end: 60).problems,
+        contains('every_out_of_range'),
+      );
       expect(Monthly.dayOfMonth(32, times: [0]).problems, contains('day_out_of_range'));
       expect(Daily(times: [hm(7, 0)]).problems, isEmpty);
     });
@@ -159,7 +162,7 @@ void main() {
       Monthly.dayOfMonth(15, times: [hm(9, 0)]),
       Monthly.nthWeekday(-1, 5, times: [hm(9, 0)]),
       EveryNDays(days: 3, anchor: mon, times: [hm(6, 0)]),
-      Interval(everyMinutes: 90, start: hm(8, 0), end: hm(20, 0), weekdays: {1, 2}),
+      IntervalRule(everyMinutes: 90, start: hm(8, 0), end: hm(20, 0), weekdays: {1, 2}),
     ];
     for (final rule in rules) {
       test('round-trips ${rule.runtimeType}', () {

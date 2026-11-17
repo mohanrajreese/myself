@@ -63,7 +63,7 @@ class OccurrenceCalculator {
     Monthly() => _monthlyMatches(rule, day) ? rule.times : const [],
     EveryNDays(:final days, :final anchor, :final times) =>
       day.daysSince(anchor) % days == 0 ? times : const [],
-    Interval(:final everyMinutes, :final start, :final end, :final weekdays) =>
+    IntervalRule(:final everyMinutes, :final start, :final end, :final weekdays) =>
       weekdays != null && !weekdays.contains(day.weekday)
           ? const []
           : [for (var m = start; m <= end; m += everyMinutes) m],

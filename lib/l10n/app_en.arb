@@ -1099,5 +1099,618 @@
         "type": "String"
       }
     }
-  }
+  },
+  "activitiesTitle": "Activities",
+  "remindersTitle": "Reminders",
+  "activityShort": "Activity",
+  "reminderShort": "Reminder",
+  "activeCount": "Active ({count})",
+  "@activeCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "archivedCount": "Archived ({count})",
+  "@archivedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "activitiesEmpty": "No activities yet. Create one for each routine you want to track.",
+  "archivedEmpty": "Nothing archived.",
+  "createActivity": "Create an activity",
+  "activityListHelp": "Drag to reorder. Archived activities keep their history and can be restored.",
+  "activityLogged": "{name} logged",
+  "@activityLogged": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityMissing": "This activity no longer exists.",
+  "activitySaved": "Activity saved",
+  "addOneTo": "Add one to {name}",
+  "@addOneTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "addStep": "Add a step",
+  "addTime": "Add a time",
+  "allow": "Allow",
+  "allowed": "Allowed",
+  "off": "Off",
+  "archive": "Archive",
+  "archived": "Archived",
+  "restore": "Restore",
+  "restored": "Restored",
+  "batteryRow": "Battery optimisation",
+  "batteryOn": "FitBuddy is not optimised, so reminders are less likely to be held back.",
+  "batteryOff": "Some phones hold reminders back to save battery. You can exclude FitBuddy.",
+  "calendarSummary": "Last 28 days: {done} done, {missed} not logged, {skipped} skipped, {none} not scheduled",
+  "@calendarSummary": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "missed": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      },
+      "none": {
+        "type": "int"
+      }
+    }
+  },
+  "cancelTimer": "Cancel",
+  "cancelTimerTitle": "Cancel this timer?",
+  "cancelTimerMessage": "Nothing is logged for a cancelled timer.",
+  "keepGoing": "Keep going",
+  "catHealth": "Health",
+  "catHygiene": "Hygiene",
+  "catMovement": "Movement",
+  "catMind": "Mind",
+  "catHome": "Home",
+  "catWork": "Work",
+  "catOther": "Other",
+  "categoryLabel": "Category",
+  "channelOn": "On · tap to change sound and vibration",
+  "channelOff": "Turned off in Android settings · tap to change",
+  "channelsTitle": "Channels",
+  "checklistItemsLabel": "Checklist steps",
+  "checklistProgress": "Checklist · {done} of {total}",
+  "@checklistProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "checklistStep": "Step {n}",
+  "@checklistStep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "copyName": "{name} (copy)",
+  "@copyName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "countProgress": "{done} of {target}",
+  "@countProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "customMinutes": "Custom",
+  "dayOfMonth": "Day of the month",
+  "decrease": "Fewer",
+  "increase": "More",
+  "deleteActivityTitle": "Delete this activity?",
+  "deleteActivityMessage": "Its history is removed too. To keep the history, archive it instead.",
+  "deleteReminderTitle": "Delete this reminder?",
+  "deleteReminderMessage": "Pending notifications for it are cancelled.",
+  "descriptionLabel": "Description",
+  "discardChangesTitle": "Discard your changes?",
+  "discardChangesMessage": "What you changed here will not be saved.",
+  "doneOfScheduledDays": "Done {done} of {total} scheduled days",
+  "@doneOfScheduledDays": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "doneOfTotal": "{done} of {total} done",
+  "@doneOfTotal": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "dueAt": "Due {time}",
+  "@dueAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicated": "Copy created",
+  "durationLabel": "Duration",
+  "durationProgress": "{done} of {target} min",
+  "@durationProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "target": {
+        "type": "int"
+      }
+    }
+  },
+  "duringQuietHours": "During quiet hours",
+  "editActivityTitle": "Edit activity",
+  "newActivityTitle": "New activity",
+  "editReminderTitle": "Edit reminder",
+  "newReminderTitle": "New reminder",
+  "elapsed": "elapsed",
+  "errActivityRequired": "Choose the activity this reminder belongs to.",
+  "errChecklistEmpty": "Add at least one checklist step.",
+  "errLoadFailed": "Could not load this. Try again.",
+  "errScheduleIncomplete": "Finish the schedule: pick days and at least one time.",
+  "errTickOne": "Tick at least one step, or choose Skip.",
+  "errTitleRequired": "Give the reminder a title.",
+  "errTrackingTypeChange": "Your history does not fit that tracking type. Create a new activity instead, or pick a compatible type.",
+  "essential": "Essential",
+  "optionalPriority": "Optional",
+  "essentialHelp": "Essential activities appear on Home.",
+  "everyDay": "Every day",
+  "weekdaysOnly": "Mon–Fri",
+  "weekendsOnly": "Weekends",
+  "everyLabel": "Every",
+  "exactAlarmsRow": "Exact alarms",
+  "exactAlarmsOn": "Important alarms ring on time.",
+  "exactAlarmsOff": "Without it, reminders can be a few minutes late.",
+  "exactOffNotice": "Exact alarms are off, so reminders may arrive a few minutes late.",
+  "exactRationaleTitle": "Allow exact alarms?",
+  "exactRationaleBody": "Reminders you mark as important alarms need Android's alarm access to ring on time. Without it they still arrive, but can be a few minutes late. Android opens the setting next.",
+  "finishAndLog": "Finish now and log {duration}",
+  "@finishAndLog": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "fromLabel": "From",
+  "untilLabel": "Until",
+  "genericReminder": "Routine reminder",
+  "historyEmpty": "No notifications in the last 30 days.",
+  "historyNote": "Kept for 30 days on this phone. Swiping a notification away is not recorded by Android.",
+  "historyTitle": "History",
+  "iconChoice": "Icon: {name}",
+  "@iconChoice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "iconLabel": "Icon",
+  "ifNotDoneShort": "if not done",
+  "kindActivity": "Activity",
+  "kindCustom": "Custom",
+  "kindPosture": "Posture break",
+  "kindSleep": "Sleep",
+  "kindWater": "Water",
+  "kindWorkout": "Workout",
+  "last4Weeks": "Last 4 weeks",
+  "leftOf": "left of {total}",
+  "@leftOf": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "limitsNote": "FitBuddy cannot override Do Not Disturb, silent mode, a channel you turned off, or your phone's battery manager. Android may delay reminders when battery saver is on.",
+  "linkedActivity": "Linked activity",
+  "logAction": "Log",
+  "logAnyway": "Log anyway",
+  "logSheetNote": "Swiping this away saves nothing. Skip records that you chose not to do it.",
+  "loggedTimes": "{count, plural, one{Logged once today} other{Logged {count} times today}}",
+  "@loggedTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "makeEssential": "Make essential",
+  "makeOptional": "Make optional",
+  "markDone": "Done",
+  "minutesLabel": "Minutes",
+  "minutesShort": "{m} min",
+  "@minutesShort": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "moreActions": "More actions for {name}",
+  "@moreActions": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "nextTimes": "Next: {times}",
+  "@nextTimes": {
+    "placeholders": {
+      "times": {
+        "type": "String"
+      }
+    }
+  },
+  "noActivity": "None",
+  "noHistoryYet": "Nothing logged yet.",
+  "notLoggedAt": "Not logged at {time}",
+  "@notLoggedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "notNow": "Not now",
+  "notScheduledNote": "Activities that are not scheduled today are never counted as missed.",
+  "notScheduledToday": "Not scheduled today",
+  "nothingScheduledToday": "Nothing is scheduled today.",
+  "notifRationaleTitle": "Allow notifications?",
+  "notifRationaleBody": "FitBuddy shows reminders as notifications. They work without internet. Android asks next.",
+  "notificationHistory": "Notification history",
+  "notificationSettingsTitle": "Notifications and reminders",
+  "notificationsOffNotice": "Notifications are off, so reminders cannot appear.",
+  "notificationsRow": "Notifications",
+  "notificationsRowHelp": "Needed for every reminder.",
+  "notifyWhenDone": "Notify when done",
+  "notifyWhenDoneHelp": "Shows a notification at the end.",
+  "offerStopwatch": "Offer a stopwatch",
+  "offerStopwatchHelp": "Start timing from the activity.",
+  "onlyIfNotDone": "Only if not done",
+  "onlyIfNotDoneHelp": "Skipped when the activity is already logged that day.",
+  "open": "Open",
+  "openSettings": "Open settings",
+  "outcomeCompleted": "Completed",
+  "outcomeSkipped": "Skipped",
+  "outcomeSnoozed": "{count, plural, one{Snoozed once} other{Snoozed {count} times}}",
+  "@outcomeSnoozed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "outcomeDismissed": "Dismissed",
+  "outcomeShown": "Shown, no response",
+  "outcomeDeferred": "held for quiet hours",
+  "outcomeInexact": "may have been late",
+  "pause": "Pause",
+  "resume": "Resume",
+  "plusOne": "+1",
+  "presetPosture": "Posture break",
+  "presetSleep": "Bedtime",
+  "presetWater": "Drink water",
+  "presetWorkout": "Workout",
+  "priorityLabel": "Priority",
+  "priorityNormal": "Normal",
+  "priorityAlarm": "Important alarm",
+  "priorityAlarmHelp": "Important alarms use exact timing and the Important alarms channel. They need Android's alarm access.",
+  "quietHours": "Quiet hours",
+  "quietHoursHelp": "Ordinary reminders wait or are dropped, as set on each reminder.",
+  "quietHoursOff": "Off",
+  "quietHoursOn": "{start}–{end}",
+  "@quietHoursOn": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "quietHoursPerReminder": "Each reminder chooses whether to wait until quiet hours end, be dropped, or ring anyway.",
+  "quietDefer": "Wait until quiet hours end",
+  "quietSuppress": "Skip it",
+  "quietBypass": "Ring anyway",
+  "rebootRow": "Restart after reboot",
+  "rebootRowHelp": "Reminders return after you unlock the phone. If you force-stop FitBuddy, Android cancels them until you open it again.",
+  "remindAtTimes": "Remind me at these times",
+  "remindAtTimesHelp": "On the Daily routines channel.",
+  "reminderDefaultTitle": "Reminder",
+  "reminderLimitsNote": "Reminders work without internet. Android may still delay or silence them in Do Not Disturb, silent mode, or with battery saver.",
+  "reminderSaved": "Reminder saved",
+  "reminderTypeLabel": "Type",
+  "remindersEmpty": "No reminders yet. Add one, or turn on \"Remind me\" in an activity.",
+  "removeStep": "Remove step {n}",
+  "@removeStep": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "removeTime": "Remove {time}",
+  "@removeTime": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "reorderHandle": "Reorder {name}",
+  "@reorderHandle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "repeatDaily": "Daily",
+  "repeatEveryNDays": "Every few days",
+  "repeatInterval": "Every few hours",
+  "repeatMonthly": "Monthly",
+  "repeatOnce": "Once",
+  "repeatSelectedDays": "Selected days",
+  "repeatWeekly": "Every few weeks",
+  "repeatDaysLabel": "Repeat days",
+  "repeatLabel": "Repeat",
+  "reschedule": "Reschedule",
+  "rescheduleNote": "The new schedule applies from today. Past days keep the old one.",
+  "review": "Review",
+  "saveChecklist": "Save · {done} of {total}",
+  "@saveChecklist": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "scheduleDaily": "Daily · {times}",
+  "@scheduleDaily": {
+    "placeholders": {
+      "times": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleEveryDays": "Every {n} days · {times}",
+  "@scheduleEveryDays": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "times": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleEveryWeeks": "Every {n} weeks · {days} · {times}",
+  "@scheduleEveryWeeks": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "days": {
+        "type": "String"
+      },
+      "times": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleInterval": "Every {n} min, {start}–{end}",
+  "@scheduleInterval": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleLabel": "Schedule",
+  "scheduleMonthlyDay": "Monthly on day {day} · {times}",
+  "@scheduleMonthlyDay": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "times": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleMonthlyNth": "Monthly, week {n} · {times}",
+  "@scheduleMonthlyNth": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "times": {
+        "type": "String"
+      }
+    }
+  },
+  "scheduleOnce": "Once · {date} {time}",
+  "@scheduleOnce": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "severalTimesNote": "Each time is counted separately.",
+  "showOnHome": "Show on Home",
+  "showOnHomeHelp": "In Essential today, when essential.",
+  "skippedSaved": "Skip saved",
+  "snoozeDefault": "Snooze for",
+  "snoozeFor": "Snooze for",
+  "snoozeLabel": "Snooze",
+  "snoozeValue": "{m} min · change on the notification",
+  "@snoozeValue": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "snoozedFor": "Reminder in {m} min",
+  "@snoozedFor": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "soundLabel": "Sound",
+  "soundValue": "{channel} channel · tap to change",
+  "@soundValue": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "sourceNotification": "from notification",
+  "sourceTimer": "stopwatch",
+  "start": "Start",
+  "startStopwatch": "Start stopwatch",
+  "stateDone": "Done",
+  "stateDue": "Due",
+  "stateMissed": "Not logged",
+  "stateNotScheduled": "Not scheduled",
+  "statePartial": "Partly done",
+  "stateSkipped": "Skipped",
+  "statusTitle": "Status",
+  "stopwatch": "Stopwatch",
+  "timer": "Timer",
+  "targetLabel": "Target",
+  "targetMinutes": "target {m} min",
+  "@targetMinutes": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      }
+    }
+  },
+  "targetValue": "target {value}",
+  "@targetValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "testAction": "Test",
+  "testSoundOf": "Test the {channel} sound",
+  "@testSoundOf": {
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "testVibration": "Test vibration",
+  "timerLogged": "{duration} logged",
+  "@timerLogged": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "timerNote": "The timer keeps going if you leave the app or restart the phone. Finishing logs the time to the activity; cancelling logs nothing.",
+  "timerPaused": "paused",
+  "timerSemantics": "{time}, {state}",
+  "@timerSemantics": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "state": {
+        "type": "String"
+      }
+    }
+  },
+  "timesLabel": "Times",
+  "timesUp": "time is up",
+  "titleLabel": "Title",
+  "trackBoolean": "Yes/no",
+  "trackCount": "Count",
+  "trackNumeric": "Number",
+  "trackDuration": "Duration",
+  "trackStopwatch": "Stopwatch",
+  "trackEventLog": "Event log",
+  "trackChecklist": "Checklist",
+  "trackBooleanHelp": "Yes/no: mark it done.",
+  "trackCountHelp": "Count: add one at a time towards an optional target.",
+  "trackNumericHelp": "Number: record a value with its unit.",
+  "trackDurationHelp": "Duration: record how long. Start a stopwatch from the activity or type the minutes.",
+  "trackStopwatchHelp": "Stopwatch: time it live and log the result.",
+  "trackEventLogHelp": "Event log: note each time it happens.",
+  "trackChecklistHelp": "Checklist: tick each step; done when all are ticked.",
+  "trackingChangeNote": "Changing the tracking type later is allowed only when your history still makes sense, for example Count to Number.",
+  "trackingLabel": "How you track it",
+  "unitDays": "days",
+  "unitWeeks": "weeks",
+  "unitMin": "min",
+  "unitHint": "For example: glasses",
+  "vibrationLabel": "Vibration",
+  "quickAddActivity": "Activity",
+  "pickActivity": "Log which activity?"
 }

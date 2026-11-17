@@ -142,7 +142,7 @@ Reminder reminderPreset(ReminderKind kind, {required String title, required Loca
         id: '',
         kind: kind,
         title: title,
-        rule: Interval(everyMinutes: 90, start: 8 * 60, end: 20 * 60),
+        rule: IntervalRule(everyMinutes: 90, start: 8 * 60, end: 20 * 60),
       ),
       ReminderKind.workout => Reminder(
         id: '',
@@ -160,7 +160,12 @@ Reminder reminderPreset(ReminderKind kind, {required String title, required Loca
         id: '',
         kind: kind,
         title: title,
-        rule: Interval(everyMinutes: 120, start: 9 * 60, end: 17 * 60, weekdays: {1, 2, 3, 4, 5}),
+        rule: IntervalRule(
+          everyMinutes: 120,
+          start: 9 * 60,
+          end: 17 * 60,
+          weekdays: {1, 2, 3, 4, 5},
+        ),
       ),
       _ => Reminder(
         id: '',

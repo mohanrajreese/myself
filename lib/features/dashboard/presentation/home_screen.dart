@@ -5,6 +5,12 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../app/providers.dart';
 import '../../../app/labels.dart';
+import '../../../app/routine_labels.dart';
+import '../../../app/routine_providers.dart';
+import '../../../core/widgets/fb_sheet.dart';
+import '../../activities/domain/activity.dart';
+import '../../../app/routine/activity_log_sheet.dart';
+import '../../../app/routine/habits_screen.dart';
 import '../../../app/routes.dart';
 import '../../../app/tracking_providers.dart';
 import '../../../core/widgets/fb_format.dart';
@@ -334,11 +340,45 @@ class _WorkoutRow extends ConsumerWidget {
   }
 }
 
-class _QuickAdd extends StatelessWidget {
+class _QuickAdd extends ConsumerWidget {
   const _QuickAdd();
 
+  Future<void> _pickActivity(BuildContext context, WidgetRef ref) async {
+    final l10n = context.l10n;
+    final activities = [
+      for (final a in ref.read(activitiesProvider).value ?? const <Activity>[])
+        if (!a.archived) a,
+    ];
+    final picked = await showFbSheet<Activity>(
+      context,
+      FbSheetBody(
+        title: l10n.pickActivity,
+        children: [
+          if (activities.isEmpty) ...[
+            FbEmptyHint(l10n.activitiesEmpty),
+            const SizedBox(height: FbSpace.md),
+            OutlinedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.push(Routes.newActivity);
+              },
+              child: Text(l10n.createActivity),
+            ),
+          ],
+          for (final a in activities)
+            ListTile(
+              leading: Icon(activityIcon(a.iconKey)),
+              title: Text(a.name),
+              onTap: () => Navigator.of(context).pop(a),
+            ),
+        ],
+      ),
+    );
+    if (picked != null && context.mounted) await showActivityLogSheet(context, picked);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -354,9 +394,10 @@ class _QuickAdd extends StatelessWidget {
               (l10n.quickAddWater, Routes.addWater),
               (l10n.quickAddWeight, Routes.addWeight),
               (l10n.quickAddSleep, Routes.addSleep),
+              (l10n.quickAddActivity, ''),
             ])
               OutlinedButton.icon(
-                onPressed: () => context.push(route),
+                onPressed: () => route.isEmpty ? _pickActivity(context, ref) : context.push(route),
                 icon: const Icon(Icons.add_rounded, size: FbSpace.xl),
                 label: Text(label),
               ),
@@ -367,18 +408,33 @@ class _QuickAdd extends StatelessWidget {
   }
 }
 
-class _Essentials extends StatelessWidget {
+class _Essentials extends ConsumerWidget {
   const _Essentials();
 
   @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      FbSectionTitle(context.l10n.essentialToday),
-      const SizedBox(height: 10),
-      FbEmptyHint(context.l10n.essentialsEmpty, boxed: true),
-    ],
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final today = ref.watch(todayProvider);
+    final days = ref.watch(activityDaysProvider(today)) ?? const [];
+    final rows = [
+      for (final d in days)
+        if (d.activity.isEssential && d.activity.showOnDashboard)
+          for (final s in d.slots) (d, s),
+    ]..sort((a, b) => a.$2.minute.compareTo(b.$2.minute));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FbSectionTitle(l10n.essentialToday),
+        const SizedBox(height: 10),
+        if (rows.isEmpty)
+          FbEmptyHint(l10n.essentialsEmpty, boxed: true)
+        else
+          FbListCard(
+            children: [for (final (d, s) in rows) SlotRow(day: d, slot: s, showSnooze: true)],
+          ),
+      ],
+    );
+  }
 }
 
 class _Timeline extends ConsumerWidget {

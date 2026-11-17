@@ -99,7 +99,7 @@ void main() {
 
     testWidgets('each tab opens; unbuilt tabs say so and offer no controls', (tester) async {
       await start(tester);
-      for (final tab in ['Fitness', 'Habits', 'Insights']) {
+      for (final tab in ['Fitness', 'Insights']) {
         await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text(tab)));
         await tester.pumpAndSettle();
         expect(
@@ -221,6 +221,8 @@ void main() {
       await start(tester);
       await openSettings(tester);
       await tester.scrollUntilVisible(find.text('Sign out'), 200);
+      await tester.ensureVisible(find.text('Sign out'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Sign out'));
       await tester.pumpAndSettle();
       expect(find.text('Sign out?'), findsOneWidget);

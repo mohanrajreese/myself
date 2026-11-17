@@ -44,7 +44,7 @@ sealed class ScheduleRule {
           anchor: LocalDate.parse(json['anchor']! as String),
           times: _ints(json['times']),
         ),
-        'interval' => Interval(
+        'interval' => IntervalRule(
           everyMinutes: json['every']! as int,
           start: json['start']! as int,
           end: json['end']! as int,
@@ -262,9 +262,13 @@ final class EveryNDays extends ScheduleRule {
 
 /// Every [everyMinutes] from [start] to [end] (included when it falls on the
 /// step), on [weekdays] or every day when null.
-final class Interval extends ScheduleRule {
-  Interval({required this.everyMinutes, required this.start, required this.end, Set<int>? weekdays})
-    : weekdays = weekdays == null ? null : Set.unmodifiable(weekdays);
+final class IntervalRule extends ScheduleRule {
+  IntervalRule({
+    required this.everyMinutes,
+    required this.start,
+    required this.end,
+    Set<int>? weekdays,
+  }) : weekdays = weekdays == null ? null : Set.unmodifiable(weekdays);
   final int everyMinutes;
   final int start;
   final int end;
@@ -289,7 +293,7 @@ final class Interval extends ScheduleRule {
 
   @override
   bool operator ==(Object other) =>
-      other is Interval &&
+      other is IntervalRule &&
       other.everyMinutes == everyMinutes &&
       other.start == start &&
       other.end == end &&

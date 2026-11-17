@@ -69,9 +69,10 @@ class FbNavRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg, vertical: FbSpace.sm),
         child: Row(
           children: [
-            Text(title, style: context.text.body),
+            Flexible(flex: 3, child: Text(title, style: context.text.body)),
             const SizedBox(width: FbSpace.md),
             Expanded(
+              flex: 2,
               child: Text(
                 value ?? '',
                 style: context.text.bodySmall,
