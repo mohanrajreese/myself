@@ -18,5 +18,21 @@ abstract interface class WeightRepository {
   /// Entries recorded on [date], oldest first.
   Stream<List<WeightEntry>> watchOn(LocalDate date);
 
+  /// Changes an entry's value, time or note. [occurredAt] is wall-clock time.
+  Future<Result<void>> update(
+    String id, {
+    required int weightG,
+    DateTime? occurredAt,
+    String? notes,
+  });
+
+  /// One page of history, newest first. Pass the last entry's time as
+  /// [before] to load the next page.
+  Future<List<WeightEntry>> page({int limit = 30, DateTime? before});
+
+  /// Entries from [from] onwards plus the last one before it (the baseline
+  /// for a change calculation), oldest first.
+  Stream<List<WeightEntry>> watchSince(LocalDate from);
+
   Future<Result<void>> delete(String id);
 }

@@ -103,6 +103,69 @@ final class DriftWeightRepository implements WeightRepository {
         );
 
   @override
+  Future<Result<void>> update(
+    String id, {
+    required int weightG,
+    DateTime? occurredAt,
+    String? notes,
+  }) async {
+    final failure = validateWeightG(weightG);
+    if (failure != null) return Err(failure);
+    if (occurredAt != null && occurredAt.isAfter(_clock.now())) {
+      return const Err(ValidationFailure('occurredAt', 'in_future'));
+    }
+    return Result.guard(
+      () => _db.transaction(() async {
+        final now = _clock.now().toUtc();
+        final changed =
+            await (_db.update(
+              _db.weightLogs,
+            )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
+              WeightLogsCompanion(
+                weightG: Value(weightG),
+                notes: Value(notes == null || notes.trim().isEmpty ? null : notes.trim()),
+                occurredAt: occurredAt == null ? const Value.absent() : Value(occurredAt.toUtc()),
+                localDate: occurredAt == null
+                    ? const Value.absent()
+                    : Value(LocalDate.fromDateTime(occurredAt.toLocal())),
+                updatedAt: Value(now),
+              ),
+            );
+        if (changed > 0) await _db.enqueueForSync('weight_logs', id, now);
+      }),
+      onError: (_) => const StorageFailure('weight_write'),
+    );
+  }
+
+  @override
+  Future<List<WeightEntry>> page({int limit = 30, DateTime? before}) async {
+    final rows =
+        await (_db.select(_db.weightLogs)
+              ..where(
+                (t) => before == null
+                    ? t.deletedAt.isNull()
+                    : t.deletedAt.isNull() & t.occurredAt.isSmallerThanValue(before.toUtc()),
+              )
+              ..orderBy([(t) => OrderingTerm.desc(t.occurredAt)])
+              ..limit(limit))
+            .get();
+    return [for (final row in rows) _toDomain(row)!];
+  }
+
+  @override
+  Stream<List<WeightEntry>> watchSince(LocalDate from) =>
+      (_db.select(_db.weightLogs)
+            ..where((t) => t.deletedAt.isNull())
+            ..orderBy([(t) => OrderingTerm.asc(t.occurredAt)]))
+          .watch()
+          .map((rows) {
+            final all = [for (final row in rows) _toDomain(row)!];
+            final firstInside = all.indexWhere((e) => !e.localDate.isBefore(from));
+            if (firstInside < 0) return all.isEmpty ? all : [all.last];
+            return all.sublist(firstInside > 0 ? firstInside - 1 : 0);
+          });
+
+  @override
   Future<Result<void>> delete(String id) => Result.guard(
     () => _db.transaction(() async {
       final now = _clock.now().toUtc();

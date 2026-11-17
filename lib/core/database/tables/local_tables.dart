@@ -27,3 +27,40 @@ class LocalAppSettings extends Table {
   @override
   Set<Column<Object>> get primaryKey => {key};
 }
+
+/// Read-only reference foods bundled with the app (decision D3). Values are
+/// per [servingLabel] as published by [source]. Never synced.
+@DataClassName('CatalogueFoodRow')
+@TableIndex(name: 'local_food_catalogue_name', columns: {#name})
+class LocalFoodCatalogue extends Table {
+  /// `<source>:<id in the source dataset>`.
+  TextColumn get id => text()();
+  TextColumn get source => text()();
+  TextColumn get name => text()();
+  TextColumn get category => text()();
+  TextColumn get servingLabel => text()();
+  IntColumn get servingWeightMg => integer()();
+  IntColumn get energyKcalMilli => integer()();
+  IntColumn get proteinMg => integer()();
+  IntColumn get carbsMg => integer()();
+  IntColumn get fatMg => integer()();
+  IntColumn get fibreMg => integer()();
+
+  /// True for values calculated from a recipe rather than measured.
+  BoolColumn get isEstimate => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Index of encrypted meal photo files kept in app storage. Never synced.
+@DataClassName('MealPhotoRow')
+class LocalMealPhotos extends Table {
+  TextColumn get id => text()();
+  TextColumn get mealLogId => text()();
+  TextColumn get fileName => text()();
+  DateTimeColumn get takenAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}

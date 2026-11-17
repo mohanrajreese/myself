@@ -12,12 +12,14 @@ void main() {
 
   setUpAll(() => verifier = SchemaVerifier(GeneratedHelper()));
 
-  test('a version 1 database upgrades to the current schema', () async {
-    final connection = await verifier.startAt(1);
-    final db = AppDatabase(connection);
-    await verifier.migrateAndValidate(db, 2);
-    await db.close();
-  });
+  for (final from in [1, 2]) {
+    test('a version $from database upgrades to the current schema', () async {
+      final connection = await verifier.startAt(from);
+      final db = AppDatabase(connection);
+      await verifier.migrateAndValidate(db, 3);
+      await db.close();
+    });
+  }
 
   test('rows written under version 1 survive the upgrade', () async {
     final schema = await verifier.schemaAt(1);

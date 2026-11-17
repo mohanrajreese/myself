@@ -27,6 +27,8 @@ part 'app_database.g.dart';
     SavedMeals,
     SleepLogs,
     DailyHealthCheckins,
+    LocalFoodCatalogue,
+    LocalMealPhotos,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -35,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   static const databaseName = 'fitbuddy';
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -55,8 +57,19 @@ class AppDatabase extends _$AppDatabase {
           await migrator.createTable(table);
         }
         for (final index in allSchemaEntities.whereType<Index>()) {
-          if (index.entityName != 'weight_logs_local_date') await migrator.create(index);
+          const notInVersion2 = {'weight_logs_local_date', 'local_food_catalogue_name'};
+          if (!notInVersion2.contains(index.entityName)) await migrator.create(index);
         }
+      }
+      if (from < 3) {
+        // Bundled food catalogue and the meal photo index.
+        await migrator.createTable(localFoodCatalogue);
+        await migrator.createTable(localMealPhotos);
+        await migrator.create(
+          allSchemaEntities.whereType<Index>().firstWhere(
+            (index) => index.entityName == 'local_food_catalogue_name',
+          ),
+        );
       }
     },
     beforeOpen: (details) async {
