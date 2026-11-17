@@ -46,7 +46,7 @@ Likelihood and impact: High, Medium, Low. "Device" in the last column means the 
 | R-35 | **Google sign-in misconfiguration.** A wrong SHA-1, package name or client ID fails with an opaque error; a debug key that changes per machine breaks sign-in | H | H | Committed project debug keystore; setup checklist with the exact fingerprints; clear on-screen error with the likely cause |
 | R-36 | **Mandatory sign-in blocks first use** without internet or without Google Play services | M | M | Offline notice on the sign-in screen; after first sign-in the gate is local and never needs the network |
 | R-37 | **Only an Android 10 phone is available.** Restrictions introduced in Android 12–14 cannot be device-tested | H | M | Version-gated code paths; unit tests on the gating logic; marked "not device-verified" until a newer device or emulator is used |
-| R-38 | **Food dataset licence or quality.** INDB's data licence is unconfirmed and its values are recipe estimates | M | M | USDA (public domain) as the safe baseline; INDB kept out of the repository until its licence is confirmed; estimates labelled in the UI |
+| R-38 | **Food dataset licence or quality.** INDB's data repository has no licence file, and its values are recipe estimates, some self-contradicting | M | M | Owner decided to bundle it (17 Nov 2026) with full attribution; if the authors object, remove `indb.json` and bump nothing else. Estimates labelled in the UI; 34 contradictory dishes excluded at build time |
 | R-34 | **Ephemeral cloud workspace.** Uncommitted work is lost when the session container is reclaimed | M | M | Small commits pushed to the development branch after every task |
 
 ## 3. Conflicts between the PRD and the platform

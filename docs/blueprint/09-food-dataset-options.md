@@ -14,7 +14,7 @@ Licence notes below were checked on 16 November 2026. Anything marked **unconfir
 | **IFCT 2017** (ICMR–National Institute of Nutrition) | Raw Indian foods, lab-analysed | 528 foods | Per 100 g | Copyright of ICMR–NIN; **no open licence found** | Authoritative, but not safe to bundle |
 | UK CoFID, French CIQUAL, Canadian Nutrient File | National tables | About 3,000 each | Per 100 g | Open government licences | Not regionally useful here |
 
-**Decided 16 November 2026: INDB plus USDA.**
+**Decided 16 November 2026: INDB plus USDA.** On 17 November 2026 the owner chose to bundle INDB in this public repository although its data repository has no licence file (the article is CC BY 4.0 and the authors describe the data as open access, usable by the private sector). See `assets/catalogue/SOURCES.md`.
 
 ## 2. Recommendation
 

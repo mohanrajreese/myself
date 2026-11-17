@@ -85,6 +85,7 @@ flutter:
 
   assets:
     - assets/catalogue/usda_sr_legacy.json
+    - assets/catalogue/indb.json
 
   fonts:
     - family: Inter

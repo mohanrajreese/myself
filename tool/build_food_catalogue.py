@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
-"""Builds assets/catalogue/usda_sr_legacy.json from USDA FoodData Central.
+"""Builds the bundled food catalogues in assets/catalogue/.
 
-Source: "SR Legacy" CSV download from https://fdc.nal.usda.gov/download-datasets
-(public domain, CC0 1.0). Values are per 100 g, as published. They are
-converted once, here, to the app's integer base units.
+USDA: "SR Legacy" CSV download from https://fdc.nal.usda.gov/download-datasets
+(public domain, CC0 1.0).
+
+INDB: INDB.xlsx from https://github.com/lindsayjaacks/Indian-Nutrient-Databank-INDB-
+(Vijayakumar A, Dubasi HB, Awasthi A, Jaacks LM. Indian Nutrient Databank (INDB):
+a comprehensive open-access resource for Indian food composition.
+Current Developments in Nutrition, 2024). Values are calculated from recipes,
+so they are marked as estimates. Needs openpyxl.
+
+Values are per 100 g, as published, converted once here to the app's integer
+base units.
 
 Usage:
-    python3 -I tool/build_food_catalogue.py <FoodData_Central_sr_legacy_food_csv.zip> <out.json>
+    python3 -I tool/build_food_catalogue.py usda <FoodData_Central_sr_legacy_food_csv.zip> <out.json>
+    python3 -I tool/build_food_catalogue.py indb <INDB.xlsx> <out.json>
 """
 import csv
 import io
@@ -26,11 +35,75 @@ def read(archive, suffix):
 
 
 def scaled(amount, factor):
-    """Decimal text -> integer in thousandths (factor 1000), rounded half up."""
-    return int((Decimal(amount) * factor).quantize(Decimal(1), rounding=ROUND_HALF_UP))
+    """Decimal value -> integer in thousandths (factor 1000), rounded half up.
+    Negative values (none expected) are clamped to zero."""
+    result = int((Decimal(amount) * factor).quantize(Decimal(1), rounding=ROUND_HALF_UP))
+    return max(result, 0)
 
 
-def main(zip_path, out_path):
+COLUMNS = ["source_id", "name", "category", "energy_kcal_milli", "protein_mg", "carbs_mg", "fat_mg", "fibre_mg"]
+
+
+def write(out_path, document):
+    with open(out_path, "w", encoding="utf-8") as out:
+        json.dump(document, out, ensure_ascii=False, separators=(",", ":"))
+    print(f"{len(document['foods'])} foods written to {out_path}")
+
+
+def build_indb(xlsx_path, out_path):
+    import openpyxl  # only needed for INDB
+
+    sheet = openpyxl.load_workbook(xlsx_path, read_only=True).worksheets[0]
+    rows = sheet.iter_rows(values_only=True)
+    header = {name: i for i, name in enumerate(next(rows))}
+
+    def value(row, column):
+        cell = row[header[column]]
+        if cell in (None, "", "NA"):
+            return Decimal(0)
+        return Decimal(str(cell))
+
+    foods = []
+    skipped = []
+    for row in rows:
+        code, name, kcal = row[header["food_code"]], row[header["food_name"]], row[header["energy_kcal"]]
+        # Dishes without an energy value cannot be logged meaningfully.
+        if not code or not name or kcal in (None, "", "NA"):
+            continue
+        kcal_d, protein, carbs, fat = (value(row, c) for c in ("energy_kcal", "protein_g", "carb_g", "fat_g"))
+        from_macros = 4 * protein + 4 * carbs + 9 * fat
+        # Leave out dishes whose stated energy contradicts their own macronutrients
+        # (more than 25 % and more than 30 kcal apart): one of the two is wrong and
+        # there is no way to tell which.
+        if abs(kcal_d - from_macros) > 30 and abs(kcal_d - from_macros) > Decimal("0.25") * kcal_d:
+            skipped.append(str(code))
+            continue
+        foods.append([
+            str(code),
+            str(name).strip(),
+            "Indian dishes",
+            scaled(value(row, "energy_kcal"), 1000),
+            scaled(value(row, "protein_g"), 1000),
+            scaled(value(row, "carb_g"), 1000),
+            scaled(value(row, "fat_g"), 1000),
+            scaled(value(row, "fibre_g"), 1000),
+        ])
+    foods.sort(key=lambda r: r[1].lower())
+    print(f"{len(skipped)} dishes left out (energy contradicts macronutrients): {', '.join(skipped)}")
+    write(out_path, {
+        "source": "Indian Nutrient Databank (INDB), Vijayakumar et al., Current Developments in Nutrition 2024",
+        "source_code": "indb",
+        "licence": "Published as open access by its authors; no licence file in the source repository",
+        "version": 1,
+        "per": "100 g",
+        "is_estimate": True,
+        "excluded": "Dishes whose stated energy differs from 4/4/9 kcal per g of protein, carbohydrate and fat by more than 25 % and 30 kcal",
+        "columns": COLUMNS,
+        "foods": foods,
+    })
+
+
+def build_usda(zip_path, out_path):
     with zipfile.ZipFile(zip_path) as archive:
         categories = {row["id"]: row["description"] for row in read(archive, "/food_category.csv")}
         foods = {
@@ -62,19 +135,16 @@ def main(zip_path, out_path):
         ])
     rows.sort(key=lambda r: r[1].lower())
 
-    document = {
+    write(out_path, {
         "source": "USDA FoodData Central, SR Legacy (April 2018)",
         "source_code": "usda",
         "licence": "Public domain (CC0 1.0)",
         "version": 1,
         "per": "100 g",
-        "columns": ["source_id", "name", "category", "energy_kcal_milli", "protein_mg", "carbs_mg", "fat_mg", "fibre_mg"],
+        "columns": COLUMNS,
         "foods": rows,
-    }
-    with open(out_path, "w", encoding="utf-8") as out:
-        json.dump(document, out, ensure_ascii=False, separators=(",", ":"))
-    print(f"{len(rows)} foods written to {out_path}")
+    })
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    {"usda": build_usda, "indb": build_indb}[sys.argv[1]](sys.argv[2], sys.argv[3])

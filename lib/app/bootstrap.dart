@@ -44,16 +44,20 @@ Future<void> bootstrap() async {
     openEncryptedDatabase(name: AppDatabase.databaseName, hexKey: hexKey),
   );
   final settings = SettingsRepository(database, clock: systemClock);
-  // Bundled food catalogue; imported once per version, in the background.
-  unawaited(
-    rootBundle
-        .loadString('assets/catalogue/usda_sr_legacy.json')
-        .then(CatalogueImporter(database, settings).importIfNeeded)
-        .catchError((Object error) {
-          logger.failure('catalogue_import_failed', error);
-          return 0;
-        }),
-  );
+  // Bundled food catalogues; each is imported once per version, in the background.
+  final importer = CatalogueImporter(database, settings);
+  unawaited(() async {
+    for (final asset in const [
+      'assets/catalogue/usda_sr_legacy.json',
+      'assets/catalogue/indb.json',
+    ]) {
+      try {
+        await importer.importIfNeeded(await rootBundle.loadString(asset));
+      } on Object catch (error) {
+        logger.failure('catalogue_import_failed', error);
+      }
+    }
+  }());
   final session = await loadSession(settings);
   final themeMode = themeModeFromSetting(await settings.read(themeModeSettingKey));
   final auth = await _createAuth(AppConfig.fromEnvironment, secrets, logger);

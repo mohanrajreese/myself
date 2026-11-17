@@ -44,4 +44,4 @@ Checked with `bash supabase/tests/run_local.sh`: applies every migration to a th
 
 ## Food catalogue
 
-`assets/catalogue/usda_sr_legacy.json` is built by `python3 -I tool/build_food_catalogue.py <SR Legacy CSV zip> <out.json>` from the USDA FoodData Central SR Legacy download (public domain, CC0 1.0). 7,793 foods, values per 100 g converted to integer base units. Imported into `local_food_catalogue` on first start and again only when the file's `version` changes. INDB will be added the same way once its licence is confirmed.
+`assets/catalogue/usda_sr_legacy.json` is built by `python3 -I tool/build_food_catalogue.py <SR Legacy CSV zip> <out.json>` from the USDA FoodData Central SR Legacy download (public domain, CC0 1.0). 7,793 foods, values per 100 g converted to integer base units. Imported into `local_food_catalogue` on first start and again only when the file's `version` changes. `assets/catalogue/indb.json` (980 Indian dishes) is built the same way from INDB.xlsx with `indb` as the first argument. Sources, terms and the exclusion rule: `assets/catalogue/SOURCES.md`.

@@ -106,6 +106,46 @@ void main() {
     });
   });
 
+  test('the bundled INDB asset imports as estimates and is searchable', () async {
+    final count = await importer.importIfNeeded(
+      File('assets/catalogue/indb.json').readAsStringSync(),
+    );
+    expect(count, 980);
+    final idli = await (db.select(
+      db.localFoodCatalogue,
+    )..where((t) => t.id.equals('indb:ASC144'))).getSingle();
+    expect(idli.name, 'Idli');
+    expect(idli.energyKcalMilli, 137535);
+    expect(idli.isEstimate, isTrue);
+    expect(idli.servingLabel, '100 g');
+
+    // A dish left out for contradicting itself is not there.
+    final soup = await (db.select(
+      db.localFoodCatalogue,
+    )..where((t) => t.id.equals('indb:ASC087'))).getSingleOrNull();
+    expect(soup, isNull);
+
+    final results = await foods.search('dal makhani');
+    expect(results.single.source, FoodSources.indb);
+    expect(results.single.isEstimate, isTrue);
+  });
+
+  test('both catalogues live side by side and re-import independently', () async {
+    await importer.importIfNeeded(File('assets/catalogue/usda_sr_legacy.json').readAsStringSync());
+    await importer.importIfNeeded(File('assets/catalogue/indb.json').readAsStringSync());
+    final bySource = await db
+        .customSelect(
+          'SELECT source, count(*) AS n FROM local_food_catalogue GROUP BY source ORDER BY source',
+        )
+        .get();
+    expect(
+      {for (final r in bySource) r.read<String>('source'): r.read<int>('n')},
+      {'indb': 980, 'usda': 7793},
+    );
+    expect(await importer.importIfNeeded(File('assets/catalogue/indb.json').readAsStringSync()), 0);
+    expect(await outboxEntries(db), isEmpty);
+  });
+
   group('the user\'s foods', () {
     test('create, edit, save and delete; each change is queued for sync', () async {
       final food = (await foods.create(draft('Dal (home)'))).valueOrNull!;
