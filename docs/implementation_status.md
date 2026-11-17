@@ -8,7 +8,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 2 — Core tracking (approved 17 Nov 2026); Phase 1 built, phone verification pending |
+| Phase | 2 — Core tracking built 17 Nov 2026; Phases 1–2 phone verification pending; Phase 3 waits for approval |
 | Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026) |
 | Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
@@ -18,7 +18,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | Phase | Status | Report |
 |---|---|---|
 | 1 Foundation | ⏳ built, phone verification pending | [phase-1.md](reports/phase-1.md) |
-| 2 Core tracking | ⏳ built, phone verification pending | — |
+| 2 Core tracking | ⏳ built, phone verification pending | [phase-2.md](reports/phase-2.md) |
 | 3 Activities and reminders | ☐ | — |
 | 4 Fitness | ☐ | — |
 | 5 Lifestyle and privacy | ☐ | — |
