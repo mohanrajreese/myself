@@ -1,0 +1,965 @@
+-- Shared trigger functions for every user-owned table.
+-- See docs/blueprint/03-database.md §5.3.
+
+-- Pull cursor: always the server's clock, never the device's.
+create or replace function public.set_server_updated_at()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  new.server_updated_at := now();
+  return new;
+end;
+$$;
+
+-- Last write wins: an update carrying an older client timestamp than the
+-- stored row is ignored (the row is left as it is).
+create or replace function public.reject_stale_write()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if new.updated_at < old.updated_at then
+    return null;
+  end if;
+  return new;
+end;
+$$;
+-- Profile and goals (PRD §5.1). One profile per account; goals are
+-- effective-dated so history is never rewritten.
+
+create table public.profiles (
+  id                       uuid primary key references auth.users (id) on delete cascade,
+  display_name             text not null check (char_length(btrim(display_name)) between 1 and 80),
+  date_of_birth            date,
+  height_mm                integer check (height_mm between 300 and 3000),
+  weight_unit              text not null check (weight_unit in ('kg', 'lb')),
+  length_unit              text not null check (length_unit in ('cm', 'in')),
+  volume_unit              text not null check (volume_unit in ('ml', 'fl_oz')),
+  distance_unit            text not null check (distance_unit in ('km', 'mi')),
+  timezone                 text not null,
+  wake_time                text check (wake_time ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$'),
+  workout_days             jsonb not null default '[]'::jsonb,
+  custom_measurement_types jsonb not null default '[]'::jsonb,
+  onboarding_completed_at  timestamptz,
+  created_at               timestamptz not null,
+  updated_at               timestamptz not null,
+  deleted_at               timestamptz,
+  server_updated_at        timestamptz not null default now()
+);
+
+create index profiles_cursor_idx on public.profiles (id, server_updated_at);
+
+alter table public.profiles enable row level security;
+revoke all on table public.profiles from anon;
+grant select, insert, update, delete on table public.profiles to authenticated;
+
+create policy profiles_select on public.profiles for select to authenticated
+  using ((select auth.uid()) = id);
+create policy profiles_insert on public.profiles for insert to authenticated
+  with check ((select auth.uid()) = id);
+create policy profiles_update on public.profiles for update to authenticated
+  using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
+create policy profiles_delete on public.profiles for delete to authenticated
+  using ((select auth.uid()) = id);
+
+create trigger profiles_stale before update on public.profiles
+  for each row execute function public.reject_stale_write();
+create trigger profiles_cursor before insert or update on public.profiles
+  for each row execute function public.set_server_updated_at();
+
+
+create table public.user_goals (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  effective_from    date not null,
+  target_weight_g   integer check (target_weight_g between 1000 and 700000),
+  daily_steps       integer check (daily_steps between 0 and 200000),
+  daily_water_ml    integer check (daily_water_ml between 0 and 20000),
+  sleep_target_min  integer check (sleep_target_min between 0 and 1440),
+  fitness_goals     jsonb not null default '[]'::jsonb,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index user_goals_user_date_idx on public.user_goals (user_id, effective_from);
+create index user_goals_user_cursor_idx on public.user_goals (user_id, server_updated_at, id);
+
+alter table public.user_goals enable row level security;
+revoke all on table public.user_goals from anon;
+grant select, insert, update, delete on table public.user_goals to authenticated;
+
+create policy user_goals_select on public.user_goals for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy user_goals_insert on public.user_goals for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy user_goals_update on public.user_goals for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy user_goals_delete on public.user_goals for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger user_goals_stale before update on public.user_goals
+  for each row execute function public.reject_stale_write();
+create trigger user_goals_cursor before insert or update on public.user_goals
+  for each row execute function public.set_server_updated_at();
+
+
+create table public.nutrition_goals (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  effective_from    date not null,
+  energy_kcal_milli bigint check (energy_kcal_milli between 0 and 20000000),
+  protein_mg        integer check (protein_mg between 0 and 2000000),
+  carbs_mg          integer check (carbs_mg between 0 and 2000000),
+  fat_mg            integer check (fat_mg between 0 and 2000000),
+  fibre_mg          integer check (fibre_mg between 0 and 2000000),
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index nutrition_goals_user_date_idx on public.nutrition_goals (user_id, effective_from);
+create index nutrition_goals_user_cursor_idx on public.nutrition_goals (user_id, server_updated_at, id);
+
+alter table public.nutrition_goals enable row level security;
+revoke all on table public.nutrition_goals from anon;
+grant select, insert, update, delete on table public.nutrition_goals to authenticated;
+
+create policy nutrition_goals_select on public.nutrition_goals for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy nutrition_goals_insert on public.nutrition_goals for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy nutrition_goals_update on public.nutrition_goals for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy nutrition_goals_delete on public.nutrition_goals for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger nutrition_goals_stale before update on public.nutrition_goals
+  for each row execute function public.reject_stale_write();
+create trigger nutrition_goals_cursor before insert or update on public.nutrition_goals
+  for each row execute function public.set_server_updated_at();
+-- Weight records (PRD §5.2). Created in Phase 1 because onboarding records
+-- the first weight.
+
+create table public.weight_logs (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  weight_g          integer not null check (weight_g between 1000 and 700000),
+  entry_unit        text not null check (entry_unit in ('kg', 'lb')),
+  occurred_at       timestamptz not null,
+  local_date        date not null,
+  tz                text not null,
+  notes             text,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index weight_logs_user_date_idx on public.weight_logs (user_id, local_date);
+create index weight_logs_user_cursor_idx on public.weight_logs (user_id, server_updated_at, id);
+
+alter table public.weight_logs enable row level security;
+revoke all on table public.weight_logs from anon;
+grant select, insert, update, delete on table public.weight_logs to authenticated;
+
+create policy weight_logs_select on public.weight_logs for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy weight_logs_insert on public.weight_logs for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy weight_logs_update on public.weight_logs for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy weight_logs_delete on public.weight_logs for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger weight_logs_stale before update on public.weight_logs
+  for each row execute function public.reject_stale_write();
+create trigger weight_logs_cursor before insert or update on public.weight_logs
+  for each row execute function public.set_server_updated_at();
+-- Body measurements (PRD §5.3). value_milli is thousandths of `unit`.
+
+create table public.body_measurements (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  measurement_type  text not null check (char_length(measurement_type) between 1 and 60),
+  value_milli       integer not null check (value_milli > 0),
+  unit              text not null check (unit in ('cm', 'percent')),
+  entry_unit        text not null check (entry_unit in ('cm', 'in', 'percent')),
+  occurred_at       timestamptz not null,
+  local_date        date not null,
+  tz                text not null,
+  notes             text,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index body_measurements_user_type_date_idx on public.body_measurements (user_id, measurement_type, local_date);
+create index body_measurements_user_cursor_idx on public.body_measurements (user_id, server_updated_at, id);
+
+alter table public.body_measurements enable row level security;
+revoke all on table public.body_measurements from anon;
+grant select, insert, update, delete on table public.body_measurements to authenticated;
+
+create policy body_measurements_select on public.body_measurements for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy body_measurements_insert on public.body_measurements for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy body_measurements_update on public.body_measurements for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy body_measurements_delete on public.body_measurements for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger body_measurements_stale before update on public.body_measurements
+  for each row execute function public.reject_stale_write();
+create trigger body_measurements_cursor before insert or update on public.body_measurements
+  for each row execute function public.set_server_updated_at();
+-- Water, foods, meals and saved meals (PRD §5.4, §5.5).
+-- Meal items store a snapshot of nutrition values, so editing a food never
+-- rewrites past meals.
+
+create table public.water_logs (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  amount_ml         integer not null check (amount_ml between 1 and 5000),
+  occurred_at       timestamptz not null,
+  local_date        date not null,
+  tz                text not null,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index water_logs_user_date_idx on public.water_logs (user_id, local_date);
+create index water_logs_user_cursor_idx on public.water_logs (user_id, server_updated_at, id);
+
+alter table public.water_logs enable row level security;
+revoke all on table public.water_logs from anon;
+grant select, insert, update, delete on table public.water_logs to authenticated;
+
+create policy water_logs_select on public.water_logs for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy water_logs_insert on public.water_logs for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy water_logs_update on public.water_logs for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy water_logs_delete on public.water_logs for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger water_logs_stale before update on public.water_logs
+  for each row execute function public.reject_stale_write();
+create trigger water_logs_cursor before insert or update on public.water_logs
+  for each row execute function public.set_server_updated_at();
+
+
+create table public.food_items (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  name              text not null check (char_length(btrim(name)) between 1 and 120),
+  brand             text,
+  category          text not null default 'other',
+  serving_label     text not null,
+  serving_qty_milli integer not null check (serving_qty_milli > 0),
+  serving_unit      text not null,
+  serving_weight_mg integer check (serving_weight_mg > 0),
+  energy_kcal_milli bigint not null check (energy_kcal_milli >= 0),
+  protein_mg        integer not null check (protein_mg >= 0),
+  carbs_mg          integer not null check (carbs_mg >= 0),
+  fat_mg            integer not null check (fat_mg >= 0),
+  fibre_mg          integer not null check (fibre_mg >= 0),
+  junk_category     text check (junk_category in ('fast_food', 'fried_snacks', 'sweets', 'sugary_drinks', 'packaged_snacks', 'other')),
+  is_saved          boolean not null default false,
+  use_count         integer not null default 0 check (use_count >= 0),
+  last_used_at      timestamptz,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index food_items_user_name_idx on public.food_items (user_id, lower(name));
+create index food_items_user_cursor_idx on public.food_items (user_id, server_updated_at, id);
+
+alter table public.food_items enable row level security;
+revoke all on table public.food_items from anon;
+grant select, insert, update, delete on table public.food_items to authenticated;
+
+create policy food_items_select on public.food_items for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy food_items_insert on public.food_items for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy food_items_update on public.food_items for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy food_items_delete on public.food_items for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger food_items_stale before update on public.food_items
+  for each row execute function public.reject_stale_write();
+create trigger food_items_cursor before insert or update on public.food_items
+  for each row execute function public.set_server_updated_at();
+
+
+create table public.meal_logs (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  meal_category     text not null check (meal_category in ('early_morning', 'breakfast', 'mid_morning', 'lunch', 'evening_snack', 'dinner', 'late_night', 'other')),
+  occurred_at       timestamptz not null,
+  local_date        date not null,
+  tz                text not null,
+  notes             text,
+  has_photo         boolean not null default false,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index meal_logs_user_date_idx on public.meal_logs (user_id, local_date);
+create index meal_logs_user_cursor_idx on public.meal_logs (user_id, server_updated_at, id);
+
+alter table public.meal_logs enable row level security;
+revoke all on table public.meal_logs from anon;
+grant select, insert, update, delete on table public.meal_logs to authenticated;
+
+create policy meal_logs_select on public.meal_logs for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy meal_logs_insert on public.meal_logs for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy meal_logs_update on public.meal_logs for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy meal_logs_delete on public.meal_logs for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger meal_logs_stale before update on public.meal_logs
+  for each row execute function public.reject_stale_write();
+create trigger meal_logs_cursor before insert or update on public.meal_logs
+  for each row execute function public.set_server_updated_at();
+
+
+create table public.meal_food_items (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  meal_log_id       uuid not null,
+  food_item_id      uuid,
+  food_name         text not null,
+  quantity_milli    integer not null check (quantity_milli > 0),
+  unit              text not null,
+  serving_weight_mg integer check (serving_weight_mg > 0),
+  energy_kcal_milli bigint not null check (energy_kcal_milli >= 0),
+  protein_mg        integer not null check (protein_mg >= 0),
+  carbs_mg          integer not null check (carbs_mg >= 0),
+  fat_mg            integer not null check (fat_mg >= 0),
+  fibre_mg          integer not null check (fibre_mg >= 0),
+  junk_category     text check (junk_category in ('fast_food', 'fried_snacks', 'sweets', 'sugary_drinks', 'packaged_snacks', 'other')),
+  item_notes        text,
+  sort_order        integer not null default 0,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  -- A child row can only point at its owner's meal and food.
+  foreign key (meal_log_id, user_id) references public.meal_logs (id, user_id) on delete cascade,
+  foreign key (food_item_id, user_id) references public.food_items (id, user_id)
+    on delete set null (food_item_id),
+  unique (id, user_id)
+);
+
+create index meal_food_items_user_meal_idx on public.meal_food_items (user_id, meal_log_id);
+create index meal_food_items_user_cursor_idx on public.meal_food_items (user_id, server_updated_at, id);
+
+alter table public.meal_food_items enable row level security;
+revoke all on table public.meal_food_items from anon;
+grant select, insert, update, delete on table public.meal_food_items to authenticated;
+
+create policy meal_food_items_select on public.meal_food_items for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy meal_food_items_insert on public.meal_food_items for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy meal_food_items_update on public.meal_food_items for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy meal_food_items_delete on public.meal_food_items for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger meal_food_items_stale before update on public.meal_food_items
+  for each row execute function public.reject_stale_write();
+create trigger meal_food_items_cursor before insert or update on public.meal_food_items
+  for each row execute function public.set_server_updated_at();
+
+
+create table public.saved_meals (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  name              text not null check (char_length(btrim(name)) between 1 and 120),
+  meal_category     text check (meal_category in ('early_morning', 'breakfast', 'mid_morning', 'lunch', 'evening_snack', 'dinner', 'late_night', 'other')),
+  items             jsonb not null default '[]'::jsonb,
+  use_count         integer not null default 0 check (use_count >= 0),
+  last_used_at      timestamptz,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index saved_meals_user_cursor_idx on public.saved_meals (user_id, server_updated_at, id);
+
+alter table public.saved_meals enable row level security;
+revoke all on table public.saved_meals from anon;
+grant select, insert, update, delete on table public.saved_meals to authenticated;
+
+create policy saved_meals_select on public.saved_meals for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy saved_meals_insert on public.saved_meals for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy saved_meals_update on public.saved_meals for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy saved_meals_delete on public.saved_meals for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger saved_meals_stale before update on public.saved_meals
+  for each row execute function public.reject_stale_write();
+create trigger saved_meals_cursor before insert or update on public.saved_meals
+  for each row execute function public.set_server_updated_at();
+-- Sleep records and wellness check-ins (PRD §5.9, §5.10).
+-- A night's local_date is the day the user woke up.
+
+create table public.sleep_logs (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  kind              text not null check (kind in ('night', 'nap')),
+  start_at          timestamptz not null,
+  end_at            timestamptz not null,
+  duration_s        integer not null check (duration_s between 60 and 86400),
+  quality           smallint check (quality between 1 and 5),
+  notes             text,
+  local_date        date not null,
+  tz                text not null,
+  check (end_at > start_at),
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index sleep_logs_user_date_idx on public.sleep_logs (user_id, local_date);
+create index sleep_logs_user_cursor_idx on public.sleep_logs (user_id, server_updated_at, id);
+
+alter table public.sleep_logs enable row level security;
+revoke all on table public.sleep_logs from anon;
+grant select, insert, update, delete on table public.sleep_logs to authenticated;
+
+create policy sleep_logs_select on public.sleep_logs for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy sleep_logs_insert on public.sleep_logs for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy sleep_logs_update on public.sleep_logs for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy sleep_logs_delete on public.sleep_logs for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger sleep_logs_stale before update on public.sleep_logs
+  for each row execute function public.reject_stale_write();
+create trigger sleep_logs_cursor before insert or update on public.sleep_logs
+  for each row execute function public.set_server_updated_at();
+
+
+create table public.daily_health_checkins (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  energy            smallint not null check (energy between 1 and 5),
+  mood              smallint not null check (mood between 1 and 5),
+  stress            smallint not null check (stress between 1 and 5),
+  wellness          smallint not null check (wellness between 1 and 5),
+  occurred_at       timestamptz not null,
+  local_date        date not null,
+  tz                text not null,
+  notes             text,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index daily_health_checkins_user_date_idx on public.daily_health_checkins (user_id, local_date);
+create index daily_health_checkins_user_cursor_idx on public.daily_health_checkins (user_id, server_updated_at, id);
+
+alter table public.daily_health_checkins enable row level security;
+revoke all on table public.daily_health_checkins from anon;
+grant select, insert, update, delete on table public.daily_health_checkins to authenticated;
+
+create policy daily_health_checkins_select on public.daily_health_checkins for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy daily_health_checkins_insert on public.daily_health_checkins for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy daily_health_checkins_update on public.daily_health_checkins for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy daily_health_checkins_delete on public.daily_health_checkins for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger daily_health_checkins_stale before update on public.daily_health_checkins
+  for each row execute function public.reject_stale_write();
+create trigger daily_health_checkins_cursor before insert or update on public.daily_health_checkins
+  for each row execute function public.set_server_updated_at();
+-- A food can be the user's edited copy of a bundled catalogue food
+-- (`<source>:<id>`, for example `indb:ASC144`). The catalogue itself is
+-- reference data on the phone and is not stored here.
+
+alter table public.food_items add column catalogue_ref text
+  check (catalogue_ref is null or catalogue_ref ~ '^[a-z]+:[A-Za-z0-9_.-]+$');
+
+create index food_items_user_catalogue_ref_idx on public.food_items (user_id, catalogue_ref)
+  where catalogue_ref is not null;
+-- Activity definitions and logs (PRD §5.14). Ordinary activities only;
+-- private activities never leave the device (§7.1, decision C5).
+-- "Missed" is derived from the schedule and never stored.
+
+create table public.activity_definitions (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  name              text not null check (length(name) between 1 and 80),
+  description       text,
+  category          text not null,
+  icon_key          text not null,
+  tracking_type     text not null check (tracking_type in ('boolean', 'count', 'numeric', 'duration', 'stopwatch', 'event_log', 'checklist')),
+  priority          text not null check (priority in ('essential', 'optional')),
+  target_milli      bigint check (target_milli > 0),
+  target_unit       text,
+  schedule          jsonb not null,
+  schedule_history  jsonb not null default '[]',
+  stopwatch_enabled boolean not null default false,
+  show_on_dashboard boolean not null default true,
+  checklist_items   jsonb not null default '[]',
+  status            text not null check (status in ('active', 'archived')),
+  sort_order        integer not null default 0,
+  system_key        text,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index activity_definitions_user_cursor_idx on public.activity_definitions (user_id, server_updated_at, id);
+
+alter table public.activity_definitions enable row level security;
+revoke all on table public.activity_definitions from anon;
+grant select, insert, update, delete on table public.activity_definitions to authenticated;
+
+create policy activity_definitions_select on public.activity_definitions for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy activity_definitions_insert on public.activity_definitions for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy activity_definitions_update on public.activity_definitions for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy activity_definitions_delete on public.activity_definitions for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger activity_definitions_stale before update on public.activity_definitions
+  for each row execute function public.reject_stale_write();
+create trigger activity_definitions_cursor before insert or update on public.activity_definitions
+  for each row execute function public.set_server_updated_at();
+
+
+create table public.activity_logs (
+  id                     uuid primary key,
+  user_id                uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  activity_definition_id uuid not null,
+  status                 text not null check (status in ('completed', 'skipped')),
+  occurred_at            timestamptz not null,
+  local_date             date not null,
+  tz                     text not null,
+  scheduled_slot         smallint check (scheduled_slot between 0 and 1439),
+  count_value            integer check (count_value >= 0),
+  numeric_value_milli    bigint,
+  unit                   text,
+  duration_s             integer check (duration_s between 0 and 86400),
+  checklist_state        jsonb,
+  source                 text not null check (source in ('manual', 'notification', 'timer')),
+  notes                  text,
+  created_at             timestamptz not null,
+  updated_at             timestamptz not null,
+  deleted_at             timestamptz,
+  server_updated_at      timestamptz not null default now(),
+  -- A log can only point at its owner's activity.
+  foreign key (activity_definition_id, user_id)
+    references public.activity_definitions (id, user_id) on delete cascade,
+  unique (id, user_id)
+);
+
+create index activity_logs_user_date_idx on public.activity_logs (user_id, local_date);
+create index activity_logs_user_activity_idx on public.activity_logs (user_id, activity_definition_id, local_date);
+create index activity_logs_user_cursor_idx on public.activity_logs (user_id, server_updated_at, id);
+
+alter table public.activity_logs enable row level security;
+revoke all on table public.activity_logs from anon;
+grant select, insert, update, delete on table public.activity_logs to authenticated;
+
+create policy activity_logs_select on public.activity_logs for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy activity_logs_insert on public.activity_logs for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy activity_logs_update on public.activity_logs for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy activity_logs_delete on public.activity_logs for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger activity_logs_stale before update on public.activity_logs
+  for each row execute function public.reject_stale_write();
+create trigger activity_logs_cursor before insert or update on public.activity_logs
+  for each row execute function public.set_server_updated_at();
+-- Ordinary reminders (PRD §5.15). Sensitive reminders (medication, bowel,
+-- private activities) never leave the device (§7.1). Notification state is
+-- device-only and has no cloud table.
+
+create table public.reminders (
+  id                     uuid primary key,
+  user_id                uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  kind                   text not null check (kind in ('custom', 'activity', 'water', 'workout', 'sleep', 'posture')),
+  title                  text not null check (length(title) between 1 and 80),
+  description            text,
+  activity_definition_id uuid,
+  schedule               jsonb not null,
+  condition              text not null check (condition in ('always', 'if_incomplete')),
+  channel_key            text not null check (channel_key in ('alarms', 'routines', 'hydration', 'fitness', 'medication', 'sleep', 'system')),
+  sound_key              text,
+  vibrate                boolean not null default true,
+  snooze_default_min     smallint not null default 10 check (snooze_default_min between 1 and 720),
+  priority               text not null check (priority in ('normal', 'alarm')),
+  quiet_hours_behaviour  text not null check (quiet_hours_behaviour in ('defer', 'suppress', 'bypass')),
+  exact                  boolean not null default false,
+  enabled                boolean not null default true,
+  start_date             date,
+  end_date               date,
+  check (end_date is null or start_date is null or end_date >= start_date),
+  created_at             timestamptz not null,
+  updated_at             timestamptz not null,
+  deleted_at             timestamptz,
+  server_updated_at      timestamptz not null default now(),
+  -- A reminder can only point at its owner's activity.
+  foreign key (activity_definition_id, user_id)
+    references public.activity_definitions (id, user_id) on delete set null (activity_definition_id),
+  unique (id, user_id)
+);
+
+create index reminders_user_cursor_idx on public.reminders (user_id, server_updated_at, id);
+
+alter table public.reminders enable row level security;
+revoke all on table public.reminders from anon;
+grant select, insert, update, delete on table public.reminders to authenticated;
+
+create policy reminders_select on public.reminders for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy reminders_insert on public.reminders for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy reminders_update on public.reminders for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy reminders_delete on public.reminders for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger reminders_stale before update on public.reminders
+  for each row execute function public.reject_stale_write();
+create trigger reminders_cursor before insert or update on public.reminders
+  for each row execute function public.set_server_updated_at();
+-- Fitness (PRD §5.6–5.8): daily step totals only (raw readings and GPS
+-- routes stay on the phone, §6.6, C3), exercises, workouts, sets, templates.
+
+create table public.step_logs (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  log_date          date not null,
+  steps             integer not null check (steps >= 0),
+  source            text not null check (source in ('phone_sensor', 'phone_sensor_adjusted', 'manual')),
+  timezone          text not null,
+  collected_at      timestamptz,
+  unique (user_id, log_date),
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index step_logs_user_cursor_idx on public.step_logs (user_id, server_updated_at, id);
+
+alter table public.step_logs enable row level security;
+revoke all on table public.step_logs from anon;
+grant select, insert, update, delete on table public.step_logs to authenticated;
+
+create policy step_logs_select on public.step_logs for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy step_logs_insert on public.step_logs for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy step_logs_update on public.step_logs for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy step_logs_delete on public.step_logs for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger step_logs_stale before update on public.step_logs
+  for each row execute function public.reject_stale_write();
+create trigger step_logs_cursor before insert or update on public.step_logs
+  for each row execute function public.set_server_updated_at();
+
+create table public.exercises (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  name              text not null check (length(name) between 1 and 80),
+  category          text not null,
+  muscle_group      text not null,
+  equipment         text not null,
+  instructions      text,
+  is_custom         boolean not null default false,
+  measurement_kind  text not null check (measurement_kind in ('weight_reps', 'reps_only', 'duration', 'distance_duration')),
+  system_key        text,
+  archived          boolean not null default false,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index exercises_user_cursor_idx on public.exercises (user_id, server_updated_at, id);
+
+alter table public.exercises enable row level security;
+revoke all on table public.exercises from anon;
+grant select, insert, update, delete on table public.exercises to authenticated;
+
+create policy exercises_select on public.exercises for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy exercises_insert on public.exercises for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy exercises_update on public.exercises for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy exercises_delete on public.exercises for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger exercises_stale before update on public.exercises
+  for each row execute function public.reject_stale_write();
+create trigger exercises_cursor before insert or update on public.exercises
+  for each row execute function public.set_server_updated_at();
+
+create table public.workout_sessions (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  kind              text not null check (kind in ('gym', 'walk', 'run', 'cycle')),
+  name              text not null,
+  started_at        timestamptz not null,
+  ended_at          timestamptz,
+  duration_s        integer not null check (duration_s between 0 and 86400),
+  local_date        date not null,
+  tz                text not null,
+  distance_m        integer check (distance_m between 0 and 500000),
+  steps             integer,
+  entry_mode        text not null check (entry_mode in ('manual', 'gps')),
+  has_route         boolean not null default false,
+  template_id       uuid,
+  notes             text,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index workout_sessions_user_cursor_idx on public.workout_sessions (user_id, server_updated_at, id);
+create index workout_sessions_user_date_idx on public.workout_sessions (user_id, local_date);
+
+alter table public.workout_sessions enable row level security;
+revoke all on table public.workout_sessions from anon;
+grant select, insert, update, delete on table public.workout_sessions to authenticated;
+
+create policy workout_sessions_select on public.workout_sessions for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy workout_sessions_insert on public.workout_sessions for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy workout_sessions_update on public.workout_sessions for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy workout_sessions_delete on public.workout_sessions for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger workout_sessions_stale before update on public.workout_sessions
+  for each row execute function public.reject_stale_write();
+create trigger workout_sessions_cursor before insert or update on public.workout_sessions
+  for each row execute function public.set_server_updated_at();
+
+create table public.workout_exercises (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  session_id        uuid not null,
+  exercise_id       uuid not null,
+  sort_order        integer not null default 0,
+  notes             text,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  foreign key (session_id, user_id) references public.workout_sessions (id, user_id) on delete cascade,
+  foreign key (exercise_id, user_id) references public.exercises (id, user_id),
+  unique (id, user_id)
+);
+
+create index workout_exercises_user_cursor_idx on public.workout_exercises (user_id, server_updated_at, id);
+create index workout_exercises_user_session_idx on public.workout_exercises (user_id, session_id);
+
+alter table public.workout_exercises enable row level security;
+revoke all on table public.workout_exercises from anon;
+grant select, insert, update, delete on table public.workout_exercises to authenticated;
+
+create policy workout_exercises_select on public.workout_exercises for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy workout_exercises_insert on public.workout_exercises for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy workout_exercises_update on public.workout_exercises for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy workout_exercises_delete on public.workout_exercises for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger workout_exercises_stale before update on public.workout_exercises
+  for each row execute function public.reject_stale_write();
+create trigger workout_exercises_cursor before insert or update on public.workout_exercises
+  for each row execute function public.set_server_updated_at();
+
+create table public.exercise_sets (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  workout_exercise_id uuid not null,
+  set_number        integer not null check (set_number >= 1),
+  reps              integer check (reps between 0 and 1000),
+  load_g            integer check (load_g between 0 and 1000000),
+  entry_unit        text check (entry_unit in ('kg', 'lb')),
+  distance_m        integer check (distance_m between 0 and 500000),
+  duration_s        integer check (duration_s between 0 and 86400),
+  rest_s            integer check (rest_s between 0 and 3600),
+  completed_at      timestamptz,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  foreign key (workout_exercise_id, user_id) references public.workout_exercises (id, user_id) on delete cascade,
+  unique (id, user_id)
+);
+
+create index exercise_sets_user_cursor_idx on public.exercise_sets (user_id, server_updated_at, id);
+create index exercise_sets_user_parent_idx on public.exercise_sets (user_id, workout_exercise_id);
+
+alter table public.exercise_sets enable row level security;
+revoke all on table public.exercise_sets from anon;
+grant select, insert, update, delete on table public.exercise_sets to authenticated;
+
+create policy exercise_sets_select on public.exercise_sets for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy exercise_sets_insert on public.exercise_sets for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy exercise_sets_update on public.exercise_sets for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy exercise_sets_delete on public.exercise_sets for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger exercise_sets_stale before update on public.exercise_sets
+  for each row execute function public.reject_stale_write();
+create trigger exercise_sets_cursor before insert or update on public.exercise_sets
+  for each row execute function public.set_server_updated_at();
+
+create table public.workout_templates (
+  id                uuid primary key,
+  user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  name              text not null check (length(name) between 1 and 80),
+  exercises         jsonb not null,
+  use_count         integer not null default 0,
+  last_used_at      timestamptz,
+  created_at        timestamptz not null,
+  updated_at        timestamptz not null,
+  deleted_at        timestamptz,
+  server_updated_at timestamptz not null default now(),
+  unique (id, user_id)
+);
+
+create index workout_templates_user_cursor_idx on public.workout_templates (user_id, server_updated_at, id);
+
+alter table public.workout_templates enable row level security;
+revoke all on table public.workout_templates from anon;
+grant select, insert, update, delete on table public.workout_templates to authenticated;
+
+create policy workout_templates_select on public.workout_templates for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy workout_templates_insert on public.workout_templates for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy workout_templates_update on public.workout_templates for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy workout_templates_delete on public.workout_templates for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create trigger workout_templates_stale before update on public.workout_templates
+  for each row execute function public.reject_stale_write();
+create trigger workout_templates_cursor before insert or update on public.workout_templates
+  for each row execute function public.set_server_updated_at();
+-- Push tokens and per-device sync status (03-database.md §2.7, PRD §5.15I).
+-- No health data: a token, a label, preferences and timestamps.
+
+create table public.device_notification_tokens (
+  id            uuid primary key default gen_random_uuid(),
+  user_id       uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  fcm_token     text not null unique check (length(fcm_token) between 20 and 4096),
+  device_label  text not null default 'Android' check (length(device_label) <= 40),
+  app_version   text not null check (length(app_version) <= 20),
+  preferences   jsonb not null default '{"account": true, "sync_problems": true, "backup_status": false}',
+  last_seen_at  timestamptz not null,
+  revoked_at    timestamptz,
+  created_at    timestamptz not null default now()
+);
+
+create index device_notification_tokens_user_idx on public.device_notification_tokens (user_id) where revoked_at is null;
+
+alter table public.device_notification_tokens enable row level security;
+revoke all on table public.device_notification_tokens from anon;
+grant select, insert, update, delete on table public.device_notification_tokens to authenticated;
+
+create policy device_notification_tokens_select on public.device_notification_tokens for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy device_notification_tokens_insert on public.device_notification_tokens for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy device_notification_tokens_update on public.device_notification_tokens for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy device_notification_tokens_delete on public.device_notification_tokens for delete to authenticated
+  using ((select auth.uid()) = user_id);
+
+create table public.cloud_sync_metadata (
+  device_id       uuid primary key,
+  user_id         uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  last_push_at    timestamptz,
+  last_pull_at    timestamptz,
+  schema_version  smallint not null check (schema_version > 0),
+  app_version     text not null check (length(app_version) <= 20),
+  updated_at      timestamptz not null default now()
+);
+
+create index cloud_sync_metadata_user_idx on public.cloud_sync_metadata (user_id);
+
+alter table public.cloud_sync_metadata enable row level security;
+revoke all on table public.cloud_sync_metadata from anon;
+grant select, insert, update, delete on table public.cloud_sync_metadata to authenticated;
+
+create policy cloud_sync_metadata_select on public.cloud_sync_metadata for select to authenticated
+  using ((select auth.uid()) = user_id);
+create policy cloud_sync_metadata_insert on public.cloud_sync_metadata for insert to authenticated
+  with check ((select auth.uid()) = user_id);
+create policy cloud_sync_metadata_update on public.cloud_sync_metadata for update to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy cloud_sync_metadata_delete on public.cloud_sync_metadata for delete to authenticated
+  using ((select auth.uid()) = user_id);
