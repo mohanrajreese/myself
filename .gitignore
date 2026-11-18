@@ -63,3 +63,4 @@ lib/l10n/generated/
 
 # Screen renders for visual review (regenerate with --tags visual --update-goldens)
 test/visual/renders/
+/android/build/
