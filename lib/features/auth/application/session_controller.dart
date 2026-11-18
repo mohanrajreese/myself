@@ -27,6 +27,13 @@ final class DifferentAccount extends SignInOutcome {
   final Account incoming;
 }
 
+/// Erases everything this phone holds for the account. Defaults to the main
+/// database; the app replaces it with the full eraser (private data, photos,
+/// notifications, app lock).
+final localDataEraserProvider = Provider<Future<void> Function()>(
+  (ref) => ref.read(appDatabaseProvider).eraseAllData,
+);
+
 final sessionControllerProvider = NotifierProvider<SessionController, SessionState>(
   SessionController.new,
 );
@@ -51,7 +58,7 @@ class SessionController extends Notifier<SessionState> {
 
   /// Erases everything stored for the previous account, then binds [incoming].
   Future<void> replaceAccount(Account incoming) async {
-    await ref.read(appDatabaseProvider).eraseAllData();
+    await ref.read(localDataEraserProvider)();
     await _bind(incoming);
   }
 
@@ -64,6 +71,12 @@ class SessionController extends Notifier<SessionState> {
     await ref.read(authRepositoryProvider).signOut();
     await ref.read(settingsRepositoryProvider).write(SessionKeys.signedIn, false);
     state = SessionState(account: state.account);
+  }
+
+  /// After the phone's data is erased: signed out and unbound.
+  Future<void> forget() async {
+    await ref.read(authRepositoryProvider).signOut();
+    state = const SessionState();
   }
 
   Future<void> _bind(Account account) async {

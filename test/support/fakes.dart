@@ -16,6 +16,7 @@ import 'package:fitbuddy/core/platform/time_zone_source.dart';
 import 'package:fitbuddy/core/utils/clock.dart';
 import 'package:fitbuddy/core/utils/id_generator.dart';
 import 'package:fitbuddy/core/platform/push_messaging.dart';
+import 'package:fitbuddy/core/platform/document_saver.dart';
 import 'package:fitbuddy/core/sync/push_registry.dart';
 import 'package:fitbuddy/features/nutrition/domain/meal_photos.dart';
 
@@ -73,6 +74,9 @@ class MemoryPhotoStore implements MealPhotoStore {
     photos.remove(mealId);
     return const Ok(null);
   }
+
+  @override
+  Future<void> removeAll() async => photos.clear();
 }
 
 /// A picker that returns [next] (null means the user cancelled).
@@ -287,4 +291,15 @@ class FakePushRegistry implements PushRegistry {
       registered[token] = prefs;
   @override
   Future<void> revoke(String token) async => revoked.add(token);
+}
+
+class FakeDocumentSaver implements DocumentSaver {
+  final Map<String, Uint8List> saved = {};
+  bool cancel = false;
+  @override
+  Future<bool> save(String fileName, Uint8List bytes) async {
+    if (cancel) return false;
+    saved[fileName] = bytes;
+    return true;
+  }
 }

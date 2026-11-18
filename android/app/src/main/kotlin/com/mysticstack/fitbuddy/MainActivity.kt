@@ -4,6 +4,7 @@ import android.Manifest
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
 import com.mysticstack.fitbuddy.generated.AlarmApi
+import com.mysticstack.fitbuddy.generated.ExportApi
 import com.mysticstack.fitbuddy.generated.SecurityApi
 import com.mysticstack.fitbuddy.generated.SoundApi
 import com.mysticstack.fitbuddy.generated.UsageApi
@@ -30,6 +31,14 @@ class MainActivity : FlutterFragmentActivity() {
         pendingSoundPick = null
     }
 
+    private var pendingSave: ((Uri?) -> Unit)? = null
+
+    // Exports are always a zip file.
+    private val documentCreator = registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+        pendingSave?.invoke(uri)
+        pendingSave = null
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         SystemInfoApi.setUp(
@@ -48,6 +57,13 @@ class MainActivity : FlutterFragmentActivity() {
         SecurityApi.setUp(flutterEngine.dartExecutor.binaryMessenger, SecurityPlugin { this })
         UsageApi.setUp(flutterEngine.dartExecutor.binaryMessenger, UsagePlugin(applicationContext))
         AlarmApi.setUp(flutterEngine.dartExecutor.binaryMessenger, AlarmPlugin(applicationContext))
+        ExportApi.setUp(
+            flutterEngine.dartExecutor.binaryMessenger,
+            ExportPlugin(applicationContext) { name, callback ->
+                pendingSave = callback
+                documentCreator.launch(name)
+            },
+        )
         SoundApi.setUp(
             flutterEngine.dartExecutor.binaryMessenger,
             SoundPlugin(applicationContext) { callback ->

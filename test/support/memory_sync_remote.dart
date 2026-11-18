@@ -13,6 +13,9 @@ class MemorySyncRemote implements SyncRemote {
   int upserts = 0;
   var _tick = 1;
 
+  /// Every table name written to, for privacy checks.
+  Iterable<String> get tableNames => _tables.keys;
+
   List<Map<String, Object?>> rows(String table) => [...?_tables[table]?.values];
 
   void seed(String table, List<Map<String, Object?>> rows) {

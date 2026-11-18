@@ -157,12 +157,21 @@ class SettingsScreen extends ConsumerWidget {
             FbNavRow(title: l10n.rowAbout, onTap: () => context.push(Routes.about)),
           ]),
           const SizedBox(height: FbSpace.xl),
-          group(l10n.sectionAccount, [
+          group(l10n.yourData, [
             FbNavRow(
               title: l10n.accountAndSync,
               value: syncText,
               onTap: () => context.push(Routes.accountSync),
             ),
+            FbNavRow(
+              title: l10n.exportTitle,
+              value: l10n.exportRowHelp,
+              onTap: () => context.push(Routes.export),
+            ),
+            FbNavRow(title: l10n.deleteDataTitle, onTap: () => context.push(Routes.deleteData)),
+          ]),
+          const SizedBox(height: FbSpace.xl),
+          group(l10n.sectionAccount, [
             InkWell(
               onTap: signOut,
               child: ConstrainedBox(

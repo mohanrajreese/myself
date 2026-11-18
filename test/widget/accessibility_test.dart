@@ -186,6 +186,8 @@ final List<_Screen> _screens = [
   ),
   (name: 'report: workouts', setUp: true, open: (tester) => _go(tester, Routes.report('workouts'))),
   (name: 'account and sync', setUp: true, open: (tester) => _go(tester, Routes.accountSync)),
+  (name: 'export', setUp: true, open: (tester) => _go(tester, Routes.export)),
+  (name: 'delete data', setUp: true, open: (tester) => _go(tester, Routes.deleteData)),
 ];
 
 /// For screens with a running clock, which never settle.

@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'dart:convert';
+
 import 'package:fitbuddy/app/routes.dart';
+import 'package:fitbuddy/core/database/synced_tables.dart';
 import 'package:fitbuddy/core/sync/sync_engine.dart';
 import 'package:fitbuddy/core/sync/sync_remote.dart';
 import 'package:fitbuddy/features/onboarding/application/setup_draft.dart';
@@ -158,5 +161,25 @@ void main() {
       expect(app.push.deleted, 1);
       await app.dispose(tester);
     });
+  });
+
+  testWidgets('private records never reach the cloud, even in a full sync', (tester) async {
+    final app = AppHarness(withSync: true);
+    await app.completeOnboarding();
+    await app.privateDb.customStatement(
+      'INSERT INTO local_bowel_logs (id, created_at, updated_at, occurred_at, local_date, tz, count, consistency, '
+      "straining, notes) VALUES ('b1', ?1, ?1, ?1, '2026-11-16', 'UTC', 1, 'loose', 1, 'PRIVATE-MARKER-7731')",
+      ['2026-11-16T09:00:00.000Z'],
+    );
+    await app.pump(tester, session: signedInSession);
+    await drain(tester);
+    await go(tester, Routes.accountSync);
+    await tap(tester, find.text('Sync now'));
+    expect(app.remote!.tableNames, isNotEmpty);
+    expect(app.remote!.tableNames.every(syncedTableNames.contains), isTrue);
+    final everything = jsonEncode({for (final t in app.remote!.tableNames) t: app.remote!.rows(t)});
+    expect(everything, isNot(contains('PRIVATE-MARKER-7731')));
+    expect(everything, isNot(contains('bowel')));
+    await app.dispose(tester);
   });
 }

@@ -36,6 +36,7 @@ import 'app.dart';
 import 'app_config.dart';
 import 'background.dart';
 import 'sync_controller.dart';
+import 'account_actions.dart';
 import 'push_controller.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -173,6 +174,10 @@ Future<void> bootstrap() async {
           ),
         ],
         pushMessagingProvider.overrideWithValue(push),
+        localDataEraserProvider.overrideWith(
+          (ref) =>
+              () => erasePhoneData(ref),
+        ),
         initialSessionProvider.overrideWithValue(session),
         initialThemeModeProvider.overrideWithValue(themeMode),
         onlineProvider.overrideWith((ref) => _online()),

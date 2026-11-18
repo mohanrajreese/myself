@@ -106,6 +106,11 @@ void main() {
     await tester.tap(find.text('Continue with Google'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Erase and continue'));
+    // Erasing touches files and both databases (real I/O).
+    for (var i = 0; i < 30; i++) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 5)));
+      await tester.pump(const Duration(milliseconds: 50));
+    }
     await tester.pumpAndSettle();
     expect(find.text('About you'), findsOneWidget);
     expect(await app.db.select(app.db.weightLogs).get(), isEmpty);

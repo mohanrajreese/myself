@@ -10,4 +10,7 @@ abstract interface class MealPhotoStore {
   Future<List<int>?> read(String mealId);
 
   Future<Result<void>> remove(String mealId);
+
+  /// Deletes every stored photo file (erasing the phone's data, §7.3).
+  Future<void> removeAll();
 }

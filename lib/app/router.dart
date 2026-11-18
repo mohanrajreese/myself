@@ -36,6 +36,7 @@ import '../features/recovery/presentation/recovery_screen.dart';
 import '../features/screen_time/presentation/screen_time_screen.dart';
 import 'routine/hygiene_screen.dart';
 import '../features/settings/presentation/account_sync_screen.dart';
+import '../features/settings/presentation/data_screens.dart';
 import '../features/insights/domain/report.dart';
 import '../features/insights/presentation/insights_screens.dart';
 import '../features/private_space/presentation/private_report_screen.dart';
@@ -331,6 +332,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(path: 'app-lock', builder: (context, state) => const AppLockSettingsScreen()),
           GoRoute(path: 'account', builder: (context, state) => const AccountSyncScreen()),
+          GoRoute(path: 'export', builder: (context, state) => const ExportScreen()),
+          GoRoute(path: 'delete', builder: (context, state) => const DeleteDataScreen()),
         ],
       ),
       GoRoute(

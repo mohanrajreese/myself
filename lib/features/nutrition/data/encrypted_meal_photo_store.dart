@@ -30,6 +30,11 @@ final class EncryptedMealPhotoStore implements MealPhotoStore {
 
   static const maxBytes = 15 * 1024 * 1024;
 
+  @override
+  Future<void> removeAll() async {
+    if (await directory.exists()) await directory.delete(recursive: true);
+  }
+
   File _file(String name) => File('${directory.path}/$name');
 
   Future<MealPhotoRow?> _row(String mealId) =>

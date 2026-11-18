@@ -30,6 +30,8 @@ import 'memory_sync_remote.dart';
 
 import 'package:fitbuddy/app/push_controller.dart';
 import 'package:fitbuddy/app/sync_controller.dart';
+import 'package:fitbuddy/app/account_actions.dart';
+import 'package:fitbuddy/app/export_providers.dart';
 
 const signedInSession = SessionState(account: testAccount, signedIn: true);
 
@@ -51,6 +53,7 @@ class AppHarness {
   MemorySyncRemote? remote;
   final FakePushMessaging push = FakePushMessaging();
   final FakePushRegistry pushRegistry = FakePushRegistry();
+  final FakeDocumentSaver saver = FakeDocumentSaver();
 
   final AppDatabase db = memoryDatabase();
   final MutableClock time;
@@ -109,6 +112,11 @@ class AppHarness {
     ),
     if (remote != null) syncRemoteProvider.overrideWithValue(remote),
     pushMessagingProvider.overrideWithValue(push),
+    localDataEraserProvider.overrideWith(
+      (ref) =>
+          () => erasePhoneData(ref),
+    ),
+    documentSaverProvider.overrideWithValue(saver),
     pushRegistryProvider.overrideWithValue(pushRegistry),
     signOutActionProvider.overrideWith(
       (ref) => () async {
