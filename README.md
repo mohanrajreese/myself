@@ -22,7 +22,7 @@ Personal Android app for daily health, fitness, nutrition, routines and digital 
 ## Setup
 
 1. Install Flutter stable and the Android SDK components above.
-2. Copy `env/dev.example.json` to `env/dev.json` and fill in your Supabase URL, publishable key and Google Web client ID. `env/*.json` is git-ignored.
+2. Copy `env/dev.example.json` to `env/dev.json` and fill in your Supabase URL, publishable key and Google Web client ID, and (for push) the four Firebase client values. `env/*.json` is git-ignored. Server setup for sync and push: [`docs/sync_and_push.md`](docs/sync_and_push.md).
 3. Register the debug signing key with your Google Cloud Android OAuth client (package `com.mysticstack.fitbuddy`). Fingerprints are in [`docs/permissions.md`](docs/permissions.md).
 
 ```bash

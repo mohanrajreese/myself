@@ -8,8 +8,8 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 6 — Reports and synchronisation (approved 18 Nov 2026); Phases 1–5 phone verification pending |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026; Phase 6 screens drawn 18 Nov 2026, awaiting approval) |
+| Phase | 6 — Reports and synchronisation built 18 Nov 2026; Phases 1–6 phone verification pending; Phase 7 waits for approval |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026; Phase 6 screens approved 18 Nov 2026) |
 | Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
@@ -22,7 +22,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | 3 Activities and reminders | ⏳ built, phone verification pending | [phase-3.md](reports/phase-3.md) |
 | 4 Fitness | ⏳ built, phone verification pending | [phase-4.md](reports/phase-4.md) |
 | 5 Lifestyle and privacy | ⏳ built, phone verification pending | [phase-5.md](reports/phase-5.md) |
-| 6 Reports and synchronisation | ✋ designs awaiting approval | — |
+| 6 Reports and synchronisation | ⏳ built, phone and cloud verification pending | [phase-6.md](reports/phase-6.md) |
 | 7 Quality and release | ☐ | — |
 
 ## Task log
@@ -99,9 +99,21 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | P-07 medication | ☑ | List, editor with schedule, taken/skipped/not marked, reminder from the notification records a dose |
 | P-08 posture and recovery | ☑ | Rest day, soreness, recovery, notes; movement-break and posture reminders (Phase 3 reminders) |
 | P-09, P-10 screen time | ☑ logic · ⏳ device | `UsagePlugin`, usage-access flow, day/week/month, most-used apps, daily target, one generic alert a day |
-| P-11 privacy suite | ◐ | Outbox, allow-list, generic secret notifications, import boundaries tested. The recording-HTTP-client test waits for the Phase 6 sync engine |
+| P-11 privacy suite | ☑ | Outbox, allow-list, generic secret notifications, import boundaries; full-sync traffic check added in Phase 6 |
 | P-12 progress photos | ☑ · ⏳ camera | Encrypted per file, grid, view, delete |
 | P-13 | ☑ | Migration 9 not needed (no `hygiene_logs`); `privacy.md`; report. Device run pending |
+
+| Schema v9 | ☑ | `local_sync_cursors`; upgrade from v1–v8 tested |
+| R-01, R-03 reports and insights | ☑ | Per-day series per domain, averages over days with records, previous-period comparison, up to five descriptive insights (wording tested for causal terms) |
+| R-02 Insights screens | ☑ | Day, week, month, custom; report per domain with chart and named gaps |
+| R-04 private history | ☑ | Behind the lock; habits, bowel, medication, private activities |
+| R-05, R-06 sync engine and restore | ☑ logic · ⏳ real project | Push, pull, backoff, local-wins, cursors, tombstones; returning user restored before onboarding |
+| R-07 background sync and status | ☑ · ⏳ WorkManager | Start, resume, network back, Sync now, hourly job; Account and sync screen |
+| R-08 FCM | ☑ logic · ⏳ delivery | Token lifecycle, preferences, foreground and background messages, tap opens Account and sync; needs the owner's Firebase project |
+| R-09 migration 10 and Edge Functions | ☑ local · ⏳ deploy | Access-rule checks pass locally; functions type-checked and token signing tested with Deno; not deployed |
+| R-10 export | ☑ · ⏳ save picker | JSON or CSV, date range, private data after PIN, photos, AES-256 passphrase |
+| R-11 deletion | ☑ · ⏳ real project | Phone data, account (DELETE + same Google account), C11 now erases private data too |
+| R-12 | ◐ | Report written; device tests 16–18 and cloud checks pending |
 
 ## Device verification backlog
 
@@ -125,3 +137,7 @@ Features implemented but not yet confirmed on the phone. Test numbers refer to `
 | Private and medication notifications show only "FitBuddy reminder" and nothing on the lock screen | Add a medicine at a time 2 min ahead, lock the phone | Pending |
 | Screen time: usage access flow and totals against Digital Wellbeing | Grant access, compare one day | Pending |
 | Progress photo camera and gallery | Add both; the stored file is not a readable image | Pending |
+| Sync against the real project: offline records appear after reconnection, no duplicates; second install restores | Tests 16–17, plus a reinstall | Pending (needs Supabase project, migrations applied) |
+| FCM foreground and background delivery, tap opens Account and sync, payload holds no health data | Test 18 | Pending (needs Firebase project and deployed send-push) |
+| Export saved through the system picker and opened with 7-Zip using the passphrase | Export with and without passphrase | Pending |
+| Account deletion removes the cloud rows | Delete account, then check the project tables | Pending |

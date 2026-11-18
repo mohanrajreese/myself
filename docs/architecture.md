@@ -28,3 +28,6 @@ Design and rationale: [`blueprint/01-architecture.md`](blueprint/01-architecture
 | Touch targets | 44 dp on the design canvas | 48 dp | Android accessibility guideline, enforced by tests |
 | Bottom navigation text | Follows system text size | Capped at 1.15× | Six labels cannot grow without clipping; screen-reader labels are unaffected |
 | Feature-to-feature navigation | — | Through routes only (for example Home opens the weight sheet by path) | Keeps the "another feature only through its domain" rule |
+| Firebase configuration | `google-services.json` and the Google Services Gradle plugin | The four Firebase client values passed with `--dart-define-from-file` and `Firebase.initializeApp(options:)` | Same values the JSON file would carry, kept with the other build settings in the untracked env file; no Gradle plugin to maintain under AGP 9. Push stays off when they are absent |
+| Pull cursors | Not in the table list | `local_sync_cursors` (app database v9) | Needed by the pull protocol in 03 §6.2 |
+
