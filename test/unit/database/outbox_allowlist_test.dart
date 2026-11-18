@@ -35,6 +35,7 @@ void main() {
       'local_notification_state',
       'local_step_daily',
       'local_workout_route_points',
+      'local_recovery_logs',
       'anything_else',
     ]) {
       await expectLater(enqueue(table), throwsA(anything), reason: table);

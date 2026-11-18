@@ -63,7 +63,7 @@ Present in `AppDatabase` and in Supabase with the same columns, plus `user_id` a
 |---|---|---|
 | `activity_definitions` | `name`, `description`, `category`, `icon_key`, `tracking_type` (boolean/count/numeric/duration/stopwatch/event_log/checklist), `priority` (essential/optional), `target_milli?`, `target_unit?`, `schedule` (JSON rule), `schedule_history` (JSON list of `{effective_from, rule}`), `stopwatch_enabled`, `show_on_dashboard`, `checklist_items` (JSON), `status` (active/archived), `sort_order`, `system_key?` | `system_key` marks seeded routines such as `hygiene.brushing_morning`. `schedule_history` keeps "missed" and "not scheduled" correct for past days after a reschedule (§5.14) |
 | `activity_logs` | `activity_definition_id` → definitions, `status` (completed/skipped), log columns, `scheduled_slot?`, `count_value?`, `numeric_value_milli?`, `unit?`, `duration_s?`, `checklist_state?` (JSON), `source` (manual/notification/timer) | Several rows per day allowed. "Missed" is derived, never stored |
-| `hygiene_logs` | `activity_log_id` → activity_logs (unique), `hygiene_type` (full_body_bath/head_wash/brushing_morning/brushing_night/flossing/mouthwash/skincare_morning/skincare_evening/custom), `steps_completed` (JSON), log columns | Detail row for hygiene activities. Bath and head wash are separate types (§5.13) |
+| `hygiene_logs` | *Not created (changed 18 Nov 2026).* Hygiene routines are seeded `activity_definitions` with `system_key` `hygiene.*` and checklist steps, so their records are ordinary `activity_logs` with `checklist_state`; bath and head wash are separate activities | §5.13 |
 
 ### 2.3 Body
 

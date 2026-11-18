@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 
+import '../converters.dart';
+
 /// Pending uploads: one entry per changed row. The payload is read from the
 /// row itself when it is sent. A trigger (see `AppDatabase`) restricts
 /// `entityTable` to the synced tables.
@@ -70,4 +72,18 @@ class LocalMealPhotos extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {id};
+}
+
+/// Rest days, soreness and recovery ratings (§5.19, decision C4). Device-only.
+@DataClassName('RecoveryLogRow')
+class LocalRecoveryLogs extends Table {
+  TextColumn get localDate => text().map(const LocalDateConverter())();
+  BoolColumn get isRestDay => boolean().withDefault(const Constant(false))();
+  IntColumn get soreness => integer().nullable()();
+  IntColumn get recovery => integer().nullable()();
+  TextColumn get notes => text().nullable()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {localDate};
 }

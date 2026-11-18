@@ -8,9 +8,9 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 4 — Fitness built 18 Nov 2026; Phases 1–4 phone verification pending; Phase 5 waits for approval |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026) |
-| Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
+| Phase | 5 — Lifestyle and privacy (approved 18 Nov 2026); Phases 1–4 phone verification pending |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens published 18 Nov 2026, awaiting approval) |
+| Blocked on | Owner's Supabase and Google OAuth setup for a phone build; design approval for Phase 5 screens |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
 ## Phases
@@ -21,7 +21,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | 2 Core tracking | ⏳ built, phone verification pending | [phase-2.md](reports/phase-2.md) |
 | 3 Activities and reminders | ⏳ built, phone verification pending | [phase-3.md](reports/phase-3.md) |
 | 4 Fitness | ⏳ built, phone verification pending | [phase-4.md](reports/phase-4.md) |
-| 5 Lifestyle and privacy | ☐ | — |
+| 5 Lifestyle and privacy | ◐ | — |
 | 6 Reports and synchronisation | ☐ | — |
 | 7 Quality and release | ☐ | — |
 
@@ -89,6 +89,7 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | S-12 overview and Home | ☑ | Fitness overview; Home steps tile live; quick add Workout |
 | S-13 migration, docs, report | ☑ | Device run pending |
 | Accessibility | ☑ | The 2×-text check now opens each screen (it only checked Home before); 7 earlier screens fixed |
+| Phase 5 screens | ✋ | Twelve designs on the canvas |
 
 ## Device verification backlog
 

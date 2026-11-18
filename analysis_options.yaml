@@ -12,6 +12,7 @@ analyzer:
     - "build/**"
     - "lib/l10n/generated/**"
     - "test/**/generated/**"
+    - "test/**/generated_private/**"
     - android/**
   errors:
     invalid_annotation_target: ignore
