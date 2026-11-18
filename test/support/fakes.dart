@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:fitbuddy/core/database/app_database.dart';
 import 'package:fitbuddy/core/errors/result.dart';
 import 'package:fitbuddy/core/notifications/notification_gateway.dart';
 import 'package:fitbuddy/core/platform/alarm_capabilities.dart';
+import 'package:fitbuddy/core/platform/location_tracker.dart';
 import 'package:fitbuddy/core/platform/sound_library.dart';
+import 'package:fitbuddy/core/platform/step_counter.dart';
 import 'package:fitbuddy/core/platform/photo_picker.dart';
 import 'package:fitbuddy/core/platform/time_zone_source.dart';
 import 'package:fitbuddy/core/utils/clock.dart';
@@ -156,4 +160,52 @@ class FakeSoundLibrary implements SoundLibrary {
   Future<void> play(String uri) async => played.add(uri);
   @override
   Future<void> stop() async {}
+}
+
+class FakeStepCounter implements StepCounter {
+  bool sensor = true;
+  bool permission = true;
+  bool grant = true;
+  bool continuous = false;
+  int snapshotsScheduled = 0;
+  final List<BufferedStep> buffer = [];
+
+  @override
+  Future<bool> hasSensor() async => sensor;
+  @override
+  Future<bool> hasPermission() async => permission;
+  @override
+  Future<bool> requestPermission() async {
+    permission = grant;
+    return grant;
+  }
+
+  @override
+  Future<BufferedStep?> readNow() async => null;
+  @override
+  Future<List<BufferedStep>> pending() async => [...buffer];
+  @override
+  Future<void> acknowledge(int maxId) async => buffer.removeWhere((b) => b.id <= maxId);
+  @override
+  Future<void> setContinuous(bool enabled) async => continuous = enabled;
+  @override
+  Future<bool> isContinuous() async => continuous;
+  @override
+  Future<void> scheduleSnapshots() async => snapshotsScheduled++;
+}
+
+class FakeLocationTracker implements LocationTracker {
+  LocationAccess current = LocationAccess.granted;
+  LocationAccess onRequest = LocationAccess.granted;
+  final StreamController<LocationFix> fixes = StreamController.broadcast();
+  int settingsOpened = 0;
+
+  @override
+  Future<LocationAccess> access() async => current;
+  @override
+  Future<LocationAccess> request() async => current = onRequest;
+  @override
+  Stream<LocationFix> track({required String title, required String text}) => fixes.stream;
+  @override
+  Future<void> openSettings() async => settingsOpened++;
 }

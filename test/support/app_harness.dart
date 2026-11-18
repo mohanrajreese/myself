@@ -1,4 +1,5 @@
 import 'package:fitbuddy/app/app.dart';
+import 'package:fitbuddy/app/fitness_providers.dart';
 import 'package:fitbuddy/app/providers.dart';
 import 'package:fitbuddy/app/routine_providers.dart';
 import 'package:fitbuddy/app/tracking_providers.dart';
@@ -38,6 +39,8 @@ class AppHarness {
   final FakeNotificationGateway notifications = FakeNotificationGateway();
   final FakeAlarmCapabilities alarms = FakeAlarmCapabilities();
   final FakeSoundLibrary sounds = FakeSoundLibrary();
+  final FakeStepCounter stepCounter = FakeStepCounter();
+  final FakeLocationTracker location = FakeLocationTracker();
 
   List<Override> overrides({
     SessionState session = const SessionState(),
@@ -56,6 +59,8 @@ class AppHarness {
     notificationGatewayProvider.overrideWithValue(notifications),
     alarmCapabilitiesProvider.overrideWithValue(alarms),
     soundLibraryProvider.overrideWithValue(sounds),
+    stepCounterProvider.overrideWithValue(stepCounter),
+    locationTrackerProvider.overrideWithValue(location),
     signOutActionProvider.overrideWith(
       (ref) =>
           () => ref.read(sessionControllerProvider.notifier).signOut(),

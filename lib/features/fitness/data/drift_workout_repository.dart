@@ -138,8 +138,9 @@ final class DriftWorkoutRepository implements WorkoutRepository {
 
   @override
   Future<Result<void>> updateExercise(Exercise exercise) async {
-    if (exercise.problems.isNotEmpty)
+    if (exercise.problems.isNotEmpty) {
       return Err(ValidationFailure('exercise', exercise.problems.first));
+    }
     if (!exercise.isCustom) return const Err(ValidationFailure('exercise', 'not_custom'));
     return Result.guard(
       () => _db.transaction(() async {
@@ -321,8 +322,9 @@ final class DriftWorkoutRepository implements WorkoutRepository {
     final newStart = (start ?? s.startedAt).toUtc();
     final newEnd = (end ?? s.endedAt)?.toUtc();
     final duration = newEnd == null ? s.durationS : newEnd.difference(newStart).inSeconds;
-    if (newEnd != null && (duration <= 0 || duration > 86400))
+    if (newEnd != null && (duration <= 0 || duration > 86400)) {
       return const Err(ValidationFailure('workout', 'duration_required'));
+    }
     if (distanceM != null && (distanceM < 0 || distanceM > 500000)) {
       return const Err(ValidationFailure('workout', 'distance_out_of_range'));
     }
@@ -382,8 +384,9 @@ final class DriftWorkoutRepository implements WorkoutRepository {
   @override
   Future<Result<String>> duplicate(String sessionId) async {
     final source = await watchSession(sessionId).first;
-    if (source == null || source.kind != WorkoutKind.gym)
+    if (source == null || source.kind != WorkoutKind.gym) {
       return const Err(ValidationFailure('workout', 'not_found'));
+    }
     final started = await startGym(name: source.name);
     final id = started.valueOrNull;
     if (id == null) return started;

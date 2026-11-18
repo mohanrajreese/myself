@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../core/notifications/notification_gateway.dart';
+import 'fitness_providers.dart';
 import 'routes.dart';
 import 'router.dart';
 import 'routine_providers.dart';
@@ -24,10 +25,17 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
   @override
   void initState() {
     super.initState();
-    _lifecycle = AppLifecycleListener(onResume: () => replanReminders(ref));
+    _lifecycle = AppLifecycleListener(
+      onResume: () {
+        replanReminders(ref);
+        syncSteps(ref);
+      },
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       replanReminders(ref);
+      syncSteps(ref);
+      unawaited(ref.read(workoutRepositoryProvider).seedExercises().catchError((Object _) {}));
       final launch = ref.read(launchTapProvider);
       if (launch != null) unawaited(_handle(launch));
     });

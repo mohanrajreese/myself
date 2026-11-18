@@ -151,8 +151,9 @@ final class DriftStepRepository implements StepRepository {
 
   @override
   Future<Result<void>> adjust(LocalDate date, int delta) async {
-    if (delta == 0 || delta.abs() > 100000)
+    if (delta == 0 || delta.abs() > 100000) {
       return const Err(ValidationFailure('steps', 'out_of_range'));
+    }
     return Result.guard(
       () => _db.transaction(() async {
         final existing = await (_db.select(
