@@ -33,7 +33,7 @@
 | Limit | Risk |
 |---|---|
 | No phone has run any build yet; every hardware, background and notification behaviour is unconfirmed | R-27 |
-| Several plugins still use the old Kotlin Gradle setup and print warnings under AGP 9; they build today but may break with a future Android Gradle Plugin | R-37 |
+| Several plugins still use the old Kotlin Gradle setup and print warnings under AGP 9; they build today but may break with a future Android Gradle Plugin | — |
 | The all-CPU APK is 83 MB because it carries three architectures; install the arm64 split APK (30.5 MB) | — |
 | Timings above are from the build machine; a mid-range phone will be slower | — |
 
