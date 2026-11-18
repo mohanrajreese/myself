@@ -8,8 +8,8 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 5 — Lifestyle and privacy built 18 Nov 2026; Phases 1–5 phone verification pending; Phase 6 waits for approval |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026) |
+| Phase | 6 — Reports and synchronisation (approved 18 Nov 2026); Phases 1–5 phone verification pending |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026; Phase 6 screens drawn 18 Nov 2026, awaiting approval) |
 | Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
@@ -22,7 +22,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | 3 Activities and reminders | ⏳ built, phone verification pending | [phase-3.md](reports/phase-3.md) |
 | 4 Fitness | ⏳ built, phone verification pending | [phase-4.md](reports/phase-4.md) |
 | 5 Lifestyle and privacy | ⏳ built, phone verification pending | [phase-5.md](reports/phase-5.md) |
-| 6 Reports and synchronisation | ☐ | — |
+| 6 Reports and synchronisation | ✋ designs awaiting approval | — |
 | 7 Quality and release | ☐ | — |
 
 ## Task log
