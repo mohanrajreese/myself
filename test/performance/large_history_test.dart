@@ -1,7 +1,6 @@
 // Three years of daily records: report timings and query plans (Q-04).
 // Timings are measured on the build machine, not a phone; the budgets are
 // generous and catch regressions such as a lost index, not small changes.
-import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:fitbuddy/core/database/app_database.dart';
 import 'package:fitbuddy/core/utils/local_date.dart';
 import 'package:fitbuddy/features/activities/data/drift_activity_repository.dart';
@@ -32,12 +31,12 @@ void main() {
           [t, d, 6000 + i % 5000],
         );
         await db.customStatement(
-          "INSERT INTO weight_logs (id, created_at, updated_at, weight_g, entry_unit, occurred_at, local_date, tz) "
+          'INSERT INTO weight_logs (id, created_at, updated_at, weight_g, entry_unit, occurred_at, local_date, tz) '
           "VALUES ('w$i', ?1, ?1, ?3, 'kg', ?1, ?2, 'UTC')",
           [t, d, 90000 + i % 2000],
         );
         await db.customStatement(
-          "INSERT INTO sleep_logs (id, created_at, updated_at, kind, start_at, end_at, duration_s, local_date, tz) "
+          'INSERT INTO sleep_logs (id, created_at, updated_at, kind, start_at, end_at, duration_s, local_date, tz) '
           "VALUES ('z$i', ?1, ?1, 'night', ?1, ?1, 25200, ?2, 'UTC')",
           [t, d],
         );
