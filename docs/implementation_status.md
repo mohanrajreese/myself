@@ -8,10 +8,10 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 6 — Reports and synchronisation built 18 Nov 2026; Phases 1–6 phone verification pending; Phase 7 waits for approval |
+| Phase | 7 — Quality and release: everything possible without a phone is done (18 Nov 2026); the device test plan and cloud setup are with the owner |
 | Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026; Phase 6 screens approved 18 Nov 2026) |
 | Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
-| Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
+| Waiting on owner | Phone model; Supabase project (migrations, functions); Google OAuth clients (debug and release fingerprints); Firebase project; release keystore; running `docs/device_test_plan.md` |
 
 ## Phases
 
@@ -23,7 +23,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | 4 Fitness | ⏳ built, phone verification pending | [phase-4.md](reports/phase-4.md) |
 | 5 Lifestyle and privacy | ⏳ built, phone verification pending | [phase-5.md](reports/phase-5.md) |
 | 6 Reports and synchronisation | ⏳ built, phone and cloud verification pending | [phase-6.md](reports/phase-6.md) |
-| 7 Quality and release | ☐ | — |
+| 7 Quality and release | ⏳ automated parts done; device run pending | [phase-7.md](reports/phase-7.md) |
 
 ## Task log
 
@@ -114,6 +114,15 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | R-10 export | ☑ · ⏳ save picker | JSON or CSV, date range, private data after PIN, photos, AES-256 passphrase |
 | R-11 deletion | ☑ · ⏳ real project | Phone data, account (DELETE + same Google account), C11 now erases private data too |
 | R-12 | ◐ | Report written; device tests 16–18 and cloud checks pending |
+
+| Q-01 regression | ☑ | 646 Dart tests, access-rule checks, Deno test, analyze clean, debug and signed release builds |
+| Q-02 device script | ⏳ | `docs/device_test_plan.md` written (19 blueprint tests, feature checks, release checks); run by the owner |
+| Q-03 privacy audit | ☑ build · ⏳ device | Release manifest, binary secret scan, logging, sync traffic, push payload; FCM auto-init and delivery-metrics export turned off. Device steps in `docs/privacy_audit.md` |
+| Q-04 performance | ☑ queries · ⏳ device | Three years of data: report month 22 ms, year 14 ms, export 0.4 s (build machine); all log tables use an index for date ranges. Cold start and scrolling are in the device plan |
+| Q-05 accessibility | ☑ automated · ⏳ TalkBack | 57 screens in light and dark plus 2× text at 320 dp, private screens after unlock; TalkBack pass in the device plan |
+| Q-06 migrations | ☑ | Every app-database version (1–8) upgrades to 9 and validates, with foreign-key checks and data from v1 and v8; private database v1→v2 |
+| Q-07 release build | ☑ build · ⏳ phone | Signing from `android/key.properties`, R8 with keep rules; signed APK, split APKs and AAB built with a throwaway key (deleted); never signed with the debug key |
+| Q-08 docs and report | ☑ | `docs/release.md`, `docs/device_test_plan.md`, `docs/privacy_audit.md`, Phase 7 report |
 
 ## Device verification backlog
 
