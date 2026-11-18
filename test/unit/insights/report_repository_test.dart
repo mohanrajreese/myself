@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:fitbuddy/core/database/app_database.dart';
 import 'package:fitbuddy/core/scheduling/schedule_rule.dart';
 import 'package:fitbuddy/core/utils/local_date.dart';
@@ -67,7 +66,7 @@ void main() {
 
   test('meal items add up per day; junk items are counted', () async {
     await sql(
-      "INSERT INTO meal_logs (id, created_at, updated_at, meal_category, occurred_at, local_date, tz, has_photo) "
+      'INSERT INTO meal_logs (id, created_at, updated_at, meal_category, occurred_at, local_date, tz, has_photo) '
       "VALUES ('m1', ?1, ?1, 'lunch', ?1, '2026-11-16', 'UTC', 0)",
       [stamp],
     );
