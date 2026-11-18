@@ -250,8 +250,10 @@ final class SyncEngine {
           variables: [Variable.withString(id)],
         )
         .getSingleOrNull();
-    if (local != null && !DateTime.parse(local.read<String>('updated_at')).isBefore(remoteUpdated))
+    if (local != null &&
+        !DateTime.parse(local.read<String>('updated_at')).isBefore(remoteUpdated)) {
       return false;
+    }
 
     final natural = localNaturalKeys[table];
     if (natural != null && row[natural] != null) {

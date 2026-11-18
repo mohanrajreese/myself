@@ -14,8 +14,9 @@ final class SupabaseSyncRemote implements SyncRemote {
   static const _timeout = Duration(seconds: 30);
 
   Future<T> _guard<T>(Future<T> Function() call) async {
-    if (_client.auth.currentSession == null)
+    if (_client.auth.currentSession == null) {
       throw const SyncRemoteException('signed_out', auth: true);
+    }
     try {
       return await call().timeout(_timeout);
     } on AuthException {
