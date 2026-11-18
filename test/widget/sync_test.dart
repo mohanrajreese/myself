@@ -75,6 +75,7 @@ void main() {
     expect(find.textContaining('Last synced'), findsOneWidget);
     expect(app.remote!.rows('profiles').single['display_name'], 'Asha Rao');
     expect(app.remote!.rows('weight_logs'), hasLength(1));
+    expect(app.remote!.statusReports.toSet(), hasLength(1)); // one device id, reused
     await app.dispose(tester);
   });
 

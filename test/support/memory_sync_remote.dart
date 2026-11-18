@@ -75,4 +75,14 @@ class MemorySyncRemote implements SyncRemote {
 
   @override
   Future<void> deleteAccount() async => _tables.clear();
+
+  final List<String> statusReports = [];
+
+  @override
+  Future<void> reportStatus({
+    required String deviceId,
+    required DateTime syncedAt,
+    required int schemaVersion,
+    required String appVersion,
+  }) async => statusReports.add(deviceId);
 }

@@ -56,9 +56,7 @@ final class SupabasePushRegistry implements PushRegistry {
   @override
   Future<void> revoke(String token) async {
     if (_client.auth.currentSession == null) return;
-    await _client
-        .from('device_notification_tokens')
-        .update({'revoked_at': _clock().toUtc().toIso8601String()})
-        .eq('fcm_token', token);
+    // Removed rather than marked, so another account may use this phone later.
+    await _client.from('device_notification_tokens').delete().eq('fcm_token', token);
   }
 }

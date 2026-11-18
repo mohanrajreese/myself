@@ -273,6 +273,42 @@ select t.eq((select count(*) from public.activity_logs), 0, 'deleting an activit
 select t.eq((select count(*) from public.reminders where activity_definition_id is null), 1,
             'deleting an activity keeps its reminder, unlinked');
 
+-- ---------------------------------------------------------------- Phase 6: devices and sync status
+reset role;
+select t.login('a');
+insert into public.device_notification_tokens (fcm_token, app_version, last_seen_at)
+values ('token-of-user-a-0123456789', '0.6.0', now());
+insert into public.cloud_sync_metadata (device_id, schema_version, app_version, last_push_at)
+values ('60000000-0000-0000-0000-000000000001', 9, '0.6.0', now());
+select t.eq((select count(*) from public.device_notification_tokens), 1, 'owner sees own push token');
+select t.eq((select count(*) from public.device_notification_tokens
+             where (preferences ->> 'backup_status')::boolean = false), 1, 'push preferences default to off for backup');
+select t.eq((select count(*) from public.cloud_sync_metadata), 1, 'owner sees own sync status');
+reset role;
+select t.login('b');
+select t.eq((select count(*) from public.device_notification_tokens), 0, 'other user cannot read push tokens');
+select t.eq((select count(*) from public.cloud_sync_metadata), 0, 'other user cannot read sync status');
+with changed as (update public.device_notification_tokens set revoked_at = now() returning 1)
+select t.eq((select count(*) from changed), 0, 'other user cannot revoke a token');
+with changed as (update public.cloud_sync_metadata set app_version = 'x' returning 1)
+select t.eq((select count(*) from changed), 0, 'other user cannot update sync status');
+with gone as (delete from public.device_notification_tokens returning 1)
+select t.eq((select count(*) from gone), 0, 'other user cannot delete a token');
+with gone as (delete from public.cloud_sync_metadata returning 1)
+select t.eq((select count(*) from gone), 0, 'other user cannot delete sync status');
+select t.refused($$insert into public.device_notification_tokens (user_id, fcm_token, app_version, last_seen_at)
+  values ('00000000-0000-0000-0000-00000000000a', 'planted-token-0123456789', '0.6.0', now())$$,
+  'cannot register a token for someone else');
+select t.refused($$insert into public.device_notification_tokens (fcm_token, app_version, last_seen_at)
+  values ('token-of-user-a-0123456789', '0.6.0', now())$$,
+  'a token already registered cannot be taken over');
+reset role;
+select t.login('anon');
+select t.refused('select 1 from public.device_notification_tokens', 'anon cannot read push tokens');
+select t.refused('select 1 from public.cloud_sync_metadata', 'anon cannot read sync status');
+reset role;
+select t.login('a');
+
 -- ---------------------------------------------------------------- account deletion
 reset role;
 delete from auth.users where id = '00000000-0000-0000-0000-00000000000a';
@@ -280,6 +316,8 @@ select t.eq((select count(*) from public.profiles), 0, 'deleting the account rem
 select t.eq((select count(*) from public.user_goals), 0, 'deleting the account removes goals');
 select t.eq((select count(*) from public.nutrition_goals), 0, 'deleting the account removes nutrition goals');
 select t.eq((select count(*) from public.weight_logs), 0, 'deleting the account removes weight');
+select t.eq((select count(*) from public.device_notification_tokens), 0, 'deleting the account removes push tokens');
+select t.eq((select count(*) from public.cloud_sync_metadata), 0, 'deleting the account removes sync status');
 
 rollback;
 \echo ALL CHECKS PASSED

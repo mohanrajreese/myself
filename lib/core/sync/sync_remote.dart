@@ -16,6 +16,15 @@ abstract interface class SyncRemote {
 
   /// Deletes the signed-in account and every synced row (Edge Function).
   Future<void> deleteAccount();
+
+  /// Records this device's last successful sync (`cloud_sync_metadata`), used
+  /// by the server for backup-status messages. Contains no health data.
+  Future<void> reportStatus({
+    required String deviceId,
+    required DateTime syncedAt,
+    required int schemaVersion,
+    required String appVersion,
+  });
 }
 
 /// A failed remote call. [code] is a short identifier safe to store and

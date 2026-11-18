@@ -61,4 +61,22 @@ final class SupabaseSyncRemote implements SyncRemote {
   @override
   Future<void> deleteAccount() =>
       _guard(() => _client.functions.invoke('delete-account', method: HttpMethod.post));
+
+  @override
+  Future<void> reportStatus({
+    required String deviceId,
+    required DateTime syncedAt,
+    required int schemaVersion,
+    required String appVersion,
+  }) => _guard(() async {
+    final at = syncedAt.toUtc().toIso8601String();
+    await _client.from('cloud_sync_metadata').upsert({
+      'device_id': deviceId,
+      'last_push_at': at,
+      'last_pull_at': at,
+      'schema_version': schemaVersion,
+      'app_version': appVersion,
+      'updated_at': at,
+    });
+  });
 }
