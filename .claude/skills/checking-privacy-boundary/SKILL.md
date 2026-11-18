@@ -1,6 +1,6 @@
 ---
 name: checking-privacy-boundary
-description: Use when FitBuddy changes touch private habits, bowel records, medication, screen time, sensitive reminders, sync, the outbox, Supabase sources, logging, notification content or push payloads, and before committing any such change.
+description: Use when Praxis changes touch private habits, bowel records, medication, screen time, sensitive reminders, sync, the outbox, Supabase sources, logging, notification content or push payloads, and before committing any such change.
 ---
 
 # Checking the privacy boundary

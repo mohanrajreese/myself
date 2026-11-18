@@ -94,7 +94,7 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | P-02 private habits | ☑ | Two seeded types and your own; record now or with details; weekly/monthly counts; history; delete; archive |
 | P-03 private activities | ☑ | "Private" switch in the activity builder (C5) and an add button in the private space; yes/no or counted; log, history, archive |
 | P-04 bowel | ☑ | Quick log, history, 7-day count, 30-day per-day average, consistency split, check-in reminder |
-| P-05 sensitive reminders | ☑ logic · ⏳ delivery | Private store; title always "FitBuddy reminder", secret on the lock screen (tested) |
+| P-05 sensitive reminders | ☑ logic · ⏳ delivery | Private store; title always "Praxis reminder", secret on the lock screen (tested) |
 | P-06 hygiene | ☑ | Eight standard routines on request (seeded activities, `hygiene.*`), steps for skincare, mark all done. `hygiene_logs` table not created (03-database.md, changed 18 Nov 2026) |
 | P-07 medication | ☑ | List, editor with schedule, taken/skipped/not marked, reminder from the notification records a dose |
 | P-08 posture and recovery | ☑ | Rest day, soreness, recovery, notes; movement-break and posture reminders (Phase 3 reminders) |
@@ -143,7 +143,7 @@ Features implemented but not yet confirmed on the phone. Test numbers refer to `
 | Steps counted, reboot, midnight, timezone, battery saver | Tests 1–9 in `blueprint/07-testing.md` §6 | Pending |
 | GPS workout with the screen off; route drawn; distance plausible | Walk 1 km with GPS, screen off | Pending |
 | App lock: private space absent from the app switcher, screenshots blocked, fingerprint unlock, auto-lock after time away | Open private space, press Recents, try a screenshot; leave for 2 min and return | Pending |
-| Private and medication notifications show only "FitBuddy reminder" and nothing on the lock screen | Add a medicine at a time 2 min ahead, lock the phone | Pending |
+| Private and medication notifications show only "Praxis reminder" and nothing on the lock screen | Add a medicine at a time 2 min ahead, lock the phone | Pending |
 | Screen time: usage access flow and totals against Digital Wellbeing | Grant access, compare one day | Pending |
 | Progress photo camera and gallery | Add both; the stored file is not a readable image | Pending |
 | Sync against the real project: offline records appear after reconnection, no duplicates; second install restores | Tests 16–17, plus a reinstall | Pending (needs Supabase project, migrations applied) |

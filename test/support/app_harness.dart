@@ -143,7 +143,7 @@ class AppHarness {
       ProviderScope(
         key: UniqueKey(),
         overrides: overrides(session: session, themeMode: themeMode),
-        child: const FitBuddyApp(),
+        child: const PraxisApp(),
       ),
     );
     await tester.pumpAndSettle();

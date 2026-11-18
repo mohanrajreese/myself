@@ -67,7 +67,7 @@ final class ExportBuilder {
         archive.add(ArchiveFile.bytes(name, utf8.encode(text)));
     final now = clock.now().toUtc().toIso8601String();
     final manifest = {
-      'format': 'fitbuddy-export',
+      'format': 'praxis-export',
       'version': 1,
       'exported_at': now,
       'from': o.from?.toString(),
@@ -77,7 +77,7 @@ final class ExportBuilder {
     };
     if (o.format == ExportFormat.json) {
       addText(
-        'fitbuddy.json',
+        'praxis.json',
         const JsonEncoder.withIndent(' ').convert({...manifest, 'tables': tables}),
       );
     } else {

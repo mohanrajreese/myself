@@ -1,7 +1,7 @@
-# FitBuddy — Implementation Blueprint
+# Praxis — Implementation Blueprint
 
 **Status:** Phase 1 approved and in progress (16 November 2026). Progress is tracked in [`docs/implementation_status.md`](../implementation_status.md).
-**Source of truth:** [`docs/PRD.md`](../PRD.md) (FitBuddy PRD v2.0, 16 November 2026). References such as "§5.6" point into the PRD.
+**Source of truth:** [`docs/PRD.md`](../PRD.md) (Praxis PRD v2.0, 16 November 2026). References such as "§5.6" point into the PRD.
 **Prepared:** 16 November 2026
 
 | # | Document | Covers |
@@ -76,7 +76,7 @@ None adds a feature; each fills a gap the PRD leaves open. Overrule any of them.
 | C8 | App lock mechanism is unspecified | App PIN (hashed) with optional biometric unlock | Works on a phone with no screen lock, and does not lose data when fingerprints change |
 | C9 | Android shows at most three notification buttons; §5.15C lists five actions | Buttons: Complete, Snooze, Skip. Tap opens the activity. Dismiss is the swipe (or a button on reminders with no activity) | Platform limit |
 | C10 | Exercise library needs starting content | A seeded list of common exercises (name, category, muscle group, equipment, instructions) | Reference data, not user data. Custom exercises remain available |
-| C11 | Signing in on a phone that already holds another account's data | Offer an export, then erase all local FitBuddy data (both databases) before binding the new account | Single-user app; one device holds one person's data |
+| C11 | Signing in on a phone that already holds another account's data | Offer an export, then erase all local Praxis data (both databases) before binding the new account | Single-user app; one device holds one person's data |
 
 ## 4. What is needed from the owner
 

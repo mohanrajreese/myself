@@ -6,7 +6,7 @@ import '../domain/account.dart';
 /// Who this device belongs to and whether they are currently signed in.
 ///
 /// The app is usable whenever [active] is true. That depends only on what is
-/// stored on the device, never on a live network session, so FitBuddy keeps
+/// stored on the device, never on a live network session, so Praxis keeps
 /// working offline after the first sign-in (PRD §9).
 @immutable
 final class SessionState {

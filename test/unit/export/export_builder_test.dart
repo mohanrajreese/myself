@@ -57,7 +57,7 @@ void main() {
 
   Map<String, Object?> json(List<int> zip, {String? password}) {
     final a = ZipDecoder().decodeBytes(zip, password: password);
-    return jsonDecode(utf8.decode(a.findFile('fitbuddy.json')!.content)) as Map<String, Object?>;
+    return jsonDecode(utf8.decode(a.findFile('praxis.json')!.content)) as Map<String, Object?>;
   }
 
   test('JSON export holds every synced table; private data is left out unless asked', () async {
@@ -75,7 +75,7 @@ void main() {
   test('a passphrase encrypts the zip; the wrong one cannot read it', () async {
     final zip = await builder.build(const ExportOptions(passphrase: 'correct horse'));
     expect(() => json(zip), throwsA(anything)); // no passphrase, no content
-    expect(json(zip, password: 'correct horse')['format'], 'fitbuddy-export');
+    expect(json(zip, password: 'correct horse')['format'], 'praxis-export');
     expect(() => json(zip, password: 'wrong pass'), throwsA(anything));
   });
 

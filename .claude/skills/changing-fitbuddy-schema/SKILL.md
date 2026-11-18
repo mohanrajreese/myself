@@ -1,9 +1,9 @@
 ---
 name: changing-fitbuddy-schema
-description: Use when adding, altering or removing a table, column, index or constraint in FitBuddy's Drift databases or Supabase schema, or when a Drift migration test, schema dump check or RLS test fails.
+description: Use when adding, altering or removing a table, column, index or constraint in Praxis's Drift databases or Supabase schema, or when a Drift migration test, schema dump check or RLS test fails.
 ---
 
-# Changing the FitBuddy schema
+# Changing the Praxis schema
 
 A schema change touches up to six places. Missing one breaks sync, migrations or the privacy boundary.
 

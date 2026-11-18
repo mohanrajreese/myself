@@ -47,7 +47,7 @@ app.*.map.json
 # Widget Preview related
 .widget_preview/
 
-# FitBuddy: local configuration and secrets (never commit)
+# Praxis: local configuration and secrets (never commit)
 env/*.json
 !env/*.example.json
 android/app/google-services.json
@@ -64,3 +64,4 @@ lib/l10n/generated/
 # Screen renders for visual review (regenerate with --tags visual --update-goldens)
 test/visual/renders/
 /android/build/
+supabase/.temp/

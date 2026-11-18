@@ -1,6 +1,6 @@
 ---
 name: adding-android-capability
-description: Use when FitBuddy work needs an Android permission, Kotlin plugin, Pigeon API, foreground service, broadcast receiver, WorkManager job, sensor, alarm or system setting, or when native behaviour differs between Android versions or phone makers.
+description: Use when Praxis work needs an Android permission, Kotlin plugin, Pigeon API, foreground service, broadcast receiver, WorkManager job, sensor, alarm or system setting, or when native behaviour differs between Android versions or phone makers.
 ---
 
 # Adding an Android capability

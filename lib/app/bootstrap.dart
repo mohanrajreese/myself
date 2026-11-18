@@ -205,7 +205,7 @@ Future<void> bootstrap() async {
           },
         ),
       ],
-      child: const FitBuddyApp(),
+      child: const PraxisApp(),
     ),
   );
 }

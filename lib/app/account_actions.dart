@@ -12,7 +12,7 @@ import 'tracking_providers.dart';
 /// push messages).
 const _fixedNotificationIds = [900, 901, 902, 903, 904, 905];
 
-/// Erases everything FitBuddy holds on this phone (§7.3, §11.4): scheduled
+/// Erases everything Praxis holds on this phone (§7.3, §11.4): scheduled
 /// notifications, photos, the private database, the main database and the
 /// app lock. Synced records in the cloud are untouched.
 Future<void> erasePhoneData(Ref ref) async {

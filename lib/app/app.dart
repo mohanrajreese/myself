@@ -8,10 +8,8 @@ import 'reminder_lifecycle.dart';
 import 'router.dart';
 import 'theme.dart';
 
-typedef PraxisApp = FitBuddyApp;
-
-class FitBuddyApp extends ConsumerWidget {
-  const FitBuddyApp({super.key});
+class PraxisApp extends ConsumerWidget {
+  const PraxisApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(

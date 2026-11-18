@@ -21,7 +21,7 @@
 ## Owner steps on the phone (device test script, Q-02)
 
 1. **Traffic capture.** Install HTTP Toolkit or mitmproxy with its certificate as a user CA. The release build trusts only system CAs, so use a debug build for this step, or add a debug-only network config. Use the app for a day: log private habits, bowel, medication, screen time, then Sync now. Confirm requests go only to the Supabase project host, Google sign-in and FCM, and that no request body contains private text.
-2. **Backup extraction.** `adb backup -f fb.ab com.mysticstack.fitbuddy` should produce an empty archive. On Android 12+ also check Settings → System → Backup shows nothing for FitBuddy.
+2. **Backup extraction.** `adb backup -f fb.ab com.mysticstack.fitbuddy` should produce an empty archive. On Android 12+ also check Settings → System → Backup shows nothing for Praxis.
 3. **App switcher and screenshots.** With the app lock on, open the private space and press Recents; the preview is blank. A screenshot is refused.
-4. **Lock screen.** Medication and private reminders show "FitBuddy reminder" only, and nothing while locked.
+4. **Lock screen.** Medication and private reminders show "Praxis reminder" only, and nothing while locked.
 5. **Logs.** `adb logcat --pid=$(adb shell pidof com.mysticstack.fitbuddy)` while using private screens: no record values, names or notes.

@@ -2,7 +2,7 @@
 
 ## 1. Intent
 
-FitBuddy is a single-user Android app for daily health, fitness, nutrition, routine and digital-wellbeing tracking (§1.1). The architecture serves four properties the PRD ranks above everything else:
+Praxis is a single-user Android app for daily health, fitness, nutrition, routine and digital-wellbeing tracking (§1.1). The architecture serves four properties the PRD ranks above everything else:
 
 1. **Logging is instant and never lost.** Every write lands in the local database first (§6.1, §9).
 2. **Sensitive records cannot leave the phone.** This is enforced by structure, not by discipline (§7).
@@ -221,7 +221,7 @@ Five independent barriers. A leak requires all of them to fail.
 | App lock | PIN stored as a salted slow hash in secure storage. Optional biometric unlock (`local_auth`). Auto-lock on background after a configurable delay |
 | Protected modules | Private habits, bowel records and private activities always sit behind the lock (§5.11, §5.12). Medication and screen time can be added to the lock in Settings |
 | App-switcher and screenshots | `FLAG_SECURE` is set while a protected screen is visible, and for the whole app when the lock is enabled (§7.3) |
-| Notifications from sensitive modules | Generic title ("FitBuddy reminder"), `VISIBILITY_SECRET`, no record text. The real title stays in the private database (§3.4 rule 14) |
+| Notifications from sensitive modules | Generic title ("Praxis reminder"), `VISIBILITY_SECRET`, no record text. The real title stays in the private database (§3.4 rule 14) |
 | Private text fields | Keyboard suggestions and personalised learning disabled |
 | Photos | Stored in app-private storage, encrypted per file |
 | Sign-in | Sign in with Google only (§7). Supabase session kept in secure storage, not shared preferences |

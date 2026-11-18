@@ -43,6 +43,10 @@ jobs:
           export PATH="$(dirname "$(ls /usr/lib/postgresql/*/bin/initdb | tail -n 1)"):$PATH"
           bash supabase/tests/run_local.sh | tee result.txt
           grep -q "ALL CHECKS PASSED" result.txt
+      - name: Combined migrations file is up to date
+        run: |
+          bash supabase/combine_migrations.sh
+          git diff --exit-code supabase/combined_migrations.sql
 
   functions:
     runs-on: ubuntu-latest

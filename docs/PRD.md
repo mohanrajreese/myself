@@ -5,7 +5,7 @@
 **Date:** 16 November 2026  
 **Platform:** Android mobile application  
 **Product category:** Personal Health, Fitness, Nutrition & Lifestyle  
-**Application name:** FitBuddy  
+**Application name:** Praxis  
 **Technology:** Flutter, Dart, Kotlin, Supabase  
 **Primary database:** Drift / SQLite  
 **Cloud database:** Supabase PostgreSQL  
@@ -18,7 +18,7 @@
 
 ## 1.1 Product vision
 
-FitBuddy is a personal health and lifestyle management application that brings daily health tracking, fitness, nutrition, sleep, personal habits, reminders and digital wellbeing into one application.
+Praxis is a personal health and lifestyle management application that brings daily health tracking, fitness, nutrition, sleep, personal habits, reminders and digital wellbeing into one application.
 
 The application should help users:
 
@@ -34,7 +34,7 @@ The application should help users:
 - Maintain private health and personal records.
 - Review their progress through meaningful reports.
 
-FitBuddy should not feel like a traditional medical application or a complicated spreadsheet.
+Praxis should not feel like a traditional medical application or a complicated spreadsheet.
 
 It should feel like a modern personal wellness assistant that the user can open several times a day to record activities and understand progress.
 
@@ -76,7 +76,7 @@ These are outside the initial release scope.
 | Mobile UI | Flutter |
 | Language | Dart |
 | Android native features | Kotlin |
-| Design system | Material 3 with custom FitBuddy styling |
+| Design system | Material 3 with custom Praxis styling |
 | State management | Riverpod |
 | Navigation | GoRouter |
 | Local database | Drift + SQLite |
@@ -330,7 +330,7 @@ Every visible control must perform its stated action.
 Create a multi-step onboarding flow.
 
 ### Screen 1: Welcome
-- FitBuddy logo.
+- Praxis logo.
 - Short product introduction.
 - Get Started button.
 
@@ -356,7 +356,7 @@ Create a multi-step onboarding flow.
 - Optional reminder preferences.
 
 ### Screen 5: Permissions explanation
-Explain why FitBuddy may need:
+Explain why Praxis may need:
 - Activity recognition.
 - Notifications.
 - Exact alarm access where necessary.
@@ -1735,7 +1735,7 @@ Implement the application in controlled milestones.
 - Signed APK/AAB.
 - Release documentation.
 
-**Deliverable:** Stable FitBuddy Android release.
+**Deliverable:** Stable Praxis Android release.
 
 ---
 
@@ -1828,7 +1828,7 @@ At the end of each milestone, report:
 
 # PART 14 — FINAL PRODUCT SUCCESS CRITERIA
 
-FitBuddy v1 is successful when the user can:
+Praxis v1 is successful when the user can:
 
 1. Open one dashboard and understand their day.
 2. Record food, weight and water quickly.
@@ -1848,7 +1848,7 @@ FitBuddy v1 is successful when the user can:
 
 **Final product principle:**
 
-FitBuddy must be useful in everyday life, not just attractive in screenshots.
+Praxis must be useful in everyday life, not just attractive in screenshots.
 
 Prioritize accurate tracking, easy logging, excellent UX, reliable reminders, privacy and meaningful progress reports over unnecessary complexity.
 

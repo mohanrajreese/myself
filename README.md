@@ -1,4 +1,4 @@
-# FitBuddy
+# Praxis
 
 Personal Android app for daily health, fitness, nutrition, routines and digital wellbeing. Single user, local-first, encrypted on the device, with optional-by-data-type sync to Supabase.
 
@@ -44,6 +44,17 @@ flutter test -r failures-only
 ```bash
 flutter build apk --debug --dart-define-from-file=env/dev.json
 ```
+
+## Names that stay "fitbuddy"
+
+The app is called Praxis. A few internal identifiers keep the original name on purpose, because changing them would break things already set up or installed:
+
+| Identifier | Why it stays |
+|---|---|
+| Android package `com.mysticstack.fitbuddy` | Google sign-in clients and any installed copy are tied to it |
+| Dart package `fitbuddy` | Internal import name only; never shown |
+| Database files `fitbuddy.sqlite`, `fitbuddy_private.sqlite` and settings files | Renaming would leave existing data behind |
+| Exercise ID namespace `fitbuddy.app/exercise/…` | Seeded exercise IDs are derived from it and are synced |
 
 ## Layout
 

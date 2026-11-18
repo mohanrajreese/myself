@@ -1,9 +1,9 @@
 ---
 name: implementing-fitbuddy-task
-description: Use when starting, resuming or finishing any FitBuddy task ID (F-, C-, A-, S-, P-, R-, Q-) from the milestone checklist, or when asked to continue the current phase or build a FitBuddy feature.
+description: Use when starting, resuming or finishing any Praxis task ID (F-, C-, A-, S-, P-, R-, Q-) from the milestone checklist, or when asked to continue the current phase or build a Praxis feature.
 ---
 
-# Implementing a FitBuddy task
+# Implementing a Praxis task
 
 One task at a time, smallest complete slice, tests first, status file updated.
 

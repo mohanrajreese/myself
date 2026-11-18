@@ -1,6 +1,6 @@
 # Device test plan (Phase 7, task Q-02)
 
-This is the run sheet for checking FitBuddy on the phone. Source list: `blueprint/07-testing.md` §6, plus the device backlog in `implementation_status.md`. Fill in **Result** (pass / fail / partly) and **Notes**, then send the sheet back. I will turn failures into fixes.
+This is the run sheet for checking Praxis on the phone. Source list: `blueprint/07-testing.md` §6, plus the device backlog in `implementation_status.md`. Fill in **Result** (pass / fail / partly) and **Notes**, then send the sheet back. I will turn failures into fixes.
 
 | Phone model | Android version | Battery saver | Manufacturer battery manager | App version / build | Date |
 |---|---|---|---|---|---|
@@ -27,7 +27,7 @@ adb install -r build/app/outputs/flutter-apk/app-debug.apk
 | # | Steps | Expected | Result | Notes |
 |---|---|---|---|---|
 | 1 | Fitness → Steps. Note the sensor status | "Counting" or the no-sensor explanation, matching the phone | | |
-| 2 | Turn on step counting and allow activity recognition. Then Android Settings → Apps → FitBuddy → Permissions → Physical activity → Don't allow. Reopen Steps | Counting starts. After revoking, it says permission is needed and earlier days are still shown | | |
+| 2 | Turn on step counting and allow activity recognition. Then Android Settings → Apps → Praxis → Permissions → Physical activity → Don't allow. Reopen Steps | Counting starts. After revoking, it says permission is needed and earlier days are still shown | | |
 | 3 | Grant again. With Steps open, walk 200 counted steps | Today's count rises by about 200 (sensor tolerance) | | |
 | 4 | Lock the phone, walk 200 steps, unlock and open Steps | Steps added; "last reading" time has moved | | |
 | 5 | Turn on continuous counting. Swipe the app away, walk 200 steps, reopen. Repeat with continuous counting off | On: steps recorded. Off: steps recorded at the next reading, or the gap is shown as uncertain | | |
@@ -35,9 +35,9 @@ adb install -r build/app/outputs/flutter-apk/app-debug.apk
 | 7 | Walk across midnight (or set a reminder for 23:55 and walk until 00:05) | Steps split between the two days | | |
 | 8 | Set a reminder for a fixed time. Change the phone's timezone (Settings → System → Date & time), wait past the reminder's new local time | Steps neither lost nor doubled; the reminder fires once at the new wall-clock time | | |
 | 9 | Battery saver on for a few hours of normal use | Note what happened; the app's status is honest about any gap | | |
-| 10 | Deny notifications (Android Settings → Apps → FitBuddy → Notifications off). Create a reminder | Reminder saved; Habits shows a banner explaining; no crash | | |
+| 10 | Deny notifications (Android Settings → Apps → Praxis → Notifications off). Create a reminder | Reminder saved; Habits shows a banner explaining; no crash | | |
 | 11 | Revoke "Alarms & reminders" special access. Create an "Important alarm" reminder 2 minutes ahead | Fires (perhaps a little late); the app says it may be delayed | | |
-| 12 | Android Settings → Apps → FitBuddy → Notifications → turn off the "Hydration" category | Settings → Notifications and reminders flags the turned-off category | | |
+| 12 | Android Settings → Apps → Praxis → Notifications → turn off the "Hydration" category | Settings → Notifications and reminders flags the turned-off category | | |
 | 13 | Create five reminders, each two minutes apart | Each fires once with the right title | | |
 | 14 | When one fires, press Snooze (5 min); next time choose a custom snooze | Fires again at the chosen times; Notification history shows the snoozes | | |
 | 15 | Create two reminders 5 and 10 minutes ahead. Reboot and unlock | Both fire after the first unlock | | |
@@ -58,12 +58,12 @@ adb install -r build/app/outputs/flutter-apk/app-debug.apk
 | Stopwatch | Start one, swipe the app away, restart the phone, reopen | The elapsed time is right | | |
 | GPS walk | Start a GPS walk, screen off, walk about 1 km | Route drawn; distance roughly right; a notification while recording | | |
 | App lock | Turn on the lock with a PIN and fingerprint. Open Private space, press Recents, try a screenshot. Leave for 2 minutes, come back | The preview is blank; the screenshot is refused; it asks for the PIN or fingerprint again | | |
-| Private notifications | Add a medicine for 2 minutes ahead and lock the phone | Lock screen shows only "FitBuddy reminder" or nothing; Taken records the dose | | |
+| Private notifications | Add a medicine for 2 minutes ahead and lock the phone | Lock screen shows only "Praxis reminder" or nothing; Taken records the dose | | |
 | Screen time | Allow usage access from the Screen time screen; use a few apps; compare one day with Digital Wellbeing | Totals within a reasonable margin (the app explains differences) | | |
 | Export | Export JSON with a passphrase; open it on a computer with 7-Zip | Opens only with the passphrase; contains your records | | |
 | Delete phone data | Settings → Delete data or account → Delete phone data | Back at sign-in; signing in again restores synced records only | | |
 | Delete account | Delete account, keeping records on the phone | Cloud tables for the account are empty; the phone keeps its records, signed out | | |
-| Manufacturer battery manager | Repeat test 4 and the overnight reminder with default settings, then with FitBuddy exempted | Note the difference | | |
+| Manufacturer battery manager | Repeat test 4 and the overnight reminder with default settings, then with Praxis exempted | Note the difference | | |
 
 ## C. Release build
 

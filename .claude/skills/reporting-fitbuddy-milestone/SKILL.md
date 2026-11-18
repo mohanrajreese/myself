@@ -1,9 +1,9 @@
 ---
 name: reporting-fitbuddy-milestone
-description: Use when all tasks of a FitBuddy phase are finished, when the owner asks for a phase or milestone completion report, or before asking for approval to start the next phase.
+description: Use when all tasks of a Praxis phase are finished, when the owner asks for a phase or milestone completion report, or before asking for approval to start the next phase.
 ---
 
-# Reporting a FitBuddy milestone
+# Reporting a Praxis milestone
 
 The report is evidence, not a summary. Gather each part from a command, then fill the template.
 

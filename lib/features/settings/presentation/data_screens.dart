@@ -76,7 +76,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
             ),
           );
       final today = ref.read(todayProvider);
-      final saved = await ref.read(documentSaverProvider).save('fitbuddy-export-$today.zip', bytes);
+      final saved = await ref.read(documentSaverProvider).save('praxis-export-$today.zip', bytes);
       if (mounted) showFbSnackBar(context, saved ? l.exportSaved : l.exportNotSaved);
     } on Object {
       if (mounted) showFbSnackBar(context, l.exportFailed);

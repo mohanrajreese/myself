@@ -1,4 +1,4 @@
-# FitBuddy
+# Praxis
 
 Single-user Android health and lifestyle tracker. Flutter + Kotlin, Drift (encrypted, local-first), Supabase sync. Project root is the repository root.
 

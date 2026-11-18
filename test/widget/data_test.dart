@@ -63,7 +63,7 @@ void main() {
   Map<String, Object?> exported(AppHarness app, {String? password}) {
     final zip = app.saver.saved.values.single;
     final a = ZipDecoder().decodeBytes(zip, password: password);
-    return jsonDecode(utf8.decode(a.findFile('fitbuddy.json')!.content)) as Map<String, Object?>;
+    return jsonDecode(utf8.decode(a.findFile('praxis.json')!.content)) as Map<String, Object?>;
   }
 
   group('export', () {
@@ -90,7 +90,7 @@ void main() {
       await tester.enterText(find.widgetWithText(TextField, 'Repeat passphrase'), 'correct horse');
       await tap(tester, find.text('Create export'));
       expect(find.text('Export saved'), findsOneWidget);
-      expect(app.saver.saved.keys.single, 'fitbuddy-export-2026-11-16.zip');
+      expect(app.saver.saved.keys.single, 'praxis-export-2026-11-16.zip');
       final data = exported(app, password: 'correct horse');
       expect(((data['tables']! as Map)['weight_logs']! as List), hasLength(1));
       expect(data['includes_private'], isFalse);

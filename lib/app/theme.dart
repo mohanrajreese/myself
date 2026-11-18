@@ -2,7 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../core/widgets/tokens.dart';
 
-/// Builds the Material theme from FitBuddy's tokens.
+/// Builds the Material theme from Praxis's tokens.
 ThemeData buildTheme(Brightness brightness) {
   final c = brightness == Brightness.dark ? FbColors.dark : FbColors.light;
   final t = FbTextStyles(c);

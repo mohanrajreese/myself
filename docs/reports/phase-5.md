@@ -10,7 +10,7 @@
 | P-02 | Private habits: the two seeded types plus your own. Record now or with time, count and note. Weekly and monthly counts, history, delete, archive |
 | P-03 | Private activities: the activity builder has a "Private" switch (C5, chosen once), and the private space has its own Add button. Each is yes/no or counted, with log, history and archive |
 | P-04 | Bowel log: quick log (consistency, straining, pain, bleeding, time), history, 7-day count, 30-day daily average, consistency split, and an optional check-in reminder |
-| P-05 | Sensitive reminders are stored in the private database. Every private and medication notification says only "FitBuddy reminder" and is hidden on the lock screen |
+| P-05 | Sensitive reminders are stored in the private database. Every private and medication notification says only "Praxis reminder" and is hidden on the lock screen |
 | P-06 | Hygiene: "Add the standard routines" creates 8 routines (bath, head wash, morning and night brushing, floss, mouthwash, morning and evening skincare with steps). Mark all done, and each routine is edited like any activity |
 | P-07 | Medication and supplements: list, editor (name, dose in your own words, schedule, remind, active, notes, delete) and today's doses with Taken or Skip. Completing a dose from the notification records it |
 | P-08 | Posture and recovery: rest day, soreness, recovery and notes. Switches for movement-break and posture reminders, plus recent history |

@@ -41,7 +41,7 @@ final class DailyGoals {
   }
 }
 
-/// Daily nutrition targets in base units. Every field is optional; FitBuddy
+/// Daily nutrition targets in base units. Every field is optional; Praxis
 /// never proposes a calorie target itself (PRD §1.3).
 @immutable
 final class NutritionTargets {

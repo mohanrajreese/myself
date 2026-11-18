@@ -1,6 +1,6 @@
 # 04 — UI/UX Design Specification
 
-Direction: premium, modern, minimal wellness app (§3.1). Material 3 with custom FitBuddy styling. Light and dark themes. The reference designs from product planning are inspiration only.
+Direction: premium, modern, minimal wellness app (§3.1). Material 3 with custom Praxis styling. Light and dark themes. The reference designs from product planning are inspiration only.
 
 ## 1. Design tokens
 
