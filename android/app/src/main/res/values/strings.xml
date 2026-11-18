@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Praxis</string>
     <string name="step_service_title">Counting steps</string>
-    <string name="step_service_text">FitBuddy reads your phone\'s step sensor.</string>
+    <string name="step_service_text">Praxis reads your phone\'s step sensor.</string>
     <string name="step_channel_name">Step counting</string>
 </resources>

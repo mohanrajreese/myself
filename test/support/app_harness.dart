@@ -107,7 +107,7 @@ class AppHarness {
       (ref) => DevicePrivateReminderSource(
         medications: ref.watch(medicationRepositoryProvider),
         sensitive: ref.watch(sensitiveReminderRepositoryProvider),
-        genericTitle: 'FitBuddy reminder',
+        genericTitle: 'Praxis reminder',
       ),
     ),
     if (remote != null) syncRemoteProvider.overrideWithValue(remote),

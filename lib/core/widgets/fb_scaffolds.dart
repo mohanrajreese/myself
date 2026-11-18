@@ -3,9 +3,11 @@ import 'package:material_ui/material_ui.dart';
 import 'l10n.dart';
 import 'tokens.dart';
 
-/// FitBuddy mark: a pulse line on a rounded square.
-class FbLogo extends StatelessWidget {
-  const FbLogo({this.size = 72, super.key});
+/// Praxis mark: a geometric 'P' habit loop on a rounded squircle.
+typedef FbLogo = PraxisLogo;
+
+class PraxisLogo extends StatelessWidget {
+  const PraxisLogo({this.size = 72, super.key});
   final double size;
 
   @override
@@ -33,23 +35,32 @@ class _LogoPainter extends CustomPainter {
       RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(20 * s)),
       Paint()..color = background,
     );
-    final path = Path()
-      ..moveTo(14 * s, 38 * s)
-      ..lineTo(25 * s, 38 * s)
-      ..lineTo(30 * s, 25 * s)
-      ..lineTo(39 * s, 49 * s)
-      ..lineTo(45 * s, 34 * s)
-      ..lineTo(48 * s, 38 * s)
-      ..lineTo(58 * s, 38 * s);
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = line
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 4 * s
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round,
-    );
+
+    final strokePaint = Paint()
+      ..color = line
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4.5 * s
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    // Stem of 'P'
+    final stem = Path()
+      ..moveTo(24 * s, 18 * s)
+      ..lineTo(24 * s, 54 * s);
+    canvas.drawPath(stem, strokePaint);
+
+    // Dynamic habit loop of 'P'
+    final loop = Path()
+      ..moveTo(24 * s, 18 * s)
+      ..cubicTo(40 * s, 17 * s, 48 * s, 21 * s, 48 * s, 28 * s)
+      ..cubicTo(48 * s, 35 * s, 40 * s, 38 * s, 24 * s, 38 * s);
+    canvas.drawPath(loop, strokePaint);
+
+    // Accent focus dot inside loop (representing daily core / intention)
+    final dotPaint = Paint()
+      ..color = line
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(Offset(35 * s, 28 * s), 2.5 * s, dotPaint);
   }
 
   @override

@@ -19,6 +19,7 @@ import '../features/recovery/data/drift_recovery_repository.dart';
 import '../features/recovery/domain/recovery.dart';
 import '../features/screen_time/data/drift_screen_time_repository.dart';
 import '../features/screen_time/domain/screen_time.dart';
+import 'app_config.dart';
 import 'providers.dart';
 import 'routine_providers.dart';
 import 'screen_time_service.dart';
@@ -76,7 +77,7 @@ final screenTimeRepositoryProvider = Provider<ScreenTimeRepository>(
 );
 
 /// Overridden at start-up so the alert text is localised.
-final screenTimeAlertTitleProvider = Provider<String>((ref) => 'FitBuddy');
+final screenTimeAlertTitleProvider = Provider<String>((ref) => AppConfig.fromEnvironment.appName);
 
 final screenTimeServiceProvider = Provider<ScreenTimeService>(
   (ref) => ScreenTimeService(

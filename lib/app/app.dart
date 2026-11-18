@@ -3,16 +3,22 @@ import 'package:material_ui/material_ui.dart';
 
 import '../core/widgets/l10n.dart';
 import '../features/settings/application/theme_mode_controller.dart';
+import 'app_config.dart';
 import 'reminder_lifecycle.dart';
 import 'router.dart';
 import 'theme.dart';
+
+typedef PraxisApp = FitBuddyApp;
 
 class FitBuddyApp extends ConsumerWidget {
   const FitBuddyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-    onGenerateTitle: (context) => context.l10n.appName,
+    onGenerateTitle: (context) =>
+        AppConfig.fromEnvironment.appName.isNotEmpty
+            ? AppConfig.fromEnvironment.appName
+            : context.l10n.appName,
     debugShowCheckedModeBanner: false,
     theme: buildTheme(Brightness.light),
     darkTheme: buildTheme(Brightness.dark),

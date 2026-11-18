@@ -146,7 +146,7 @@ void main() {
     final requests = app.notifications.pending.values.where((r) => r.secret).toList();
     expect(requests, isNotEmpty);
     for (final r in requests) {
-      expect(r.title, 'FitBuddy reminder');
+      expect(r.title, 'Praxis reminder');
       expect(r.title, isNot(contains('Vitamin')));
     }
     expect(app.notifications.pending.values.any((r) => r.title.contains('Vitamin')), isFalse);

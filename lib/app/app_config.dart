@@ -6,6 +6,7 @@ final class AppConfig {
     required this.supabaseUrl,
     required this.supabasePublishableKey,
     required this.googleWebClientId,
+    this.appName = 'Praxis',
     this.firebaseApiKey = '',
     this.firebaseAppId = '',
     this.firebaseProjectId = '',
@@ -13,6 +14,7 @@ final class AppConfig {
   });
 
   static const fromEnvironment = AppConfig(
+    appName: String.fromEnvironment('APP_NAME', defaultValue: 'Praxis'),
     supabaseUrl: String.fromEnvironment('SUPABASE_URL'),
     supabasePublishableKey: String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY'),
     googleWebClientId: String.fromEnvironment('GOOGLE_WEB_CLIENT_ID'),
@@ -22,6 +24,7 @@ final class AppConfig {
     firebaseSenderId: String.fromEnvironment('FIREBASE_SENDER_ID'),
   );
 
+  final String appName;
   final String supabaseUrl;
   final String supabasePublishableKey;
   final String googleWebClientId;

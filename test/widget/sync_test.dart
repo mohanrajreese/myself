@@ -141,7 +141,7 @@ void main() {
       app.push.messages.add((type: 'sync_problem', id: null));
       await drain(tester);
       final shown = app.notifications.shown.single;
-      expect(shown.title, 'FitBuddy');
+      expect(shown.title, 'Praxis');
       expect(shown.body, contains('not synced'));
 
       // Unknown types and switched-off types show nothing.

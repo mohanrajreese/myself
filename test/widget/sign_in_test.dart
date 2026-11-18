@@ -12,7 +12,7 @@ void main() {
 
   testWidgets('a fresh install shows only the sign-in screen', (tester) async {
     await app.pump(tester);
-    expect(find.text('FitBuddy'), findsOneWidget);
+    expect(find.text('Praxis'), findsOneWidget);
     expect(find.text('Continue with Google'), findsOneWidget);
     expect(find.text('Home'), findsNothing);
     await app.dispose(tester);

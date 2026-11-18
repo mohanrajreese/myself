@@ -13,7 +13,7 @@ Personal Android app for daily health, fitness, nutrition, routines and digital 
 
 | Tool | Version used |
 |---|---|
-| Flutter | 3.50.0 stable (Dart 3.14.0) |
+| Flutter | 3.50.0 stable (Dart >= 3.12.0) |
 | Android Gradle Plugin / Gradle | 9.3.1 / 9.5.0 |
 | JDK | 17 or newer |
 | Android SDK | platform 37, build-tools 37.0.0 |

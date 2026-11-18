@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appName": "FitBuddy",
+  "appName": "Praxis",
   "continueLabel": "Continue",
   "save": "Save",
   "cancel": "Cancel",
@@ -19,11 +19,11 @@
   "continueWithGoogle": "Continue with Google",
   "signInFooter": "Sign-in needs internet once. It keeps your synced records safe if you change phones.",
   "signInOffline": "You are offline. Connect to the internet to sign in for the first time.",
-  "signInNotConfigured": "Sign-in is not set up in this build of FitBuddy.",
+  "signInNotConfigured": "Sign-in is not set up in this build of Praxis.",
   "signInFailedGoogle": "Google sign-in did not complete. Try again.",
-  "signInFailedBackend": "FitBuddy could not confirm your account. Try again in a moment.",
+  "signInFailedBackend": "Praxis could not confirm your account. Try again in a moment.",
   "replaceTitle": "Use a different account?",
-  "replaceMessage": "This phone holds FitBuddy data for {existing}. To continue as {incoming}, that data must be erased from this phone first. This cannot be undone.",
+  "replaceMessage": "This phone holds Praxis data for {existing}. To continue as {incoming}, that data must be erased from this phone first. This cannot be undone.",
   "@replaceMessage": {
     "placeholders": {
       "existing": {
@@ -111,7 +111,7 @@
   "remindBedtimeSubtitle": "Worked out from wake-up and sleep target",
   "remindersLater": "Reminders begin once the reminder feature is added. Your choices are saved now.",
   "permTitle": "Permissions, when needed",
-  "permSubtitle": "Nothing is requested now. FitBuddy asks only when you turn a feature on.",
+  "permSubtitle": "Nothing is requested now. Praxis asks only when you turn a feature on.",
   "permActivityTitle": "Physical activity",
   "permActivityBody": "Counts steps. Asked when you turn on step tracking.",
   "permNotificationsTitle": "Notifications",
@@ -354,7 +354,7 @@
   "signOutTitle": "Sign out?",
   "signOutMessage": "Your records stay on this phone, encrypted. Sign in with the same account to continue.",
   "signOutNote": "Signing out keeps your records on this phone, encrypted. Sign in with the same account to continue.",
-  "startupError": "FitBuddy can't open its secure storage on this phone. Your data has not been changed.",
+  "startupError": "Praxis can't open its secure storage on this phone. Your data has not been changed.",
   "dailyFibreLabel": "Daily fibre",
   "cardFibre": "Fibre",
   "delete": "Delete",
@@ -600,7 +600,7 @@
       }
     }
   },
-  "sleepHelp": "A night counts towards the day you woke up. Times are entered by you; FitBuddy does not measure sleep stages.",
+  "sleepHelp": "A night counts towards the day you woke up. Times are entered by you; Praxis does not measure sleep stages.",
   "sleepRange": "{start} to {end}",
   "@sleepRange": {
     "placeholders": {
@@ -1058,7 +1058,7 @@
   },
   "timelineCheckin": "Check-in",
   "rowAbout": "About",
-  "aboutTitle": "About FitBuddy",
+  "aboutTitle": "About Praxis",
   "aboutVersion": "Version {version}",
   "@aboutVersion": {
     "placeholders": {
@@ -1152,8 +1152,8 @@
   "restore": "Restore",
   "restored": "Restored",
   "batteryRow": "Battery optimisation",
-  "batteryOn": "FitBuddy is not optimised, so reminders are less likely to be held back.",
-  "batteryOff": "Some phones hold reminders back to save battery. You can exclude FitBuddy.",
+  "batteryOn": "Praxis is not optimised, so reminders are less likely to be held back.",
+  "batteryOff": "Some phones hold reminders back to save battery. You can exclude Praxis.",
   "calendarSummary": "Last 28 days: {done} done, {missed} not logged, {skipped} skipped, {none} not scheduled",
   "@calendarSummary": {
     "placeholders": {
@@ -1344,7 +1344,7 @@
       }
     }
   },
-  "limitsNote": "FitBuddy cannot override Do Not Disturb, silent mode, a channel you turned off, or your phone's battery manager. Android may delay reminders when battery saver is on.",
+  "limitsNote": "Praxis cannot override Do Not Disturb, silent mode, a channel you turned off, or your phone's battery manager. Android may delay reminders when battery saver is on.",
   "linkedActivity": "Linked activity",
   "logAction": "Log",
   "logAnyway": "Log anyway",
@@ -1400,7 +1400,7 @@
   "notScheduledToday": "Not scheduled today",
   "nothingScheduledToday": "Nothing is scheduled today.",
   "notifRationaleTitle": "Allow notifications?",
-  "notifRationaleBody": "FitBuddy shows reminders as notifications. They work without internet. Android asks next.",
+  "notifRationaleBody": "Praxis shows reminders as notifications. They work without internet. Android asks next.",
   "notificationHistory": "Notification history",
   "notificationSettingsTitle": "Notifications and reminders",
   "notificationsOffNotice": "Notifications are off, so reminders cannot appear.",
@@ -1458,7 +1458,7 @@
   "quietSuppress": "Skip it",
   "quietBypass": "Ring anyway",
   "rebootRow": "Restart after reboot",
-  "rebootRowHelp": "Reminders return after you unlock the phone. If you force-stop FitBuddy, Android cancels them until you open it again.",
+  "rebootRowHelp": "Reminders return after you unlock the phone. If you force-stop Praxis, Android cancels them until you open it again.",
   "remindAtTimes": "Remind me at these times",
   "remindAtTimesHelp": "On the Daily routines channel.",
   "reminderDefaultTitle": "Reminder",
@@ -1807,9 +1807,9 @@
       }
     }
   },
-  "gpsNotificationText": "FitBuddy is recording your route.",
+  "gpsNotificationText": "Praxis is recording your route.",
   "gpsRationaleTitle": "Use your location for this workout?",
-  "gpsRationaleBody": "FitBuddy records your route only while this workout runs. Android asks for location next; choose \"While using the app\".",
+  "gpsRationaleBody": "Praxis records your route only while this workout runs. Android asks for location next; choose \"While using the app\".",
   "gpsServiceOff": "Location is turned off on the phone. Turn it on in quick settings, or log by hand.",
   "gpsStoredNote": "Recorded with GPS. The route is kept on this phone only.",
   "gpsTag": "GPS",
@@ -2022,7 +2022,7 @@
     }
   },
   "stepsIntroTitle": "Count steps with your phone",
-  "stepsIntroBody": "FitBuddy reads your phone's step sensor. Android asks for \"Physical activity\" access next. Only daily totals leave your phone, for your backup.",
+  "stepsIntroBody": "Praxis reads your phone's step sensor. Android asks for \"Physical activity\" access next. Only daily totals leave your phone, for your backup.",
   "stepsLastReading": "Last reading",
   "stepsNewTotal": "New total: {total}",
   "@stepsNewTotal": {
@@ -2137,7 +2137,7 @@
     }
   },
   "quickAddWorkout": "Workout",
-  "genericReminderTitle": "FitBuddy reminder",
+  "genericReminderTitle": "Praxis reminder",
   "activeLabel": "Active",
   "activitiesCount": "{count, plural, =0{None yet} one{1 activity} other{{count} activities}}",
   "@activitiesCount": {
@@ -2241,8 +2241,8 @@
   "markAllDone": "Mark all done",
   "medicationEmpty": "Nothing added yet.",
   "medicationList": "Your list",
-  "medicationNote": "FitBuddy only reminds and records. It does not check doses or give medical advice.",
-  "medicationReminderHelp": "Shown as “FitBuddy reminder” with no name on the lock screen",
+  "medicationNote": "Praxis only reminds and records. It does not check doses or give medical advice.",
+  "medicationReminderHelp": "Shown as “Praxis reminder” with no name on the lock screen",
   "medicationTitle": "Medication and supplements",
   "month": "Month",
   "monthly": "Monthly",
@@ -2303,7 +2303,7 @@
   "privateReminders": "Private reminders",
   "privateRemindersEmpty": "No private reminders yet.",
   "privateRemindersHelp": "Generic text on the lock screen",
-  "privateRemindersNote": "These show only “FitBuddy reminder”, hidden on the lock screen.",
+  "privateRemindersNote": "These show only “Praxis reminder”, hidden on the lock screen.",
   "privateSpace": "Private space",
   "privateSpaceHelp": "Locked, on this phone only",
   "progressPhotos": "Progress photos",
@@ -2387,10 +2387,10 @@
   "turnOffLockMessage": "Private space will not open until you set a PIN again. Your records stay on this phone.",
   "turnOffLockTitle": "Turn off the app lock?",
   "undoTaken": "Undo taken",
-  "unlockReason": "Unlock FitBuddy private space",
+  "unlockReason": "Unlock Praxis private space",
   "unlockWithFingerprint": "Unlock with fingerprint",
   "unlockWithFingerprintHelp": "Your PIN still works as a backup",
-  "usageAccessBody": "Android keeps screen time behind a special setting. Turn on usage access for FitBuddy; the numbers stay on this phone.",
+  "usageAccessBody": "Android keeps screen time behind a special setting. Turn on usage access for Praxis; the numbers stay on this phone.",
   "usageAccessTitle": "Usage access is off",
   "useFingerprint": "Use fingerprint",
   "week": "Week",
@@ -2401,10 +2401,10 @@
   "privateActivitySwitch": "Private",
   "privateActivitySwitchHelp": "Kept in the locked private space, never synced. Cannot be changed later.",
   "privateTypeLimit": "Private activities are yes/no or counted.",
-  "pushTitle": "FitBuddy",
-  "pushAccountBody": "There was a sign-in or a change to your account. Open FitBuddy if this was not you.",
-  "pushSyncProblemBody": "Some changes have not synced for over a day. Open FitBuddy to try again.",
-  "pushBackupBody": "Your FitBuddy backup is up to date.",
+  "pushTitle": "Praxis",
+  "pushAccountBody": "There was a sign-in or a change to your account. Open Praxis if this was not you.",
+  "pushSyncProblemBody": "Some changes have not synced for over a day. Open Praxis to try again.",
+  "pushBackupBody": "Your Praxis backup is up to date.",
   "accountAndSync": "Account and sync",
   "lastSynced": "Last synced {when}",
   "@lastSynced": {
@@ -2435,7 +2435,7 @@
       }
     }
   },
-  "syncProblemHelp": "FitBuddy tries again automatically. Nothing is lost. Code: {code}",
+  "syncProblemHelp": "Praxis tries again automatically. Nothing is lost. Code: {code}",
   "@syncProblemHelp": {
     "placeholders": {
       "code": {
@@ -2904,7 +2904,7 @@
   "exportFailed": "The export could not be created.",
   "exportFirst": "Export your data first",
   "exportNotSaved": "Not saved.",
-  "exportNote": "The file is made on this phone, then Android asks where to save it. FitBuddy keeps no copy. Without a passphrase, anyone with the file can read it.",
+  "exportNote": "The file is made on this phone, then Android asks where to save it. Praxis keeps no copy. Without a passphrase, anyone with the file can read it.",
   "exportSaved": "Export saved",
   "formatCsv": "CSV, one per table",
   "formatJson": "JSON, one file",
