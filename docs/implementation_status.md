@@ -8,7 +8,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 4 — Fitness (approved 18 Nov 2026); Phases 1–3 phone verification pending |
+| Phase | 4 — Fitness built 18 Nov 2026; Phases 1–4 phone verification pending; Phase 5 waits for approval |
 | Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026) |
 | Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
@@ -20,7 +20,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | 1 Foundation | ⏳ built, phone verification pending | [phase-1.md](reports/phase-1.md) |
 | 2 Core tracking | ⏳ built, phone verification pending | [phase-2.md](reports/phase-2.md) |
 | 3 Activities and reminders | ⏳ built, phone verification pending | [phase-3.md](reports/phase-3.md) |
-| 4 Fitness | ◐ | — |
+| 4 Fitness | ⏳ built, phone verification pending | [phase-4.md](reports/phase-4.md) |
 | 5 Lifestyle and privacy | ☐ | — |
 | 6 Reports and synchronisation | ☐ | — |
 | 7 Quality and release | ☐ | — |
@@ -76,9 +76,19 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | A-16 notification centre | ☑ | 30-day history; limitation notices on Habits and in Settings |
 | A-17 stopwatch and timers | ☑ · ⏳ notification | State machine, persistence, history, completion notification, activity log on finish, cancel logs nothing |
 | A-18 migrations, docs, report | ☑ | Device test run pending |
-| S-04 step attribution | ☑ | `StepAttributionEngine`: baseline first reading, same-boot differences, reboot gaps, backwards counter, implausible rate, midnight split (uncertain over 10 min), per-reading offsets for timezone changes (10 tests). Native collection and ingest next |
-| S-06, S-11 rules | ☑ | Pace, speed, entry checks; personal records per the blueprint table (5 tests) |
-| Phase 4 screens | ◐ | Designs approved 18 Nov 2026 |
+| Schema v7 | ☑ | Steps, exercises, workouts, sets, templates (synced; Supabase migration and access-rule checks); step readings, daily workings, route points (local); upgrades from v1–v6 tested |
+| S-01 to S-03 native steps | ⏳ | `StepApi`, buffer, one-shot read, snapshot worker, opt-in foreground service, boot reading |
+| S-04 ingest and attribution | ☑ | Engine (10 tests) and repository |
+| S-05 step dashboard | ☑ · ⏳ sensor | All dashboard items, states for intro, refusal and no sensor, labelled adjustment |
+| S-06 walk, run, ride | ☑ | Manual entry with pace or speed, edit, delete, history |
+| S-07 GPS | ☑ logic · ⏳ | While-in-use permission with explanation, foreground notification, accuracy and jitter filter, pause, route line kept on the phone |
+| S-08 exercise library | ☑ | 37 seeded exercises with fixed ids; your own exercises, edit, archive |
+| S-09 gym session | ☑ | Add, remove, reorder exercises; add, edit, remove sets; rest timer; finish |
+| S-10 duplicate, templates, history | ☑ | |
+| S-11 records and progression | ☑ | Blueprint rules; per-exercise chart |
+| S-12 overview and Home | ☑ | Fitness overview; Home steps tile live; quick add Workout |
+| S-13 migration, docs, report | ☑ | Device run pending |
+| Accessibility | ☑ | The 2×-text check now opens each screen (it only checked Home before); 7 earlier screens fixed |
 
 ## Device verification backlog
 
@@ -96,3 +106,5 @@ Features implemented but not yet confirmed on the phone. Test numbers refer to `
 | Reminders survive a reboot | Test 15 | Pending |
 | Background WorkManager top-up and button presses with the app closed | Leave the phone overnight with reminders; press Complete from the shade with the app swiped away | Pending |
 | Stopwatch survives the app being closed and the phone restarting | Start, swipe away, restart phone, reopen | Pending |
+| Steps counted, reboot, midnight, timezone, battery saver | Tests 1–9 in `blueprint/07-testing.md` §6 | Pending |
+| GPS workout with the screen off; route drawn; distance plausible | Walk 1 km with GPS, screen off | Pending |

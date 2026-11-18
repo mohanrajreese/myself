@@ -11,6 +11,10 @@ Plan: [`blueprint/01-architecture.md`](blueprint/01-architecture.md) §2.1. A pe
 | `SCHEDULE_EXACT_ALARM` | Phase 3 | Special access, only for reminders marked "Important alarm", after a rationale; Settings → Notifications and reminders shows the state. Denied: scheduled inexactly with "may be late" wording | Important alarms |
 | `RECEIVE_BOOT_COMPLETED` | Phase 3 | — (normal permission) | Reschedule after reboot |
 | `VIBRATE` | Phase 3 | — (normal permission) | Reminder vibration, test vibration |
+| `ACTIVITY_RECOGNITION` | Phase 4 | When the user turns step counting on, after an explanation. Refused: manual logging stays available | Steps |
+| `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_HEALTH` | Phase 4 | — (normal). Used only when the user turns on continuous counting | Steps |
+| `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION` | Phase 4 | At the start of a GPS workout, after an explanation; while in use only. Never for manual logging | GPS walks, runs, rides |
+| `FOREGROUND_SERVICE_LOCATION` | Phase 4 | — (normal). Keeps a GPS workout going with the screen off | GPS workouts |
 
 Merged in by libraries, not requested from the user: `ACCESS_NETWORK_STATE`, `WAKE_LOCK`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_SHORT_SERVICE`, `BIND_JOB_SERVICE` and `DUMP` (WorkManager), `USE_BIOMETRIC`/`USE_FINGERPRINT` (app lock library). Picking a sound file uses Android's document picker, so no storage permission is needed.
 
