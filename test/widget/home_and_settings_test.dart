@@ -137,7 +137,7 @@ void main() {
       await openSettings(tester);
       expect(find.text('Asha Rao'), findsOneWidget);
       expect(find.text('asha@example.com'), findsOneWidget);
-      await tester.scrollUntilVisible(find.text('Sync'), 200);
+      await tester.scrollUntilVisible(find.text('Account and sync'), 200);
       expect(find.textContaining('changes saved on this phone, waiting to upload'), findsOneWidget);
       await app.dispose(tester);
     });

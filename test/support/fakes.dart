@@ -15,6 +15,8 @@ import 'package:fitbuddy/core/platform/photo_picker.dart';
 import 'package:fitbuddy/core/platform/time_zone_source.dart';
 import 'package:fitbuddy/core/utils/clock.dart';
 import 'package:fitbuddy/core/utils/id_generator.dart';
+import 'package:fitbuddy/core/platform/push_messaging.dart';
+import 'package:fitbuddy/core/sync/push_registry.dart';
 import 'package:fitbuddy/features/nutrition/domain/meal_photos.dart';
 
 AppDatabase memoryDatabase() {
@@ -246,3 +248,43 @@ class FakeUsageReader implements UsageReader {
 }
 
 PrivateDatabase memoryPrivateDatabase() => PrivateDatabase(NativeDatabase.memory());
+
+class FakePushMessaging implements PushMessaging {
+  bool isAvailable = false;
+  String? currentToken = 'token-1';
+  int deleted = 0;
+  // Live for the whole test.
+  // ignore: close_sinks
+  final StreamController<String> refreshes = StreamController<String>.broadcast();
+  // ignore: close_sinks
+  final StreamController<PushMessage> messages = StreamController<PushMessage>.broadcast();
+  // ignore: close_sinks
+  final StreamController<PushMessage> taps = StreamController<PushMessage>.broadcast();
+  @override
+  bool get available => isAvailable;
+  @override
+  Future<String?> token() async => currentToken;
+  @override
+  Stream<String> get tokenRefresh => refreshes.stream;
+  @override
+  Stream<PushMessage> get foreground => messages.stream;
+  @override
+  Stream<PushMessage> get opened => taps.stream;
+  @override
+  Future<PushMessage?> initialMessage() async => null;
+  @override
+  Future<void> deleteToken() async {
+    deleted++;
+    currentToken = null;
+  }
+}
+
+class FakePushRegistry implements PushRegistry {
+  final Map<String, PushPreferences> registered = {};
+  final List<String> revoked = [];
+  @override
+  Future<void> register(String token, PushPreferences prefs, {required String appVersion}) async =>
+      registered[token] = prefs;
+  @override
+  Future<void> revoke(String token) async => revoked.add(token);
+}

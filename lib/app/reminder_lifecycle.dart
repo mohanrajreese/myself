@@ -6,6 +6,8 @@ import 'package:material_ui/material_ui.dart';
 import '../core/notifications/notification_gateway.dart';
 import 'fitness_providers.dart';
 import 'private_providers.dart';
+import 'sync_controller.dart';
+import 'push_controller.dart';
 import 'routes.dart';
 import 'router.dart';
 import 'routine_providers.dart';
@@ -33,6 +35,7 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
         replanReminders(ref);
         syncSteps(ref);
         refreshScreenTime(ref);
+        unawaited(ref.read(syncControllerProvider.notifier).syncNow());
       },
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -42,6 +45,13 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
       unawaited(ref.read(workoutRepositoryProvider).seedExercises().catchError((Object _) {}));
       unawaited(ref.read(privateRepositoryProvider).seedHabitTypes().catchError((Object _) {}));
       refreshScreenTime(ref);
+      unawaited(ref.read(syncControllerProvider.notifier).syncNow());
+      unawaited(ref.read(pushControllerProvider.notifier).start());
+      unawaited(
+        ref.read(pushMessagingProvider).initialMessage().then((m) {
+          if (m != null && mounted) unawaited(ref.read(routerProvider).push(Routes.accountSync));
+        }),
+      );
       final launch = ref.read(launchTapProvider);
       if (launch != null) unawaited(_handle(launch));
     });
@@ -54,6 +64,10 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
   }
 
   Future<void> _handle(NotificationTap tap) async {
+    if (pushNotificationIds.contains(tap.notificationId)) {
+      unawaited(ref.read(routerProvider).push(Routes.accountSync));
+      return;
+    }
     final activityId = await ref.read(reminderServiceProvider).handle(tap);
     if (activityId != null && mounted) {
       unawaited(ref.read(routerProvider).push(Routes.activity(activityId)));
@@ -62,6 +76,9 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(pushOpenedProvider, (_, next) {
+      if (next.value != null) unawaited(ref.read(routerProvider).push(Routes.accountSync));
+    });
     ref.listen(notificationTapsProvider, (_, next) {
       final tap = next.value;
       if (tap != null) unawaited(_handle(tap));

@@ -1,5 +1,9 @@
 {
   "SUPABASE_URL": "https://YOUR-PROJECT.supabase.co",
   "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_xxx",
-  "GOOGLE_WEB_CLIENT_ID": "xxxx.apps.googleusercontent.com"
+  "GOOGLE_WEB_CLIENT_ID": "xxxx.apps.googleusercontent.com",
+  "FIREBASE_API_KEY": "",
+  "FIREBASE_APP_ID": "",
+  "FIREBASE_PROJECT_ID": "",
+  "FIREBASE_SENDER_ID": ""
 }

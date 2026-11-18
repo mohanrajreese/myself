@@ -158,24 +158,10 @@ class SettingsScreen extends ConsumerWidget {
           ]),
           const SizedBox(height: FbSpace.xl),
           group(l10n.sectionAccount, [
-            MergeSemantics(
-              child: Padding(
-                padding: const EdgeInsets.all(FbSpace.lg),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.sync, style: context.text.body),
-                    const SizedBox(width: FbSpace.lg),
-                    Expanded(
-                      child: Text(
-                        syncText,
-                        style: context.text.bodySmall,
-                        textAlign: TextAlign.end,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            FbNavRow(
+              title: l10n.accountAndSync,
+              value: syncText,
+              onTap: () => context.push(Routes.accountSync),
             ),
             InkWell(
               onTap: signOut,

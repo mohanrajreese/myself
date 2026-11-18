@@ -36,7 +36,9 @@ import '../features/private_space/presentation/private_space_screens.dart';
 import '../features/recovery/presentation/recovery_screen.dart';
 import '../features/screen_time/presentation/screen_time_screen.dart';
 import 'routine/hygiene_screen.dart';
+import '../features/settings/presentation/account_sync_screen.dart';
 import 'app_shell.dart';
+import 'sync_controller.dart';
 import 'providers.dart';
 import '../features/fitness/domain/workouts.dart';
 import '../features/fitness/presentation/cardio_screens.dart';
@@ -51,6 +53,8 @@ import 'routine/habits_screen.dart';
 final setupStatusProvider = Provider<SetupStatus>((ref) {
   final account = ref.watch(currentAccountProvider);
   if (account == null) return SetupStatus.unknown;
+  // A returning user's records are downloading: decide only once they are in.
+  if (ref.watch(syncControllerProvider).phase == SyncPhase.restoring) return SetupStatus.unknown;
   return ref
       .watch(profileProvider(account.id))
       .when(
@@ -310,6 +314,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const NotificationSettingsScreen(),
           ),
           GoRoute(path: 'app-lock', builder: (context, state) => const AppLockSettingsScreen()),
+          GoRoute(path: 'account', builder: (context, state) => const AccountSyncScreen()),
         ],
       ),
       GoRoute(

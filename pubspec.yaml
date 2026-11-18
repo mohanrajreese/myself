@@ -64,6 +64,8 @@ dependencies:
   geolocator_android: ^5.2.1
   geolocator_platform_interface: ^4.4.1
   local_auth: ^3.0.2
+  firebase_core: ^5.2.0
+  firebase_messaging: ^17.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

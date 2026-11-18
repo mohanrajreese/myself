@@ -35,6 +35,14 @@ import '../features/settings/presentation/settings_screen.dart';
 import 'app.dart';
 import 'app_config.dart';
 import 'background.dart';
+import 'sync_controller.dart';
+import 'push_controller.dart';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+import '../core/platform/push_messaging.dart';
+import '../core/sync/push_registry.dart';
+import '../core/sync/supabase_sync_remote.dart';
 import 'notification_setup.dart';
 import 'private_providers.dart';
 import 'private_reminder_source.dart';
@@ -136,19 +144,35 @@ Future<void> bootstrap() async {
     logger.failure('notifications_init_failed', error);
   }
   unawaited(
-    registerReminderTopUp().catchError(
+    registerBackgroundJobs().catchError(
       (Object error) => logger.failure('reminder_top_up_failed', error),
     ),
   );
   final session = await loadSession(settings);
   final themeMode = themeModeFromSetting(await settings.read(themeModeSettingKey));
-  final auth = await _createAuth(AppConfig.fromEnvironment, secrets, logger);
+  final (auth, supabaseClient) = await _createAuth(AppConfig.fromEnvironment, secrets, logger);
+  PushMessaging push = const DisabledPushMessaging();
+  if (AppConfig.fromEnvironment.hasPush && supabaseClient != null) {
+    try {
+      push = await FirebasePushMessaging.create(firebaseOptions(AppConfig.fromEnvironment));
+      FirebaseMessaging.onBackgroundMessage(pushBackgroundHandler);
+    } on Object catch (error) {
+      logger.failure('push_init_failed', error);
+    }
+  }
 
   runApp(
     ProviderScope(
       overrides: [
         appDatabaseProvider.overrideWithValue(database),
         authRepositoryProvider.overrideWithValue(auth),
+        if (supabaseClient != null) ...[
+          syncRemoteProvider.overrideWithValue(SupabaseSyncRemote(supabaseClient)),
+          pushRegistryProvider.overrideWithValue(
+            SupabasePushRegistry(supabaseClient, () => systemClock.now()),
+          ),
+        ],
+        pushMessagingProvider.overrideWithValue(push),
         initialSessionProvider.overrideWithValue(session),
         initialThemeModeProvider.overrideWithValue(themeMode),
         onlineProvider.overrideWith((ref) => _online()),
@@ -170,8 +194,10 @@ Future<void> bootstrap() async {
         fileCipherProvider.overrideWithValue(fileCipher),
         screenTimeAlertTitleProvider.overrideWithValue(l10n.genericReminderTitle),
         signOutActionProvider.overrideWith(
-          (ref) =>
-              () => ref.read(sessionControllerProvider.notifier).signOut(),
+          (ref) => () async {
+            await ref.read(pushControllerProvider.notifier).stop();
+            await ref.read(sessionControllerProvider.notifier).signOut();
+          },
         ),
       ],
       child: const FitBuddyApp(),
@@ -179,25 +205,28 @@ Future<void> bootstrap() async {
   );
 }
 
-Future<AuthRepository> _createAuth(
+Future<(AuthRepository, SupabaseClient?)> _createAuth(
   AppConfig config,
   SecureSecretStore secrets,
   AppLogger logger,
 ) async {
-  if (!config.hasBackend) return const UnconfiguredAuthRepository();
+  if (!config.hasBackend) return (const UnconfiguredAuthRepository(), null);
   try {
     final supabase = await Supabase.initialize(
       url: config.supabaseUrl,
       publishableKey: config.supabasePublishableKey,
       authOptions: FlutterAuthClientOptions(localStorage: SecureSessionStorage(secrets)),
     );
-    return SupabaseGoogleAuthRepository(
-      client: supabase.client,
-      googleWebClientId: config.googleWebClientId,
+    return (
+      SupabaseGoogleAuthRepository(
+        client: supabase.client,
+        googleWebClientId: config.googleWebClientId,
+      ),
+      supabase.client,
     );
   } on Object catch (error) {
     logger.failure('backend_init_failed', error);
-    return const UnconfiguredAuthRepository();
+    return (const UnconfiguredAuthRepository(), null);
   }
 }
 

@@ -2400,5 +2400,82 @@
   "unlockAction": "Unlock",
   "privateActivitySwitch": "Private",
   "privateActivitySwitchHelp": "Kept in the locked private space, never synced. Cannot be changed later.",
-  "privateTypeLimit": "Private activities are yes/no or counted."
+  "privateTypeLimit": "Private activities are yes/no or counted.",
+  "pushTitle": "FitBuddy",
+  "pushAccountBody": "There was a sign-in or a change to your account. Open FitBuddy if this was not you.",
+  "pushSyncProblemBody": "Some changes have not synced for over a day. Open FitBuddy to try again.",
+  "pushBackupBody": "Your FitBuddy backup is up to date.",
+  "accountAndSync": "Account and sync",
+  "lastSynced": "Last synced {when}",
+  "@lastSynced": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "syncOff": "Sync is not set up",
+  "syncOffHelp": "This build has no cloud project. Records stay on this phone.",
+  "syncSignedOut": "Signed out",
+  "syncSignedOutHelp": "Sign in to sync. Changes made meanwhile wait on this phone.",
+  "syncRestoring": "Downloading your records…",
+  "syncSyncing": "{count, plural, =0{Checking for changes…} one{Uploading 1 change…} other{Uploading {count} changes…}}",
+  "@syncSyncing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncProblem": "{count, plural, one{! 1 change could not be sent} other{! {count} changes could not be sent}}",
+  "@syncProblem": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncProblemHelp": "FitBuddy tries again automatically. Nothing is lost. Code: {code}",
+  "@syncProblemHelp": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "syncWaiting": "{count, plural, one{1 change waiting} other{{count} changes waiting}}",
+  "@syncWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncWaitingNetwork": "Waiting for a network",
+  "syncUpToDate": "Up to date",
+  "signedInAs": "Signed in as {email}",
+  "@signedInAs": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNow": "Sync now",
+  "whatIsBackedUp": "What is backed up",
+  "syncedList": "Synced: profile and goals, weight, measurements, meals and foods, water, sleep, check-ins, activities and reminders, steps per day, workouts.",
+  "neverLeavesList": "Never leaves this phone: private space, bowel log, medication, screen time, recovery, meal and progress photos, GPS routes, raw step readings.",
+  "pushNotifications": "Push notifications",
+  "pushNotSetUp": "Push notifications are not set up in this build. Reminders work without them.",
+  "pushAccount": "Account and security",
+  "pushAccountHelp": "A new sign-in or a change to your account",
+  "pushSyncProblems": "Sync problems",
+  "pushSyncProblemsHelp": "When changes have waited more than a day",
+  "pushBackup": "Backup status",
+  "pushBackupHelp": "A weekly note that your backup is current",
+  "pushNote": "Push messages never contain health information. Reminders are scheduled on the phone and do not need push.",
+  "yourData": "Your data",
+  "exportTitle": "Export",
+  "exportRowHelp": "JSON or CSV",
+  "deleteDataTitle": "Delete data or account"
 }

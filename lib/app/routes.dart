@@ -56,6 +56,11 @@ abstract final class Routes {
   static const settingsDay = '/settings/day';
   static const settingsHome = '/settings/home-layout';
   static const appLock = '/settings/app-lock';
+  static const accountSync = '/settings/account';
+  static const export = '/settings/export';
+  static const deleteData = '/settings/delete';
+  static String report(String domain) => '/insights/report/$domain';
+  static const privateReport = '/private/report';
   static const hygiene = '/habits/hygiene';
   static const medication = '/habits/medication';
   static String medicationEdit(String id) => '/medication/$id';

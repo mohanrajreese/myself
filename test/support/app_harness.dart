@@ -26,15 +26,31 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'fake_auth.dart';
 import 'fakes.dart';
+import 'memory_sync_remote.dart';
+
+import 'package:fitbuddy/app/push_controller.dart';
+import 'package:fitbuddy/app/sync_controller.dart';
 
 const signedInSession = SessionState(account: testAccount, signedIn: true);
 
 /// Everything a widget test needs to run the real app against an in-memory
 /// database, a fake sign-in and a clock the test controls.
 class AppHarness {
-  AppHarness({DateTime? now, FakeAuthRepository? auth})
-    : time = MutableClock(now ?? DateTime(2026, 11, 16, 9)),
-      auth = auth ?? FakeAuthRepository();
+  AppHarness({
+    DateTime? now,
+    FakeAuthRepository? auth,
+    bool withSync = false,
+    bool withPush = false,
+  }) : time = MutableClock(now ?? DateTime(2026, 11, 16, 9)),
+       auth = auth ?? FakeAuthRepository() {
+    if (withSync) remote = MemorySyncRemote(clock: () => time.now);
+    push.isAvailable = withPush;
+  }
+
+  /// Set when the harness was made `withSync`; otherwise sync is off.
+  MemorySyncRemote? remote;
+  final FakePushMessaging push = FakePushMessaging();
+  final FakePushRegistry pushRegistry = FakePushRegistry();
 
   final AppDatabase db = memoryDatabase();
   final MutableClock time;
@@ -91,9 +107,14 @@ class AppHarness {
         genericTitle: 'FitBuddy reminder',
       ),
     ),
+    if (remote != null) syncRemoteProvider.overrideWithValue(remote),
+    pushMessagingProvider.overrideWithValue(push),
+    pushRegistryProvider.overrideWithValue(pushRegistry),
     signOutActionProvider.overrideWith(
-      (ref) =>
-          () => ref.read(sessionControllerProvider.notifier).signOut(),
+      (ref) => () async {
+        await ref.read(pushControllerProvider.notifier).stop();
+        await ref.read(sessionControllerProvider.notifier).signOut();
+      },
     ),
   ];
 
