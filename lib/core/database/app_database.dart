@@ -47,6 +47,7 @@ part 'app_database.g.dart';
     LocalStepDaily,
     LocalWorkoutRoutePoints,
     LocalRecoveryLogs,
+    LocalSyncCursors,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -74,7 +75,7 @@ class AppDatabase extends _$AppDatabase {
   };
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -170,6 +171,10 @@ class AppDatabase extends _$AppDatabase {
       if (from < 8) {
         // Phase 5: rest days and recovery ratings (device-only, C4).
         await migrator.createTable(localRecoveryLogs);
+      }
+      if (from < 9) {
+        // Phase 6: pull cursors for the sync engine.
+        await migrator.createTable(localSyncCursors);
       }
     },
     beforeOpen: (details) async {

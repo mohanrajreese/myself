@@ -87,3 +87,14 @@ class LocalRecoveryLogs extends Table {
   @override
   Set<Column<Object>> get primaryKey => {localDate};
 }
+
+/// Pull position per synced table (03-database.md §3, §6.2).
+class LocalSyncCursors extends Table {
+  TextColumn get tableName_ => text().named('table_name')();
+  DateTimeColumn get cursorTs => dateTime()();
+  TextColumn get cursorId => text()();
+  DateTimeColumn get lastPulledAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {tableName_};
+}
