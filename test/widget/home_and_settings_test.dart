@@ -97,16 +97,17 @@ void main() {
       await app.dispose(tester);
     });
 
-    testWidgets('each tab opens; unbuilt tabs say so and offer no controls', (tester) async {
+    testWidgets('each tab opens', (tester) async {
       await start(tester);
-      for (final tab in ['Insights']) {
-        await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text(tab)));
-        await tester.pumpAndSettle();
-        expect(
-          find.text("$tab isn't available yet. It will appear here in a later update."),
-          findsOneWidget,
-        );
+      await tester.tap(
+        find.descendant(of: find.byType(NavigationBar), matching: find.text('Insights')),
+      );
+      for (var i = 0; i < 20; i++) {
+        await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 5)));
+        await tester.pump(const Duration(milliseconds: 50));
       }
+      await tester.pumpAndSettle();
+      expect(find.text('In brief'), findsOneWidget);
       await tester.tap(
         find.descendant(of: find.byType(NavigationBar), matching: find.text('Nutrition')),
       );

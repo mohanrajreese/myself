@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
-import '../core/widgets/fb_scaffolds.dart';
 import '../core/widgets/fb_states.dart';
 import '../core/widgets/l10n.dart';
 import '../features/auth/application/session_controller.dart';
@@ -37,6 +36,9 @@ import '../features/recovery/presentation/recovery_screen.dart';
 import '../features/screen_time/presentation/screen_time_screen.dart';
 import 'routine/hygiene_screen.dart';
 import '../features/settings/presentation/account_sync_screen.dart';
+import '../features/insights/domain/report.dart';
+import '../features/insights/presentation/insights_screens.dart';
+import '../features/private_space/presentation/private_report_screen.dart';
 import 'app_shell.dart';
 import 'sync_controller.dart';
 import 'providers.dart';
@@ -209,8 +211,22 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.insights,
-                builder: (context, state) =>
-                    FbNotBuiltYet(title: _Tab.insights.label(context.l10n)),
+                builder: (context, state) => const InsightsScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'report/:kind',
+                    builder: (context, state) => ReportScreen(
+                      kind: ReportKind.values.byName(state.pathParameters['kind']!),
+                      selection: switch (state.extra) {
+                        final Selection s => s,
+                        _ => (
+                          period: ReportPeriod.week,
+                          range: periodRange(ReportPeriod.week, ref.read(todayProvider)),
+                        ),
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -332,6 +348,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'habit/:id',
             builder: (context, state) =>
                 LockGate(child: PrivateHabitScreen(id: state.pathParameters['id']!)),
+          ),
+          GoRoute(
+            path: 'report',
+            builder: (context, state) => const LockGate(child: PrivateReportScreen()),
           ),
           GoRoute(
             path: 'bowel',

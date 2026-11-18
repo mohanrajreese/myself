@@ -2477,5 +2477,411 @@
   "yourData": "Your data",
   "exportTitle": "Export",
   "exportRowHelp": "JSON or CSV",
-  "deleteDataTitle": "Delete data or account"
+  "deleteDataTitle": "Delete data or account",
+  "activitiesDone": "Activities done",
+  "calories": "Calories",
+  "caloriesDailyAverage": "Calories, daily average",
+  "carbohydrates": "Carbohydrates",
+  "customRange": "Custom range",
+  "cycling": "Rides",
+  "cyclingDistance": "Riding distance",
+  "dates": "Dates",
+  "essentialDoneCount": "Essential done",
+  "essentialDonePercent": "Essential activities done",
+  "essentialScheduledCount": "Essential scheduled",
+  "fat": "Fat",
+  "fibre": "Fibre",
+  "gymProgression": "Gym progression",
+  "gymSessions": "Gym workouts",
+  "inBrief": "In brief",
+  "insightsDisclaimer": "Descriptions of your records only, not advice.",
+  "junkDays": "Days with junk food",
+  "junkFoodTitle": "Junk food",
+  "junkItems": "Junk food items",
+  "last14Days": "Last 14 days",
+  "last90Days": "Last 90 days",
+  "newRecords": "New personal records",
+  "nextPeriod": "Next period",
+  "noInsightsYet": "Not enough records in both periods to compare yet.",
+  "noRecordsInPeriod": "No records in this period.",
+  "noneRecorded": "None recorded",
+  "noneScheduled": "Nothing essential scheduled",
+  "nothingRecorded": "Nothing recorded.",
+  "nutritionReport": "Nutrition",
+  "perDayLabel": "Per day",
+  "periodCustom": "Custom",
+  "periodDay": "Day",
+  "previousColumn": "Previous",
+  "previousPeriod": "Previous period",
+  "privateHistory": "Private history",
+  "privateReportNote": "Worked out on this phone from the private database. Not synced, not on the Insights tab, and left out of exports unless you include it.",
+  "protein": "Protein",
+  "reportNote": "Averages use only days with records; days without records are named, never counted as zero.",
+  "running": "Runs",
+  "runningDistance": "Running distance",
+  "sameAsBefore": "Same as before",
+  "screenTimeDaily": "Screen time, daily",
+  "showReport": "Show report",
+  "sleepAverageNight": "Sleep, average night",
+  "stepsDailyAverage": "Steps, daily average",
+  "stepsTitle": "Steps",
+  "thisPeriod": "This period",
+  "thisYear": "This year",
+  "unlockToView": "Unlock to view",
+  "wEnergy": "Energy (1–5)",
+  "wMood": "Mood (1–5)",
+  "wStress": "Stress (1–5)",
+  "wWellness": "Wellness (1–5)",
+  "walking": "Walks",
+  "walkingDistance": "Walking distance",
+  "waterDailyAverage": "Water, daily average",
+  "weightLatest": "Weight, latest",
+  "wellnessTitle": "Wellness check-ins",
+  "workoutsTitle": "Workouts",
+  "comparedWith": "compared with {range}",
+  "@comparedWith": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      }
+    }
+  },
+  "comparedWithDays": "compared with the {days} days before",
+  "@comparedWithDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "customRangeHelp": "{days} days, compared with the {days} days before ({previous}).",
+  "@customRangeHelp": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "previous": {
+        "type": "String"
+      }
+    }
+  },
+  "daysLogged": "{done} of {total} days logged",
+  "@daysLogged": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "daysWithoutRecords": "{count, plural, one{1 day has no records and is left out of averages.} other{{count} days have no records and are left out of averages.}}",
+  "@daysWithoutRecords": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "essentialOf": "{done} of {total} essential",
+  "@essentialOf": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "gymCount": "{count} gym",
+  "@gymCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walkCount": "{count, plural, one{1 walk} other{{count} walks}}",
+  "@walkCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "runCount": "{count, plural, one{1 run} other{{count} runs}}",
+  "@runCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rideCount": "{count, plural, one{1 ride} other{{count} rides}}",
+  "@rideCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "higherBy": "{value} higher",
+  "@higherBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "lowerBy": "{value} lower",
+  "@lowerBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "moreBy": "{value} more",
+  "@moreBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "lessBy": "{value} less",
+  "@lessBy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "itemsCount": "{count, plural, =0{None} one{1 item} other{{count} items}}",
+  "@itemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newRecordsCount": "{count, plural, =0{No new records} one{1 new record} other{{count} new records}}",
+  "@newRecordsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moodOutOf5": "Mood {value} / 5",
+  "@moodOutOf5": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "reportChartSummary": "Chart of {done} days with records out of {total}. {headline}",
+  "@reportChartSummary": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "headline": {
+        "type": "String"
+      }
+    }
+  },
+  "takenOfScheduled": "{done} of {total} marked taken · {skipped} skipped",
+  "@takenOfScheduled": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "skipped": {
+        "type": "int"
+      }
+    }
+  },
+  "timesWithPrevious": "{count} times · previous {previous}",
+  "@timesWithPrevious": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "previous": {
+        "type": "int"
+      }
+    }
+  },
+  "logsWithPrevious": "{count} logs · previous {previous}",
+  "@logsWithPrevious": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "previous": {
+        "type": "int"
+      }
+    }
+  },
+  "valueWithPrevious": "{value} · previous {previous}",
+  "@valueWithPrevious": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "previous": {
+        "type": "String"
+      }
+    }
+  },
+  "insightSteps": "Your average daily steps {direction, select, up{increased} other{decreased}} by {amount} compared with the previous {period, select, day{day} week{week} month{month} other{period}}.",
+  "@insightSteps": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "insightSleep": "You slept {amount} {direction, select, up{longer} other{less}} per night on average compared with the previous {period, select, day{day} week{week} month{month} other{period}}.",
+  "@insightSleep": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "direction": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "insightWeight": "Your latest weight is {amount} {direction, select, up{higher} other{lower}} than at the end of the previous {period, select, day{day} week{week} month{month} other{period}}.",
+  "@insightWeight": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "direction": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "insightWater": "Your average daily water {direction, select, up{increased} other{decreased}} by {amount} compared with the previous {period, select, day{day} week{week} month{month} other{period}}.",
+  "@insightWater": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "insightKcal": "Your average daily calories {direction, select, up{increased} other{decreased}} by {amount} compared with the previous {period, select, day{day} week{week} month{month} other{period}}.",
+  "@insightKcal": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "insightProtein": "Your average daily protein {direction, select, up{increased} other{decreased}} by {amount} compared with the previous {period, select, day{day} week{week} month{month} other{period}}.",
+  "@insightProtein": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "insightFibre": "Your average daily fibre {direction, select, up{increased} other{decreased}} by {amount} compared with the previous {period, select, day{day} week{week} month{month} other{period}}.",
+  "@insightFibre": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "insightWorkouts": "You recorded {current, plural, one{1 workout} other{{current} workouts}}, compared with {previous} in the previous {period, select, day{day} week{week} month{month} other{period}}.",
+  "@insightWorkouts": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "previous": {
+        "type": "int"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "insightEssential": "Essential activities were done {current}% of the time, compared with {previous}% in the previous {period, select, day{day} week{week} month{month} other{period}}.",
+  "@insightEssential": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "previous": {
+        "type": "int"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  },
+  "insightScreen": "Your average daily screen time {direction, select, up{increased} other{decreased}} by {amount} compared with the previous {period, select, day{day} week{week} month{month} other{period}}.",
+  "@insightScreen": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "period": {
+        "type": "String"
+      }
+    }
+  }
 }

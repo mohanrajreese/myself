@@ -26,14 +26,24 @@ Future<void> _continue(WidgetTester tester, int times) async {
   }
 }
 
+/// Lets database work (real I/O, not fake time) finish.
+Future<void> _drain(WidgetTester tester) async {
+  for (var i = 0; i < 20; i++) {
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 5)));
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+}
+
 /// Opens [path] as the app would after a tap.
 Future<void> _go(WidgetTester tester, String path) async {
   unawaited(GoRouter.of(tester.element(find.byType(Scaffold).first)).push(path));
+  await _drain(tester);
   await tester.pumpAndSettle();
 }
 
 Future<void> _tab(WidgetTester tester, String path) async {
   GoRouter.of(tester.element(find.byType(Scaffold).first)).go(path);
+  await _drain(tester);
   await tester.pumpAndSettle();
 }
 
@@ -168,6 +178,14 @@ final List<_Screen> _screens = [
   ),
   (name: 'recovery', setUp: true, open: (tester) => _go(tester, Routes.recovery)),
   (name: 'screen time', setUp: true, open: (tester) => _go(tester, Routes.screenTime)),
+  (name: 'insights', setUp: true, open: (tester) => _tab(tester, Routes.insights)),
+  (
+    name: 'report: nutrition',
+    setUp: true,
+    open: (tester) => _go(tester, Routes.report('nutrition')),
+  ),
+  (name: 'report: workouts', setUp: true, open: (tester) => _go(tester, Routes.report('workouts'))),
+  (name: 'account and sync', setUp: true, open: (tester) => _go(tester, Routes.accountSync)),
 ];
 
 /// For screens with a running clock, which never settle.

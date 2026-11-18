@@ -209,6 +209,7 @@ void main() {
       Routes.privateActivities,
       Routes.progressPhotos,
       Routes.privateReminders,
+      Routes.privateReport,
     ]) {
       await go(tester, path);
       await expectLater(tester, meetsGuideline(androidTapTargetGuideline), reason: path);
@@ -233,6 +234,7 @@ void main() {
       Routes.privateActivities,
       Routes.progressPhotos,
       Routes.privateReminders,
+      Routes.privateReport,
     ]) {
       await go(tester, path);
       expect(tester.takeException(), isNull, reason: path);
