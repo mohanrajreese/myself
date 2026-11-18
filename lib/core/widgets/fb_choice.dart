@@ -153,12 +153,14 @@ class FbSwitchRow extends StatelessWidget {
   final String title;
   final String? subtitle;
   final bool value;
-  final ValueChanged<bool> onChanged;
+
+  /// Null shows the switch disabled.
+  final ValueChanged<bool>? onChanged;
 
   @override
   Widget build(BuildContext context) => MergeSemantics(
     child: InkWell(
-      onTap: () => onChanged(!value),
+      onTap: onChanged == null ? null : () => onChanged!(!value),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 60),
         child: Padding(

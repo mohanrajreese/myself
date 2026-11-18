@@ -30,6 +30,12 @@ import '../features/onboarding/presentation/edit_setup_screen.dart';
 import '../features/onboarding/presentation/onboarding_screens.dart';
 import '../features/settings/presentation/settings_screen.dart';
 import '../features/weight/presentation/add_weight_sheet.dart';
+import '../features/medication/presentation/medication_screens.dart';
+import '../features/private_space/presentation/lock_screens.dart';
+import '../features/private_space/presentation/private_space_screens.dart';
+import '../features/recovery/presentation/recovery_screen.dart';
+import '../features/screen_time/presentation/screen_time_screen.dart';
+import 'routine/hygiene_screen.dart';
 import 'app_shell.dart';
 import 'providers.dart';
 import '../features/fitness/domain/workouts.dart';
@@ -181,6 +187,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'reminders/history',
                     builder: (context, state) => const NotificationHistoryScreen(),
                   ),
+                  GoRoute(path: 'hygiene', builder: (context, state) => const HygieneScreen()),
+                  GoRoute(
+                    path: 'medication',
+                    builder: (context, state) => const MedicationScreen(),
+                  ),
+                  GoRoute(path: 'recovery', builder: (context, state) => const RecoveryScreen()),
+                  GoRoute(
+                    path: 'screen-time',
+                    builder: (context, state) => const ScreenTimeScreen(),
+                  ),
                 ],
               ),
             ],
@@ -292,6 +308,48 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'notifications',
             builder: (context, state) => const NotificationSettingsScreen(),
+          ),
+          GoRoute(path: 'app-lock', builder: (context, state) => const AppLockSettingsScreen()),
+        ],
+      ),
+      GoRoute(
+        path: '/medication/:id',
+        builder: (context, state) => MedicationEditorScreen(
+          id: state.pathParameters['id'] == 'new' ? null : state.pathParameters['id'],
+        ),
+      ),
+      // Private space: every route sits behind the lock (§7.3).
+      GoRoute(
+        path: Routes.privateSpace,
+        builder: (context, state) => const LockGate(child: PrivateSpaceScreen()),
+        routes: [
+          GoRoute(
+            path: 'habit/:id',
+            builder: (context, state) =>
+                LockGate(child: PrivateHabitScreen(id: state.pathParameters['id']!)),
+          ),
+          GoRoute(
+            path: 'bowel',
+            builder: (context, state) => const LockGate(child: BowelScreen()),
+          ),
+          GoRoute(
+            path: 'activities',
+            builder: (context, state) => const LockGate(child: PrivateActivitiesScreen()),
+            routes: [
+              GoRoute(
+                path: ':id',
+                builder: (context, state) =>
+                    LockGate(child: PrivateActivityScreen(id: state.pathParameters['id']!)),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: 'photos',
+            builder: (context, state) => const LockGate(child: ProgressPhotosScreen()),
+          ),
+          GoRoute(
+            path: 'reminders',
+            builder: (context, state) => const LockGate(child: PrivateRemindersScreen()),
           ),
         ],
       ),

@@ -21,7 +21,7 @@ import '../../features/activities/domain/activity.dart';
 import '../../features/activities/domain/activity_day.dart';
 import 'activity_log_sheet.dart';
 
-enum HabitsTab { today, activities, reminders }
+enum HabitsTab { today, activities, reminders, more }
 
 /// Habits tab (approved design "Habits: today / activities / reminders").
 class HabitsScreen extends ConsumerStatefulWidget {
@@ -42,15 +42,16 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen> {
       appBar: AppBar(
         title: Text(l10n.tabHabits),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: FbSpace.sm),
-            child: FilledButton.icon(
-              style: FilledButton.styleFrom(minimumSize: const Size(64, FbSize.touch)),
-              onPressed: () => context.push(reminders ? Routes.newReminder : Routes.newActivity),
-              icon: const Icon(Icons.add_rounded),
-              label: Text(reminders ? l10n.reminderShort : l10n.activityShort),
+          if (_tab != HabitsTab.more)
+            Padding(
+              padding: const EdgeInsets.only(right: FbSpace.sm),
+              child: FilledButton.icon(
+                style: FilledButton.styleFrom(minimumSize: const Size(64, FbSize.touch)),
+                onPressed: () => context.push(reminders ? Routes.newReminder : Routes.newActivity),
+                icon: const Icon(Icons.add_rounded),
+                label: Text(reminders ? l10n.reminderShort : l10n.activityShort),
+              ),
             ),
-          ),
         ],
       ),
       body: Column(
@@ -62,6 +63,7 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen> {
                 HabitsTab.today: l10n.today,
                 HabitsTab.activities: l10n.activitiesTitle,
                 HabitsTab.reminders: l10n.remindersTitle,
+                HabitsTab.more: l10n.moreTab,
               },
               selected: _tab,
               onChanged: (t) => setState(() => _tab = t),
@@ -72,6 +74,7 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen> {
               HabitsTab.today => const _TodayList(),
               HabitsTab.activities => const _ActivityList(),
               HabitsTab.reminders => const ReminderList(),
+              HabitsTab.more => const _MoreList(),
             },
           ),
         ],
@@ -483,5 +486,55 @@ class _Menu extends ConsumerWidget {
         replanReminders(ref);
         if (context.mounted) showFbSnackBar(context, l10n.deleted);
     }
+  }
+}
+
+/// Lifestyle areas that live under Habits (approved design, Phase 5).
+class _MoreList extends StatelessWidget {
+  const _MoreList();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(FbSpace.lg, 0, FbSpace.lg, FbSpace.xxl),
+      children: [
+        FbListCard(
+          children: [
+            FbListRow(
+              title: l10n.hygiene,
+              leading: const Icon(Icons.clean_hands_outlined),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => context.push(Routes.hygiene),
+            ),
+            FbListRow(
+              title: l10n.medicationTitle,
+              leading: const Icon(Icons.medication_outlined),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => context.push(Routes.medication),
+            ),
+            FbListRow(
+              title: l10n.recoveryTitle,
+              leading: const Icon(Icons.self_improvement_rounded),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => context.push(Routes.recovery),
+            ),
+            FbListRow(
+              title: l10n.screenTimeTitle,
+              leading: const Icon(Icons.phone_android_rounded),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => context.push(Routes.screenTime),
+            ),
+            FbListRow(
+              title: l10n.privateSpace,
+              subtitle: l10n.privateSpaceHelp,
+              leading: const Icon(Icons.lock_outline_rounded),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => context.push(Routes.privateSpace),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }

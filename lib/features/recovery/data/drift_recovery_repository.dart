@@ -24,8 +24,9 @@ final class DriftRecoveryRepository implements RecoveryRepository {
   @override
   Future<Result<void>> save(RecoveryLog log) async {
     bool bad(int? v) => v != null && (v < 1 || v > 5);
-    if (bad(log.soreness) || bad(log.recovery))
+    if (bad(log.soreness) || bad(log.recovery)) {
       return const Err(ValidationFailure('rating', 'out_of_range'));
+    }
     return Result.guard(
       () => _db
           .into(_db.localRecoveryLogs)

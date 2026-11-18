@@ -2137,5 +2137,265 @@
     }
   },
   "quickAddWorkout": "Workout",
-  "genericReminderTitle": "FitBuddy reminder"
+  "genericReminderTitle": "FitBuddy reminder",
+  "activeLabel": "Active",
+  "activitiesCount": "{count, plural, =0{None yet} one{1 activity} other{{count} activities}}",
+  "@activitiesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addBowelReminder": "Add a check-in reminder",
+  "addHabitType": "Add a habit",
+  "addMedication": "Add medicine or supplement",
+  "addStandardRoutines": "Add the standard routines",
+  "allMarkedDone": "Marked as done",
+  "appLock": "App lock",
+  "appLockNote": "The PIN is stored only as a salted hash on this phone. If you forget it, turning the lock off needs the PIN; reinstalling the app removes private records.",
+  "appLockOff": "Off. The private space asks you to set a PIN first.",
+  "appLockOn": "On. Private space needs your PIN or fingerprint.",
+  "archiveHabitMessage": "Its history stays on this phone and it leaves the list.",
+  "archiveHabitTitle": "Archive this habit?",
+  "bleeding": "Bleeding",
+  "bowelLog": "Bowel log",
+  "bowelNote": "For your own record. If something worries you, a doctor can help.",
+  "breakReminders": "Break reminders",
+  "changePin": "Change PIN",
+  "changeTimes": "Change times",
+  "checkAgain": "Check again",
+  "close": "Close",
+  "consistencyHard": "Hard",
+  "consistencyLabel": "Consistency",
+  "consistencyLoose": "Loose",
+  "consistencyNormal": "Normal",
+  "countEachTime": "Count each time",
+  "countLabel": "Count",
+  "countsOnly": "Counts per period. No judgement, no streaks.",
+  "dailyAverage": "Daily average",
+  "dailyTarget": "Daily target",
+  "deleteDigit": "Delete digit",
+  "deleteMedicationMessage": "Its dose history and reminders are removed from this phone.",
+  "deleteMedicationTitle": "Delete this medicine?",
+  "deletePhotoMessage": "The encrypted file is removed from this phone.",
+  "deletePhotoTitle": "Delete this photo?",
+  "dosageHint": "In your own words, for example 1 tablet",
+  "dosageLabel": "Dose",
+  "doseNotTaken": "Not marked",
+  "doseTaken": "Taken",
+  "editMedication": "Edit medicine",
+  "enterPin": "Enter your PIN",
+  "errDosageRequired": "Enter the dose in your own words.",
+  "habitMasturbation": "Masturbation",
+  "habitPorn": "Porn",
+  "habitTrendSummary": "Counts for the last {count} periods",
+  "@habitTrendSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursShort": "{hours} h",
+  "@hoursShort": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "hygiene": "Hygiene",
+  "hygieneBath": "Bath",
+  "hygieneBrushMorning": "Brush teeth, morning",
+  "hygieneBrushNight": "Brush teeth, night",
+  "hygieneEmpty": "No hygiene routines yet. Add the standard ones or create your own with the Hygiene category.",
+  "hygieneFloss": "Floss",
+  "hygieneHeadWash": "Head wash",
+  "hygieneMouthwash": "Mouthwash",
+  "hygieneNote": "Each routine is an ordinary activity: change times, steps or reminders from its page.",
+  "hygieneSkinEvening": "Skincare, evening",
+  "hygieneSkinMorning": "Skincare, morning",
+  "last7Days": "Last 7 days",
+  "lockAction": "Lock",
+  "lockAfter": "Lock after",
+  "lockAfterMinutes": "{count, plural, one{1 minute in the background} other{{count} minutes in the background}}",
+  "@lockAfterMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lockImmediately": "Immediately",
+  "lockNeededBody": "Private records sit behind a PIN. Set one up to open this space.",
+  "lockNeededTitle": "Set up the app lock first",
+  "loggedAt": "Logged at {time}",
+  "@loggedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "markAllDone": "Mark all done",
+  "medicationEmpty": "Nothing added yet.",
+  "medicationList": "Your list",
+  "medicationNote": "FitBuddy only reminds and records. It does not check doses or give medical advice.",
+  "medicationReminderHelp": "Shown as “FitBuddy reminder” with no name on the lock screen",
+  "medicationTitle": "Medication and supplements",
+  "month": "Month",
+  "monthly": "Monthly",
+  "moreTab": "More",
+  "mostUsedApps": "Most used apps",
+  "movementBreak": "Movement break",
+  "movementBreakHelp": "Every hour, Mon–Fri 09:00–17:00",
+  "newPin": "New PIN",
+  "newPrivateActivity": "New private activity",
+  "newPrivateReminder": "New private reminder",
+  "noDosesToday": "Nothing scheduled today.",
+  "noFingerprint": "No fingerprint is set up on this phone.",
+  "noPhotosYet": "No photos yet",
+  "noUsageYet": "No usage recorded yet.",
+  "normalHardLoose": "Normal / hard / loose (30 days)",
+  "notesLabel": "Notes",
+  "nothingToday": "Nothing logged today",
+  "openUsageSettings": "Open usage access settings",
+  "pain": "Pain",
+  "paused": "Paused",
+  "perDay30": "Per day (30 days)",
+  "photoOf": "Photo of {date}",
+  "@photoOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "photoSaved": "Photo saved",
+  "photosCount": "{count, plural, one{1 photo} other{{count} photos}}",
+  "@photosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "photosNote": "Encrypted on this phone. Never synced or shared.",
+  "pinDigitsEntered": "{count, plural, =0{No digits entered} one{1 digit entered} other{{count} digits entered}}",
+  "@pinDigitsEntered": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pinRules": "Use 4 to 8 digits.",
+  "pinSaved": "PIN saved",
+  "pinsDiffer": "The two PINs are different.",
+  "postureBreakHelp": "Every 2 hours, Mon–Fri 09:00–17:00",
+  "privateActivities": "Private activities",
+  "privateActivitiesEmpty": "No private activities yet.",
+  "privateActivitiesNote": "Stored only on this phone and never synced.",
+  "privateHabits": "Private habits",
+  "privateLocked": "Private space is locked",
+  "privateNote": "Everything here stays encrypted on this phone. It is never synced, backed up to the cloud or shown in notifications.",
+  "privateReminders": "Private reminders",
+  "privateRemindersEmpty": "No private reminders yet.",
+  "privateRemindersHelp": "Generic text on the lock screen",
+  "privateRemindersNote": "These show only “FitBuddy reminder”, hidden on the lock screen.",
+  "privateSpace": "Private space",
+  "privateSpaceHelp": "Locked, on this phone only",
+  "progressPhotos": "Progress photos",
+  "quickLog": "Quick log",
+  "recordNow": "Record now",
+  "recordWithDetails": "With details",
+  "recorded": "Recorded",
+  "recoveryLabel": "Recovery (1 poor – 5 fully recovered)",
+  "recoveryNote": "Ratings are for your own record and are not used to judge training.",
+  "recoveryTitle": "Posture and recovery",
+  "recoveryValue": "Recovery {value}/5",
+  "@recoveryValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "remindMe": "Remind me",
+  "repeatPin": "Repeat PIN",
+  "restDay": "Rest day",
+  "routineCheckIn": "Check-in",
+  "routinesAdded": "Routines added",
+  "screenTimeAlerts": "Alert over target",
+  "screenTimeAlertsHelp": "One generic notification a day, checked when the app opens",
+  "screenTimeChartSummary": "Hours per day over {count} days, average {value}",
+  "@screenTimeChartSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "screenTimeNote": "From Android's usage records. Totals can differ from Digital Wellbeing. Stored only on this phone.",
+  "screenTimeTitle": "Screen time",
+  "screenTimeToday": "Today so far",
+  "setUpLock": "Set up app lock",
+  "skip": "Skip",
+  "sorenessLabel": "Soreness (1 none – 5 very sore)",
+  "sorenessValue": "Soreness {value}/5",
+  "@sorenessValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "stepCleanse": "Cleanse",
+  "stepMoisturise": "Moisturise",
+  "stepSunscreen": "Sunscreen",
+  "straining": "Straining",
+  "taken": "Taken",
+  "targetIs": "Target {value}",
+  "@targetIs": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "timesCount": "{count, plural, one{1 time} other{{count} times}}",
+  "@timesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tryAgainIn": "Too many tries. Try again in {seconds} s.",
+  "@tryAgainIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "turnOff": "Turn off",
+  "turnOffLockMessage": "Private space will not open until you set a PIN again. Your records stay on this phone.",
+  "turnOffLockTitle": "Turn off the app lock?",
+  "undoTaken": "Undo taken",
+  "unlockReason": "Unlock FitBuddy private space",
+  "unlockWithFingerprint": "Unlock with fingerprint",
+  "unlockWithFingerprintHelp": "Your PIN still works as a backup",
+  "usageAccessBody": "Android keeps screen time behind a special setting. Turn on usage access for FitBuddy; the numbers stay on this phone.",
+  "usageAccessTitle": "Usage access is off",
+  "useFingerprint": "Use fingerprint",
+  "week": "Week",
+  "weekly": "Weekly",
+  "whenLabel": "When",
+  "wrongPin": "Wrong PIN",
+  "unlockAction": "Unlock"
 }

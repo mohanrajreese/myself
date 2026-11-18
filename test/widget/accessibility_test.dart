@@ -157,6 +157,17 @@ final List<_Screen> _screens = [
   (name: 'exercise library', setUp: true, open: (tester) => _go(tester, Routes.exerciseLibrary)),
   (name: 'workout history', setUp: true, open: (tester) => _go(tester, Routes.workoutHistory)),
   (name: 'personal records', setUp: true, open: (tester) => _go(tester, Routes.records)),
+  (name: 'app lock', setUp: true, open: (tester) => _go(tester, Routes.appLock)),
+  (name: 'private space gate', setUp: true, open: (tester) => _go(tester, Routes.privateSpace)),
+  (name: 'hygiene', setUp: true, open: (tester) => _go(tester, Routes.hygiene)),
+  (name: 'medication', setUp: true, open: (tester) => _go(tester, Routes.medication)),
+  (
+    name: 'medication editor',
+    setUp: true,
+    open: (tester) => _go(tester, Routes.medicationEdit('new')),
+  ),
+  (name: 'recovery', setUp: true, open: (tester) => _go(tester, Routes.recovery)),
+  (name: 'screen time', setUp: true, open: (tester) => _go(tester, Routes.screenTime)),
 ];
 
 /// For screens with a running clock, which never settle.

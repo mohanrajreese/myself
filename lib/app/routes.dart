@@ -55,6 +55,19 @@ abstract final class Routes {
   static const settingsGoals = '/settings/goals';
   static const settingsDay = '/settings/day';
   static const settingsHome = '/settings/home-layout';
+  static const appLock = '/settings/app-lock';
+  static const hygiene = '/habits/hygiene';
+  static const medication = '/habits/medication';
+  static String medicationEdit(String id) => '/medication/$id';
+  static const recovery = '/habits/recovery';
+  static const screenTime = '/habits/screen-time';
+  static const privateSpace = '/private';
+  static String privateHabit(String id) => '/private/habit/$id';
+  static const bowel = '/private/bowel';
+  static const privateActivities = '/private/activities';
+  static String privateActivity(String id) => '/private/activities/$id';
+  static const progressPhotos = '/private/photos';
+  static const privateReminders = '/private/reminders';
 
   static const onboardingSteps = [
     onboardingProfile,

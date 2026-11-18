@@ -43,8 +43,9 @@ final class DriftMedicationRepository implements MedicationRepository {
 
   @override
   Future<Result<Medication>> create(Medication draft) async {
-    if (draft.problems.isNotEmpty)
+    if (draft.problems.isNotEmpty) {
       return Err(ValidationFailure('medication', draft.problems.first));
+    }
     return Result.guard(() async {
       final id = ids.newId();
       await _db
