@@ -53,7 +53,8 @@ final class StepService {
           source: p.source,
         ),
     ]);
-    if (result.isOk)
+    if (result.isOk) {
       await counter.acknowledge(pending.map((p) => p.id).reduce((a, b) => a > b ? a : b));
+    }
   }
 }

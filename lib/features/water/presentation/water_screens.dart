@@ -263,21 +263,20 @@ class _WaterSheetState extends ConsumerState<WaterSheet> {
         style: context.text.bodySmall,
       ),
       children: [
-        Row(
+        // Wraps at large text sizes instead of squeezing the buttons.
+        Wrap(
+          spacing: FbSpace.sm,
+          runSpacing: FbSpace.sm,
           children: [
-            for (final ml in quickWaterMl) ...[
-              if (ml != quickWaterMl.first) const SizedBox(width: FbSpace.sm),
-              Expanded(
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(minimumSize: const Size(0, FbSize.primaryButton)),
-                  onPressed: () => _quick(ml),
-                  child: Text(
-                    _quickLabel(context, ml, units),
-                    semanticsLabel: l10n.quickAddAmount(context.volume(ml, units)),
-                  ),
+            for (final ml in quickWaterMl)
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(minimumSize: const Size(72, FbSize.primaryButton)),
+                onPressed: () => _quick(ml),
+                child: Text(
+                  _quickLabel(context, ml, units),
+                  semanticsLabel: l10n.quickAddAmount(context.volume(ml, units)),
                 ),
               ),
-            ],
           ],
         ),
         const SizedBox(height: FbSpace.sm),

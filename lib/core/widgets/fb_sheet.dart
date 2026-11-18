@@ -32,11 +32,13 @@ class FbSheetBody extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
+          // The trailing part wraps under the title when space is short.
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: FbSpace.sm,
             children: [
-              Expanded(
-                child: Semantics(header: true, child: Text(title, style: context.text.title)),
-              ),
+              Semantics(header: true, child: Text(title, style: context.text.title)),
               ?trailing,
             ],
           ),

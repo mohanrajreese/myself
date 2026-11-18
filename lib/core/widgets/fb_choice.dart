@@ -120,11 +120,14 @@ class FbToggleChip extends StatelessWidget {
                 mainAxisSize: circular ? MainAxisSize.max : MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    label,
-                    style: context.text.bodySmall.copyWith(
-                      color: foreground,
-                      fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                  Flexible(
+                    child: Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      style: context.text.bodySmall.copyWith(
+                        color: foreground,
+                        fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],

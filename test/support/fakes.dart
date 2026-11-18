@@ -197,6 +197,8 @@ class FakeStepCounter implements StepCounter {
 class FakeLocationTracker implements LocationTracker {
   LocationAccess current = LocationAccess.granted;
   LocationAccess onRequest = LocationAccess.granted;
+  // Closed with the test process; a fake.
+  // ignore: close_sinks
   final StreamController<LocationFix> fixes = StreamController.broadcast();
   int settingsOpened = 0;
 

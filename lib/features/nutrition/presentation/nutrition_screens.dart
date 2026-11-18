@@ -434,11 +434,15 @@ class NutritionSummaryScreen extends ConsumerWidget {
             Row(
               children: [
                 Expanded(child: Text(label, style: context.text.body)),
-                Text(
-                  target == null
-                      ? l10n.noTargetSuffix(fmt(value))
-                      : l10n.ofTargetValue(fmt(value), fmt(target)),
-                  style: context.text.bodySmall,
+                const SizedBox(width: FbSpace.sm),
+                Flexible(
+                  child: Text(
+                    target == null
+                        ? l10n.noTargetSuffix(fmt(value))
+                        : l10n.ofTargetValue(fmt(value), fmt(target)),
+                    style: context.text.bodySmall,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
               ],
             ),

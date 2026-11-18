@@ -74,21 +74,28 @@ class FbNotice extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: FbSpace.md, vertical: 10),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (isError) ...[
-                Icon(Icons.error_outline_rounded, color: c.error, size: FbSpace.xl),
-                const SizedBox(width: FbSpace.sm),
-              ],
-              Expanded(
-                child: Text(
-                  message,
-                  style: context.text.caption.copyWith(
-                    color: isError ? c.error : c.onPrimaryContainer,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (isError) ...[
+                    Icon(Icons.error_outline_rounded, color: c.error, size: FbSpace.xl),
+                    const SizedBox(width: FbSpace.sm),
+                  ],
+                  Expanded(
+                    child: Text(
+                      message,
+                      style: context.text.caption.copyWith(
+                        color: isError ? c.error : c.onPrimaryContainer,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-              if (action != null) ...[const SizedBox(width: FbSpace.sm), action!],
+              // Below the text, so a long message and a large font both fit.
+              if (action != null) Align(alignment: AlignmentDirectional.centerEnd, child: action),
             ],
           ),
         ),

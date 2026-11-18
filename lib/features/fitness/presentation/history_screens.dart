@@ -116,8 +116,9 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
                                         .read(workoutRepositoryProvider)
                                         .startGym(name: t.name, templateId: t.id))
                                     .valueOrNull;
-                            if (id != null && context.mounted)
+                            if (id != null && context.mounted) {
                               unawaited(context.push(Routes.workout(id)));
+                            }
                           },
                           child: Text(l10n.start),
                         ),

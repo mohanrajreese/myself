@@ -260,9 +260,10 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
           title: Text(widget.existing == null ? l10n.addMeal : l10n.editMealTitle),
           actions: [
             if (widget.existing == null)
-              TextButton(
+              IconButton(
+                tooltip: l10n.savedMeals,
                 onPressed: () => context.push(Routes.savedMeals),
-                child: Text(l10n.savedMeals),
+                icon: const Icon(Icons.bookmarks_outlined),
               )
             else ...[
               IconButton(

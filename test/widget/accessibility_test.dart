@@ -146,7 +146,26 @@ final List<_Screen> _screens = [
     setUp: true,
     open: (tester) => _go(tester, Routes.notificationHistory),
   ),
+  (name: 'fitness', setUp: true, open: (tester) => _tab(tester, Routes.fitness)),
+  (name: 'steps', setUp: true, open: (tester) => _go(tester, Routes.steps)),
+  (name: 'log a run', setUp: true, open: (tester) => _go(tester, Routes.logCardio('run'))),
+  (
+    name: 'gps ride',
+    setUp: true,
+    open: (tester) => _goNoSettle(tester, Routes.gpsWorkout('cycle')),
+  ),
+  (name: 'exercise library', setUp: true, open: (tester) => _go(tester, Routes.exerciseLibrary)),
+  (name: 'workout history', setUp: true, open: (tester) => _go(tester, Routes.workoutHistory)),
+  (name: 'personal records', setUp: true, open: (tester) => _go(tester, Routes.records)),
 ];
+
+/// For screens with a running clock, which never settle.
+Future<void> _goNoSettle(WidgetTester tester, String path) async {
+  unawaited(GoRouter.of(tester.element(find.byType(Scaffold).first)).push(path));
+  for (var i = 0; i < 20; i++) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+}
 
 /// Creates a yes/no activity through the builder; ends on its detail screen.
 Future<void> _createActivity(WidgetTester tester) async {
@@ -199,6 +218,7 @@ void main() {
         size: const Size(320, 640),
         textScale: 2,
       );
+      await screen.open(tester);
       expect(tester.takeException(), isNull);
       await app.dispose(tester);
     });
