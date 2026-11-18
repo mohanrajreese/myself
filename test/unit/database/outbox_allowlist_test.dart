@@ -33,6 +33,8 @@ void main() {
       'local_timer_sessions',
       'local_timer_events',
       'local_notification_state',
+      'local_step_daily',
+      'local_workout_route_points',
       'anything_else',
     ]) {
       await expectLater(enqueue(table), throwsA(anything), reason: table);

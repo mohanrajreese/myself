@@ -39,7 +39,7 @@ create function t.refused(statement text, label text) returns void language plpg
 begin
   begin
     execute statement;
-  exception when insufficient_privilege or check_violation or foreign_key_violation then
+  exception when insufficient_privilege or check_violation or foreign_key_violation or unique_violation then
     raise notice 'ok - %', label;
     return;
   end;
@@ -144,7 +144,8 @@ reset role;
 create function t.phase2_tables() returns text[] language sql as $$
   select array['body_measurements', 'water_logs', 'food_items', 'meal_logs', 'meal_food_items',
                'saved_meals', 'sleep_logs', 'daily_health_checkins',
-               'activity_definitions', 'activity_logs', 'reminders']
+               'activity_definitions', 'activity_logs', 'reminders',
+               'step_logs', 'exercises', 'workout_sessions', 'workout_exercises', 'exercise_sets', 'workout_templates']
 $$;
 create function t.count_visible(tbl text) returns bigint language plpgsql as $$
 declare n bigint;
@@ -186,6 +187,18 @@ insert into public.activity_logs (id, activity_definition_id, status, occurred_a
 values ('49000000-0000-0000-0000-000000000001', '48000000-0000-0000-0000-000000000001', 'completed', now(), '2026-11-16', 'UTC', 1800, 'manual', now(), now());
 insert into public.reminders (id, kind, title, activity_definition_id, schedule, condition, channel_key, priority, quiet_hours_behaviour, created_at, updated_at)
 values ('4a000000-0000-0000-0000-000000000001', 'activity', 'Walk', '48000000-0000-0000-0000-000000000001', '{"type":"daily","times":[480]}', 'always', 'routines', 'normal', 'defer', now(), now());
+insert into public.step_logs (id, log_date, steps, source, timezone, created_at, updated_at)
+values ('4b000000-0000-0000-0000-000000000001', '2026-11-16', 8200, 'phone_sensor', 'Asia/Kolkata', now(), now());
+insert into public.exercises (id, name, category, muscle_group, equipment, measurement_kind, created_at, updated_at)
+values ('4c000000-0000-0000-0000-000000000001', 'Bench press', 'strength', 'chest', 'barbell', 'weight_reps', now(), now());
+insert into public.workout_sessions (id, kind, name, started_at, duration_s, local_date, tz, entry_mode, created_at, updated_at)
+values ('4d000000-0000-0000-0000-000000000001', 'gym', 'Push day', now(), 2700, '2026-11-16', 'UTC', 'manual', now(), now());
+insert into public.workout_exercises (id, session_id, exercise_id, created_at, updated_at)
+values ('4e000000-0000-0000-0000-000000000001', '4d000000-0000-0000-0000-000000000001', '4c000000-0000-0000-0000-000000000001', now(), now());
+insert into public.exercise_sets (id, workout_exercise_id, set_number, reps, load_g, entry_unit, created_at, updated_at)
+values ('4f000000-0000-0000-0000-000000000001', '4e000000-0000-0000-0000-000000000001', 1, 12, 40000, 'kg', now(), now());
+insert into public.workout_templates (id, name, exercises, created_at, updated_at)
+values ('50000000-0000-0000-0000-000000000001', 'Push day', '[]', now(), now());
 
 select t.eq(t.count_visible(tbl), 1, 'owner sees own ' || tbl) from unnest(t.phase2_tables()) tbl;
 select t.refused($$update public.activity_definitions set tracking_type = 'streak', updated_at = now() + interval '1 hour'$$,
@@ -194,6 +207,11 @@ select t.refused($$update public.activity_logs set status = 'missed', updated_at
   'missed is never stored');
 select t.refused($$update public.reminders set channel_key = 'bowel', updated_at = now() + interval '1 hour'$$,
   'unknown channel is rejected');
+select t.refused($$insert into public.step_logs (id, log_date, steps, source, timezone, created_at, updated_at)
+  values ('4b000000-0000-0000-0000-000000000002', '2026-11-16', 100, 'manual', 'UTC', now(), now())$$,
+  'one step total per day');
+select t.refused($$update public.exercise_sets set reps = -1, updated_at = now() + interval '1 hour'$$,
+  'negative repetitions are rejected');
 
 select t.refused($$update public.sleep_logs set quality = 9, updated_at = now() + interval '1 hour'$$,
   'sleep quality outside 1 to 5 is rejected');
@@ -221,6 +239,9 @@ select t.eq(t.count_changed(format('delete from public.%I', tbl)), 0,
 select t.refused($$insert into public.meal_food_items (id, meal_log_id, food_name, quantity_milli, unit, energy_kcal_milli, protein_mg, carbs_mg, fat_mg, fibre_mg, created_at, updated_at)
   values ('44000000-0000-0000-0000-000000000002', '43000000-0000-0000-0000-000000000001', 'x', 1000, 'g', 0, 0, 0, 0, 0, now(), now())$$,
   'cannot attach an item to another user''s meal');
+select t.refused($$insert into public.exercise_sets (id, workout_exercise_id, set_number, created_at, updated_at)
+  values ('4f000000-0000-0000-0000-000000000002', '4e000000-0000-0000-0000-000000000001', 2, now(), now())$$,
+  'cannot add a set to another user''s workout');
 select t.refused($$insert into public.activity_logs (id, activity_definition_id, status, occurred_at, local_date, tz, source, created_at, updated_at)
   values ('49000000-0000-0000-0000-000000000002', '48000000-0000-0000-0000-000000000001', 'completed', now(), '2026-11-16', 'UTC', 'manual', now(), now())$$,
   'cannot log against another user''s activity');
@@ -243,6 +264,9 @@ select t.eq((select count(*) from public.meal_food_items where food_item_id is n
 delete from public.meal_logs where id = '43000000-0000-0000-0000-000000000001';
 select t.eq((select count(*) from public.meal_food_items), 0, 'deleting a meal removes its items');
 
+-- Deleting a workout removes its exercises and sets.
+delete from public.workout_sessions where id = '4d000000-0000-0000-0000-000000000001';
+select t.eq((select count(*) from public.exercise_sets), 0, 'deleting a workout removes its sets');
 -- Deleting an activity removes its logs.
 delete from public.activity_definitions where id = '48000000-0000-0000-0000-000000000001';
 select t.eq((select count(*) from public.activity_logs), 0, 'deleting an activity removes its logs');

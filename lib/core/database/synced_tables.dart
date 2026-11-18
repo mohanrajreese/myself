@@ -19,4 +19,10 @@ const syncedTableNames = <String>[
   'activity_definitions',
   'activity_logs',
   'reminders',
+  'step_logs',
+  'exercises',
+  'workout_sessions',
+  'workout_exercises',
+  'exercise_sets',
+  'workout_templates',
 ];

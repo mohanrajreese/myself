@@ -4,6 +4,7 @@ import '../utils/local_date.dart';
 import 'converters.dart';
 import 'synced_tables.dart';
 import 'tables/activity_tables.dart';
+import 'tables/fitness_tables.dart';
 import 'tables/local_tables.dart';
 import 'tables/profile_tables.dart';
 import 'tables/tracking_tables.dart';
@@ -36,6 +37,15 @@ part 'app_database.g.dart';
     LocalTimerEvents,
     Reminders,
     LocalNotificationState,
+    StepLogs,
+    Exercises,
+    WorkoutSessions,
+    WorkoutExercises,
+    ExerciseSets,
+    WorkoutTemplates,
+    LocalStepReadings,
+    LocalStepDaily,
+    LocalWorkoutRoutePoints,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -54,8 +64,16 @@ class AppDatabase extends _$AppDatabase {
     'local_notification_state_at',
   };
 
+  static const _version7Indexes = {
+    'workout_sessions_local_date',
+    'workout_exercises_session',
+    'exercise_sets_workout_exercise',
+    'local_step_readings_time',
+    'local_workout_route_points_session',
+  };
+
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -80,6 +98,7 @@ class AppDatabase extends _$AppDatabase {
             'local_food_catalogue_name',
             ..._version5Indexes,
             ..._version6Indexes,
+            ..._version7Indexes,
           };
           if (!notInVersion2.contains(index.entityName)) await migrator.create(index);
         }
@@ -126,6 +145,25 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createTable(localNotificationState);
         for (final index in allSchemaEntities.whereType<Index>()) {
           if (_version6Indexes.contains(index.entityName)) await migrator.create(index);
+        }
+      }
+      if (from < 7) {
+        // Phase 4: steps, exercises, workouts, templates, GPS routes.
+        for (final table in <TableInfo<Table, Object?>>[
+          stepLogs,
+          exercises,
+          workoutSessions,
+          workoutExercises,
+          exerciseSets,
+          workoutTemplates,
+          localStepReadings,
+          localStepDaily,
+          localWorkoutRoutePoints,
+        ]) {
+          await migrator.createTable(table);
+        }
+        for (final index in allSchemaEntities.whereType<Index>()) {
+          if (_version7Indexes.contains(index.entityName)) await migrator.create(index);
         }
       }
     },
