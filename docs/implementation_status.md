@@ -89,6 +89,8 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | S-12 overview and Home | ☑ | Fitness overview; Home steps tile live; quick add Workout |
 | S-13 migration, docs, report | ☑ | Device run pending |
 | Accessibility | ☑ | The 2×-text check now opens each screen (it only checked Home before); 7 earlier screens fixed |
+| Phase 5 schema | ☑ | Private database v2 (all §7.1 tables; none on the sync allow-list, tested); app database v8 recovery logs; upgrades tested |
+| P-01 lock logic | ☑ | Salted PBKDF2 PIN hash in Keystore-backed storage, settings, auto-lock after time away, growing wait after 5 wrong PINs (7 tests). Lock screen, biometric and secure window follow design approval |
 | Phase 5 screens | ✋ | Twelve designs on the canvas |
 
 ## Device verification backlog
