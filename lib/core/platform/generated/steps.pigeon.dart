@@ -10,9 +10,9 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show immutable, protected, visibleForTesting;
 
 Object? _extractReplyValueOrThrow(
-    List<Object?>? replyList,
-    String channelName, {
-    required bool isNullValid,
+  List<Object?>? replyList,
+  String channelName, {
+  required bool isNullValid,
 }) {
   if (replyList == null) {
     throw PlatformException(
@@ -46,8 +46,7 @@ bool _deepEquals(Object? a, Object? b) {
   }
   if (a is List && b is List) {
     return a.length == b.length &&
-        a.indexed
-            .every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
+        a.indexed.every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
   }
   if (a is Map && b is Map) {
     if (a.length != b.length) {
@@ -96,7 +95,6 @@ int _deepHash(Object? value) {
   return value.hashCode;
 }
 
-
 class StepReadingMessage {
   StepReadingMessage({
     required this.id,
@@ -139,7 +137,8 @@ class StepReadingMessage {
   }
 
   Object encode() {
-    return _toList();  }
+    return _toList();
+  }
 
   static StepReadingMessage decode(Object result) {
     result as List<Object?>;
@@ -164,7 +163,14 @@ class StepReadingMessage {
     if (identical(this, other)) {
       return true;
     }
-    return _deepEquals(id, other.id) && _deepEquals(cumulativeSteps, other.cumulativeSteps) && _deepEquals(bootCount, other.bootCount) && _deepEquals(elapsedRealtimeMs, other.elapsedRealtimeMs) && _deepEquals(wallTimeUtcMs, other.wallTimeUtcMs) && _deepEquals(tz, other.tz) && _deepEquals(utcOffsetS, other.utcOffsetS) && _deepEquals(source, other.source);
+    return _deepEquals(id, other.id) &&
+        _deepEquals(cumulativeSteps, other.cumulativeSteps) &&
+        _deepEquals(bootCount, other.bootCount) &&
+        _deepEquals(elapsedRealtimeMs, other.elapsedRealtimeMs) &&
+        _deepEquals(wallTimeUtcMs, other.wallTimeUtcMs) &&
+        _deepEquals(tz, other.tz) &&
+        _deepEquals(utcOffsetS, other.utcOffsetS) &&
+        _deepEquals(source, other.source);
   }
 
   @override
@@ -177,7 +183,6 @@ class StepReadingMessage {
   }
 }
 
-
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
   @override
@@ -185,7 +190,7 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    }    else if (value is StepReadingMessage) {
+    } else if (value is StepReadingMessage) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
     } else {
@@ -208,22 +213,21 @@ class StepApi {
   /// Constructor for [StepApi]. The [binaryMessenger] named argument is
   /// available for dependency injection. If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  StepApi({
-      BinaryMessenger? binaryMessenger, 
-      String messageChannelSuffix = '', 
-      })
-      : pigeonVar_binaryMessenger = binaryMessenger,
-        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  StepApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+    : pigeonVar_binaryMessenger = binaryMessenger,
+      pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty
+          ? '.$messageChannelSuffix'
+          : '';
 
   final BinaryMessenger? pigeonVar_binaryMessenger;
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
   final String pigeonVar_messageChannelSuffix;
 
-
   /// Whether the phone has `Sensor.TYPE_STEP_COUNTER`.
   Future<bool> hasSensor() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.hasSensor$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.hasSensor$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -232,17 +236,17 @@ class StepApi {
     final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
-        pigeonVar_replyList,
-        pigeonVar_channelName,
-        isNullValid: false,
-    )
-    ;
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
     return pigeonVar_replyValue! as bool;
   }
 
   /// `ACTIVITY_RECOGNITION` granted (always true before Android 10's prompt).
   Future<bool> hasPermission() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.hasPermission$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.hasPermission$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -251,17 +255,17 @@ class StepApi {
     final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
-        pigeonVar_replyList,
-        pigeonVar_channelName,
-        isNullValid: false,
-    )
-    ;
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
     return pigeonVar_replyValue! as bool;
   }
 
   /// Shows the system prompt; returns the result.
   Future<bool> requestPermission() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.requestPermission$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.requestPermission$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -270,18 +274,18 @@ class StepApi {
     final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
-        pigeonVar_replyList,
-        pigeonVar_channelName,
-        isNullValid: false,
-    )
-    ;
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
     return pigeonVar_replyValue! as bool;
   }
 
   /// Takes one reading now and stores it in the native buffer; null when the
   /// sensor gave no value in time.
   Future<StepReadingMessage?> readNow() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.readNow$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.readNow$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -290,17 +294,17 @@ class StepApi {
     final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
-        pigeonVar_replyList,
-        pigeonVar_channelName,
-        isNullValid: true,
-    )
-    ;
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: true,
+    );
     return pigeonVar_replyValue as StepReadingMessage?;
   }
 
   /// Readings waiting in the native buffer, oldest first.
   Future<List<StepReadingMessage>> pendingReadings() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.pendingReadings$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.pendingReadings$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -309,17 +313,17 @@ class StepApi {
     final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
-        pigeonVar_replyList,
-        pigeonVar_channelName,
-        isNullValid: false,
-    )
-    ;
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
     return (pigeonVar_replyValue! as List<Object?>).cast<StepReadingMessage>();
   }
 
   /// Removes buffered readings up to and including [maxId].
   Future<void> acknowledge(int maxId) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.acknowledge$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.acknowledge$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -327,17 +331,13 @@ class StepApi {
     );
     final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[maxId]);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
-    _extractReplyValueOrThrow(
-        pigeonVar_replyList,
-        pigeonVar_channelName,
-        isNullValid: true,
-    )
-    ;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
   }
 
   /// Starts or stops continuous collection (foreground service).
   Future<void> setContinuous(bool enabled) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.setContinuous$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.setContinuous$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -345,16 +345,12 @@ class StepApi {
     );
     final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(<Object?>[enabled]);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
-    _extractReplyValueOrThrow(
-        pigeonVar_replyList,
-        pigeonVar_channelName,
-        isNullValid: true,
-    )
-    ;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
   }
 
   Future<bool> isContinuous() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.isContinuous$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.isContinuous$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -363,17 +359,17 @@ class StepApi {
     final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
     final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
-        pigeonVar_replyList,
-        pigeonVar_channelName,
-        isNullValid: false,
-    )
-    ;
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
     return pigeonVar_replyValue! as bool;
   }
 
   /// Schedules the 15-minute snapshot job (idempotent).
   Future<void> scheduleSnapshots() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.scheduleSnapshots$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.scheduleSnapshots$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -381,11 +377,6 @@ class StepApi {
     );
     final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(null);
     final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
-    _extractReplyValueOrThrow(
-        pigeonVar_replyList,
-        pigeonVar_channelName,
-        isNullValid: true,
-    )
-    ;
+    _extractReplyValueOrThrow(pigeonVar_replyList, pigeonVar_channelName, isNullValid: true);
   }
 }
