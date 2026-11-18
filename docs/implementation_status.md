@@ -8,9 +8,9 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 3 — Activities and reminders built 17 Nov 2026; Phases 1–3 phone verification pending; Phase 4 waits for approval |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026) |
-| Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
+| Phase | 4 — Fitness (approved 18 Nov 2026); Phases 1–3 phone verification pending |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens published 18 Nov 2026, awaiting approval) |
+| Blocked on | Owner's Supabase and Google OAuth setup for a phone build; design approval for Phase 4 screens |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
 ## Phases
@@ -20,7 +20,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | 1 Foundation | ⏳ built, phone verification pending | [phase-1.md](reports/phase-1.md) |
 | 2 Core tracking | ⏳ built, phone verification pending | [phase-2.md](reports/phase-2.md) |
 | 3 Activities and reminders | ⏳ built, phone verification pending | [phase-3.md](reports/phase-3.md) |
-| 4 Fitness | ☐ | — |
+| 4 Fitness | ◐ | — |
 | 5 Lifestyle and privacy | ☐ | — |
 | 6 Reports and synchronisation | ☐ | — |
 | 7 Quality and release | ☐ | — |
@@ -76,6 +76,9 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | A-16 notification centre | ☑ | 30-day history; limitation notices on Habits and in Settings |
 | A-17 stopwatch and timers | ☑ · ⏳ notification | State machine, persistence, history, completion notification, activity log on finish, cancel logs nothing |
 | A-18 migrations, docs, report | ☑ | Device test run pending |
+| S-04 step attribution | ☑ | `StepAttributionEngine`: baseline first reading, same-boot differences, reboot gaps, backwards counter, implausible rate, midnight split (uncertain over 10 min), per-reading offsets for timezone changes (10 tests). Native collection and ingest next |
+| S-06, S-11 rules | ☑ | Pace, speed, entry checks; personal records per the blueprint table (5 tests) |
+| Phase 4 screens | ✋ | Ten designs on the canvas |
 
 ## Device verification backlog
 
