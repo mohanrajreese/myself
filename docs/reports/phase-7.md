@@ -27,13 +27,13 @@
 |---|---|
 | The migration test still validated upgrades against version 8 after version 9 was added in Phase 6, so the v8→v9 step was only partly checked | Validates against the current version; a new test fails if a version is added without being covered |
 | FCM would have created a device token at startup once Firebase is configured, before sign-in | `firebase_messaging_auto_init_enabled=false`; the token is created only when the app registers after sign-in |
+| Build warning: `workmanager_android` still carried the legacy Kotlin Gradle Plugin line, which future Flutter versions will refuse to build | Built-in Kotlin switched on for the whole build; a patched copy of the plugin without that line in `third_party/workmanager_android` (see its `FITBUDDY_PATCH.md`), used through `dependency_overrides`. Debug and release builds now have no warnings |
 
 ## 4. Known limitations and risks
 
 | Limit | Risk |
 |---|---|
 | No phone has run any build yet; every hardware, background and notification behaviour is unconfirmed | R-27 |
-| Several plugins still use the old Kotlin Gradle setup and print warnings under AGP 9; they build today but may break with a future Android Gradle Plugin | — |
 | The all-CPU APK is 83 MB because it carries three architectures; install the arm64 split APK (30.5 MB) | — |
 | Timings above are from the build machine; a mid-range phone will be slower | — |
 

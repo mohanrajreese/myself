@@ -10,6 +10,7 @@ analyzer:
     - "**/*.freezed.dart"
     - "lib/core/platform/generated/**"
     - "build/**"
+    - "third_party/**"
     - "lib/l10n/generated/**"
     - "test/**/generated/**"
     - "test/**/generated_private/**"

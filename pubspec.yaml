@@ -122,3 +122,10 @@ hooks:
   user_defines:
     sqlite3:
       source: sqlite3mc
+
+# Patched copy without the legacy Kotlin Gradle Plugin line; see
+# third_party/workmanager_android/FITBUDDY_PATCH.md.
+dependency_overrides:
+  workmanager_android:
+    path: third_party/workmanager_android
+

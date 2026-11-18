@@ -30,4 +30,4 @@ Design and rationale: [`blueprint/01-architecture.md`](blueprint/01-architecture
 | Feature-to-feature navigation | — | Through routes only (for example Home opens the weight sheet by path) | Keeps the "another feature only through its domain" rule |
 | Firebase configuration | `google-services.json` and the Google Services Gradle plugin | The four Firebase client values passed with `--dart-define-from-file` and `Firebase.initializeApp(options:)` | Same values the JSON file would carry, kept with the other build settings in the untracked env file; no Gradle plugin to maintain under AGP 9. Push stays off when they are absent |
 | Pull cursors | Not in the table list | `local_sync_cursors` (app database v9) | Needed by the pull protocol in 03 §6.2 |
-
+| `workmanager_android` | Package from pub.dev | Patched copy in `third_party/workmanager_android` (one Gradle change), with built-in Kotlin on (`android.builtInKotlin=true`) | The published 0.10.9 still names the legacy Kotlin Gradle Plugin, which Flutter flags as a future build failure. Remove the copy when a release drops the line (`FITBUDDY_PATCH.md`) |
