@@ -129,6 +129,14 @@ final List<_Screen> _screens = [
   ),
   (name: 'reminder editor', setUp: true, open: (tester) => _go(tester, Routes.newReminder)),
   (
+    name: 'sound picker',
+    setUp: true,
+    open: (tester) async {
+      await _go(tester, Routes.newReminder);
+      await _tapText(tester, 'Default · tap to choose');
+    },
+  ),
+  (
     name: 'notification settings',
     setUp: true,
     open: (tester) => _go(tester, Routes.notificationSettings),

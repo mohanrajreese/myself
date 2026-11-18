@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/notifications/notification_gateway.dart';
 import '../core/notifications/notification_state_store.dart';
 import '../core/platform/alarm_capabilities.dart';
+import '../core/platform/sound_library.dart';
 import '../core/utils/local_date.dart';
 import '../features/activities/data/drift_activity_repository.dart';
 import '../features/activities/domain/activity.dart';
@@ -174,3 +175,9 @@ final class DisabledNotificationGateway implements NotificationGateway {
   @override
   Future<bool> canScheduleExact() async => false;
 }
+
+final soundLibraryProvider = Provider<SoundLibrary>((ref) => DeviceSoundLibrary());
+
+final systemSoundsProvider = FutureProvider<List<SoundOption>>(
+  (ref) => ref.watch(soundLibraryProvider).systemSounds(),
+);

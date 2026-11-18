@@ -24,6 +24,7 @@ import '../../../app/routine/schedule_editor.dart';
 import '../../activities/domain/activity.dart';
 import '../domain/reminder.dart';
 import 'reminder_names.dart';
+import 'sound_picker_sheet.dart';
 
 /// Reminder editor (approved design "Reminder editor").
 class ReminderEditorScreen extends ConsumerStatefulWidget {
@@ -158,6 +159,11 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
     _dirty = false;
     showFbSnackBar(context, l10n.deleted);
     context.pop();
+  }
+
+  Future<void> _pickSound() async {
+    final pick = await showFbSheet<SoundPick>(context, SoundPickerSheet(current: _r.soundKey));
+    if (pick != null) _change((r) => r.copyWith(soundKey: () => pick.uri));
   }
 
   Future<void> _pickSnooze() async {
@@ -357,16 +363,22 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
                 children: [
                   FbListRow(
                     title: l10n.soundLabel,
-                    subtitle: l10n.soundValue(channelName(l10n, _r.channel)),
+                    subtitle: l10n.soundValue(
+                      soundTitle(
+                        l10n,
+                        _r.soundKey,
+                        ref.watch(systemSoundsProvider).value ?? const [],
+                      ),
+                    ),
                     trailing: TextButton(
-                      onPressed: () => ref
-                          .read(alarmCapabilitiesProvider)
-                          .playTestSound(channelIdFor(_r.channel.code)),
+                      onPressed: () => _r.soundKey == null
+                          ? ref
+                                .read(alarmCapabilitiesProvider)
+                                .playTestSound(channelIdFor(_r.channel.code))
+                          : ref.read(soundLibraryProvider).play(_r.soundKey!),
                       child: Text(l10n.testAction),
                     ),
-                    onTap: () => ref
-                        .read(alarmCapabilitiesProvider)
-                        .openChannelSettings(channelIdFor(_r.channel.code)),
+                    onTap: _pickSound,
                   ),
                   FbSwitchRow(
                     title: l10n.vibrationLabel,

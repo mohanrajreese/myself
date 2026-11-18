@@ -18,7 +18,7 @@
 | A-10 | Complete, Snooze, Skip from the notification, in the app and in a background isolate; tapping opens the activity; dismissing completes nothing |
 | A-11 | Snooze 5, 10, 15, 30 minutes or a custom number |
 | A-12 | Quiet hours, including overnight periods; per reminder: wait, skip or ring anyway |
-| A-13 | Channel sound and vibration through Android's channel settings, test sound, test vibration |
+| A-13 | In-app sound picker (default, the phone's sounds, or your own sound file), a channel per sound, test sound, test vibration (added 18 Nov 2026) |
 | A-14 | Recovery: plugin boot receiver, `SystemEventReceiver`, WorkManager top-up every 6 hours, re-plan on start, resume and return from settings |
 | A-15 | "Only if not done" reminders; water, workout, sleep and posture presets |
 | A-16 | Notification history (30 days, no text stored) and limitation notices |
@@ -73,7 +73,6 @@ Defects found and fixed by the new tests: concurrent re-plans could give two not
 | After a force-stop, nothing is delivered until the app is opened; after a reboot, not until first unlock | R-06 |
 | Three notification buttons only; swiping a notification away is not reported | R-11 |
 | A channel's sound is fixed once created; sound is changed in Android's channel settings, not in the app | R-08 |
-| No in-app system-sound picker or custom sound file yet | A-13 partial |
 | The WorkManager plugin writes a timestamp-only marker file to the app's private temp folder | — |
 
 ## 9. Remaining tasks

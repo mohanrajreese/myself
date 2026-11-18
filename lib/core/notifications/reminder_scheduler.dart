@@ -14,6 +14,7 @@ final class SchedulableReminder {
     this.body,
     this.vibrate = true,
     this.secret = false,
+    this.soundUri,
   });
 
   final PlannerReminder plan;
@@ -22,6 +23,7 @@ final class SchedulableReminder {
   final String? body;
   final bool vibrate;
   final bool secret;
+  final String? soundUri;
 }
 
 /// Outcome of one run, for logging and tests.
@@ -135,5 +137,6 @@ class ReminderScheduler {
         exact: exact,
         secret: r.secret,
         vibrate: r.vibrate,
+        soundUri: r.soundUri,
       );
 }

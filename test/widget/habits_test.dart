@@ -332,4 +332,35 @@ void main() {
     expect(find.textContaining('Your history does not fit that tracking type'), findsOneWidget);
     await app.dispose(tester);
   });
+
+  testWidgets('a reminder can use a phone sound or a sound file, each on its own channel', (
+    tester,
+  ) async {
+    await start(tester);
+    await openHabits(tester);
+    await tapText(tester, 'Reminders');
+    await tap(tester, find.widgetWithText(FilledButton, 'Reminder'));
+    await tapText(tester, 'Default · tap to choose');
+    await drain(tester);
+    await tapText(tester, 'Chime');
+    expect(app.sounds.played, ['content://media/internal/audio/media/11']);
+    await tapText(tester, 'Done');
+    expect(find.text('Chime · tap to choose'), findsOneWidget);
+
+    await tapText(tester, 'Chime · tap to choose');
+    await drain(tester);
+    await tapText(tester, 'Choose a sound file');
+    await drain(tester);
+    expect(find.text('my tone'), findsOneWidget);
+    await tapText(tester, 'Done');
+
+    await tap(tester, find.widgetWithText(FilledButton, 'Save'));
+    await drain(tester);
+    final stored = (await app.db.select(app.db.reminders).get()).single;
+    expect(stored.soundKey, 'content://com.mysticstack.fitbuddy.sounds/sounds/my_tone.mp3');
+    final sent = app.notifications.pending.values.first;
+    expect(sent.soundUri, stored.soundKey);
+    expect(sent.channelId, startsWith('routines_s'));
+    await app.dispose(tester);
+  });
 }

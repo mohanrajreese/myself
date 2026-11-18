@@ -70,7 +70,7 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | A-10 notification actions | ☑ logic · ⏳ | Complete, Snooze, Skip in foreground and background isolate |
 | A-11 snooze | ☑ | 5/10/15/30 min and custom |
 | A-12 quiet hours | ☑ | Wait, skip, ring anyway; overnight periods |
-| A-13 sound and vibration | ⏳ | Channel sound via Android's channel settings, test sound, test vibration. No in-app sound picker or custom sound file (see notifications.md) |
+| A-13 sound and vibration | ☑ choice · ⏳ playback | In-app picker: default, the phone's notification sounds, or a sound file (Android document picker, copied into private storage); a channel per sound; test sound and vibration |
 | A-14 recovery | ⏳ | Plugin boot receiver, SystemEventReceiver, WorkManager top-up every 6 h, re-plan on start and resume |
 | A-15 "if not done" and presets | ☑ | Water, workout, sleep and posture presets |
 | A-16 notification centre | ☑ | 30-day history; limitation notices on Habits and in Settings |

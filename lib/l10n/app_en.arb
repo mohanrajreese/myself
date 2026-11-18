@@ -1618,10 +1618,10 @@
     }
   },
   "soundLabel": "Sound",
-  "soundValue": "{channel} channel · tap to change",
+  "soundValue": "{sound} · tap to choose",
   "@soundValue": {
     "placeholders": {
-      "channel": {
+      "sound": {
         "type": "String"
       }
     }
@@ -1712,5 +1712,18 @@
   "unitHint": "For example: glasses",
   "vibrationLabel": "Vibration",
   "quickAddActivity": "Activity",
-  "pickActivity": "Log which activity?"
+  "pickActivity": "Log which activity?",
+  "soundDefault": "Default",
+  "soundCustom": "Your sound file",
+  "chooseSoundFile": "Choose a sound file",
+  "soundImportFailed": "That file could not be used as a sound.",
+  "playSound": "Play {name}",
+  "@playSound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "soundPickerNote": "The sound applies to this reminder. Android keeps a separate notification channel for each sound you choose, so its volume and vibration can also be set in Android settings."
 }

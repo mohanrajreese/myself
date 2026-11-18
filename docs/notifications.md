@@ -18,11 +18,12 @@ Design: `blueprint/05-notifications-alarms-steps.md` Part A. States: ☑ automat
 | Battery optimisation state and settings page; disabled-channel detection; test sound; test vibration | `AlarmPlugin.kt` | ⏳ |
 | Notification history (30 days, no text stored) | Habits → Reminders → Notification history | ☑ |
 | Timer "finished" notification (id 900) | Timer screen | ⏳ |
+| Sound per reminder: default, the phone's notification sounds, or a sound file picked with Android's document picker and copied into private storage (`SoundPlugin.kt`, file provider). Each sound gets its own channel id (`<key>_s<hash>`), since a channel's sound is fixed once created | Reminder editor → Sound | ☑ (choice, storage, channel ids) · ⏳ (playback through the notification system) |
 
 ## Honest limits shown in the app
 
-Do Not Disturb, silent mode, a channel switched off, battery saver and manufacturer battery managers can delay or silence reminders. Force-stopping the app cancels them until it is opened. Swiping a notification away is not reported by the plugin (R-11). Sound per channel is changed in Android's channel settings (a channel's sound is fixed once created, R-08); the app opens that page and plays a test.
+Do Not Disturb, silent mode, a channel switched off, battery saver and manufacturer battery managers can delay or silence reminders. Force-stopping the app cancels them until it is opened. Swiping a notification away is not reported by the plugin (R-11).
 
 ## Not built in Phase 3
 
-Custom sound files and an in-app system-sound picker (the channel settings page covers sound choice), the lock-screen full-screen alarm, and FCM (Phase 6).
+The lock-screen full-screen alarm and FCM (Phase 6).

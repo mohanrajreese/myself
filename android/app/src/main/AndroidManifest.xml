@@ -54,6 +54,16 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
+        <!-- Custom notification sounds, readable by the notification system (R-12). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.sounds"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/sound_paths" />
+        </provider>
         <!-- Notes system events so reminders are re-planned on the next run (05 §A5). -->
         <receiver android:exported="false" android:name=".SystemEventReceiver">
             <intent-filter>

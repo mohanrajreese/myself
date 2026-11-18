@@ -5,8 +5,21 @@ import 'notification_gateway.dart';
 import 'tz_zone.dart';
 
 /// Channel ids are versioned: Android fixes a channel's sound once created,
-/// so a sound change means a new id (R-08).
-String channelIdFor(String key) => '${key}_v1';
+/// so each chosen sound gets its own channel id (R-08).
+String channelIdFor(String key, {String? soundUri}) =>
+    soundUri == null ? '${key}_v1' : '${key}_s${_fnv32(soundUri).toRadixString(36)}';
+
+/// The channel key (`hydration`, …) a channel id belongs to.
+String channelKeyOf(String channelId) => channelId.split('_').first;
+
+int _fnv32(String text) {
+  var hash = 0x811c9dc5;
+  for (final unit in text.codeUnits) {
+    hash ^= unit;
+    hash = (hash * 0x01000193) & 0xffffffff;
+  }
+  return hash;
+}
 
 typedef ChannelLabels = ({String name, String description});
 
@@ -20,6 +33,8 @@ final class LocalNotificationGateway implements NotificationGateway {
 
   final FlutterLocalNotificationsPlugin _plugin;
   final ActionLabels actionLabels;
+  Map<String, ChannelLabels> _labels = const {};
+  final Set<String> _soundChannels = {};
 
   AndroidFlutterLocalNotificationsPlugin? get _android =>
       _plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
@@ -32,6 +47,7 @@ final class LocalNotificationGateway implements NotificationGateway {
     required DidReceiveBackgroundNotificationResponseCallback onBackgroundTap,
   }) async {
     ensureTimeZonesLoaded();
+    _labels = channels;
     await _plugin.initialize(
       settings: const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -83,6 +99,7 @@ final class LocalNotificationGateway implements NotificationGateway {
           : AndroidNotificationCategory.reminder,
       visibility: r.secret ? NotificationVisibility.secret : NotificationVisibility.private,
       enableVibration: r.vibrate,
+      sound: r.soundUri == null ? null : UriAndroidNotificationSound(r.soundUri!),
       actions: r.withActions
           ? [
               AndroidNotificationAction(ReminderAction.complete.code, actionLabels.complete),
@@ -93,8 +110,33 @@ final class LocalNotificationGateway implements NotificationGateway {
     ),
   );
 
+  /// Creates the channel for a chosen sound the first time it is used.
+  Future<void> _ensureChannel(NotificationRequest r) async {
+    final uri = r.soundUri;
+    if (uri == null || !_soundChannels.add(r.channelId)) return;
+    final key = channelKeyOf(r.channelId);
+    final labels = _labels[key];
+    await _android?.createNotificationChannel(
+      AndroidNotificationChannel(
+        r.channelId,
+        labels?.name ?? key,
+        description: labels?.description,
+        importance: key == 'alarms' ? Importance.max : Importance.high,
+        sound: UriAndroidNotificationSound(uri),
+        audioAttributesUsage: key == 'alarms'
+            ? AudioAttributesUsage.alarm
+            : AudioAttributesUsage.notification,
+      ),
+    );
+  }
+
   @override
-  Future<void> schedule(NotificationRequest r) => _plugin.zonedSchedule(
+  Future<void> schedule(NotificationRequest r) async {
+    await _ensureChannel(r);
+    await _zoned(r);
+  }
+
+  Future<void> _zoned(NotificationRequest r) => _plugin.zonedSchedule(
     id: r.id,
     scheduledDate: tz.TZDateTime.from(r.at!.toUtc(), tz.UTC),
     notificationDetails: _details(r),

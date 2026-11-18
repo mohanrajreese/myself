@@ -110,10 +110,11 @@ final class ReminderService {
         for (final r in list)
           SchedulableReminder(
             plan: r.toPlanner(),
-            channelId: channelIdFor(r.channel.code),
+            channelId: channelIdFor(r.channel.code, soundUri: r.soundKey),
             title: r.title,
             body: r.description,
             vibrate: r.vibrate,
+            soundUri: r.soundKey,
           ),
       ],
       zone: zone,
@@ -179,7 +180,11 @@ final class ReminderService {
           NotificationRequest(
             id: record.id,
             at: until,
-            channelId: channelIdFor((reminder?.channel ?? NotificationChannelKey.routines).code),
+            channelId: channelIdFor(
+              (reminder?.channel ?? NotificationChannelKey.routines).code,
+              soundUri: reminder?.soundKey,
+            ),
+            soundUri: reminder?.soundKey,
             title: reminder?.title ?? '',
             body: reminder?.description,
             exact: record.exact,

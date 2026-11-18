@@ -12,6 +12,8 @@ Plan: [`blueprint/01-architecture.md`](blueprint/01-architecture.md) §2.1. A pe
 | `RECEIVE_BOOT_COMPLETED` | Phase 3 | — (normal permission) | Reschedule after reboot |
 | `VIBRATE` | Phase 3 | — (normal permission) | Reminder vibration, test vibration |
 
+Merged in by libraries, not requested from the user: `ACCESS_NETWORK_STATE`, `WAKE_LOCK`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_SHORT_SERVICE`, `BIND_JOB_SERVICE` and `DUMP` (WorkManager), `USE_BIOMETRIC`/`USE_FINGERPRINT` (app lock library). Picking a sound file uses Android's document picker, so no storage permission is needed.
+
 Never declared: `USE_EXACT_ALARM`, `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` (the app only opens the battery-optimisation list), `USE_FULL_SCREEN_INTENT` (the lock-screen alarm display is not built). The manifest test enforces the allow-list.
 
 ## Debug signing key (for the Google Cloud Android OAuth client)

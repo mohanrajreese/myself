@@ -21,6 +21,7 @@ final class NotificationRequest {
     this.withActions = true,
     this.secret = false,
     this.vibrate = true,
+    this.soundUri,
   });
 
   final int id;
@@ -36,6 +37,10 @@ final class NotificationRequest {
   /// Hidden on the lock screen (sensitive modules, §3.4 rule 14).
   final bool secret;
   final bool vibrate;
+
+  /// A chosen sound; null uses the channel's default. [channelId] must be
+  /// the matching per-sound channel (`channelIdFor`).
+  final String? soundUri;
 }
 
 /// A tap on a notification or one of its buttons.

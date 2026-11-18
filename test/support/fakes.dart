@@ -4,6 +4,7 @@ import 'package:fitbuddy/core/database/app_database.dart';
 import 'package:fitbuddy/core/errors/result.dart';
 import 'package:fitbuddy/core/notifications/notification_gateway.dart';
 import 'package:fitbuddy/core/platform/alarm_capabilities.dart';
+import 'package:fitbuddy/core/platform/sound_library.dart';
 import 'package:fitbuddy/core/platform/photo_picker.dart';
 import 'package:fitbuddy/core/platform/time_zone_source.dart';
 import 'package:fitbuddy/core/utils/clock.dart';
@@ -137,4 +138,22 @@ class FakeAlarmCapabilities implements AlarmCapabilities {
     pendingEvent = null;
     return e;
   }
+}
+
+class FakeSoundLibrary implements SoundLibrary {
+  List<SoundOption> sounds = const [
+    (title: 'Chime', uri: 'content://media/internal/audio/media/11'),
+    (title: 'Bell', uri: 'content://media/internal/audio/media/12'),
+  ];
+  final List<String> played = [];
+  String? importResult = 'content://com.mysticstack.fitbuddy.sounds/sounds/my_tone.mp3';
+
+  @override
+  Future<List<SoundOption>> systemSounds() async => sounds;
+  @override
+  Future<String?> pickSound() async => importResult;
+  @override
+  Future<void> play(String uri) async => played.add(uri);
+  @override
+  Future<void> stop() async {}
 }

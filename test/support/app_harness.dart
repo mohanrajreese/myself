@@ -37,6 +37,7 @@ class AppHarness {
   final FakePhotoPicker picker = FakePhotoPicker();
   final FakeNotificationGateway notifications = FakeNotificationGateway();
   final FakeAlarmCapabilities alarms = FakeAlarmCapabilities();
+  final FakeSoundLibrary sounds = FakeSoundLibrary();
 
   List<Override> overrides({
     SessionState session = const SessionState(),
@@ -54,6 +55,7 @@ class AppHarness {
     photoPickerProvider.overrideWithValue(picker),
     notificationGatewayProvider.overrideWithValue(notifications),
     alarmCapabilitiesProvider.overrideWithValue(alarms),
+    soundLibraryProvider.overrideWithValue(sounds),
     signOutActionProvider.overrideWith(
       (ref) =>
           () => ref.read(sessionControllerProvider.notifier).signOut(),
