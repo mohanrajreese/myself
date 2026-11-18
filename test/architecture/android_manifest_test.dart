@@ -71,6 +71,14 @@ void main() {
     );
   });
 
+  test('FCM creates no token on its own and exports no delivery data', () {
+    expect(manifest, contains(RegExp(r'android:name="firebase_messaging_auto_init_enabled"\s+android:value="false"')));
+    expect(
+      manifest,
+      contains(RegExp(r'android:name="delivery_metrics_exported_to_big_query_enabled"\s+android:value="false"')),
+    );
+  });
+
   test('only planned permissions are declared', () {
     expect(declared.difference(_allowedPermissions), isEmpty);
     expect(declared.intersection(_forbiddenPermissions), isEmpty);
