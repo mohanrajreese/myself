@@ -32,6 +32,12 @@ import '../features/settings/presentation/settings_screen.dart';
 import '../features/weight/presentation/add_weight_sheet.dart';
 import 'app_shell.dart';
 import 'providers.dart';
+import '../features/fitness/domain/workouts.dart';
+import '../features/fitness/presentation/cardio_screens.dart';
+import '../features/fitness/presentation/fitness_screen.dart';
+import '../features/fitness/presentation/gym_screens.dart';
+import '../features/fitness/presentation/history_screens.dart';
+import '../features/fitness/presentation/steps_screens.dart';
 import 'routes.dart';
 import 'routine/habits_screen.dart';
 
@@ -94,7 +100,22 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Routes.fitness,
-                builder: (context, state) => FbNotBuiltYet(title: _Tab.fitness.label(context.l10n)),
+                builder: (context, state) => const FitnessScreen(),
+                routes: [
+                  GoRoute(path: 'steps', builder: (context, state) => const StepsScreen()),
+                  GoRoute(
+                    path: 'history',
+                    builder: (context, state) => const WorkoutHistoryScreen(),
+                  ),
+                  GoRoute(
+                    path: 'records',
+                    builder: (context, state) => const PersonalRecordsScreen(),
+                  ),
+                  GoRoute(
+                    path: 'exercises',
+                    builder: (context, state) => const ExerciseLibraryScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -195,6 +216,33 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             FoodSearchScreen(pick: state.uri.queryParameters['pick'] == '1'),
       ),
+      GoRoute(
+        path: '/exercise/:id',
+        builder: (context, state) => ExerciseDetailScreen(id: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/workout/:id',
+        builder: (context, state) => WorkoutDetailScreen(id: state.pathParameters['id']!),
+        routes: [
+          GoRoute(
+            path: 'edit',
+            builder: (context, state) => switch (state.extra) {
+              final WorkoutSession s => CardioLogScreen(kind: s.kind, existing: s),
+              _ => WorkoutDetailScreen(id: state.pathParameters['id']!),
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/log-cardio/:kind',
+        builder: (context, state) =>
+            CardioLogScreen(kind: WorkoutKind.fromCode(state.pathParameters['kind']!)),
+      ),
+      GoRoute(
+        path: '/gps/:kind',
+        builder: (context, state) =>
+            GpsWorkoutScreen(kind: WorkoutKind.fromCode(state.pathParameters['kind']!)),
+      ),
       GoRoute(path: Routes.newActivity, builder: (context, state) => const ActivityEditorScreen()),
       GoRoute(
         path: '/activity/:id',
@@ -254,11 +302,9 @@ final routerProvider = Provider<GoRouter>((ref) {
 });
 
 enum _Tab {
-  fitness,
   insights;
 
   String label(AppLocalizations l10n) => switch (this) {
-    _Tab.fitness => l10n.tabFitness,
     _Tab.insights => l10n.tabInsights,
   };
 }

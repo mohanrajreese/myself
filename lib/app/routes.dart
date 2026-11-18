@@ -40,6 +40,15 @@ abstract final class Routes {
   static String editReminder(String id) => '/reminder/$id';
   static const notificationHistory = '/habits/reminders/history';
   static const notificationSettings = '/settings/notifications';
+  static const steps = '/fitness/steps';
+  static const workoutHistory = '/fitness/history';
+  static const records = '/fitness/records';
+  static const exerciseLibrary = '/fitness/exercises';
+  static String exercise(String id) => '/exercise/$id';
+  static String workout(String id) => '/workout/$id';
+  static String editCardio(String id) => '/workout/$id/edit';
+  static String logCardio(String kind) => '/log-cardio/$kind';
+  static String gpsWorkout(String kind) => '/gps/$kind';
   static const about = '/settings/about';
   static const settings = '/settings';
   static const settingsProfile = '/settings/profile';

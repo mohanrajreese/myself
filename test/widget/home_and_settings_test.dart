@@ -99,7 +99,7 @@ void main() {
 
     testWidgets('each tab opens; unbuilt tabs say so and offer no controls', (tester) async {
       await start(tester);
-      for (final tab in ['Fitness', 'Insights']) {
+      for (final tab in ['Insights']) {
         await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text(tab)));
         await tester.pumpAndSettle();
         expect(

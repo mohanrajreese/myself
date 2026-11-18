@@ -1725,5 +1725,416 @@
       }
     }
   },
-  "soundPickerNote": "The sound applies to this reminder. Android keeps a separate notification channel for each sound you choose, so its volume and vibration can also be set in Android settings."
+  "soundPickerNote": "The sound applies to this reminder. Android keeps a separate notification channel for each sound you choose, so its volume and vibration can also be set in Android settings.",
+  "activeTime": "active time",
+  "addExercise": "Add exercise",
+  "addSet": "Add set",
+  "archiveExerciseTitle": "Archive this exercise?",
+  "archiveExerciseMessage": "It leaves the library. Past workouts still show it.",
+  "averagePace": "average pace",
+  "averageSpeed": "average speed",
+  "bestPerWorkout": "Best set per workout",
+  "continueAction": "Continue",
+  "continueWorkout": "Continue {name}",
+  "@continueWorkout": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "defaultWorkoutName": "Workout",
+  "deleteTemplate": "Delete template {name}",
+  "@deleteTemplate": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteTemplateTitle": "Delete this template?",
+  "deleteTemplateMessage": "Workouts started from it are kept.",
+  "deleteWorkoutTitle": "Delete this workout?",
+  "deleteWorkoutMessage": "Its exercises and sets are removed. This cannot be undone.",
+  "discardWorkoutTitle": "Discard this workout?",
+  "discardWorkoutMessage": "Nothing from this session is saved.",
+  "distanceLabel": "Distance",
+  "editExercise": "Edit exercise",
+  "editWorkout": "Edit workout",
+  "emptyWorkout": "Empty workout",
+  "endLabel": "End",
+  "startLabel": "Start",
+  "equipmentLabel": "Equipment",
+  "equipmentNone": "none",
+  "exerciseLibrary": "Exercise library",
+  "exerciseSaved": "Exercise saved",
+  "exercisesCount": "{count, plural, one{1 exercise} other{{count} exercises}}",
+  "@exercisesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exercisesDone": "{done} of {total} exercises",
+  "@exercisesDone": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "finish": "Finish",
+  "gpsDenied": "Location access was refused. You can still log by hand.",
+  "gpsGood": "GPS active · keeps tracking with the screen off",
+  "gpsInProgress": "{kind} in progress",
+  "@gpsInProgress": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "gpsNote": "A notification shows while tracking. The route stays on this phone; only distance, time and pace are backed up.",
+  "gpsNotificationTitle": "{kind} in progress",
+  "@gpsNotificationTitle": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "gpsNotificationText": "FitBuddy is recording your route.",
+  "gpsRationaleTitle": "Use your location for this workout?",
+  "gpsRationaleBody": "FitBuddy records your route only while this workout runs. Android asks for location next; choose \"While using the app\".",
+  "gpsServiceOff": "Location is turned off on the phone. Turn it on in quick settings, or log by hand.",
+  "gpsStoredNote": "Recorded with GPS. The route is kept on this phone only.",
+  "gpsTag": "GPS",
+  "gpsWaiting": "Waiting for a GPS signal…",
+  "gymExercises": "Gym exercises",
+  "gymWorkout": "Gym workout",
+  "historyHelp": "Open a workout to edit it, duplicate it, or save it as a template.",
+  "inProgress": "in progress",
+  "instructionsLabel": "Instructions",
+  "kindGym": "Gym",
+  "kindRide": "Ride",
+  "kindRun": "Run",
+  "kindWalk": "Walk",
+  "libraryNote": "The starting list is reference content. Your own exercises are marked and can be edited or archived.",
+  "logAWalk": "Log a walk",
+  "logKind": "Log a {kind}",
+  "@logKind": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "manualEntryNote": "Entered by hand.",
+  "manualNoLocation": "Logging by hand never asks for location.",
+  "measureWeightReps": "Weight and reps",
+  "measureReps": "Reps",
+  "measureDuration": "Time",
+  "measureDistance": "Distance and time",
+  "measuredAs": "Measured as",
+  "muscleGroup": "Muscle group",
+  "newExercise": "New exercise",
+  "newShort": "New",
+  "noExercisesFound": "No exercises match.",
+  "noExercisesYet": "No exercises yet. Add one to start.",
+  "noRecordsYet": "No records yet. They appear after your first completed sets, runs or rides.",
+  "noWorkoutsYet": "No workouts yet.",
+  "pacePerKm": "{pace} /km",
+  "@pacePerKm": {
+    "placeholders": {
+      "pace": {
+        "type": "String"
+      }
+    }
+  },
+  "personalRecords": "Personal records",
+  "plus30s": "+30 s",
+  "progressNeedsTwo": "Complete this exercise in two workouts to see a chart.",
+  "progressSummary": "{count} workouts, from {first} to {last}.",
+  "@progressSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "first": {
+        "type": "String"
+      },
+      "last": {
+        "type": "String"
+      }
+    }
+  },
+  "recordHighestLoad": "Highest load",
+  "recordRepsAt": "Most reps at {load}",
+  "@recordRepsAt": {
+    "placeholders": {
+      "load": {
+        "type": "String"
+      }
+    }
+  },
+  "recordLongestDuration": "Longest time",
+  "recordLongestDistance": "Longest distance",
+  "recordFastestPace": "Fastest pace",
+  "recordRulesNote": "Records compare one exercise only, completed sets with at least one repetition, loads in kilograms whatever unit you entered. Pace records count sessions of 1 km or more.",
+  "recordShort": "record {value}",
+  "@recordShort": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "records": "Records",
+  "removeExercise": "Remove {name}",
+  "@removeExercise": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "removeExerciseTitle": "Remove this exercise?",
+  "removeExerciseMessage": "Its sets in this workout are removed.",
+  "removeSet": "Remove set {n}",
+  "@removeSet": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "renameWorkout": "Rename",
+  "repsLabel": "Reps",
+  "repsValue": "{count, plural, one{1 rep} other{{count} reps}}",
+  "@repsValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "restLeft": "Rest {left} of {total}",
+  "@restLeft": {
+    "placeholders": {
+      "left": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "restTimer": "Rest timer",
+  "routeSemantics": "Route, {distance}",
+  "@routeSemantics": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "saveAsTemplate": "Save as template",
+  "searchExercises": "Search exercises",
+  "secondsLabel": "Seconds",
+  "setDoneLabel": "Set {n} done",
+  "@setDoneLabel": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "setsCount": "{count, plural, one{1 set} other{{count} sets}}",
+  "@setsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "speedKmh": "{speed} km/h",
+  "@speedKmh": {
+    "placeholders": {
+      "speed": {
+        "type": "String"
+      }
+    }
+  },
+  "startOrLog": "Start or log",
+  "startWorkout": "Start a workout",
+  "startedAt": "Started {time}",
+  "@startedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "steps7Avg": "7-day average",
+  "stepsAdjustHelp": "Add or remove steps; shown as your adjustment",
+  "stepsAdjustTitle": "Adjust today's steps",
+  "stepsAdjustToday": "Adjust today",
+  "stepsAdjusted": "Adjusted by you: {value}",
+  "@stepsAdjusted": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "stepsAdjustmentSaved": "Adjustment saved",
+  "stepsChartSummary": "Steps per day for the last {days} days.",
+  "@stepsChartSummary": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "stepsContinuous": "Continuous counting",
+  "stepsContinuousHelp": "Keeps counting with the app closed. Shows a silent notification. Without it, some phones undercount.",
+  "stepsCountedAndAdjusted": "Counted: {counted} · your adjustments: {adjusted}",
+  "@stepsCountedAndAdjusted": {
+    "placeholders": {
+      "counted": {
+        "type": "String"
+      },
+      "adjusted": {
+        "type": "String"
+      }
+    }
+  },
+  "stepsGapNotice": "{day}: no readings for part of the day. Shown as uncertain, not as zero walking.",
+  "@stepsGapNotice": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      }
+    }
+  },
+  "stepsIntroTitle": "Count steps with your phone",
+  "stepsIntroBody": "FitBuddy reads your phone's step sensor. Android asks for \"Physical activity\" access next. Only daily totals leave your phone, for your backup.",
+  "stepsLastReading": "Last reading",
+  "stepsNewTotal": "New total: {total}",
+  "@stepsNewTotal": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "stepsNoReadingYet": "No reading yet",
+  "stepsNote": "Counted by your phone's step sensor. Steps from logged walks and runs are not added on top, so nothing is counted twice.",
+  "stepsPercentOf": "{percent}% of {goal}",
+  "@stepsPercentOf": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "stepsPermissionRefused": "Physical activity access was refused. You can still log walks and runs by hand.",
+  "stepsRingValue": "{steps} of {goal} steps",
+  "@stepsRingValue": {
+    "placeholders": {
+      "steps": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "stepsSaveAdjustment": "Save adjustment",
+  "stepsSensor": "Sensor",
+  "stepsSensorContinuous": "Step counter found · counting in the background",
+  "stepsSensorSnapshots": "Step counter found · checked about every 15 minutes",
+  "stepsTapToSetUp": "Tap to turn on step counting",
+  "stepsToGo": "to go",
+  "stepsToGoOf": "{left} to go of {goal}",
+  "@stepsToGoOf": {
+    "placeholders": {
+      "left": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "stepsTodayLabel": "{steps} steps today",
+  "@stepsTodayLabel": {
+    "placeholders": {
+      "steps": {
+        "type": "String"
+      }
+    }
+  },
+  "stepsTodayTitle": "Steps today",
+  "stepsUncertainNotice": "{day}: {steps} steps are uncertain (counted across a long gap).",
+  "@stepsUncertainNotice": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "steps": {
+        "type": "String"
+      }
+    }
+  },
+  "stepsUnsupportedTitle": "This phone has no step counter",
+  "stepsUnsupportedBody": "Automatic steps are not available on this phone. Log walks and runs by hand instead; nothing else changes.",
+  "stepsUnsupportedShort": "No step sensor on this phone",
+  "stepsVsLastMonth": "vs last month",
+  "templateSaved": "Template saved",
+  "templateSummary": "{exercises} exercises · used {uses} times",
+  "@templateSummary": {
+    "placeholders": {
+      "exercises": {
+        "type": "int"
+      },
+      "uses": {
+        "type": "int"
+      }
+    }
+  },
+  "templates": "Templates",
+  "templatesEmpty": "No templates yet. Save a workout as a template from its menu.",
+  "thisWeek": "This week",
+  "trackWithGps": "Track with GPS instead",
+  "trackWithGpsHelp": "Records your route while the workout is in progress. Needs location access while tracking.",
+  "unitKm": "km",
+  "valueKm": "{value} km",
+  "@valueKm": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "workoutHistory": "Workout history",
+  "workoutMissing": "This workout no longer exists.",
+  "workoutSaved": "Workout saved",
+  "workoutsLabel": "workouts",
+  "yoursName": "{name} (yours)",
+  "@yoursName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "quickAddWorkout": "Workout"
 }

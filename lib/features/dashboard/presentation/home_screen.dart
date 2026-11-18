@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../app/providers.dart';
+import '../../../app/fitness_providers.dart';
 import '../../../app/labels.dart';
 import '../../../app/routine_labels.dart';
 import '../../../app/routine_providers.dart';
@@ -134,6 +135,8 @@ class _Progress extends ConsumerWidget {
     String target(String? value) => value == null ? l10n.noTarget : l10n.ofTarget(value);
 
     final steps = goals?.dailySteps;
+    final stepDay = ref.watch(stepDayProvider(ref.watch(todayProvider))).value;
+    final stepStatus = ref.watch(stepStatusProvider).value;
     final waterTarget = goals?.dailyWaterMl;
     final nutritionTarget = nutrition;
     final sleepTarget = goals?.sleepTargetMin;
@@ -216,7 +219,12 @@ class _Progress extends ConsumerWidget {
                       children: [
                         Text(l10n.cardSteps, style: context.text.label),
                         const SizedBox(height: FbSpace.xs),
-                        Text(l10n.stepsNotSetUp, style: context.text.title),
+                        Text(
+                          stepStatus?.permission ?? false
+                              ? '${(stepDay?.isUncertain ?? false) ? '≈ ' : ''}${context.number(stepDay?.total ?? 0)}'
+                              : l10n.stepsNotSetUp,
+                          style: context.text.title,
+                        ),
                         const SizedBox(height: FbSpace.xs),
                         Text(
                           steps == null ? l10n.noTarget : l10n.stepsGoal(context.number(steps)),
@@ -227,7 +235,15 @@ class _Progress extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: FbSpace.lg),
-                FbProgressRing(fraction: null, semanticLabel: l10n.stepsRingLabel, size: 72),
+                FbProgressRing(
+                  fraction: stepStatus?.permission ?? false
+                      ? (steps == null || steps == 0
+                            ? null
+                            : ((stepDay?.total ?? 0) / steps).clamp(0, 1))
+                      : null,
+                  semanticLabel: l10n.stepsRingLabel,
+                  size: 72,
+                ),
               ],
             ),
           ),
@@ -395,9 +411,12 @@ class _QuickAdd extends ConsumerWidget {
               (l10n.quickAddWeight, Routes.addWeight),
               (l10n.quickAddSleep, Routes.addSleep),
               (l10n.quickAddActivity, ''),
+              (l10n.quickAddWorkout, Routes.fitness),
             ])
               OutlinedButton.icon(
-                onPressed: () => route.isEmpty ? _pickActivity(context, ref) : context.push(route),
+                onPressed: () => route.isEmpty
+                    ? _pickActivity(context, ref)
+                    : (route == Routes.fitness ? context.go(route) : context.push(route)),
                 icon: const Icon(Icons.add_rounded, size: FbSpace.xl),
                 label: Text(label),
               ),
