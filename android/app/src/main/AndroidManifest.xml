@@ -7,6 +7,14 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- Steps (PRD §5.6): asked when the user turns step counting on. -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />
+    <!-- Optional GPS workouts (§5.7): while in use only, asked at the start of one. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 
     <application
         android:label="FitBuddy"
@@ -54,6 +62,11 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
+        <!-- Continuous step collection; opt-in, ongoing silent notification. -->
+        <service
+            android:name=".steps.StepCollectionService"
+            android:exported="false"
+            android:foregroundServiceType="health" />
         <!-- Custom notification sounds, readable by the notification system (R-12). -->
         <provider
             android:name="androidx.core.content.FileProvider"

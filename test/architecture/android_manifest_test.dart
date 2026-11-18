@@ -10,6 +10,12 @@ const _allowedPermissions = {
   'android.permission.SCHEDULE_EXACT_ALARM',
   'android.permission.RECEIVE_BOOT_COMPLETED',
   'android.permission.VIBRATE',
+  'android.permission.ACTIVITY_RECOGNITION',
+  'android.permission.FOREGROUND_SERVICE',
+  'android.permission.FOREGROUND_SERVICE_HEALTH',
+  'android.permission.ACCESS_FINE_LOCATION',
+  'android.permission.ACCESS_COARSE_LOCATION',
+  'android.permission.FOREGROUND_SERVICE_LOCATION',
 };
 
 /// Never declared (docs/blueprint/01-architecture.md §2.1).
