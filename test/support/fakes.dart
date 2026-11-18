@@ -6,7 +6,9 @@ import 'package:fitbuddy/core/database/app_database.dart';
 import 'package:fitbuddy/core/errors/result.dart';
 import 'package:fitbuddy/core/notifications/notification_gateway.dart';
 import 'package:fitbuddy/core/platform/alarm_capabilities.dart';
+import 'package:fitbuddy/core/database/private_database.dart';
 import 'package:fitbuddy/core/platform/location_tracker.dart';
+import 'package:fitbuddy/core/platform/privacy_platform.dart';
 import 'package:fitbuddy/core/platform/sound_library.dart';
 import 'package:fitbuddy/core/platform/step_counter.dart';
 import 'package:fitbuddy/core/platform/photo_picker.dart';
@@ -211,3 +213,36 @@ class FakeLocationTracker implements LocationTracker {
   @override
   Future<void> openSettings() async => settingsOpened++;
 }
+
+class FakeSecureWindow implements SecureWindow {
+  bool secure = false;
+  @override
+  Future<void> set({required bool secure}) async => this.secure = secure;
+}
+
+class FakeBiometrics implements Biometrics {
+  bool isAvailable = true;
+  bool succeed = true;
+  int prompts = 0;
+  @override
+  Future<bool> available() async => isAvailable;
+  @override
+  Future<bool> authenticate(String reason) async {
+    prompts++;
+    return succeed;
+  }
+}
+
+class FakeUsageReader implements UsageReader {
+  bool access = true;
+  int settingsOpened = 0;
+  List<AppUsage> today = const [];
+  @override
+  Future<bool> hasAccess() async => access;
+  @override
+  Future<void> openAccessSettings() async => settingsOpened++;
+  @override
+  Future<List<AppUsage>> usage(DateTime start, DateTime end) async => today;
+}
+
+PrivateDatabase memoryPrivateDatabase() => PrivateDatabase(NativeDatabase.memory());

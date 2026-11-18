@@ -52,6 +52,7 @@ final class DriftActivityRepository implements ActivityRepository {
     checklistItems: ChecklistItem.listFromJson(r.checklistItems),
     archived: r.status == 'archived',
     sortOrder: r.sortOrder,
+    systemKey: r.systemKey,
   );
 
   static ActivityLog _toLog(ActivityLogRow r) => ActivityLog(
@@ -91,6 +92,7 @@ final class DriftActivityRepository implements ActivityRepository {
     checklistItems: Value(ChecklistItem.listToJson(a.checklistItems)),
     status: Value(a.archived ? 'archived' : 'active'),
     sortOrder: Value(a.sortOrder),
+    systemKey: Value(a.systemKey),
   );
 
   Failure? _invalid(Activity a) {

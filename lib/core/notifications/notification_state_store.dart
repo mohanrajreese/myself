@@ -28,6 +28,7 @@ final class NotificationRecord {
     required this.deferred,
     required this.snoozeCount,
     this.actedAt,
+    this.channelId,
     this.store = 'main',
   });
 
@@ -43,8 +44,10 @@ final class NotificationRecord {
   final bool deferred;
   final int snoozeCount;
   final DateTime? actedAt;
+  final String? channelId;
 
   String get key => '$reminderId@$occurrenceLocal';
+  String channelIdOr(String fallback) => channelId ?? fallback;
 }
 
 /// `local_notification_state`: stable ids and history. Device-only.
@@ -65,6 +68,7 @@ final class NotificationStateStore {
     deferred: r.deferred,
     snoozeCount: r.snoozeCount,
     actedAt: r.actedAt?.toUtc(),
+    channelId: r.channelId,
   );
 
   Future<List<NotificationRecord>> active({String store = 'main'}) async => [

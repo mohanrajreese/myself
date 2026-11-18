@@ -58,8 +58,21 @@ final class ReminderService {
     required this.timeZone,
     required this.clock,
     TimeZoneRules Function(String id)? zoneFor,
+    this.privateSource,
   }) : zoneFor = zoneFor ?? IanaZone.new,
-       _scheduler = ReminderScheduler(store: store, gateway: gateway, clock: clock);
+       _scheduler = ReminderScheduler(store: store, gateway: gateway, clock: clock),
+       _privateScheduler = ReminderScheduler(
+         store: store,
+         gateway: gateway,
+         clock: clock,
+         storeName: 'private',
+       );
+
+  /// Sensitive reminders (medication, bowel, private). Null before the
+  /// private database is open, for example in a background isolate without
+  /// its key.
+  final PrivateReminderSource? privateSource;
+  final ReminderScheduler _privateScheduler;
 
   final ReminderRepository reminders;
   final ActivityRepository activities;
@@ -123,6 +136,16 @@ final class ReminderService {
       exactAllowed: await capabilities.canScheduleExactAlarms(),
       days: _windowDays,
     );
+    final private = privateSource;
+    if (private != null) {
+      await _privateScheduler.run(
+        await private.reminders(),
+        zone: zone,
+        quietHours: (await quietHours()).active,
+        exactAllowed: await capabilities.canScheduleExactAlarms(),
+        days: _windowDays,
+      );
+    }
     await store.prune(clock.now().subtract(const Duration(days: 30)));
     return summary;
   }
@@ -163,6 +186,7 @@ final class ReminderService {
   Future<String?> handle(NotificationTap tap, {int? snoozeMinutes}) async {
     final record = await store.byId(tap.notificationId);
     if (record == null) return null;
+    if (record.store == 'private') return _handlePrivate(record, tap, snoozeMinutes);
     final reminder = await reminders.byId(record.reminderId);
     // Ad-hoc "remind me again" from Home carries the activity id.
     final linkedActivity =
@@ -222,4 +246,50 @@ final class ReminderService {
         return null;
     }
   }
+
+  Future<String?> _handlePrivate(
+    NotificationRecord record,
+    NotificationTap tap,
+    int? snoozeMinutes,
+  ) async {
+    final now = clock.now();
+    final source = privateSource;
+    switch (tap.action) {
+      case null:
+        return 'private';
+      case ReminderAction.snooze:
+        final until = now.add(Duration(minutes: snoozeMinutes ?? 10));
+        await store.snooze(record.id, until);
+        await gateway.schedule(
+          NotificationRequest(
+            id: record.id,
+            at: until,
+            channelId: record.channelIdOr(channelIdFor(NotificationChannelKey.routines.code)),
+            title: source?.genericTitle ?? '',
+            secret: true,
+          ),
+        );
+        return null;
+      case ReminderAction.complete || ReminderAction.skip:
+        final complete = tap.action == ReminderAction.complete;
+        await gateway.cancel(record.id);
+        await store.setStatus(
+          record.id,
+          complete ? NotificationStatus.completed : NotificationStatus.skipped,
+          actedAt: now,
+        );
+        await source?.acted(record.reminderId, record.occurrenceLocal, completed: complete);
+        return null;
+    }
+  }
+}
+
+/// Supplies sensitive reminders without exposing their text to the
+/// scheduler beyond a generic title.
+abstract interface class PrivateReminderSource {
+  String get genericTitle;
+  Future<List<SchedulableReminder>> reminders();
+
+  /// A notification button was pressed for [reminderId] at [occurrenceLocal].
+  Future<void> acted(String reminderId, String occurrenceLocal, {required bool completed});
 }

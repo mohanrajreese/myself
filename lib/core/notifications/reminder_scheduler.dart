@@ -38,7 +38,11 @@ class ReminderScheduler {
     required this.gateway,
     required this.clock,
     this.planner = const ReminderPlanner(),
+    this.storeName = 'main',
   });
+
+  /// `main` for ordinary reminders, `private` for sensitive ones (§7.1).
+  final String storeName;
 
   final NotificationStateStore store;
   final NotificationGateway gateway;
@@ -65,7 +69,10 @@ class ReminderScheduler {
       quietHours: quietHours,
       done: done,
     );
-    final settled = await store.settledKeys(now.subtract(const Duration(days: 2)));
+    final settled = await store.settledKeys(
+      now.subtract(const Duration(days: 2)),
+      store: storeName,
+    );
     final desired = {
       for (final o in planned)
         if (!settled.contains('${o.reminderId}@${localKey(o.local)}'))
@@ -73,7 +80,7 @@ class ReminderScheduler {
     };
 
     var scheduled = 0, cancelled = 0, moved = 0, expired = 0;
-    final existing = await store.active();
+    final existing = await store.active(store: storeName);
     final kept = <String>{};
     for (final record in existing) {
       if (record.status == NotificationStatus.snoozed) {
@@ -120,6 +127,7 @@ class ReminderScheduler {
         channelId: r.channelId,
         exact: exact,
         deferred: o.deferred,
+        store: storeName,
       );
       await gateway.schedule(_request(record.id, r, o.fireAt, exact));
       scheduled++;

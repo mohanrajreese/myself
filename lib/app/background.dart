@@ -17,7 +17,11 @@ import '../core/utils/clock.dart';
 import '../core/utils/id_generator.dart';
 import '../features/activities/data/drift_activity_repository.dart';
 import '../features/reminders/data/drift_reminder_repository.dart';
+import '../core/database/private_database.dart';
+import '../features/medication/data/drift_medication_repository.dart';
+import '../features/private_space/data/drift_sensitive_reminder_repository.dart';
 import 'notification_setup.dart';
+import 'private_reminder_source.dart';
 import 'reminder_service.dart';
 
 /// WorkManager name of the reminder top-up job (05 §A5).
@@ -32,6 +36,14 @@ Future<(ReminderService, AppDatabase)?> _openServices() async {
       .valueOrNull;
   if (key == null) return null;
   final db = AppDatabase(openEncryptedDatabase(name: AppDatabase.databaseName, hexKey: key));
+  final privateKey = (await DatabaseKeyManager(
+    const SecureSecretStore(),
+  ).keyFor(DatabaseId.private)).valueOrNull;
+  final privateDb = privateKey == null
+      ? null
+      : PrivateDatabase(
+          openEncryptedDatabase(name: PrivateDatabase.databaseName, hexKey: privateKey),
+        );
   final gateway = await createNotificationGateway(
     onTap: (_) {},
     onBackgroundTap: notificationTapBackground,
@@ -47,6 +59,13 @@ Future<(ReminderService, AppDatabase)?> _openServices() async {
     capabilities: DeviceAlarmCapabilities(),
     timeZone: timeZone,
     clock: systemClock,
+    privateSource: privateDb == null
+        ? null
+        : DevicePrivateReminderSource(
+            medications: DriftMedicationRepository(privateDb, clock: systemClock, ids: ids),
+            sensitive: DriftSensitiveReminderRepository(privateDb, clock: systemClock, ids: ids),
+            genericTitle: deviceLocalizations().genericReminderTitle,
+          ),
   );
   return (service, db);
 }

@@ -63,6 +63,7 @@ dependencies:
   workmanager: ^0.10.10
   geolocator_android: ^5.2.1
   geolocator_platform_interface: ^4.4.1
+  local_auth: ^3.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

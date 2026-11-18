@@ -4,7 +4,9 @@ import android.Manifest
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
 import com.mysticstack.fitbuddy.generated.AlarmApi
+import com.mysticstack.fitbuddy.generated.SecurityApi
 import com.mysticstack.fitbuddy.generated.SoundApi
+import com.mysticstack.fitbuddy.generated.UsageApi
 import com.mysticstack.fitbuddy.generated.StepApi
 import com.mysticstack.fitbuddy.steps.StepPlugin
 import com.mysticstack.fitbuddy.generated.SystemInfoApi
@@ -43,6 +45,8 @@ class MainActivity : FlutterFragmentActivity() {
                 permissionRequest.launch(Manifest.permission.ACTIVITY_RECOGNITION)
             },
         )
+        SecurityApi.setUp(flutterEngine.dartExecutor.binaryMessenger, SecurityPlugin { this })
+        UsageApi.setUp(flutterEngine.dartExecutor.binaryMessenger, UsagePlugin(applicationContext))
         AlarmApi.setUp(flutterEngine.dartExecutor.binaryMessenger, AlarmPlugin(applicationContext))
         SoundApi.setUp(
             flutterEngine.dartExecutor.binaryMessenger,

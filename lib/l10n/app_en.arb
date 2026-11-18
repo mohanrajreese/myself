@@ -2136,5 +2136,6 @@
       }
     }
   },
-  "quickAddWorkout": "Workout"
+  "quickAddWorkout": "Workout",
+  "genericReminderTitle": "FitBuddy reminder"
 }

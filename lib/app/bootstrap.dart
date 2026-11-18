@@ -11,6 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/database/app_database.dart';
 import '../core/database/encrypted_connection.dart';
+import '../core/database/private_database.dart';
 import '../core/database/settings_repository.dart';
 import '../core/encryption/database_key_manager.dart';
 import '../core/encryption/file_cipher.dart';
@@ -35,6 +36,8 @@ import 'app.dart';
 import 'app_config.dart';
 import 'background.dart';
 import 'notification_setup.dart';
+import 'private_providers.dart';
+import 'private_reminder_source.dart';
 import 'providers.dart';
 import 'routine_providers.dart';
 import 'tracking_providers.dart';
@@ -99,6 +102,22 @@ Future<void> bootstrap() async {
       }
     }
   }());
+  // Private database (§7.1): its own key; never synced.
+  final privateKey = (await DatabaseKeyManager(secrets).keyFor(DatabaseId.private)).valueOrNull;
+  final privateDb = privateKey == null
+      ? null
+      : PrivateDatabase(
+          openEncryptedDatabase(name: PrivateDatabase.databaseName, hexKey: privateKey),
+        );
+  final supportDir = await getApplicationSupportDirectory();
+  final fileCipher = fileKey == null
+      ? null
+      : FileCipher([
+          for (var i = 0; i < fileKey.length; i += 2)
+            int.parse(fileKey.substring(i, i + 2), radix: 16),
+        ]);
+  final l10n = deviceLocalizations();
+
   // Reminders: channels, taps, and the six-hourly top-up (05 §A5).
   // Lives as long as the app; never closed.
   // ignore: close_sinks
@@ -137,6 +156,19 @@ Future<void> bootstrap() async {
         notificationGatewayProvider.overrideWithValue(gateway),
         notificationTapsProvider.overrideWith((ref) => taps.stream),
         launchTapProvider.overrideWithValue(launchTap),
+        if (privateDb != null) ...[
+          privateDatabaseProvider.overrideWithValue(privateDb),
+          privateReminderSourceProvider.overrideWith(
+            (ref) => DevicePrivateReminderSource(
+              medications: ref.watch(medicationRepositoryProvider),
+              sensitive: ref.watch(sensitiveReminderRepositoryProvider),
+              genericTitle: l10n.genericReminderTitle,
+            ),
+          ),
+        ],
+        progressPhotoDirProvider.overrideWithValue(Directory('${supportDir.path}/progress_photos')),
+        fileCipherProvider.overrideWithValue(fileCipher),
+        screenTimeAlertTitleProvider.overrideWithValue(l10n.genericReminderTitle),
         signOutActionProvider.overrideWith(
           (ref) =>
               () => ref.read(sessionControllerProvider.notifier).signOut(),

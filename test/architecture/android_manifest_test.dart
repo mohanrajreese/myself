@@ -16,6 +16,8 @@ const _allowedPermissions = {
   'android.permission.ACCESS_FINE_LOCATION',
   'android.permission.ACCESS_COARSE_LOCATION',
   'android.permission.FOREGROUND_SERVICE_LOCATION',
+  'android.permission.PACKAGE_USAGE_STATS',
+  'android.permission.USE_BIOMETRIC',
 };
 
 /// Never declared (docs/blueprint/01-architecture.md §2.1).

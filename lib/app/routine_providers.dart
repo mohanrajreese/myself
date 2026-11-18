@@ -55,6 +55,9 @@ final notificationGatewayProvider = Provider<NotificationGateway>(
 );
 final alarmCapabilitiesProvider = Provider<AlarmCapabilities>((ref) => DeviceAlarmCapabilities());
 
+/// Sensitive reminders; set at start-up once the private database is open.
+final privateReminderSourceProvider = Provider<PrivateReminderSource?>((ref) => null);
+
 /// One service per app, so its re-plan queue is shared.
 final reminderServiceProvider = Provider<ReminderService>(
   (ref) => ReminderService(
@@ -66,6 +69,7 @@ final reminderServiceProvider = Provider<ReminderService>(
     capabilities: ref.watch(alarmCapabilitiesProvider),
     timeZone: ref.watch(timeZoneSourceProvider),
     clock: ref.watch(clockProvider),
+    privateSource: ref.watch(privateReminderSourceProvider),
   ),
 );
 

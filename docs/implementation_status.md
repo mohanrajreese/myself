@@ -9,8 +9,8 @@ Resume point for every work session. Update it when a task changes state; keep i
 | Item | Value |
 |---|---|
 | Phase | 5 — Lifestyle and privacy (approved 18 Nov 2026); Phases 1–4 phone verification pending |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens published 18 Nov 2026, awaiting approval) |
-| Blocked on | Owner's Supabase and Google OAuth setup for a phone build; design approval for Phase 5 screens |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026) |
+| Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
 
 ## Phases
@@ -91,7 +91,7 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | Accessibility | ☑ | The 2×-text check now opens each screen (it only checked Home before); 7 earlier screens fixed |
 | Phase 5 schema | ☑ | Private database v2 (all §7.1 tables; none on the sync allow-list, tested); app database v8 recovery logs; upgrades tested |
 | P-01 lock logic | ☑ | Salted PBKDF2 PIN hash in Keystore-backed storage, settings, auto-lock after time away, growing wait after 5 wrong PINs (7 tests). Lock screen, biometric and secure window follow design approval |
-| Phase 5 screens | ✋ | Twelve designs on the canvas |
+| Phase 5 screens | ◐ | Designs approved 18 Nov 2026 |
 
 ## Device verification backlog
 

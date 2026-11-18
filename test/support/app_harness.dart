@@ -1,5 +1,14 @@
 import 'package:fitbuddy/app/app.dart';
+
+import 'dart:io';
+
 import 'package:fitbuddy/app/fitness_providers.dart';
+import 'package:fitbuddy/app/private_providers.dart';
+import 'package:fitbuddy/app/private_reminder_source.dart';
+import 'package:fitbuddy/core/database/private_database.dart';
+import 'package:fitbuddy/core/encryption/file_cipher.dart';
+import 'package:fitbuddy/core/encryption/secret_store.dart';
+import 'package:fitbuddy/core/security/app_lock.dart';
 import 'package:fitbuddy/app/providers.dart';
 import 'package:fitbuddy/app/routine_providers.dart';
 import 'package:fitbuddy/app/tracking_providers.dart';
@@ -41,6 +50,12 @@ class AppHarness {
   final FakeSoundLibrary sounds = FakeSoundLibrary();
   final FakeStepCounter stepCounter = FakeStepCounter();
   final FakeLocationTracker location = FakeLocationTracker();
+  final PrivateDatabase privateDb = memoryPrivateDatabase();
+  final InMemorySecretStore secrets = InMemorySecretStore();
+  final FakeSecureWindow secureWindow = FakeSecureWindow();
+  final FakeBiometrics biometrics = FakeBiometrics();
+  final FakeUsageReader usage = FakeUsageReader();
+  final Directory photoDir = Directory.systemTemp.createTempSync('fb_photos');
 
   List<Override> overrides({
     SessionState session = const SessionState(),
@@ -61,6 +76,21 @@ class AppHarness {
     soundLibraryProvider.overrideWithValue(sounds),
     stepCounterProvider.overrideWithValue(stepCounter),
     locationTrackerProvider.overrideWithValue(location),
+    privateDatabaseProvider.overrideWithValue(privateDb),
+    secretStoreProvider.overrideWithValue(secrets),
+    pinStoreProvider.overrideWith((ref) => PinStore(secrets, iterations: 1000)),
+    secureWindowProvider.overrideWithValue(secureWindow),
+    biometricsProvider.overrideWithValue(biometrics),
+    usageReaderProvider.overrideWithValue(usage),
+    progressPhotoDirProvider.overrideWithValue(photoDir),
+    fileCipherProvider.overrideWithValue(FileCipher(List.filled(32, 7))),
+    privateReminderSourceProvider.overrideWith(
+      (ref) => DevicePrivateReminderSource(
+        medications: ref.watch(medicationRepositoryProvider),
+        sensitive: ref.watch(sensitiveReminderRepositoryProvider),
+        genericTitle: 'FitBuddy reminder',
+      ),
+    ),
     signOutActionProvider.overrideWith(
       (ref) =>
           () => ref.read(sessionControllerProvider.notifier).signOut(),

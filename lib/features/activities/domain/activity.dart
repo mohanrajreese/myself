@@ -109,6 +109,7 @@ final class Activity {
     this.checklistItems = const [],
     this.archived = false,
     this.sortOrder = 0,
+    this.systemKey,
   });
 
   final String id;
@@ -133,6 +134,9 @@ final class Activity {
   final List<ChecklistItem> checklistItems;
   final bool archived;
   final int sortOrder;
+
+  /// Set for routines the app created, such as `hygiene.bath`.
+  final String? systemKey;
 
   bool get isEssential => priority == ActivityPriority.essential;
 
@@ -200,6 +204,7 @@ final class Activity {
     checklistItems: checklistItems ?? this.checklistItems,
     archived: archived ?? this.archived,
     sortOrder: sortOrder ?? this.sortOrder,
+    systemKey: systemKey,
   );
 }
 

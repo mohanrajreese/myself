@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../core/notifications/notification_gateway.dart';
 import 'fitness_providers.dart';
+import 'private_providers.dart';
 import 'routes.dart';
 import 'router.dart';
 import 'routine_providers.dart';
@@ -26,9 +27,12 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
   void initState() {
     super.initState();
     _lifecycle = AppLifecycleListener(
+      onHide: () => ref.read(lockControllerProvider.notifier).movedToBackground(),
       onResume: () {
+        ref.read(lockControllerProvider.notifier).returnedToForeground();
         replanReminders(ref);
         syncSteps(ref);
+        refreshScreenTime(ref);
       },
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -36,6 +40,8 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
       replanReminders(ref);
       syncSteps(ref);
       unawaited(ref.read(workoutRepositoryProvider).seedExercises().catchError((Object _) {}));
+      unawaited(ref.read(privateRepositoryProvider).seedHabitTypes().catchError((Object _) {}));
+      refreshScreenTime(ref);
       final launch = ref.read(launchTapProvider);
       if (launch != null) unawaited(_handle(launch));
     });
