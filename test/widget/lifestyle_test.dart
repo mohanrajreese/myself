@@ -243,4 +243,20 @@ void main() {
     expect(tester.takeException(), isNull, reason: 'lock screen');
     await app.dispose(tester);
   });
+
+  testWidgets("the builder's Private switch stores the activity in the private space", (
+    tester,
+  ) async {
+    await start(tester);
+    await go(tester, Routes.newActivity);
+    await tester.enterText(find.byType(EditableText).first, 'Journal');
+    await tapText(tester, 'Private');
+    await tap(tester, find.widgetWithText(FilledButton, 'Save'));
+    // Without a PIN the private space asks for one first.
+    expect(find.text('Set up the app lock first'), findsOneWidget);
+    expect(await app.db.select(app.db.activityDefinitions).get(), isEmpty);
+    final outbox = await app.db.select(app.db.syncOutbox).get();
+    expect(outbox.where((r) => r.entityTable.contains('activit')), isEmpty);
+    await app.dispose(tester);
+  });
 }

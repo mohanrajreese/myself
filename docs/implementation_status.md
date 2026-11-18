@@ -8,7 +8,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 5 — Lifestyle and privacy (approved 18 Nov 2026); Phases 1–4 phone verification pending |
+| Phase | 5 — Lifestyle and privacy built 18 Nov 2026; Phases 1–5 phone verification pending; Phase 6 waits for approval |
 | Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026) |
 | Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project; Google OAuth clients; Firebase project (Phase 6) |
@@ -21,7 +21,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | 2 Core tracking | ⏳ built, phone verification pending | [phase-2.md](reports/phase-2.md) |
 | 3 Activities and reminders | ⏳ built, phone verification pending | [phase-3.md](reports/phase-3.md) |
 | 4 Fitness | ⏳ built, phone verification pending | [phase-4.md](reports/phase-4.md) |
-| 5 Lifestyle and privacy | ◐ | — |
+| 5 Lifestyle and privacy | ⏳ built, phone verification pending | [phase-5.md](reports/phase-5.md) |
 | 6 Reports and synchronisation | ☐ | — |
 | 7 Quality and release | ☐ | — |
 
@@ -90,8 +90,18 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 | S-13 migration, docs, report | ☑ | Device run pending |
 | Accessibility | ☑ | The 2×-text check now opens each screen (it only checked Home before); 7 earlier screens fixed |
 | Phase 5 schema | ☑ | Private database v2 (all §7.1 tables; none on the sync allow-list, tested); app database v8 recovery logs; upgrades tested |
-| P-01 lock logic | ☑ | Salted PBKDF2 PIN hash in Keystore-backed storage, settings, auto-lock after time away, growing wait after 5 wrong PINs (7 tests). Lock screen, biometric and secure window follow design approval |
-| Phase 5 screens | ◐ | Designs approved 18 Nov 2026 |
+| P-01 app lock | ☑ · ⏳ biometric, secure window | Salted PBKDF2 PIN hash, auto-lock, backoff; `LockGate` on every private route; PIN pad needs an explicit Unlock tap; fingerprint through `local_auth`; `FLAG_SECURE` while the lock is on |
+| P-02 private habits | ☑ | Two seeded types and your own; record now or with details; weekly/monthly counts; history; delete; archive |
+| P-03 private activities | ☑ | "Private" switch in the activity builder (C5) and an add button in the private space; yes/no or counted; log, history, archive |
+| P-04 bowel | ☑ | Quick log, history, 7-day count, 30-day per-day average, consistency split, check-in reminder |
+| P-05 sensitive reminders | ☑ logic · ⏳ delivery | Private store; title always "FitBuddy reminder", secret on the lock screen (tested) |
+| P-06 hygiene | ☑ | Eight standard routines on request (seeded activities, `hygiene.*`), steps for skincare, mark all done. `hygiene_logs` table not created (03-database.md, changed 18 Nov 2026) |
+| P-07 medication | ☑ | List, editor with schedule, taken/skipped/not marked, reminder from the notification records a dose |
+| P-08 posture and recovery | ☑ | Rest day, soreness, recovery, notes; movement-break and posture reminders (Phase 3 reminders) |
+| P-09, P-10 screen time | ☑ logic · ⏳ device | `UsagePlugin`, usage-access flow, day/week/month, most-used apps, daily target, one generic alert a day |
+| P-11 privacy suite | ◐ | Outbox, allow-list, generic secret notifications, import boundaries tested. The recording-HTTP-client test waits for the Phase 6 sync engine |
+| P-12 progress photos | ☑ · ⏳ camera | Encrypted per file, grid, view, delete |
+| P-13 | ☑ | Migration 9 not needed (no `hygiene_logs`); `privacy.md`; report. Device run pending |
 
 ## Device verification backlog
 
@@ -111,3 +121,7 @@ Features implemented but not yet confirmed on the phone. Test numbers refer to `
 | Stopwatch survives the app being closed and the phone restarting | Start, swipe away, restart phone, reopen | Pending |
 | Steps counted, reboot, midnight, timezone, battery saver | Tests 1–9 in `blueprint/07-testing.md` §6 | Pending |
 | GPS workout with the screen off; route drawn; distance plausible | Walk 1 km with GPS, screen off | Pending |
+| App lock: private space absent from the app switcher, screenshots blocked, fingerprint unlock, auto-lock after time away | Open private space, press Recents, try a screenshot; leave for 2 min and return | Pending |
+| Private and medication notifications show only "FitBuddy reminder" and nothing on the lock screen | Add a medicine at a time 2 min ahead, lock the phone | Pending |
+| Screen time: usage access flow and totals against Digital Wellbeing | Grant access, compare one day | Pending |
+| Progress photo camera and gallery | Add both; the stored file is not a readable image | Pending |

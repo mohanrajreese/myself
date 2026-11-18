@@ -2397,5 +2397,8 @@
   "weekly": "Weekly",
   "whenLabel": "When",
   "wrongPin": "Wrong PIN",
-  "unlockAction": "Unlock"
+  "unlockAction": "Unlock",
+  "privateActivitySwitch": "Private",
+  "privateActivitySwitchHelp": "Kept in the locked private space, never synced. Cannot be changed later.",
+  "privateTypeLimit": "Private activities are yes/no or counted."
 }

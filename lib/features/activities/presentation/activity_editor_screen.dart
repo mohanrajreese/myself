@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../core/widgets/fb_scaffolds.dart';
+import '../../../app/private_providers.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../app/routine_actions.dart';
@@ -47,6 +48,9 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
   late ScheduleRule _initialRule;
   bool _stopwatch = false;
   bool _showOnHome = true;
+
+  /// Decision C5: chosen once, at creation; stored in the private database.
+  bool _private = false;
   bool _remind = false;
   Reminder? _linked;
   List<ChecklistItem> _checklist = [];
@@ -111,6 +115,7 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
     final l10n = context.l10n;
     final errors = <String, String>{};
     if (_name.trim().isEmpty) errors['name'] = l10n.errRequired;
+    if (_private) return _savePrivate(errors);
     int? targetMilli;
     if (_target.trim().isNotEmpty) {
       final v = int.tryParse(_target.trim());
@@ -176,6 +181,25 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
     } else {
       context.pop();
     }
+  }
+
+  Future<void> _savePrivate(Map<String, String> errors) async {
+    final l10n = context.l10n;
+    if (_type != TrackingType.boolean && _type != TrackingType.count) {
+      errors['private'] = l10n.privateTypeLimit;
+    }
+    setState(() => _errors = errors);
+    if (errors.isNotEmpty) return;
+    setState(() => _busy = true);
+    final r = await ref
+        .read(privateRepositoryProvider)
+        .addActivity(_name.trim(), counted: _type == TrackingType.count);
+    if (!mounted) return;
+    final id = r.valueOrNull?.id;
+    if (id == null) return _failed(r.failureOrNull);
+    showFbSnackBar(context, l10n.activitySaved);
+    _dirty = false;
+    context.pushReplacement(Routes.privateActivity(id));
   }
 
   Future<void> _saveReminder(String id, Activity a) async {
@@ -256,6 +280,10 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
           children: [
             if (_errors['form'] != null) ...[
               FbNotice(_errors['form']!, isError: true),
+              const SizedBox(height: FbSpace.md),
+            ],
+            if (_errors['private'] != null) ...[
+              FbNotice(_errors['private']!, isError: true),
               const SizedBox(height: FbSpace.md),
             ],
             FbTextField(
@@ -415,6 +443,13 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
+                  if (_existing == null)
+                    FbSwitchRow(
+                      title: l10n.privateActivitySwitch,
+                      subtitle: l10n.privateActivitySwitchHelp,
+                      value: _private,
+                      onChanged: (v) => _change(() => _private = v),
+                    ),
                   FbSwitchRow(
                     title: l10n.remindAtTimes,
                     subtitle: l10n.remindAtTimesHelp,

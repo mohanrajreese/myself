@@ -11,4 +11,10 @@ Design: `blueprint/01-architecture.md` §5–6. Verification state is given per 
 | Logger cannot write text or decimal values | Verified by automated tests | `test/unit/core/logger_test.dart` |
 | Android backup and device transfer disabled; cleartext traffic disabled; analytics deactivated | Manifest verified by automated tests; `adb backup` check on the phone pending | `test/architecture/android_manifest_test.dart` |
 | Meal photos encrypted per file (AES-256-GCM), stored on the phone only, index table outside the sync allow-list | Verified by automated tests; phone pending | `test/unit/nutrition/meal_photo_store_test.dart` |
-| App lock, private modules, sensitive notifications | Not built (Phase 5) | — |
+| Private records (habits, bowel, medication, sensitive reminders, private activities, screen time, progress photos) in the private database only; none on the sync allow-list | Verified by automated tests | `test/unit/database/private_migration_test.dart`, `test/widget/lifestyle_test.dart` |
+| Private and medication notifications: generic title "FitBuddy reminder", secret on the lock screen, no name in any notification | Verified by automated tests; phone pending | `test/widget/lifestyle_test.dart` |
+| App lock: salted PBKDF2 PIN hash, growing wait after 5 wrong PINs, every private route behind `LockGate`, digits never count as a try without Unlock | Verified by automated tests | `test/unit/security/app_lock_test.dart`, `test/widget/lifestyle_test.dart` |
+| Screenshots and app-switcher preview blocked (`FLAG_SECURE`) while the lock is on; fingerprint unlock | Flag requested in tests with a fake; phone pending | `test/widget/lifestyle_test.dart` |
+| Private text fields never learn from typing (no suggestions, no personalised keyboard learning) | Code review | `lib/features/private_space/presentation/` |
+| Progress photos encrypted per file (AES-256-GCM), never synced | Verified by automated tests; camera on the phone pending | `lib/features/private_space/data/drift_private_repository.dart` |
+| No request carries private data (recording HTTP client) | Not built: waits for the Phase 6 sync engine. Today no network code can import the private database (architecture test) | — |
