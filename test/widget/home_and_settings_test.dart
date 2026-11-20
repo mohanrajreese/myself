@@ -12,8 +12,7 @@ void main() {
 
   Future<void> start(WidgetTester tester, {SetupDraft? draft}) async {
     await app.completeOnboarding(
-      draft:
-          draft ?? const SetupDraft(name: 'Asha Rao', weightText: '91.8', workoutDays: {1, 3, 5}),
+      draft: draft ?? const SetupDraft(name: 'Asha Rao', weightText: '91.8', workoutDays: {1, 3, 5}),
     );
     await app.pump(tester, session: signedInSession);
   }
@@ -99,28 +98,20 @@ void main() {
 
     testWidgets('each tab opens', (tester) async {
       await start(tester);
-      await tester.tap(
-        find.descendant(of: find.byType(NavigationBar), matching: find.text('Insights')),
-      );
+      await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('Insights')));
       for (var i = 0; i < 20; i++) {
         await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 5)));
         await tester.pump(const Duration(milliseconds: 50));
       }
       await tester.pumpAndSettle();
       expect(find.text('In brief'), findsOneWidget);
-      await tester.tap(
-        find.descendant(of: find.byType(NavigationBar), matching: find.text('Nutrition')),
-      );
+      await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('Nutrition')));
       await tester.pumpAndSettle();
       expect(find.textContaining('Today, '), findsOneWidget);
-      await tester.tap(
-        find.descendant(of: find.byType(NavigationBar), matching: find.text('Health')),
-      );
+      await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('Health')));
       await tester.pumpAndSettle();
       expect(find.text('Body measurements'), findsOneWidget);
-      await tester.tap(
-        find.descendant(of: find.byType(NavigationBar), matching: find.text('Home')),
-      );
+      await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('Home')));
       await tester.pumpAndSettle();
       expect(find.text('Good morning, Asha'), findsOneWidget);
       await app.dispose(tester);
@@ -233,9 +224,7 @@ void main() {
 
       await tester.tap(find.text('Sign out'));
       await tester.pumpAndSettle();
-      await tester.tap(
-        find.descendant(of: find.byType(AlertDialog), matching: find.text('Sign out')),
-      );
+      await tester.tap(find.descendant(of: find.byType(AlertDialog), matching: find.text('Sign out')));
       await tester.pumpAndSettle();
       expect(find.text('Continue with Google'), findsOneWidget);
       expect(app.auth.signOuts, 1);

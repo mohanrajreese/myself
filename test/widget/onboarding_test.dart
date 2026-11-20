@@ -5,10 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../support/app_harness.dart';
 
-Finder field(String label) => find.descendant(
-  of: find.bySemanticsLabel(RegExp('^${RegExp.escape(label)}')),
-  matching: find.byType(EditableText),
-);
+Finder field(String label) =>
+    find.descendant(of: find.bySemanticsLabel(RegExp('^${RegExp.escape(label)}')), matching: find.byType(EditableText));
 
 Future<void> next(WidgetTester tester, [String label = 'Continue']) async {
   await tester.tap(find.text(label));
@@ -19,9 +17,7 @@ void main() {
   late AppHarness app;
   setUp(() => app = AppHarness());
 
-  testWidgets('the whole flow: profile, goals from weight, day, permissions, summary, Home', (
-    tester,
-  ) async {
+  testWidgets('the whole flow: profile, goals from weight, day, permissions, summary, Home', (tester) async {
     await app.pump(tester, session: signedInSession);
     expect(find.text('About you'), findsOneWidget);
 

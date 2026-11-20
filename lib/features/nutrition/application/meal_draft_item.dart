@@ -42,18 +42,12 @@ List<Portion> portionsFor(Food food) {
       Portion(
         unit: _unitName(household),
         baseQtyMilli: 1000,
-        baseValues: scaleToQuantity(
-          food.values,
-          servingQtyMilli: gramsPerServing,
-          quantityMilli: householdMg,
-        ),
+        baseValues: scaleToQuantity(food.values, servingQtyMilli: gramsPerServing, quantityMilli: householdMg),
       ),
     );
   }
   if (food.servingUnit != 'g') {
-    portions.add(
-      Portion(unit: _unitName(food.servingLabel), baseQtyMilli: 1000, baseValues: food.values),
-    );
+    portions.add(Portion(unit: _unitName(food.servingLabel), baseQtyMilli: 1000, baseValues: food.values));
   }
   if (gramsPerServing != null && gramsPerServing > 0) {
     portions.add(Portion(unit: 'g', baseQtyMilli: gramsPerServing, baseValues: food.values));
@@ -75,25 +69,20 @@ final class DraftItem {
     this.isEstimate = false,
   });
 
-  factory DraftItem.fromFood(Food food, Portion portion, int qtyMilli, {JunkCategory? junk}) =>
-      DraftItem(
-        name: food.name,
-        portion: portion,
-        qtyMilli: qtyMilli,
-        portions: portionsFor(food),
-        food: food,
-        foodItemId: food.isMine ? food.id : null,
-        junk: junk ?? food.junk,
-        isEstimate: food.isEstimate,
-      );
+  factory DraftItem.fromFood(Food food, Portion portion, int qtyMilli, {JunkCategory? junk}) => DraftItem(
+    name: food.name,
+    portion: portion,
+    qtyMilli: qtyMilli,
+    portions: portionsFor(food),
+    food: food,
+    foodItemId: food.isMine ? food.id : null,
+    junk: junk ?? food.junk,
+    isEstimate: food.isEstimate,
+  );
 
   /// An item from a logged or saved meal: it can be rescaled in its own unit.
   factory DraftItem.fromMealItem(MealItem item) {
-    final portion = Portion(
-      unit: item.unit,
-      baseQtyMilli: item.quantityMilli,
-      baseValues: item.values,
-    );
+    final portion = Portion(unit: item.unit, baseQtyMilli: item.quantityMilli, baseValues: item.values);
     return DraftItem(
       name: item.foodName,
       portion: portion,
@@ -124,21 +113,17 @@ final class DraftItem {
     return '${formatScaled(qtyMilli, 3, decimals: decimals)} ${portion.unit}';
   }
 
-  DraftItem copyWith({
-    Portion? portion,
-    int? qtyMilli,
-    JunkCategory? Function()? junk,
-    String? foodItemId,
-  }) => DraftItem(
-    name: name,
-    portion: portion ?? this.portion,
-    qtyMilli: qtyMilli ?? this.qtyMilli,
-    portions: portions,
-    food: food,
-    foodItemId: foodItemId ?? this.foodItemId,
-    junk: junk == null ? this.junk : junk(),
-    isEstimate: isEstimate,
-  );
+  DraftItem copyWith({Portion? portion, int? qtyMilli, JunkCategory? Function()? junk, String? foodItemId}) =>
+      DraftItem(
+        name: name,
+        portion: portion ?? this.portion,
+        qtyMilli: qtyMilli ?? this.qtyMilli,
+        portions: portions,
+        food: food,
+        foodItemId: foodItemId ?? this.foodItemId,
+        junk: junk == null ? this.junk : junk(),
+        isEstimate: isEstimate,
+      );
 
   MealItem toMealItem() => MealItem(
     foodItemId: foodItemId,

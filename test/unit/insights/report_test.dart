@@ -4,8 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 LocalDate d(int m, int day, [int y = 2026]) => LocalDate(y, m, day);
 
-PeriodReport report(DateRange r, Map<Metric, Map<LocalDate, int>> s) =>
-    PeriodReport(range: r, series: s);
+PeriodReport report(DateRange r, Map<Metric, Map<LocalDate, int>> s) => PeriodReport(range: r, series: s);
 
 void main() {
   group('periods', () {
@@ -21,10 +20,7 @@ void main() {
       expect(feb.to, d(2, 28));
       final dec = periodRange(ReportPeriod.month, d(12, 31));
       expect(stepPeriod(ReportPeriod.month, dec, 1), (from: d(1, 1, 2027), to: d(1, 31, 2027)));
-      expect(
-        stepPeriod(ReportPeriod.month, periodRange(ReportPeriod.month, d(1, 5)), -1).from,
-        d(12, 1, 2025),
-      );
+      expect(stepPeriod(ReportPeriod.month, periodRange(ReportPeriod.month, d(1, 5)), -1).from, d(12, 1, 2025));
     });
 
     test('the previous period has the same length; a month compares with the previous month', () {

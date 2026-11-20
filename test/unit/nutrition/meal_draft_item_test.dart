@@ -12,13 +12,7 @@ const idli = Food(
   servingQtyMilli: 100000,
   servingUnit: 'g',
   servingWeightMg: 100000,
-  values: NutritionValues(
-    energyKcalMilli: 137535,
-    proteinMg: 4637,
-    carbsMg: 28178,
-    fatMg: 333,
-    fibreMg: 2309,
-  ),
+  values: NutritionValues(energyKcalMilli: 137535, proteinMg: 4637, carbsMg: 28178, fatMg: 333, fibreMg: 2309),
   source: FoodSources.indb,
   isEstimate: true,
   householdLabel: '1 idli',
@@ -33,13 +27,7 @@ const homeDal = Food(
   servingQtyMilli: 1000,
   servingUnit: 'serving',
   servingWeightMg: 250000,
-  values: NutritionValues(
-    energyKcalMilli: 230000,
-    proteinMg: 12000,
-    carbsMg: 30000,
-    fatMg: 6000,
-    fibreMg: 8000,
-  ),
+  values: NutritionValues(energyKcalMilli: 230000, proteinMg: 12000, carbsMg: 30000, fatMg: 6000, fibreMg: 8000),
   source: FoodSources.mine,
 );
 
@@ -72,13 +60,7 @@ void main() {
         foodName: 'Rice',
         quantityMilli: 1500,
         unit: 'cup',
-        values: NutritionValues(
-          energyKcalMilli: 310000,
-          proteinMg: 6000,
-          carbsMg: 0,
-          fatMg: 0,
-          fibreMg: 0,
-        ),
+        values: NutritionValues(energyKcalMilli: 310000, proteinMg: 6000, carbsMg: 0, fatMg: 0, fibreMg: 0),
       ),
     );
     expect(item.copyWith(qtyMilli: 3000).values.energyKcalMilli, 620000);

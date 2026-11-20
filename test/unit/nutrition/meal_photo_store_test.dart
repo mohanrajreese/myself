@@ -36,14 +36,7 @@ void main() {
     mealId = (await meals.add(
       const MealDraft(
         category: MealCategory.lunch,
-        items: [
-          MealItem(
-            foodName: 'Dal',
-            quantityMilli: 1000,
-            unit: 'bowl',
-            values: NutritionValues.zero,
-          ),
-        ],
+        items: [MealItem(foodName: 'Dal', quantityMilli: 1000, unit: 'bowl', values: NutritionValues.zero)],
       ),
     )).valueOrNull!.id;
   });
@@ -59,12 +52,7 @@ void main() {
     final stored = files().single.readAsBytesSync();
     expect(String.fromCharCodes(stored).contains('JPEG-MARKER'), isFalse);
     expect(await photos.read(mealId), image);
-    expect(
-      (await meals.watchOn((await db.select(db.mealLogs).getSingle()).localDate).first)
-          .single
-          .hasPhoto,
-      isTrue,
-    );
+    expect((await meals.watchOn((await db.select(db.mealLogs).getSingle()).localDate).first).single.hasPhoto, isTrue);
   });
 
   test('the photo index never enters the sync outbox', () async {

@@ -10,8 +10,7 @@ void main() {
   late AppDatabase db;
   late ProviderContainer container;
 
-  ProviderContainer build() =>
-      ProviderContainer(overrides: [appDatabaseProvider.overrideWithValue(db)]);
+  ProviderContainer build() => ProviderContainer(overrides: [appDatabaseProvider.overrideWithValue(db)]);
 
   setUp(() {
     db = memoryDatabase();

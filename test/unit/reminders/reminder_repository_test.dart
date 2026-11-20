@@ -16,11 +16,7 @@ void main() {
 
   setUp(() {
     db = memoryDatabase();
-    repo = DriftReminderRepository(
-      db,
-      clock: MutableClock(DateTime(2026, 11, 16, 9)).clock,
-      ids: SequentialIds(),
-    );
+    repo = DriftReminderRepository(db, clock: MutableClock(DateTime(2026, 11, 16, 9)).clock, ids: SequentialIds());
   });
   tearDown(() => db.close());
 
@@ -28,53 +24,33 @@ void main() {
     final water = reminderPreset(ReminderKind.water, title: 'Drink water', today: today);
     expect(water.rule, isA<IntervalRule>());
     expect(water.channel, NotificationChannelKey.hydration);
+    expect(reminderPreset(ReminderKind.sleep, title: 'Bedtime', today: today).channel, NotificationChannelKey.sleep);
     expect(
-      reminderPreset(ReminderKind.sleep, title: 'Bedtime', today: today).channel,
-      NotificationChannelKey.sleep,
-    );
-    expect(
-      reminderPreset(
-        ReminderKind.workout,
-        title: 'Gym',
-        today: today,
-      ).copyWith(alarm: true).channel,
+      reminderPreset(ReminderKind.workout, title: 'Gym', today: today).copyWith(alarm: true).channel,
       NotificationChannelKey.alarms,
     );
   });
 
-  test(
-    'a reminder is saved, listed, edited, switched off and deleted, each queued for sync',
-    () async {
-      final r = (await repo.create(
-        reminderPreset(ReminderKind.water, title: 'Drink water', today: today),
-      )).valueOrNull!;
-      expect((await repo.watchAll().first).single.title, 'Drink water');
-      await repo.update(
-        r.copyWith(title: 'Water', quietBehaviour: QuietBehaviour.suppress, snoozeMinutes: 15),
-      );
-      final edited = (await repo.byId(r.id))!;
-      expect(edited.quietBehaviour, QuietBehaviour.suppress);
-      expect(edited.snoozeMinutes, 15);
-      expect(edited.rule, r.rule);
-      await repo.setEnabled(r.id, enabled: false);
-      expect(await repo.enabled(), isEmpty);
-      await repo.delete(r.id);
-      expect(await repo.watchAll().first, isEmpty);
-      final outbox = await db.select(db.syncOutbox).get();
-      expect(outbox.single.entityTable, 'reminders');
-    },
-  );
+  test('a reminder is saved, listed, edited, switched off and deleted, each queued for sync', () async {
+    final r = (await repo.create(reminderPreset(ReminderKind.water, title: 'Drink water', today: today))).valueOrNull!;
+    expect((await repo.watchAll().first).single.title, 'Drink water');
+    await repo.update(r.copyWith(title: 'Water', quietBehaviour: QuietBehaviour.suppress, snoozeMinutes: 15));
+    final edited = (await repo.byId(r.id))!;
+    expect(edited.quietBehaviour, QuietBehaviour.suppress);
+    expect(edited.snoozeMinutes, 15);
+    expect(edited.rule, r.rule);
+    await repo.setEnabled(r.id, enabled: false);
+    expect(await repo.enabled(), isEmpty);
+    await repo.delete(r.id);
+    expect(await repo.watchAll().first, isEmpty);
+    final outbox = await db.select(db.syncOutbox).get();
+    expect(outbox.single.entityTable, 'reminders');
+  });
 
   test('invalid reminders are refused', () async {
-    final noTitle = await repo.create(
-      reminderPreset(ReminderKind.custom, title: ' ', today: today),
-    );
+    final noTitle = await repo.create(reminderPreset(ReminderKind.custom, title: ' ', today: today));
     expect(noTitle.failureOrNull, isA<ValidationFailure>());
-    final ifNotDone = reminderPreset(
-      ReminderKind.custom,
-      title: 'x',
-      today: today,
-    ).copyWith(onlyIfIncomplete: true);
+    final ifNotDone = reminderPreset(ReminderKind.custom, title: 'x', today: today).copyWith(onlyIfIncomplete: true);
     expect((await repo.create(ifNotDone)).failureOrNull, isA<ValidationFailure>());
     expect(await db.select(db.reminders).get(), isEmpty);
   });

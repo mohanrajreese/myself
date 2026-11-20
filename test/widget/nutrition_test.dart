@@ -87,9 +87,7 @@ void main() {
   });
 
   group('Meals', () {
-    testWidgets('a meal with a new food is saved and shown in the diary and on Home', (
-      tester,
-    ) async {
+    testWidgets('a meal with a new food is saved and shown in the diary and on Home', (tester) async {
       await start(tester);
       await addOatsToNewMeal(tester);
       await tapText(tester, 'Save meal');
@@ -145,6 +143,31 @@ void main() {
       await tapText(tester, 'Log now');
       expect(find.text('Breakfast logged'), findsOneWidget);
       expect(await app.db.select(app.db.mealLogs).get(), hasLength(2));
+      await app.dispose(tester);
+    });
+
+    testWidgets('a meal cost records a linked Food expense; deleting asks about it', (tester) async {
+      await start(tester);
+      await addOatsToNewMeal(tester);
+      await tester.enterText(field('Cost'), '240');
+      await tap(tester, find.bySemanticsLabel('Paid with'));
+      await tapText(tester, 'Cash');
+      await tapText(tester, 'Save meal');
+      final meal = (await app.db.select(app.db.mealLogs).get()).single;
+      var expense = (await app.db.select(app.db.expenses).get()).single;
+      expect(expense.amountPaise, 24000);
+      expect(expense.mealLogId, meal.id);
+      expect(expense.method, 'cash');
+
+      await openTab(tester, 'Nutrition');
+      await tap(tester, find.textContaining('389 kcal').first);
+      expect(find.text('240'), findsOneWidget);
+      await tap(tester, find.byTooltip('Delete'));
+      expect(find.text('It has a linked expense of ₹240.'), findsOneWidget);
+      await tapText(tester, 'Delete meal, keep expense');
+      expense = (await app.db.select(app.db.expenses).get()).single;
+      expect(expense.deletedAt, isNull);
+      expect(expense.mealLogId, isNull);
       await app.dispose(tester);
     });
 

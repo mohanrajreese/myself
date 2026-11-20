@@ -2,8 +2,7 @@ import 'package:fitbuddy/core/utils/local_date.dart';
 import 'package:fitbuddy/features/sleep/domain/sleep_math.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-SleepPeriod night(DateTime bed, DateTime wake) =>
-    SleepPeriod(kind: SleepKind.night, start: bed, end: wake);
+SleepPeriod night(DateTime bed, DateTime wake) => SleepPeriod(kind: SleepKind.night, start: bed, end: wake);
 
 void main() {
   test('an overnight sleep is measured across midnight', () {
@@ -13,10 +12,7 @@ void main() {
   });
 
   test('a night belongs to the day the user woke up; a nap to its own day', () {
-    expect(
-      night(DateTime(2026, 11, 16, 0, 5), DateTime(2026, 11, 16, 6, 35)).wakeDate,
-      LocalDate(2026, 11, 16),
-    );
+    expect(night(DateTime(2026, 11, 16, 0, 5), DateTime(2026, 11, 16, 6, 35)).wakeDate, LocalDate(2026, 11, 16));
     final nap = SleepPeriod(
       kind: SleepKind.nap,
       start: DateTime(2026, 11, 15, 14, 30),
@@ -27,14 +23,8 @@ void main() {
   });
 
   test('rejects an end before the start, a zero length, and more than 24 hours', () {
-    expect(
-      validateSleep(DateTime(2026, 11, 16, 7), DateTime(2026, 11, 16, 6))?.code,
-      'end_before_start',
-    );
-    expect(
-      validateSleep(DateTime(2026, 11, 16, 7), DateTime(2026, 11, 16, 7))?.code,
-      'end_before_start',
-    );
+    expect(validateSleep(DateTime(2026, 11, 16, 7), DateTime(2026, 11, 16, 6))?.code, 'end_before_start');
+    expect(validateSleep(DateTime(2026, 11, 16, 7), DateTime(2026, 11, 16, 7))?.code, 'end_before_start');
     expect(validateSleep(DateTime(2026, 11, 15, 6), DateTime(2026, 11, 16, 7))?.code, 'too_long');
     expect(validateSleep(DateTime(2026, 11, 15, 23), DateTime(2026, 11, 16, 6)), isNull);
   });
@@ -43,11 +33,7 @@ void main() {
     final periods = [
       night(DateTime(2026, 11, 13, 23), DateTime(2026, 11, 14, 6)), // 7 h
       night(DateTime(2026, 11, 14, 23, 30), DateTime(2026, 11, 15, 6)), // 6 h 30
-      SleepPeriod(
-        kind: SleepKind.nap,
-        start: DateTime(2026, 11, 15, 14),
-        end: DateTime(2026, 11, 15, 15),
-      ),
+      SleepPeriod(kind: SleepKind.nap, start: DateTime(2026, 11, 15, 14), end: DateTime(2026, 11, 15, 15)),
       night(DateTime(2026, 11, 15, 23), DateTime(2026, 11, 16, 6, 30)), // 7 h 30
     ];
     expect(averageNightLength(periods), const Duration(hours: 7));
@@ -76,9 +62,6 @@ void main() {
   });
 
   test('consistency needs at least two nights', () {
-    expect(
-      sleepConsistency([night(DateTime(2026, 11, 15, 23), DateTime(2026, 11, 16, 6))]),
-      isNull,
-    );
+    expect(sleepConsistency([night(DateTime(2026, 11, 15, 23), DateTime(2026, 11, 16, 6))]), isNull);
   });
 }

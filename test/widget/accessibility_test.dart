@@ -146,24 +146,12 @@ final List<_Screen> _screens = [
       await _tapText(tester, 'Default · tap to choose');
     },
   ),
-  (
-    name: 'notification settings',
-    setUp: true,
-    open: (tester) => _go(tester, Routes.notificationSettings),
-  ),
-  (
-    name: 'notification history',
-    setUp: true,
-    open: (tester) => _go(tester, Routes.notificationHistory),
-  ),
+  (name: 'notification settings', setUp: true, open: (tester) => _go(tester, Routes.notificationSettings)),
+  (name: 'notification history', setUp: true, open: (tester) => _go(tester, Routes.notificationHistory)),
   (name: 'fitness', setUp: true, open: (tester) => _tab(tester, Routes.fitness)),
   (name: 'steps', setUp: true, open: (tester) => _go(tester, Routes.steps)),
   (name: 'log a run', setUp: true, open: (tester) => _go(tester, Routes.logCardio('run'))),
-  (
-    name: 'gps ride',
-    setUp: true,
-    open: (tester) => _goNoSettle(tester, Routes.gpsWorkout('cycle')),
-  ),
+  (name: 'gps ride', setUp: true, open: (tester) => _goNoSettle(tester, Routes.gpsWorkout('cycle'))),
   (name: 'exercise library', setUp: true, open: (tester) => _go(tester, Routes.exerciseLibrary)),
   (name: 'workout history', setUp: true, open: (tester) => _go(tester, Routes.workoutHistory)),
   (name: 'personal records', setUp: true, open: (tester) => _go(tester, Routes.records)),
@@ -171,19 +159,11 @@ final List<_Screen> _screens = [
   (name: 'private space gate', setUp: true, open: (tester) => _go(tester, Routes.privateSpace)),
   (name: 'hygiene', setUp: true, open: (tester) => _go(tester, Routes.hygiene)),
   (name: 'medication', setUp: true, open: (tester) => _go(tester, Routes.medication)),
-  (
-    name: 'medication editor',
-    setUp: true,
-    open: (tester) => _go(tester, Routes.medicationEdit('new')),
-  ),
+  (name: 'medication editor', setUp: true, open: (tester) => _go(tester, Routes.medicationEdit('new'))),
   (name: 'recovery', setUp: true, open: (tester) => _go(tester, Routes.recovery)),
   (name: 'screen time', setUp: true, open: (tester) => _go(tester, Routes.screenTime)),
   (name: 'insights', setUp: true, open: (tester) => _tab(tester, Routes.insights)),
-  (
-    name: 'report: nutrition',
-    setUp: true,
-    open: (tester) => _go(tester, Routes.report('nutrition')),
-  ),
+  (name: 'report: nutrition', setUp: true, open: (tester) => _go(tester, Routes.report('nutrition'))),
   (name: 'report: workouts', setUp: true, open: (tester) => _go(tester, Routes.report('workouts'))),
   (name: 'account and sync', setUp: true, open: (tester) => _go(tester, Routes.accountSync)),
   (name: 'export', setUp: true, open: (tester) => _go(tester, Routes.export)),
@@ -213,9 +193,7 @@ Future<void> _createActivity(WidgetTester tester) async {
 void main() {
   for (final mode in [AppThemeMode.light, AppThemeMode.dark]) {
     for (final screen in _screens) {
-      testWidgets('${screen.name} (${mode.name}): contrast, tap targets and labels', (
-        tester,
-      ) async {
+      testWidgets('${screen.name} (${mode.name}): contrast, tap targets and labels', (tester) async {
         final handle = tester.ensureSemantics();
         final app = AppHarness();
         if (screen.setUp) {

@@ -22,8 +22,7 @@ void main() {
 
   tearDown(() => dir.deleteSync(recursive: true));
 
-  AppDatabase open(String key) =>
-      AppDatabase(NativeDatabase(file, setup: (db) => configureEncryption(db, key)));
+  AppDatabase open(String key) => AppDatabase(NativeDatabase(file, setup: (db) => configureEncryption(db, key)));
 
   Future<void> writeMarker(AppDatabase db) => db.customStatement(
     'INSERT INTO local_app_settings (key, value_json, updated_at) VALUES (?, ?, ?)',
@@ -59,10 +58,7 @@ void main() {
     await db.close();
 
     final wrong = open(_otherKey);
-    await expectLater(
-      wrong.customSelect('SELECT count(*) FROM local_app_settings').get(),
-      throwsA(anything),
-    );
+    await expectLater(wrong.customSelect('SELECT count(*) FROM local_app_settings').get(), throwsA(anything));
     await wrong.close();
   });
 
@@ -85,18 +81,13 @@ void main() {
 
   test('the private database is encrypted with its own key', () async {
     final privateFile = File('${dir.path}/fitbuddy_private.db');
-    var db = PrivateDatabase(
-      NativeDatabase(privateFile, setup: (d) => configureEncryption(d, _otherKey)),
-    );
+    var db = PrivateDatabase(NativeDatabase(privateFile, setup: (d) => configureEncryption(d, _otherKey)));
     await db.customSelect('SELECT 1').get();
     await db.close();
     expect(latin1.decode(privateFile.readAsBytesSync()).startsWith('SQLite format 3'), isFalse);
 
     db = PrivateDatabase(NativeDatabase(privateFile, setup: (d) => configureEncryption(d, _key)));
-    await expectLater(
-      db.customSelect('SELECT count(*) FROM sqlite_master').get(),
-      throwsA(anything),
-    );
+    await expectLater(db.customSelect('SELECT count(*) FROM sqlite_master').get(), throwsA(anything));
     await db.close();
   });
 }

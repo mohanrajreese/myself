@@ -60,11 +60,7 @@ void main() {
 
     test('selected weekdays', () {
       final rule = Weekdays(weekdays: {1, 3, 5}, times: [hm(18, 30)]);
-      expect(at(rule, mon, mon.addDays(6)), [
-        '2026-11-16 18:30',
-        '2026-11-18 18:30',
-        '2026-11-20 18:30',
-      ]);
+      expect(at(rule, mon, mon.addDays(6)), ['2026-11-16 18:30', '2026-11-18 18:30', '2026-11-20 18:30']);
       expect(calc.isScheduledOn(rule, mon.addDays(1)), isFalse);
       expect(calc.isScheduledOn(rule, mon.addDays(2)), isTrue);
     });
@@ -91,10 +87,7 @@ void main() {
 
     test('monthly on the nth or last weekday', () {
       final second = Monthly.nthWeekday(2, DateTime.tuesday, times: [hm(8, 0)]);
-      expect(at(second, LocalDate(2026, 11, 1), LocalDate(2026, 12, 31)), [
-        '2026-11-10 08:00',
-        '2026-12-08 08:00',
-      ]);
+      expect(at(second, LocalDate(2026, 11, 1), LocalDate(2026, 12, 31)), ['2026-11-10 08:00', '2026-12-08 08:00']);
       final last = Monthly.nthWeekday(-1, DateTime.friday, times: [hm(8, 0)]);
       expect(at(last, LocalDate(2026, 11, 1), LocalDate(2026, 11, 30)), ['2026-11-27 08:00']);
     });
@@ -111,21 +104,12 @@ void main() {
 
     test('interval between a start and end time, end included', () {
       final rule = IntervalRule(everyMinutes: 90, start: hm(8, 0), end: hm(12, 30));
-      expect(at(rule, mon, mon), [
-        '2026-11-16 08:00',
-        '2026-11-16 09:30',
-        '2026-11-16 11:00',
-        '2026-11-16 12:30',
-      ]);
+      expect(at(rule, mon, mon), ['2026-11-16 08:00', '2026-11-16 09:30', '2026-11-16 11:00', '2026-11-16 12:30']);
     });
 
     test('interval limited to weekdays', () {
       final rule = IntervalRule(everyMinutes: 240, start: hm(9, 0), end: hm(17, 0), weekdays: {6});
-      expect(at(rule, mon, mon.addDays(6)), [
-        '2026-11-21 09:00',
-        '2026-11-21 13:00',
-        '2026-11-21 17:00',
-      ]);
+      expect(at(rule, mon, mon.addDays(6)), ['2026-11-21 09:00', '2026-11-21 13:00', '2026-11-21 17:00']);
     });
 
     test('an empty range or a range backwards gives nothing', () {
@@ -140,14 +124,8 @@ void main() {
       expect(Weekdays(weekdays: const {}, times: [0]).problems, contains('weekdays_empty'));
       expect(Weekdays(weekdays: {8}, times: [0]).problems, contains('weekday_out_of_range'));
       expect(EveryNDays(days: 0, anchor: mon, times: [0]).problems, contains('every_out_of_range'));
-      expect(
-        IntervalRule(everyMinutes: 60, start: hm(10, 0), end: hm(9, 0)).problems,
-        contains('end_before_start'),
-      );
-      expect(
-        IntervalRule(everyMinutes: 4, start: 0, end: 60).problems,
-        contains('every_out_of_range'),
-      );
+      expect(IntervalRule(everyMinutes: 60, start: hm(10, 0), end: hm(9, 0)).problems, contains('end_before_start'));
+      expect(IntervalRule(everyMinutes: 4, start: 0, end: 60).problems, contains('every_out_of_range'));
       expect(Monthly.dayOfMonth(32, times: [0]).problems, contains('day_out_of_range'));
       expect(Daily(times: [hm(7, 0)]).problems, isEmpty);
     });
@@ -196,11 +174,7 @@ void main() {
         zone: const EuZone(),
       );
       // 27 Mar: UTC+1; 28 and 29 Mar: UTC+2.
-      expect(instants, [
-        DateTime.utc(2027, 3, 27, 6),
-        DateTime.utc(2027, 3, 28, 5),
-        DateTime.utc(2027, 3, 29, 5),
-      ]);
+      expect(instants, [DateTime.utc(2027, 3, 27, 6), DateTime.utc(2027, 3, 28, 5), DateTime.utc(2027, 3, 29, 5)]);
     });
 
     test('a time skipped by the spring change moves to the next valid minute', () {

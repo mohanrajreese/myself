@@ -2,13 +2,7 @@ import 'package:fitbuddy/core/utils/local_date.dart';
 import 'package:fitbuddy/features/nutrition/domain/nutrition_math.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const dal = NutritionValues(
-  energyKcalMilli: 230000,
-  proteinMg: 12000,
-  carbsMg: 30000,
-  fatMg: 6000,
-  fibreMg: 8000,
-);
+const dal = NutritionValues(energyKcalMilli: 230000, proteinMg: 12000, carbsMg: 30000, fatMg: 6000, fibreMg: 8000);
 
 void main() {
   group('scaling a food to the quantity eaten', () {
@@ -34,13 +28,7 @@ void main() {
     });
 
     test('rounds to the nearest unit instead of truncating', () {
-      const food = NutritionValues(
-        energyKcalMilli: 100,
-        proteinMg: 1,
-        carbsMg: 2,
-        fatMg: 0,
-        fibreMg: 0,
-      );
+      const food = NutritionValues(energyKcalMilli: 100, proteinMg: 1, carbsMg: 2, fatMg: 0, fibreMg: 0);
       final eaten = scaleToQuantity(food, servingQtyMilli: 3000, quantityMilli: 2000);
       expect(eaten.energyKcalMilli, 67);
       expect(eaten.proteinMg, 1);
@@ -49,13 +37,7 @@ void main() {
   });
 
   test('totals add exactly, with no drift over a thousand items', () {
-    const item = NutritionValues(
-      energyKcalMilli: 100100,
-      proteinMg: 3333,
-      carbsMg: 1,
-      fatMg: 7,
-      fibreMg: 0,
-    );
+    const item = NutritionValues(energyKcalMilli: 100100, proteinMg: 3333, carbsMg: 1, fatMg: 7, fibreMg: 0);
     final total = sumNutrition(List.filled(1000, item));
     expect(total.energyKcalMilli, 100100000);
     expect(total.proteinMg, 3333000);
@@ -83,11 +65,7 @@ void main() {
       MealCategory.eveningSnack: 160000,
       MealCategory.dinner: 0,
     });
-    expect(shares.map((s) => s.category), [
-      MealCategory.breakfast,
-      MealCategory.lunch,
-      MealCategory.eveningSnack,
-    ]);
+    expect(shares.map((s) => s.category), [MealCategory.breakfast, MealCategory.lunch, MealCategory.eveningSnack]);
     expect(shares.map((s) => s.percent), [38, 48, 14]);
     expect(shares.fold<int>(0, (a, s) => a + s.percent), 100);
     expect(caloriesByMeal(const {}), isEmpty);
@@ -139,23 +117,11 @@ void main() {
     final items = [
       (values: dal, junk: null),
       (
-        values: const NutritionValues(
-          energyKcalMilli: 160000,
-          proteinMg: 3000,
-          carbsMg: 0,
-          fatMg: 0,
-          fibreMg: 0,
-        ),
+        values: const NutritionValues(energyKcalMilli: 160000, proteinMg: 3000, carbsMg: 0, fatMg: 0, fibreMg: 0),
         junk: JunkCategory.friedSnacks,
       ),
       (
-        values: const NutritionValues(
-          energyKcalMilli: 140000,
-          proteinMg: 0,
-          carbsMg: 0,
-          fatMg: 0,
-          fibreMg: 0,
-        ),
+        values: const NutritionValues(energyKcalMilli: 140000, proteinMg: 0, carbsMg: 0, fatMg: 0, fibreMg: 0),
         junk: JunkCategory.sugaryDrinks,
       ),
     ];

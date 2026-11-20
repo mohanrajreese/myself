@@ -82,9 +82,9 @@ final class DriftMealRepository implements MealRepository {
       _db.mealFoodItems,
     )..where((t) => t.mealLogId.equals(mealId) & t.deletedAt.isNull())).get();
     for (final row in live) {
-      await (_db.update(_db.mealFoodItems)..where((t) => t.id.equals(row.id))).write(
-        MealFoodItemsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
-      );
+      await (_db.update(
+        _db.mealFoodItems,
+      )..where((t) => t.id.equals(row.id))).write(MealFoodItemsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
       await _db.enqueueForSync(_items, row.id, now);
     }
   }
@@ -162,20 +162,15 @@ final class DriftMealRepository implements MealRepository {
       () => _db.transaction(() async {
         final now = clock.now().toUtc();
         final at = draft.at;
-        final changed =
-            await (_db.update(
-              _db.mealLogs,
-            )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
-              MealLogsCompanion(
-                mealCategory: Value(draft.category.code),
-                notes: Value(_clean(draft.notes)),
-                occurredAt: at == null ? const Value.absent() : Value(at.toUtc()),
-                localDate: at == null
-                    ? const Value.absent()
-                    : Value(LocalDate.fromDateTime(at.toLocal())),
-                updatedAt: Value(now),
-              ),
-            );
+        final changed = await (_db.update(_db.mealLogs)..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
+          MealLogsCompanion(
+            mealCategory: Value(draft.category.code),
+            notes: Value(_clean(draft.notes)),
+            occurredAt: at == null ? const Value.absent() : Value(at.toUtc()),
+            localDate: at == null ? const Value.absent() : Value(LocalDate.fromDateTime(at.toLocal())),
+            updatedAt: Value(now),
+          ),
+        );
         if (changed == 0) throw StateError('missing');
         await _db.enqueueForSync(_meals, id, now);
         await _removeItems(id, now);
@@ -189,9 +184,9 @@ final class DriftMealRepository implements MealRepository {
   Future<Result<void>> delete(String id) => Result.guard(
     () => _db.transaction(() async {
       final now = clock.now().toUtc();
-      final changed =
-          await (_db.update(_db.mealLogs)..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
-              .write(MealLogsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
+      final changed = await (_db.update(_db.mealLogs)..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
+        MealLogsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+      );
       if (changed == 0) return;
       await _db.enqueueForSync(_meals, id, now);
       await _removeItems(id, now);
@@ -268,9 +263,9 @@ final class DriftMealRepository implements MealRepository {
   @override
   Future<void> setHasPhoto(String id, bool hasPhoto) => _db.transaction(() async {
     final now = clock.now().toUtc();
-    final changed = await (_db.update(_db.mealLogs)..where((t) => t.id.equals(id))).write(
-      MealLogsCompanion(hasPhoto: Value(hasPhoto), updatedAt: Value(now)),
-    );
+    final changed = await (_db.update(
+      _db.mealLogs,
+    )..where((t) => t.id.equals(id))).write(MealLogsCompanion(hasPhoto: Value(hasPhoto), updatedAt: Value(now)));
     if (changed > 0) await _db.enqueueForSync(_meals, id, now);
   });
 
@@ -278,10 +273,7 @@ final class DriftMealRepository implements MealRepository {
     id: r.id,
     name: r.name,
     category: r.mealCategory == null ? null : MealCategory.fromCode(r.mealCategory!),
-    items: [
-      for (final j in (jsonDecode(r.items) as List<Object?>).cast<Map<String, Object?>>())
-        MealItem.fromJson(j),
-    ],
+    items: [for (final j in (jsonDecode(r.items) as List<Object?>).cast<Map<String, Object?>>()) MealItem.fromJson(j)],
     useCount: r.useCount,
   );
 
@@ -308,9 +300,7 @@ final class DriftMealRepository implements MealRepository {
             );
         await _db.enqueueForSync(_saved, id, now);
       });
-      return _savedMeal(
-        await (_db.select(_db.savedMeals)..where((t) => t.id.equals(id))).getSingle(),
-      );
+      return _savedMeal(await (_db.select(_db.savedMeals)..where((t) => t.id.equals(id))).getSingle());
     }, onError: (_) => const StorageFailure('saved_meal_write'));
   }
 
@@ -333,11 +323,7 @@ final class DriftMealRepository implements MealRepository {
       final now = clock.now().toUtc();
       await _db.transaction(() async {
         await (_db.update(_db.savedMeals)..where((t) => t.id.equals(savedMealId))).write(
-          SavedMealsCompanion(
-            useCount: Value(row.useCount + 1),
-            lastUsedAt: Value(now),
-            updatedAt: Value(now),
-          ),
+          SavedMealsCompanion(useCount: Value(row.useCount + 1), lastUsedAt: Value(now), updatedAt: Value(now)),
         );
         await _db.enqueueForSync(_saved, savedMealId, now);
       });
@@ -349,10 +335,8 @@ final class DriftMealRepository implements MealRepository {
   Future<Result<void>> deleteSaved(String savedMealId) => Result.guard(
     () => _db.transaction(() async {
       final now = clock.now().toUtc();
-      final changed =
-          await (_db.update(_db.savedMeals)
-                ..where((t) => t.id.equals(savedMealId) & t.deletedAt.isNull()))
-              .write(SavedMealsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
+      final changed = await (_db.update(_db.savedMeals)..where((t) => t.id.equals(savedMealId) & t.deletedAt.isNull()))
+          .write(SavedMealsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
       if (changed > 0) await _db.enqueueForSync(_saved, savedMealId, now);
     }),
     onError: (_) => const StorageFailure('saved_meal_write'),
@@ -369,10 +353,7 @@ final class DriftMealRepository implements MealRepository {
 
 extension on Stream<List<MealLogRow>> {
   /// Re-reads items whenever meals or items change.
-  Stream<List<Meal>> combineWithItems(
-    AppDatabase db,
-    Future<List<Meal>> Function(List<MealLogRow>) assemble,
-  ) {
+  Stream<List<Meal>> combineWithItems(AppDatabase db, Future<List<Meal>> Function(List<MealLogRow>) assemble) {
     final itemChanges = db.tableUpdates(TableUpdateQuery.onTable(db.mealFoodItems));
     late List<MealLogRow> latest;
     return Stream<Future<List<Meal>>>.multi((controller) {

@@ -2,8 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'boundary_rules.dart';
 
-List<String> _rules(Map<String, String> sources) =>
-    checkBoundaries(sources).map((v) => v.rule).toList();
+List<String> _rules(Map<String, String> sources) => checkBoundaries(sources).map((v) => v.rule).toList();
 
 void main() {
   group('domain purity', () {
@@ -47,11 +46,7 @@ import '../data/weight_repository_impl.dart';
 final c = MethodChannel('x');
 ''',
         }),
-        [
-          'presentation-no-storage',
-          'presentation-no-data-layer',
-          'presentation-no-platform-channel',
-        ],
+        ['presentation-no-storage', 'presentation-no-data-layer', 'presentation-no-platform-channel'],
       );
     });
 
@@ -85,8 +80,7 @@ final c = MethodChannel('x');
       expect(
         _rules({
           'core/sync/sync_engine.dart': "import '../database/private_database.dart';",
-          'core/networking/client.dart':
-              "import 'package:fitbuddy/core/database/private/bowel_dao.dart';",
+          'core/networking/client.dart': "import 'package:fitbuddy/core/database/private/bowel_dao.dart';",
           'features/weight/data/weight_remote_source.dart':
               "import 'package:fitbuddy/core/database/private_database.dart';",
         }),
@@ -95,10 +89,7 @@ final c = MethodChannel('x');
     });
 
     test('sync may import the main database', () {
-      expect(
-        _rules({'core/sync/sync_engine.dart': "import '../database/app_database.dart';"}),
-        isEmpty,
-      );
+      expect(_rules({'core/sync/sync_engine.dart': "import '../database/app_database.dart';"}), isEmpty);
     });
   });
 
@@ -116,9 +107,6 @@ final c = MethodChannel('x');
   });
 
   test('generated files are skipped', () {
-    expect(
-      _rules({'features/weight/domain/weight_entry.g.dart': "import 'package:drift/drift.dart';"}),
-      isEmpty,
-    );
+    expect(_rules({'features/weight/domain/weight_entry.g.dart': "import 'package:drift/drift.dart';"}), isEmpty);
   });
 }

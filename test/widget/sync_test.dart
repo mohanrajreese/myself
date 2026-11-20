@@ -32,9 +32,7 @@ void main() {
       await tester.scrollUntilVisible(
         f,
         200,
-        scrollable: find
-            .byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down)
-            .last,
+        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).last,
       );
     }
     await tester.ensureVisible(f.last);
@@ -82,9 +80,7 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('a returning user on a new phone gets their records back and skips onboarding', (
-    tester,
-  ) async {
+  testWidgets('a returning user on a new phone gets their records back and skips onboarding', (tester) async {
     final first = AppHarness(withSync: true);
     await first.completeOnboarding(
       draft: const SetupDraft(name: 'Asha Rao', weightText: '91.8'),

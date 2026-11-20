@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../core/notifications/notification_gateway.dart';
+import '../core/widgets/l10n.dart';
 import 'fitness_providers.dart';
+import 'money_labels.dart';
+import 'providers.dart';
 import 'private_providers.dart';
 import 'sync_controller.dart';
 import 'push_controller.dart';
@@ -44,6 +47,9 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
       syncSteps(ref);
       unawaited(ref.read(workoutRepositoryProvider).seedExercises().catchError((Object _) {}));
       unawaited(ref.read(privateRepositoryProvider).seedHabitTypes().catchError((Object _) {}));
+      unawaited(
+        ref.read(moneyRepositoryProvider).seedCategories(categoryNames(context.l10n)).catchError((Object _) {}),
+      );
       refreshScreenTime(ref);
       unawaited(ref.read(syncControllerProvider.notifier).syncNow());
       unawaited(ref.read(pushControllerProvider.notifier).start());

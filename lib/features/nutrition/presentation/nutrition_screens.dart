@@ -40,10 +40,7 @@ class DiaryScreen extends ConsumerWidget {
     final eaten = ref.watch(nutritionOnProvider(day));
     final targets = ref.watch(currentNutritionGoalsProvider).value;
     final kcalTarget = targets?.energyKcalMilli;
-    final left = remainingKcalMilli(
-      targetKcalMilli: kcalTarget,
-      eatenKcalMilli: eaten.energyKcalMilli,
-    );
+    final left = remainingKcalMilli(targetKcalMilli: kcalTarget, eatenKcalMilli: eaten.energyKcalMilli);
     void go(LocalDate d) => ref.read(diaryDayProvider.notifier).set(d == today ? null : d);
 
     Future<void> pickDay() async {
@@ -87,9 +84,7 @@ class DiaryScreen extends ConsumerWidget {
                   child: TextButton(
                     onPressed: pickDay,
                     child: Text(
-                      day == today
-                          ? '${l10n.today}, ${context.dayLabel(day)}'
-                          : context.dayLabel(day, today: today),
+                      day == today ? '${l10n.today}, ${context.dayLabel(day)}' : context.dayLabel(day, today: today),
                       semanticsLabel: '${l10n.chooseDay}: ${context.dayLabel(day, today: today)}',
                     ),
                   ),
@@ -128,15 +123,11 @@ class DiaryScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                left == null
-                                    ? l10n.caloriesEaten
-                                    : (left >= 0 ? l10n.caloriesLeft : l10n.caloriesOver),
+                                left == null ? l10n.caloriesEaten : (left >= 0 ? l10n.caloriesLeft : l10n.caloriesOver),
                                 style: context.text.label,
                               ),
                               Text(
-                                context.number(
-                                  ((left ?? eaten.energyKcalMilli).abs() + 500) ~/ 1000,
-                                ),
+                                context.number(((left ?? eaten.energyKcalMilli).abs() + 500) ~/ 1000),
                                 style: context.text.displayMetric,
                               ),
                               Text(
@@ -153,10 +144,7 @@ class DiaryScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: FbSpace.md),
                         FbProgressBar(
-                          fraction: progressFraction(
-                            eaten: eaten.energyKcalMilli,
-                            target: kcalTarget,
-                          ),
+                          fraction: progressFraction(eaten: eaten.energyKcalMilli, target: kcalTarget),
                         ),
                         const SizedBox(height: FbSpace.md),
                         Row(
@@ -172,10 +160,7 @@ class DiaryScreen extends ConsumerWidget {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        context.grams(mg),
-                                        style: context.text.bodyStrong.copyWith(fontSize: 15),
-                                      ),
+                                      Text(context.grams(mg), style: context.text.bodyStrong.copyWith(fontSize: 15)),
                                       Text(label, style: context.text.caption),
                                     ],
                                   ),
@@ -195,18 +180,9 @@ class DiaryScreen extends ConsumerWidget {
             spacing: FbSpace.sm,
             runSpacing: FbSpace.sm,
             children: [
-              OutlinedButton(
-                onPressed: () => context.push(Routes.water),
-                child: Text(l10n.waterTitle),
-              ),
-              OutlinedButton(
-                onPressed: () => context.push(Routes.foods),
-                child: Text(l10n.myFoods),
-              ),
-              OutlinedButton(
-                onPressed: () => context.push(Routes.savedMeals),
-                child: Text(l10n.savedMeals),
-              ),
+              OutlinedButton(onPressed: () => context.push(Routes.water), child: Text(l10n.waterTitle)),
+              OutlinedButton(onPressed: () => context.push(Routes.foods), child: Text(l10n.myFoods)),
+              OutlinedButton(onPressed: () => context.push(Routes.savedMeals), child: Text(l10n.savedMeals)),
             ],
           ),
           const SizedBox(height: FbSpace.lg),
@@ -255,10 +231,7 @@ class _MealCard extends StatelessWidget {
                             text: name,
                             style: context.text.bodyStrong,
                             children: [
-                              TextSpan(
-                                text: '  ${context.time(meal.occurredAt)}',
-                                style: context.text.caption,
-                              ),
+                              TextSpan(text: '  ${context.time(meal.occurredAt)}', style: context.text.caption),
                             ],
                           ),
                           semanticsLabel: l10n.mealCardLabel(
@@ -290,19 +263,11 @@ class _MealCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              [
-                                item.foodName,
-                                if (item.junk != null) junkLabel(l10n, item.junk),
-                              ].join(' · '),
-                              style: context.text.bodySmall.copyWith(
-                                color: context.colors.textPrimary,
-                              ),
+                              [item.foodName, if (item.junk != null) junkLabel(l10n, item.junk)].join(' · '),
+                              style: context.text.bodySmall.copyWith(color: context.colors.textPrimary),
                             ),
                           ),
-                          Text(
-                            context.kcal(item.values.energyKcalMilli),
-                            style: context.text.bodySmall,
-                          ),
+                          Text(context.kcal(item.values.energyKcalMilli), style: context.text.bodySmall),
                         ],
                       ),
                     ),
@@ -375,9 +340,7 @@ class SavedMealsScreen extends ConsumerWidget {
                             icon: const Icon(Icons.delete_outline_rounded),
                           ),
                           FilledButton(
-                            style: FilledButton.styleFrom(
-                              minimumSize: const Size(64, FbSize.touch),
-                            ),
+                            style: FilledButton.styleFrom(minimumSize: const Size(64, FbSize.touch)),
                             onPressed: () => log(m),
                             child: Text(l10n.logSavedMeal),
                           ),
@@ -411,19 +374,10 @@ class NutritionSummaryScreen extends ConsumerWidget {
     final average = dailyAverage(totals);
     final byMeal = <MealCategory, int>{};
     for (final m in meals) {
-      byMeal.update(
-        m.category,
-        (v) => v + m.total.energyKcalMilli,
-        ifAbsent: () => m.total.energyKcalMilli,
-      );
+      byMeal.update(m.category, (v) => v + m.total.energyKcalMilli, ifAbsent: () => m.total.energyKcalMilli);
     }
     final shares = caloriesByMeal(byMeal);
-    final palette = [
-      context.colors.primary,
-      context.colors.secondary,
-      context.colors.warning,
-      context.colors.success,
-    ];
+    final palette = [context.colors.primary, context.colors.secondary, context.colors.warning, context.colors.success];
 
     Widget targetRow(String label, int value, int? target, String Function(int) fmt) => Padding(
       padding: const EdgeInsets.only(bottom: FbSpace.md),
@@ -437,9 +391,7 @@ class NutritionSummaryScreen extends ConsumerWidget {
                 const SizedBox(width: FbSpace.sm),
                 Flexible(
                   child: Text(
-                    target == null
-                        ? l10n.noTargetSuffix(fmt(value))
-                        : l10n.ofTargetValue(fmt(value), fmt(target)),
+                    target == null ? l10n.noTargetSuffix(fmt(value)) : l10n.ofTargetValue(fmt(value), fmt(target)),
                     style: context.text.bodySmall,
                     textAlign: TextAlign.end,
                   ),
@@ -468,12 +420,7 @@ class NutritionSummaryScreen extends ConsumerWidget {
               children: [
                 FbSectionTitle(l10n.todayVsTargets),
                 const SizedBox(height: FbSpace.md),
-                targetRow(
-                  l10n.energyLabel,
-                  eaten.energyKcalMilli,
-                  targets?.energyKcalMilli,
-                  context.kcal,
-                ),
+                targetRow(l10n.energyLabel, eaten.energyKcalMilli, targets?.energyKcalMilli, context.kcal),
                 targetRow(l10n.proteinLabel, eaten.proteinMg, targets?.proteinMg, context.grams),
                 targetRow(l10n.fibreLabel, eaten.fibreMg, targets?.fibreMg, context.grams),
                 targetRow(l10n.carbsLabel, eaten.carbsMg, targets?.carbsMg, context.grams),
@@ -492,9 +439,7 @@ class NutritionSummaryScreen extends ConsumerWidget {
                   FbEmptyHint(l10n.mealsEmpty)
                 else ...[
                   Semantics(
-                    label: shares
-                        .map((s) => l10n.mealShareSummary(mealName(l10n, s.category), s.percent))
-                        .join(', '),
+                    label: shares.map((s) => l10n.mealShareSummary(mealName(l10n, s.category), s.percent)).join(', '),
                     image: true,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(FbRadius.input),
@@ -521,16 +466,10 @@ class NutritionSummaryScreen extends ConsumerWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            SizedBox.square(
-                              dimension: 10,
-                              child: ColoredBox(color: palette[i % palette.length]),
-                            ),
+                            SizedBox.square(dimension: 10, child: ColoredBox(color: palette[i % palette.length])),
                             const SizedBox(width: 6),
                             Text(
-                              l10n.mealShare(
-                                mealName(l10n, shares[i].category),
-                                context.kcal(shares[i].kcalMilli),
-                              ),
+                              l10n.mealShare(mealName(l10n, shares[i].category), context.kcal(shares[i].kcalMilli)),
                               style: context.text.caption,
                             ),
                           ],
@@ -551,10 +490,7 @@ class NutritionSummaryScreen extends ConsumerWidget {
                 Row(
                   children: [
                     for (final (label, text) in [
-                      (
-                        l10n.unitKcal,
-                        context.number((average.values.energyKcalMilli + 500) ~/ 1000),
-                      ),
+                      (l10n.unitKcal, context.number((average.values.energyKcalMilli + 500) ~/ 1000)),
                       (l10n.macroProtein, context.grams(average.values.proteinMg)),
                       (l10n.macroCarbs, context.grams(average.values.carbsMg)),
                       (l10n.macroFat, context.grams(average.values.fatMg)),
@@ -605,15 +541,10 @@ class NutritionSummaryScreen extends ConsumerWidget {
                             Expanded(
                               child: Text(
                                 '${j.foodName} · ${junkLabel(l10n, j.category)} · ${context.dayLabel(j.date, today: today)}',
-                                style: context.text.bodySmall.copyWith(
-                                  color: context.colors.textPrimary,
-                                ),
+                                style: context.text.bodySmall.copyWith(color: context.colors.textPrimary),
                               ),
                             ),
-                            Text(
-                              context.kcal(j.values.energyKcalMilli),
-                              style: context.text.bodySmall,
-                            ),
+                            Text(context.kcal(j.values.energyKcalMilli), style: context.text.bodySmall),
                           ],
                         ),
                       ),

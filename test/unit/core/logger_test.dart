@@ -5,11 +5,7 @@ void main() {
   test('writes the event code and safe fields', () {
     final lines = <String>[];
     final logger = AppLogger(sink: lines.add);
-    logger.event('sync_push_ok', {
-      'rows': 3,
-      'retry': false,
-      'took': const Duration(milliseconds: 120),
-    });
+    logger.event('sync_push_ok', {'rows': 3, 'retry': false, 'took': const Duration(milliseconds: 120)});
     expect(lines.single, 'sync_push_ok rows=3 retry=false took=120ms');
   });
 

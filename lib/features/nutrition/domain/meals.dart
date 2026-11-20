@@ -108,13 +108,7 @@ final class MealDraft {
 
 @immutable
 final class SavedMeal {
-  const SavedMeal({
-    required this.id,
-    required this.name,
-    required this.items,
-    this.category,
-    this.useCount = 0,
-  });
+  const SavedMeal({required this.id, required this.name, required this.items, this.category, this.useCount = 0});
   final String id;
   final String name;
   final MealCategory? category;
@@ -124,13 +118,7 @@ final class SavedMeal {
 
 /// A junk-food item as it appears in history: the same diary item, listed by
 /// category. Its calories are already part of the day's totals.
-typedef JunkEntry = ({
-  String foodName,
-  JunkCategory category,
-  NutritionValues values,
-  LocalDate date,
-  DateTime at,
-});
+typedef JunkEntry = ({String foodName, JunkCategory category, NutritionValues values, LocalDate date, DateTime at});
 
 abstract interface class MealRepository {
   Future<Result<Meal>> add(MealDraft draft);

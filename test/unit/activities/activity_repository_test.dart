@@ -32,31 +32,21 @@ void main() {
   setUp(() {
     db = memoryDatabase();
     time = MutableClock(DateTime(2026, 11, 16, 9));
-    repo = DriftActivityRepository(
-      db,
-      clock: time.clock,
-      ids: SequentialIds(),
-      timeZone: const FixedTimeZone(),
-    );
+    repo = DriftActivityRepository(db, clock: time.clock, ids: SequentialIds(), timeZone: const FixedTimeZone());
   });
   tearDown(() => db.close());
 
-  Future<List<String>> outbox() async => [
-    for (final r in await db.select(db.syncOutbox).get()) r.entityTable,
-  ];
+  Future<List<String>> outbox() async => [for (final r in await db.select(db.syncOutbox).get()) r.entityTable];
 
-  test(
-    'creating saves the activity with its schedule starting today and queues it for sync',
-    () async {
-      final a = (await repo.create(draft())).valueOrNull!;
-      expect(a.id, isNotEmpty);
-      expect(a.scheduleHistory.single.from, today);
-      final listed = await repo.watchAll().first;
-      expect(listed.single.name, 'Walking');
-      expect(listed.single.schedule, Daily(times: [hm(8, 0)]));
-      expect(await outbox(), ['activity_definitions']);
-    },
-  );
+  test('creating saves the activity with its schedule starting today and queues it for sync', () async {
+    final a = (await repo.create(draft())).valueOrNull!;
+    expect(a.id, isNotEmpty);
+    expect(a.scheduleHistory.single.from, today);
+    final listed = await repo.watchAll().first;
+    expect(listed.single.name, 'Walking');
+    expect(listed.single.schedule, Daily(times: [hm(8, 0)]));
+    expect(await outbox(), ['activity_definitions']);
+  });
 
   test('an invalid activity is refused and nothing is stored', () async {
     final result = await repo.create(draft(name: ' '));
@@ -105,18 +95,10 @@ void main() {
 
   test('logs are stored per day with their values, several per day', () async {
     final a = (await repo.create(draft(type: TrackingType.count))).valueOrNull!;
+    await repo.addLog(a.id, LogDraft(status: ActivityLogStatus.completed, occurredAt: time.now, countValue: 1));
     await repo.addLog(
       a.id,
-      LogDraft(status: ActivityLogStatus.completed, occurredAt: time.now, countValue: 1),
-    );
-    await repo.addLog(
-      a.id,
-      LogDraft(
-        status: ActivityLogStatus.completed,
-        occurredAt: time.now,
-        countValue: 1,
-        scheduledSlot: hm(8, 0),
-      ),
+      LogDraft(status: ActivityLogStatus.completed, occurredAt: time.now, countValue: 1, scheduledSlot: hm(8, 0)),
     );
     final logs = await repo.watchLogsBetween(today, today).first;
     expect(logs, hasLength(2));
@@ -129,10 +111,7 @@ void main() {
     final a = (await repo.create(draft())).valueOrNull!;
     final future = await repo.addLog(
       a.id,
-      LogDraft(
-        status: ActivityLogStatus.completed,
-        occurredAt: time.now.add(const Duration(hours: 2)),
-      ),
+      LogDraft(status: ActivityLogStatus.completed, occurredAt: time.now.add(const Duration(hours: 2))),
     );
     expect(future.failureOrNull, isA<ValidationFailure>());
     final negative = await repo.addLog(
@@ -148,10 +127,7 @@ void main() {
       a.id,
       LogDraft(status: ActivityLogStatus.completed, occurredAt: time.now, durationS: 600),
     )).valueOrNull!;
-    await repo.updateLog(
-      log.id,
-      LogDraft(status: ActivityLogStatus.completed, occurredAt: time.now, durationS: 1200),
-    );
+    await repo.updateLog(log.id, LogDraft(status: ActivityLogStatus.completed, occurredAt: time.now, durationS: 1200));
     expect((await repo.watchLogsFor(a.id).first).single.durationS, 1200);
     await repo.deleteLog(log.id);
     expect(await repo.watchLogsFor(a.id).first, isEmpty);

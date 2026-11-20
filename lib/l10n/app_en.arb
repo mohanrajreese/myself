@@ -2971,5 +2971,40 @@
         "type": "String"
       }
     }
-  }
+  },
+  "moneyMethodCash": "Cash",
+  "moneyMethodUpi": "UPI",
+  "moneyMethodDebitCard": "Debit card",
+  "moneyMethodCreditCard": "Credit card",
+  "moneyMethodNetBanking": "Net banking",
+  "moneyMethodOther": "Other",
+  "moneyPaidWith": "Paid with",
+  "mealCost": "Cost",
+  "mealCostHelp": "Saving records a Food expense linked to this meal. Clearing the cost removes it.",
+  "errAmountInvalid": "Enter an amount in rupees, with up to 2 decimals.",
+  "deleteMealLinkedMessage": "It has a linked expense of {amount}.",
+  "@deleteMealLinkedMessage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteMealAndExpense": "Delete meal and expense",
+  "deleteMealKeepExpense": "Delete meal, keep expense",
+  "selected": "Selected",
+  "moneyCatFood": "Food",
+  "moneyCatGroceries": "Groceries",
+  "moneyCatTransport": "Transport",
+  "moneyCatFuel": "Fuel",
+  "moneyCatBills": "Bills and utilities",
+  "moneyCatRent": "Rent",
+  "moneyCatShopping": "Shopping",
+  "moneyCatHealth": "Health",
+  "moneyCatEntertainment": "Entertainment",
+  "moneyCatEducation": "Education",
+  "moneyCatTravel": "Travel",
+  "moneyCatGifts": "Gifts",
+  "moneyCatEmi": "EMI and loan repayments",
+  "moneyCatOther": "Other"
 }

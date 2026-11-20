@@ -38,13 +38,9 @@ const signedInSession = SessionState(account: testAccount, signedIn: true);
 /// Everything a widget test needs to run the real app against an in-memory
 /// database, a fake sign-in and a clock the test controls.
 class AppHarness {
-  AppHarness({
-    DateTime? now,
-    FakeAuthRepository? auth,
-    bool withSync = false,
-    bool withPush = false,
-  }) : time = MutableClock(now ?? DateTime(2026, 11, 16, 9)),
-       auth = auth ?? FakeAuthRepository() {
+  AppHarness({DateTime? now, FakeAuthRepository? auth, bool withSync = false, bool withPush = false})
+    : time = MutableClock(now ?? DateTime(2026, 11, 16, 9)),
+      auth = auth ?? FakeAuthRepository() {
     if (withSync) remote = MemorySyncRemote(clock: () => time.now);
     push.isAvailable = withPush;
   }
@@ -150,9 +146,7 @@ class AppHarness {
   }
 
   /// Saves a finished onboarding for [testAccount], as the app would.
-  Future<void> completeOnboarding({
-    SetupDraft draft = const SetupDraft(name: 'Asha Rao', weightText: '91.8'),
-  }) async {
+  Future<void> completeOnboarding({SetupDraft draft = const SetupDraft(name: 'Asha Rao', weightText: '91.8')}) async {
     final container = ProviderContainer(overrides: overrides(session: signedInSession));
     await container.read(setupControllerProvider.future);
     final controller = container.read(setupControllerProvider.notifier)

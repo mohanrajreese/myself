@@ -38,9 +38,7 @@ void main() {
       await tester.scrollUntilVisible(
         f,
         200,
-        scrollable: find
-            .byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down)
-            .last,
+        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).last,
       );
     }
     await tester.ensureVisible(f.last);
@@ -62,18 +60,9 @@ void main() {
 
   testWidgets('Habits "More" lists the lifestyle areas', (tester) async {
     await start(tester);
-    await tap(
-      tester,
-      find.descendant(of: find.byType(NavigationBar), matching: find.text('Habits')),
-    );
+    await tap(tester, find.descendant(of: find.byType(NavigationBar), matching: find.text('Habits')));
     await tapText(tester, 'More');
-    for (final t in [
-      'Hygiene',
-      'Medication and supplements',
-      'Posture and recovery',
-      'Screen time',
-      'Private space',
-    ]) {
+    for (final t in ['Hygiene', 'Medication and supplements', 'Posture and recovery', 'Screen time', 'Private space']) {
       expect(find.text(t), findsOneWidget);
     }
     await tapText(tester, 'Private space');
@@ -81,9 +70,7 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('a PIN opens the private space; lock asks again; wrong PIN is refused', (
-    tester,
-  ) async {
+  testWidgets('a PIN opens the private space; lock asks again; wrong PIN is refused', (tester) async {
     await start(tester);
     await setPin(tester, '2468');
     expect(app.secureWindow.secure, isTrue);
@@ -186,9 +173,7 @@ void main() {
   });
 
   testWidgets('screen time: usage shows totals and most used apps', (tester) async {
-    app.usage.today = const [
-      (packageName: 'com.example.reader', label: 'Reader', foregroundMs: 45 * 60000),
-    ];
+    app.usage.today = const [(packageName: 'com.example.reader', label: 'Reader', foregroundMs: 45 * 60000)];
     await start(tester);
     await go(tester, Routes.screenTime);
     await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
@@ -246,9 +231,7 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets("the builder's Private switch stores the activity in the private space", (
-    tester,
-  ) async {
+  testWidgets("the builder's Private switch stores the activity in the private space", (tester) async {
     await start(tester);
     await go(tester, Routes.newActivity);
     await tester.enterText(find.byType(EditableText).first, 'Journal');

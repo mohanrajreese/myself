@@ -58,12 +58,7 @@ void main() {
       final a = activity(
         rule: Weekdays(weekdays: {1}, times: [hm(7, 0)]),
       );
-      final day = ActivityDay.of(
-        a,
-        mon.addDays(1),
-        const [],
-        now: (date: mon.addDays(5), minute: 0),
-      );
+      final day = ActivityDay.of(a, mon.addDays(1), const [], now: (date: mon.addDays(5), minute: 0));
       expect(day.scheduled, isFalse);
       expect(day.slots, isEmpty);
       expect(day.summary, DayState.notScheduled);
@@ -89,12 +84,7 @@ void main() {
 
     test('logs answer their own slot first, then the earliest open slot', () {
       final a = activity(rule: Daily(times: [hm(7, 0), hm(13, 0), hm(19, 0)]));
-      final day = ActivityDay.of(
-        a,
-        mon,
-        [log(slot: hm(13, 0)), log()],
-        now: (date: mon, minute: hm(20, 0)),
-      );
+      final day = ActivityDay.of(a, mon, [log(slot: hm(13, 0)), log()], now: (date: mon, minute: hm(20, 0)));
       expect(day.slots.map((s) => s.state), [SlotState.done, SlotState.done, SlotState.missed]);
       expect(day.doneCount, 2);
     });
@@ -128,23 +118,13 @@ void main() {
       var day = ActivityDay.of(a, mon, [log(count: 1)], now: (date: mon, minute: hm(6, 0)));
       expect(day.slots.single.state, SlotState.due);
       expect(day.slots.single.progressMilli, 1000);
-      day = ActivityDay.of(
-        a,
-        mon,
-        [log(count: 1), log(count: 1)],
-        now: (date: mon, minute: hm(6, 0)),
-      );
+      day = ActivityDay.of(a, mon, [log(count: 1), log(count: 1)], now: (date: mon, minute: hm(6, 0)));
       expect(day.slots.single.state, SlotState.done);
     });
 
     test('a duration below target is partial and reads as not logged once the time passes', () {
       final a = activity(type: TrackingType.duration, targetMilli: 1800 * 1000);
-      final day = ActivityDay.of(
-        a,
-        mon,
-        [log(durationS: 600)],
-        now: (date: mon, minute: hm(23, 0)),
-      );
+      final day = ActivityDay.of(a, mon, [log(durationS: 600)], now: (date: mon, minute: hm(23, 0)));
       expect(day.slots.single.state, SlotState.partial);
       expect(day.slots.single.progressMilli, 600000);
     });
@@ -192,15 +172,9 @@ void main() {
       expect(a.ruleOn(mon.addDays(5)), weekends);
       expect(a.ruleOn(mon.addDays(-20)), isNull);
       // Monday was scheduled under the old rule.
-      expect(
-        ActivityDay.of(a, mon, const [], now: (date: mon.addDays(6), minute: 0)).scheduled,
-        isTrue,
-      );
+      expect(ActivityDay.of(a, mon, const [], now: (date: mon.addDays(6), minute: 0)).scheduled, isTrue);
       // Saturday before the change: not scheduled.
-      expect(
-        ActivityDay.of(a, mon.addDays(-2), const [], now: (date: mon, minute: 0)).scheduled,
-        isFalse,
-      );
+      expect(ActivityDay.of(a, mon.addDays(-2), const [], now: (date: mon, minute: 0)).scheduled, isFalse);
     });
 
     test('rescheduling from a day keeps earlier rules and replaces same-day ones', () {
@@ -223,10 +197,7 @@ void main() {
 
   group('tracking type changes', () {
     test('any change is allowed with no history', () {
-      expect(
-        canChangeTrackingType(TrackingType.boolean, TrackingType.checklist, hasLogs: false),
-        isTrue,
-      );
+      expect(canChangeTrackingType(TrackingType.boolean, TrackingType.checklist, hasLogs: false), isTrue);
     });
 
     test('only changes that keep past logs meaningful are allowed with history', () {
@@ -247,10 +218,7 @@ void main() {
       expect(activity().problems, isEmpty);
       expect(activity().copyWith(name: '  ').problems, contains('name_required'));
       expect(activity(rule: Daily(times: const [])).problems, contains('times_empty'));
-      expect(
-        activity(type: TrackingType.count, targetMilli: 0).problems,
-        contains('target_out_of_range'),
-      );
+      expect(activity(type: TrackingType.count, targetMilli: 0).problems, contains('target_out_of_range'));
       expect(activity(type: TrackingType.checklist).problems, contains('checklist_empty'));
     });
   });

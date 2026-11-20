@@ -11,13 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/fakes.dart';
 
-const _dal = NutritionValues(
-  energyKcalMilli: 230000,
-  proteinMg: 12000,
-  carbsMg: 30000,
-  fatMg: 6000,
-  fibreMg: 8000,
-);
+const _dal = NutritionValues(energyKcalMilli: 230000, proteinMg: 12000, carbsMg: 30000, fatMg: 6000, fibreMg: 8000);
 
 FoodDraft draft(String name, {bool saved = false, JunkCategory? junk}) => FoodDraft(
   name: name,
@@ -34,37 +28,10 @@ String catalogueJson({int version = 1}) => jsonEncode({
   'source_code': 'usda',
   'version': version,
   'per': '100 g',
-  'columns': [
-    'source_id',
-    'name',
-    'category',
-    'energy_kcal_milli',
-    'protein_mg',
-    'carbs_mg',
-    'fat_mg',
-    'fibre_mg',
-  ],
+  'columns': ['source_id', 'name', 'category', 'energy_kcal_milli', 'protein_mg', 'carbs_mg', 'fat_mg', 'fibre_mg'],
   'foods': [
-    [
-      172421,
-      'Lentils, mature seeds, cooked, boiled, without salt',
-      'Legumes',
-      116000,
-      9020,
-      20130,
-      380,
-      7900,
-    ],
-    [
-      168878,
-      'Rice, white, long-grain, regular, enriched, cooked',
-      'Cereal Grains',
-      130000,
-      2690,
-      28170,
-      280,
-      400,
-    ],
+    [172421, 'Lentils, mature seeds, cooked, boiled, without salt', 'Legumes', 116000, 9020, 20130, 380, 7900],
+    [168878, 'Rice, white, long-grain, regular, enriched, cooked', 'Cereal Grains', 130000, 2690, 28170, 280, 400],
     [99, 'Dal (100% test)', 'Legumes', 1000, 0, 0, 0, 0],
   ],
 });
@@ -96,9 +63,7 @@ void main() {
       final json = File('assets/catalogue/usda_sr_legacy.json').readAsStringSync();
       final count = await importer.importIfNeeded(json);
       expect(count, greaterThan(7000));
-      final lentils = await (db.select(
-        db.localFoodCatalogue,
-      )..where((t) => t.id.equals('usda:172421'))).getSingle();
+      final lentils = await (db.select(db.localFoodCatalogue)..where((t) => t.id.equals('usda:172421'))).getSingle();
       expect(lentils.energyKcalMilli, 116000);
       expect(lentils.proteinMg, 9020);
       expect(lentils.servingLabel, '100 g');
@@ -107,13 +72,9 @@ void main() {
   });
 
   test('the bundled INDB asset imports as estimates and is searchable', () async {
-    final count = await importer.importIfNeeded(
-      File('assets/catalogue/indb.json').readAsStringSync(),
-    );
+    final count = await importer.importIfNeeded(File('assets/catalogue/indb.json').readAsStringSync());
     expect(count, 1014);
-    final idli = await (db.select(
-      db.localFoodCatalogue,
-    )..where((t) => t.id.equals('indb:ASC144'))).getSingle();
+    final idli = await (db.select(db.localFoodCatalogue)..where((t) => t.id.equals('indb:ASC144'))).getSingle();
     expect(idli.name, 'Idli');
     expect(idli.energyKcalMilli, 137535);
     expect(idli.isEstimate, isTrue);
@@ -124,9 +85,7 @@ void main() {
     expect(idli.hasConflict, isFalse);
 
     // A dish whose energy contradicts its macronutrients is kept, and flagged.
-    final soup = await (db.select(
-      db.localFoodCatalogue,
-    )..where((t) => t.id.equals('indb:ASC087'))).getSingle();
+    final soup = await (db.select(db.localFoodCatalogue)..where((t) => t.id.equals('indb:ASC087'))).getSingle();
     expect(soup.hasConflict, isTrue);
 
     final results = await foods.search('dal makhani');
@@ -138,14 +97,9 @@ void main() {
     await importer.importIfNeeded(File('assets/catalogue/usda_sr_legacy.json').readAsStringSync());
     await importer.importIfNeeded(File('assets/catalogue/indb.json').readAsStringSync());
     final bySource = await db
-        .customSelect(
-          'SELECT source, count(*) AS n FROM local_food_catalogue GROUP BY source ORDER BY source',
-        )
+        .customSelect('SELECT source, count(*) AS n FROM local_food_catalogue GROUP BY source ORDER BY source')
         .get();
-    expect(
-      {for (final r in bySource) r.read<String>('source'): r.read<int>('n')},
-      {'indb': 1014, 'usda': 7793},
-    );
+    expect({for (final r in bySource) r.read<String>('source'): r.read<int>('n')}, {'indb': 1014, 'usda': 7793});
     expect(await importer.importIfNeeded(File('assets/catalogue/indb.json').readAsStringSync()), 0);
     expect(await outboxEntries(db), isEmpty);
   });
@@ -169,13 +123,7 @@ void main() {
         servingLabel: '1',
         servingQtyMilli: 1000,
         servingUnit: 'g',
-        values: NutritionValues(
-          energyKcalMilli: -1,
-          proteinMg: 0,
-          carbsMg: 0,
-          fatMg: 0,
-          fibreMg: 0,
-        ),
+        values: NutritionValues(energyKcalMilli: -1, proteinMg: 0, carbsMg: 0, fatMg: 0, fibreMg: 0),
       );
       expect((await foods.create(negative)).failureOrNull?.code, 'out_of_range');
       expect(await db.select(db.foodItems).get(), isEmpty);
@@ -261,27 +209,15 @@ void main() {
 
     test('editing again changes the same copy; renaming keeps the original hidden', () async {
       final idli = await find('idli');
-      final first = (await foods.edit(
-        idli,
-        FoodDraft.from(idli).copyWith(name: 'Idli (mine)'),
-      )).valueOrNull!;
-      final second = (await foods.edit(
-        idli,
-        FoodDraft.from(idli).copyWith(name: 'Idli, home'),
-      )).valueOrNull!;
+      final first = (await foods.edit(idli, FoodDraft.from(idli).copyWith(name: 'Idli (mine)'))).valueOrNull!;
+      final second = (await foods.edit(idli, FoodDraft.from(idli).copyWith(name: 'Idli, home'))).valueOrNull!;
       expect(second.id, first.id);
-      expect(
-        (await foods.search('idli')).where((f) => f.source == FoodSources.indb && f.name == 'Idli'),
-        isEmpty,
-      );
+      expect((await foods.search('idli')).where((f) => f.source == FoodSources.indb && f.name == 'Idli'), isEmpty);
     });
 
     test('deleting your copy brings the original back', () async {
       final idli = (await foods.search('idli')).firstWhere((f) => f.name == 'Idli');
-      final copy = (await foods.edit(
-        idli,
-        FoodDraft.from(idli).copyWith(name: 'Idli, home'),
-      )).valueOrNull!;
+      final copy = (await foods.edit(idli, FoodDraft.from(idli).copyWith(name: 'Idli, home'))).valueOrNull!;
       await foods.delete(copy.id);
       expect((await foods.search('idli')).any((f) => f.id == 'indb:ASC144'), isTrue);
     });

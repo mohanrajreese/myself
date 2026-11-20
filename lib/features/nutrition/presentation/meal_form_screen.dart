@@ -7,9 +7,12 @@ import 'package:material_ui/material_ui.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../app/labels.dart';
+import '../../../app/meal_cost.dart';
+import '../../../app/money_labels.dart';
 import '../../../app/tracking_providers.dart';
 import '../../../core/platform/photo_picker.dart';
 import '../../../core/units/decimal_text.dart';
+import '../../../core/units/rupees.dart';
 import '../../../core/widgets/fb_card.dart';
 import '../../../core/widgets/fb_choice.dart';
 import '../../../core/widgets/fb_fields.dart';
@@ -20,6 +23,7 @@ import '../../../core/widgets/fb_states.dart';
 import '../../../core/widgets/l10n.dart';
 import '../../../core/widgets/tokens.dart';
 import '../../food_database/domain/food.dart';
+import '../../money/domain/money.dart';
 import '../application/meal_draft_item.dart';
 import '../domain/meals.dart';
 import '../domain/nutrition_math.dart';
@@ -44,6 +48,9 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
   Uint8List? _newPhoto;
   Uint8List? _existingPhoto;
   bool _removePhoto = false;
+  String _cost = '';
+  String? _costError;
+  PaymentMethod _method = PaymentMethod.upi;
   bool _dirty = false;
   bool _busy = false;
   String? _error;
@@ -57,6 +64,15 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
     _items = [for (final i in meal?.items ?? const <MealItem>[]) DraftItem.fromMealItem(i)];
     _note = meal?.notes ?? '';
     _showNote = _note.isNotEmpty;
+    if (meal != null) {
+      ref.read(moneyRepositoryProvider).expenseForMeal(meal.id).then((e) {
+        if (!mounted || e == null || _dirty) return;
+        setState(() {
+          _cost = rupeesInput(e.amountPaise);
+          _method = e.method;
+        });
+      });
+    }
     if (meal != null && meal.hasPhoto) {
       ref.read(mealPhotoStoreProvider).read(meal.id).then((bytes) {
         if (mounted && bytes != null) setState(() => _existingPhoto = Uint8List.fromList(bytes));
@@ -77,10 +93,7 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
     if (portions.isEmpty) return;
     final item = await showFbSheet<DraftItem>(
       context,
-      QuantitySheet(
-        item: DraftItem.fromFood(food, portions.first, portions.first.defaultQtyMilli),
-        isNew: true,
-      ),
+      QuantitySheet(item: DraftItem.fromFood(food, portions.first, portions.first.defaultQtyMilli), isNew: true),
     );
     if (item != null) _change(() => _items = [..._items, item]);
   }
@@ -149,6 +162,11 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
       setState(() => _error = l10n.errAddItem);
       return;
     }
+    final costPaise = _cost.trim().isEmpty ? null : parseRupees(_cost.replaceAll(',', '.'));
+    if (_cost.trim().isNotEmpty && (costPaise == null || costPaise <= 0)) {
+      setState(() => _costError = l10n.errAmountInvalid);
+      return;
+    }
     setState(() => _busy = true);
     final foods = ref.read(foodRepositoryProvider);
     final meals = ref.read(mealRepositoryProvider);
@@ -176,6 +194,14 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
     for (final item in items) {
       if (item.foodItemId != null) await foods.markUsed(item.foodItemId!, now);
     }
+    final costSaved = await syncMealCost(
+      ref.read(moneyRepositoryProvider),
+      mealId: mealId,
+      costPaise: costPaise,
+      method: _method,
+      at: _at,
+    );
+    if (!costSaved.isOk) return _failed(null);
     final photos = ref.read(mealPhotoStoreProvider);
     if (_newPhoto != null) {
       await photos.attach(mealId, _newPhoto!);
@@ -210,17 +236,42 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
 
   Future<void> _delete() async {
     final l10n = context.l10n;
-    final agreed = await showFbConfirm(
-      context,
-      title: l10n.deleteMealTitle,
-      message: l10n.deleteEntryMessage,
-      confirmLabel: l10n.delete,
-      cancelLabel: l10n.cancel,
-      destructive: true,
-    );
-    if (!agreed || !mounted) return;
+    final money = ref.read(moneyRepositoryProvider);
+    final linked = await money.expenseForMeal(widget.existing!.id);
+    if (!mounted) return;
+    bool? deleteExpense;
+    if (linked == null) {
+      final agreed = await showFbConfirm(
+        context,
+        title: l10n.deleteMealTitle,
+        message: l10n.deleteEntryMessage,
+        confirmLabel: l10n.delete,
+        cancelLabel: l10n.cancel,
+        destructive: true,
+      );
+      if (!agreed || !mounted) return;
+    } else {
+      deleteExpense = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(l10n.deleteMealTitle),
+          content: Text(l10n.deleteMealLinkedMessage(formatRupees(linked.amountPaise))),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.cancel)),
+            TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.deleteMealKeepExpense)),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(foregroundColor: context.colors.error),
+              child: Text(l10n.deleteMealAndExpense),
+            ),
+          ],
+        ),
+      );
+      if (deleteExpense == null || !mounted) return;
+    }
     await ref.read(mealPhotoStoreProvider).remove(widget.existing!.id);
     await ref.read(mealRepositoryProvider).delete(widget.existing!.id);
+    if (linked != null) await afterMealDeleted(money, linked, deleteExpense: deleteExpense!);
     if (!mounted) return;
     showFbSnackBar(context, l10n.deleted);
     _dirty = false;
@@ -266,16 +317,8 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
                 icon: const Icon(Icons.bookmarks_outlined),
               )
             else ...[
-              IconButton(
-                tooltip: l10n.duplicateMeal,
-                onPressed: _duplicate,
-                icon: const Icon(Icons.copy_rounded),
-              ),
-              IconButton(
-                tooltip: l10n.delete,
-                onPressed: _delete,
-                icon: const Icon(Icons.delete_outline_rounded),
-              ),
+              IconButton(tooltip: l10n.duplicateMeal, onPressed: _duplicate, icon: const Icon(Icons.copy_rounded)),
+              IconButton(tooltip: l10n.delete, onPressed: _delete, icon: const Icon(Icons.delete_outline_rounded)),
             ],
           ],
         ),
@@ -284,12 +327,7 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
             children: [
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(
-                    FbSpace.lg,
-                    FbSpace.sm,
-                    FbSpace.lg,
-                    FbSpace.xxl,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(FbSpace.lg, FbSpace.sm, FbSpace.lg, FbSpace.xxl),
                   children: [
                     FbFieldPair(
                       first: Column(
@@ -353,12 +391,7 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
                     if (photo != null) ...[
                       ClipRRect(
                         borderRadius: BorderRadius.circular(FbRadius.card),
-                        child: Image.memory(
-                          photo,
-                          height: 160,
-                          fit: BoxFit.cover,
-                          semanticLabel: l10n.mealPhoto,
-                        ),
+                        child: Image.memory(photo, height: 160, fit: BoxFit.cover, semanticLabel: l10n.mealPhoto),
                       ),
                       const SizedBox(height: FbSpace.sm),
                     ],
@@ -383,6 +416,33 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
                         onChanged: (v) => _change(() => _note = v),
                       ),
                     ],
+                    const SizedBox(height: FbSpace.lg),
+                    FbFieldPair(
+                      first: FbTextField(
+                        label: l10n.mealCost,
+                        value: _cost,
+                        optional: true,
+                        optionalLabel: l10n.optional,
+                        suffix: '₹',
+                        errorText: _costError,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        inputFormatters: FbTextField.decimal,
+                        onChanged: (v) => _change(() {
+                          _cost = v;
+                          _costError = null;
+                        }),
+                      ),
+                      second: FbPickerField(
+                        label: l10n.moneyPaidWith,
+                        valueText: paymentMethodLabel(l10n, _method),
+                        onTap: () async {
+                          final m = await pickPaymentMethod(context, _method);
+                          if (m != null) _change(() => _method = m);
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: FbSpace.xs),
+                    Text(l10n.mealCostHelp, style: context.text.caption),
                     const SizedBox(height: FbSpace.md),
                     CheckboxListTile(
                       value: _keepAsSaved,
@@ -407,10 +467,7 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (_error != null) ...[
-                      FbNotice(_error!, isError: true),
-                      const SizedBox(height: FbSpace.md),
-                    ],
+                    if (_error != null) ...[FbNotice(_error!, isError: true), const SizedBox(height: FbSpace.md)],
                     FbPrimaryButton(label: l10n.saveMeal, onPressed: _save, busy: _busy),
                   ],
                 ),
@@ -424,12 +481,7 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
 }
 
 class _ItemRow extends StatelessWidget {
-  const _ItemRow({
-    required this.item,
-    required this.onTap,
-    required this.onLess,
-    required this.onMore,
-  });
+  const _ItemRow({required this.item, required this.onTap, required this.onLess, required this.onMore});
   final DraftItem item;
   final VoidCallback onTap;
   final VoidCallback onLess;
@@ -463,16 +515,8 @@ class _ItemRow extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(
-              tooltip: l10n.lessOf(item.name),
-              onPressed: onLess,
-              icon: const Icon(Icons.remove_rounded),
-            ),
-            IconButton(
-              tooltip: l10n.moreOf(item.name),
-              onPressed: onMore,
-              icon: const Icon(Icons.add_rounded),
-            ),
+            IconButton(tooltip: l10n.lessOf(item.name), onPressed: onLess, icon: const Icon(Icons.remove_rounded)),
+            IconButton(tooltip: l10n.moreOf(item.name), onPressed: onMore, icon: const Icon(Icons.add_rounded)),
           ],
         ),
       ),
@@ -568,10 +612,7 @@ class _QuantitySheetState extends State<QuantitySheet> {
             ),
       children: [
         if (food != null && food.hasConflict) ...[
-          FbNotice(
-            l10n.conflictWarning(context.kcal(4 * v.proteinMg + 4 * v.carbsMg + 9 * v.fatMg)),
-            isError: true,
-          ),
+          FbNotice(l10n.conflictWarning(context.kcal(4 * v.proteinMg + 4 * v.carbsMg + 9 * v.fatMg)), isError: true),
           const SizedBox(height: FbSpace.md),
         ],
         if (_item.isEstimate) ...[
@@ -586,11 +627,7 @@ class _QuantitySheetState extends State<QuantitySheet> {
             runSpacing: FbSpace.sm,
             children: [
               for (final p in _item.portions)
-                FbToggleChip(
-                  label: p.unit,
-                  selected: p.unit == _item.portion.unit,
-                  onTap: () => _setPortion(p),
-                ),
+                FbToggleChip(label: p.unit, selected: p.unit == _item.portion.unit, onTap: () => _setPortion(p)),
             ],
           ),
           const SizedBox(height: FbSpace.lg),

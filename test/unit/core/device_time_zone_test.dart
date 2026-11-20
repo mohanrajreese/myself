@@ -13,17 +13,11 @@ class _Api implements SystemInfoApi {
 
 void main() {
   test('returns the platform timezone id', () async {
-    expect(
-      await DeviceTimeZone(_Api(() async => 'Asia/Kolkata')).currentTimeZoneId(),
-      'Asia/Kolkata',
-    );
+    expect(await DeviceTimeZone(_Api(() async => 'Asia/Kolkata')).currentTimeZoneId(), 'Asia/Kolkata');
   });
 
   test('falls back to UTC when the platform fails or answers nothing', () async {
     expect(await DeviceTimeZone(_Api(() async => '')).currentTimeZoneId(), 'UTC');
-    expect(
-      await DeviceTimeZone(_Api(() async => throw StateError('x'))).currentTimeZoneId(),
-      'UTC',
-    );
+    expect(await DeviceTimeZone(_Api(() async => throw StateError('x'))).currentTimeZoneId(), 'UTC');
   });
 }

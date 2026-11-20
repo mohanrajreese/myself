@@ -48,10 +48,7 @@ void main() {
 
   Future<int?> localWeight(String id) async =>
       (await db
-              .customSelect(
-                'SELECT weight_g FROM weight_logs WHERE id = ?',
-                variables: [Variable.withString(id)],
-              )
+              .customSelect('SELECT weight_g FROM weight_logs WHERE id = ?', variables: [Variable.withString(id)])
               .getSingleOrNull())
           ?.read<int>('weight_g');
 
@@ -161,10 +158,7 @@ void main() {
     };
 
     test('restores rows for a returning user without queueing them again', () async {
-      remote.seed('weight_logs', [
-        cloudWeight('w1', 92000, time.now),
-        cloudWeight('w2', 91700, time.now),
-      ]);
+      remote.seed('weight_logs', [cloudWeight('w1', 92000, time.now), cloudWeight('w2', 91700, time.now)]);
       final r = await engine.pull();
       expect(r.pulled, 2);
       expect(await localWeight('w1'), 92000);
@@ -173,23 +167,17 @@ void main() {
 
     test('a pending local change wins over the pulled row', () async {
       await addWeight('w1', 90000);
-      remote.seed('weight_logs', [
-        cloudWeight('w1', 95000, time.now.add(const Duration(minutes: 5))),
-      ]);
+      remote.seed('weight_logs', [cloudWeight('w1', 95000, time.now.add(const Duration(minutes: 5)))]);
       await engine.pull();
       expect(await localWeight('w1'), 90000);
     });
 
     test('a newer local row is kept; an older one is replaced', () async {
       await addWeight('w1', 90000, enqueue: false);
-      remote.seed('weight_logs', [
-        cloudWeight('w1', 95000, time.now.subtract(const Duration(hours: 1))),
-      ]);
+      remote.seed('weight_logs', [cloudWeight('w1', 95000, time.now.subtract(const Duration(hours: 1)))]);
       await engine.pull();
       expect(await localWeight('w1'), 90000);
-      remote.seed('weight_logs', [
-        cloudWeight('w1', 96000, time.now.add(const Duration(hours: 1))),
-      ]);
+      remote.seed('weight_logs', [cloudWeight('w1', 96000, time.now.add(const Duration(hours: 1)))]);
       await engine.pull();
       expect(await localWeight('w1'), 96000);
     });
@@ -197,8 +185,7 @@ void main() {
     test('pages through many rows and saves a cursor per table', () async {
       remote.pageSize = 3;
       remote.seed('weight_logs', [
-        for (var i = 0; i < 8; i++)
-          cloudWeight('w$i', 90000 + i, time.now.add(Duration(seconds: i))),
+        for (var i = 0; i < 8; i++) cloudWeight('w$i', 90000 + i, time.now.add(Duration(seconds: i))),
       ]);
       final r = await engine.pull();
       expect(r.pulled, 8);
@@ -216,9 +203,7 @@ void main() {
       final row = cloudWeight('w1', 92000, time.now)..['deleted_at'] = iso(time.now);
       remote.seed('weight_logs', [row]);
       await engine.pull();
-      final deleted = await db
-          .customSelect("SELECT deleted_at FROM weight_logs WHERE id = 'w1'")
-          .getSingle();
+      final deleted = await db.customSelect("SELECT deleted_at FROM weight_logs WHERE id = 'w1'").getSingle();
       expect(deleted.read<String?>('deleted_at'), isNotNull);
     });
   });
@@ -236,10 +221,7 @@ void main() {
       'supabase/migrations',
     ).listSync().whereType<File>().map((f) => f.readAsStringSync()).join('\n');
     final found = <String, Set<String>>{};
-    for (final m in RegExp(
-      r'create table public\.(\w+)\s*\((.*?)\n\);',
-      dotAll: true,
-    ).allMatches(sql)) {
+    for (final m in RegExp(r'create table public\.(\w+)\s*\((.*?)\n\);', dotAll: true).allMatches(sql)) {
       for (final line in m.group(2)!.split('\n')) {
         final c = RegExp(r'^\s*(\w+)\s+jsonb').firstMatch(line);
         if (c != null) (found[m.group(1)!] ??= {}).add(c.group(1)!);

@@ -46,3 +46,7 @@ int? parseRupees(String text) {
   if (paise > maxRupeePaise) return null;
   return paise;
 }
+
+/// Paise as text for an input field: 24000 → "240", 24050 → "240.50".
+String rupeesInput(int paise) =>
+    paise % 100 == 0 ? '${paise ~/ 100}' : '${paise ~/ 100}.${(paise % 100).toString().padLeft(2, '0')}';
