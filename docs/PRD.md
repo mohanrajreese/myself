@@ -1243,7 +1243,7 @@ Avoid claims that one activity caused another health outcome.
 
 ## 5.21 Money: expenses, budgets, debts and EMIs
 
-> Addendum v2.1, requested by the owner on 20 November 2026. **Status: proposed, awaiting owner approval.** Decisions: reached from a Home card (no new tab); synced like other ordinary records; Indian rupees only; no bill splitting.
+> Addendum v2.1, requested by the owner on 20 November 2026. **Status: approved by the owner on 20 November 2026.** Decisions: reached from a Home card (no new tab); synced like other ordinary records; Indian rupees only; no bill splitting.
 
 ### Placement
 - A **Money** card on Home shows this month's spending, the budget left, and the next EMI due. Tapping it opens the Money section (its own screens, not a bottom tab).
@@ -1352,7 +1352,7 @@ Create the following PostgreSQL tables:
 - sync_outbox (local implementation)
 - cloud_sync_metadata
 
-### Money (addendum v2.1, proposed)
+### Money (addendum v2.1)
 - finance_categories
 - expenses
 - budgets
@@ -1464,7 +1464,7 @@ The following must remain local-only by default:
 
 The following may be synchronized:
 
-- Money: expenses, budgets, debts, debt payments, categories (addendum v2.1, proposed). Receipt photos stay on the phone.
+- Money: expenses, budgets, debts, debt payments, categories (addendum v2.1). Receipt photos stay on the phone.
 - Profile.
 - Goals.
 - Weight.

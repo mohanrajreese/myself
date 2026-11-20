@@ -193,7 +193,7 @@ Screen tasks (F-07, F-08, F-09, F-12, F-13, F-14a, F-15) wait for design approva
 
 ---
 
-## Phase 8 — Money (PRD §5.21, addendum v2.1; proposed)
+## Phase 8 — Money (PRD §5.21, addendum v2.1)
 
 **Deliverable:** expenses, budgets, debts and EMI reminders with analysis, reached from a Home card.
 

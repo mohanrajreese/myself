@@ -108,7 +108,7 @@ Present in `AppDatabase` and in Supabase with the same columns, plus `user_id` a
 | `device_notification_tokens` | `fcm_token` (unique), `device_label`, `app_version`, `last_seen_at`, `revoked_at?` | Cloud-only in practice; the device keeps its own token in settings |
 | `cloud_sync_metadata` | `device_id`, `last_push_at`, `last_pull_at`, `schema_version`, `app_version` | One row per device. Used for sync status and backup-status pushes |
 
-### 2.8 Money (PRD §5.21, proposed)
+### 2.8 Money (PRD §5.21)
 
 | Table | Columns | Notes |
 |---|---|---|
@@ -172,7 +172,7 @@ SQL-first (§13.2). One file per logical step in `supabase/migrations/`, applied
 | 8 | `…_fitness.sql` | `step_logs`, `exercises`, `workout_sessions`, `workout_exercises`, `exercise_sets`, `workout_templates` | 4 |
 | 9 | `…_hygiene.sql` | `hygiene_logs` | 5 |
 | 10 | `…_devices_and_sync.sql` | `device_notification_tokens`, `cloud_sync_metadata` | 6 |
-| 11 | `…_money.sql` | `finance_categories`, `expenses`, `budgets`, `debts`, `debt_payments`; `reminders` kinds `emi`/`expense` and `debt_id` | 8 (proposed) |
+| 11 | `…_money.sql` | `finance_categories`, `expenses`, `budgets`, `debts`, `debt_payments`; `reminders` kinds `emi`/`expense` and `debt_id` | 8 |
 
 `supabase/seed.sql` holds only development fixtures for local testing. It never runs against the real project.
 
