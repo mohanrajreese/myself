@@ -33,10 +33,9 @@ const _forbiddenPermissions = {
 
 void main() {
   final manifest = File('android/app/src/main/AndroidManifest.xml').readAsStringSync();
-  final declared = RegExp(r'<uses-permission[^>]*android:name="([^"]+)"')
-      .allMatches(manifest)
-      .map((m) => m.group(1)!)
-      .toSet();
+  final declared = RegExp(
+    r'<uses-permission[^>]*android:name="([^"]+)"',
+  ).allMatches(manifest).map((m) => m.group(1)!).toSet();
 
   test('backups and device transfer are disabled', () {
     expect(manifest, contains('android:allowBackup="false"'));
@@ -57,8 +56,9 @@ void main() {
   test('cleartext traffic is disabled', () {
     expect(manifest, contains('android:usesCleartextTraffic="false"'));
     expect(manifest, contains('android:networkSecurityConfig="@xml/network_security_config"'));
-    final config = File('android/app/src/main/res/xml/network_security_config.xml')
-        .readAsStringSync();
+    final config = File(
+      'android/app/src/main/res/xml/network_security_config.xml',
+    ).readAsStringSync();
     expect(config, contains('cleartextTrafficPermitted="false"'));
   });
 
@@ -72,10 +72,19 @@ void main() {
   });
 
   test('FCM creates no token on its own and exports no delivery data', () {
-    expect(manifest, contains(RegExp(r'android:name="firebase_messaging_auto_init_enabled"\s+android:value="false"')));
     expect(
       manifest,
-      contains(RegExp(r'android:name="delivery_metrics_exported_to_big_query_enabled"\s+android:value="false"')),
+      contains(
+        RegExp(r'android:name="firebase_messaging_auto_init_enabled"\s+android:value="false"'),
+      ),
+    );
+    expect(
+      manifest,
+      contains(
+        RegExp(
+          r'android:name="delivery_metrics_exported_to_big_query_enabled"\s+android:value="false"',
+        ),
+      ),
     );
   });
 
@@ -85,8 +94,9 @@ void main() {
   });
 
   test('the main activity supports the biometric prompt', () {
-    final activity = File('android/app/src/main/kotlin/com/mysticstack/fitbuddy/MainActivity.kt')
-        .readAsStringSync();
+    final activity = File(
+      'android/app/src/main/kotlin/com/mysticstack/fitbuddy/MainActivity.kt',
+    ).readAsStringSync();
     expect(activity, contains('FlutterFragmentActivity'));
   });
 }

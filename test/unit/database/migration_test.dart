@@ -16,10 +16,10 @@ void main() {
 
   test('every older version is tested', () {
     // Fails when a version is added without extending the loop below.
-    expect(AppDatabase(DatabaseConnection(NativeDatabase.memory())).schemaVersion, 9);
+    expect(AppDatabase(DatabaseConnection(NativeDatabase.memory())).schemaVersion, 10);
   });
 
-  for (final from in [1, 2, 3, 4, 5, 6, 7, 8]) {
+  for (final from in [1, 2, 3, 4, 5, 6, 7, 8, 9]) {
     test('a version $from database upgrades to the current schema', () async {
       final connection = await verifier.startAt(from);
       final db = AppDatabase(connection);

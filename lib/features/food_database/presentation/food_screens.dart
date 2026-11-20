@@ -70,8 +70,9 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
   }
 
   Future<void> _edit(Food? food) async {
-    final saved = await Navigator.of(context)
-        .push<Food>(MaterialPageRoute(builder: (_) => FoodEditorScreen(food: food)));
+    final saved = await Navigator.of(
+      context,
+    ).push<Food>(MaterialPageRoute(builder: (_) => FoodEditorScreen(food: food)));
     await _search();
     if (saved != null && widget.pick && food == null && mounted) context.pop(saved);
   }

@@ -118,8 +118,9 @@ final class DriftWorkoutRepository implements WorkoutRepository {
         await _db
             .into(_db.exercises)
             .insert(
-              _exerciseFields(draft)
-                  .copyWith(id: Value(id), createdAt: Value(_now), isCustom: const Value(true)),
+              _exerciseFields(
+                draft,
+              ).copyWith(id: Value(id), createdAt: Value(_now), isCustom: const Value(true)),
             );
         await _sync('exercises', id);
       });

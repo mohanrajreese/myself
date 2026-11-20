@@ -232,11 +232,9 @@ void main() {
   });
 
   test('JSON column list matches the jsonb columns in the Supabase migrations', () {
-    final sql = Directory('supabase/migrations')
-        .listSync()
-        .whereType<File>()
-        .map((f) => f.readAsStringSync())
-        .join('\n');
+    final sql = Directory(
+      'supabase/migrations',
+    ).listSync().whereType<File>().map((f) => f.readAsStringSync()).join('\n');
     final found = <String, Set<String>>{};
     for (final m in RegExp(
       r'create table public\.(\w+)\s*\((.*?)\n\);',

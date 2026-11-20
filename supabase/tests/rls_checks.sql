@@ -309,6 +309,75 @@ select t.refused('select 1 from public.cloud_sync_metadata', 'anon cannot read s
 reset role;
 select t.login('a');
 
+-- ---------------------------------------------------------------- Phase 8: money
+reset role;
+select t.login('a');
+insert into public.finance_categories (id, name, icon_key, created_at, updated_at)
+values ('70000000-0000-0000-0000-000000000001', 'Food', 'food', now(), now());
+insert into public.debts (id, direction, name, counterparty, kind, principal_paise, start_date, emi_paise, emi_day,
+                          emi_count, first_emi_date, status, created_at, updated_at)
+values ('71000000-0000-0000-0000-000000000001', 'i_owe', 'Home loan', 'SBI', 'bank_loan', 150000000, '2023-09-05',
+        1250000, 5, 240, '2023-10-05', 'open', now(), now());
+insert into public.debt_payments (id, debt_id, amount_paise, paid_at, local_date, tz, instalment_no, created_at, updated_at)
+values ('72000000-0000-0000-0000-000000000001', '71000000-0000-0000-0000-000000000001', 1250000, now(), '2026-11-05',
+        'Asia/Kolkata', 38, now(), now());
+insert into public.recurring_expenses (id, name, amount_paise, category_id, method, schedule, created_at, updated_at)
+values ('73000000-0000-0000-0000-000000000001', 'Rent', 2000000, '70000000-0000-0000-0000-000000000001', 'upi',
+        '{"v":1,"type":"monthly","days":[1],"times":[540]}', now(), now());
+insert into public.expenses (id, amount_paise, category_id, method, occurred_at, local_date, tz, debt_payment_id,
+                             created_at, updated_at)
+values ('74000000-0000-0000-0000-000000000001', 24000, '70000000-0000-0000-0000-000000000001', 'upi', now(),
+        '2026-11-20', 'Asia/Kolkata', '72000000-0000-0000-0000-000000000001', now(), now());
+insert into public.budgets (id, effective_from, amount_paise, created_at, updated_at)
+values ('75000000-0000-0000-0000-000000000001', '2026-11-01', 3000000, now(), now());
+select t.eq((select count(*) from public.finance_categories), 1, 'owner sees own categories');
+select t.eq((select count(*) from public.debts), 1, 'owner sees own debts');
+select t.eq((select count(*) from public.debt_payments), 1, 'owner sees own debt payments');
+select t.eq((select count(*) from public.recurring_expenses), 1, 'owner sees own recurring expenses');
+select t.eq((select count(*) from public.expenses), 1, 'owner sees own expenses');
+select t.eq((select count(*) from public.budgets), 1, 'owner sees own budgets');
+select t.refused($$insert into public.debts (id, direction, name, counterparty, kind, principal_paise, start_date, emi_paise,
+  status, created_at, updated_at) values ('71000000-0000-0000-0000-000000000002', 'i_owe', 'x', 'y', 'personal', 100,
+  '2026-11-01', 50, 'open', now(), now())$$, 'EMI fields must be all set or all empty');
+select t.refused($$insert into public.debts (id, direction, name, counterparty, kind, principal_paise, start_date, emi_paise,
+  emi_day, emi_count, first_emi_date, remind_days_before, status, created_at, updated_at)
+  values ('71000000-0000-0000-0000-000000000003', 'i_owe', 'x', 'y', 'bank_loan', 100, '2026-11-01', 50, 5, 2,
+  '2026-12-05', 3, 'open', now(), now())$$, 'the first EMI reminder is at least 7 days before');
+select t.refused($$insert into public.expenses (id, amount_paise, category_id, method, occurred_at, local_date, tz,
+  created_at, updated_at) values ('74000000-0000-0000-0000-000000000002', 0, '70000000-0000-0000-0000-000000000001',
+  'upi', now(), '2026-11-20', 'UTC', now(), now())$$, 'an expense must be more than zero');
+reset role;
+select t.login('b');
+select t.eq((select count(*) from public.expenses), 0, 'other user cannot read expenses');
+select t.eq((select count(*) from public.debts), 0, 'other user cannot read debts');
+select t.eq((select count(*) from public.debt_payments), 0, 'other user cannot read debt payments');
+select t.eq((select count(*) from public.budgets), 0, 'other user cannot read budgets');
+select t.eq((select count(*) from public.finance_categories), 0, 'other user cannot read categories');
+select t.eq((select count(*) from public.recurring_expenses), 0, 'other user cannot read recurring expenses');
+with changed as (update public.expenses set amount_paise = 1 returning 1)
+select t.eq((select count(*) from changed), 0, 'other user cannot update expenses');
+with gone as (delete from public.debts returning 1)
+select t.eq((select count(*) from gone), 0, 'other user cannot delete debts');
+insert into public.finance_categories (id, name, icon_key, created_at, updated_at)
+values ('70000000-0000-0000-0000-0000000000b1', 'Mine', 'other', now(), now());
+select t.refused($$insert into public.expenses (id, amount_paise, category_id, method, occurred_at, local_date, tz,
+  created_at, updated_at) values ('74000000-0000-0000-0000-0000000000b1', 100, '70000000-0000-0000-0000-000000000001',
+  'cash', now(), '2026-11-20', 'UTC', now(), now())$$, 'an expense cannot use another user''s category');
+select t.refused($$insert into public.debt_payments (id, debt_id, amount_paise, paid_at, local_date, tz, created_at,
+  updated_at) values ('72000000-0000-0000-0000-0000000000b1', '71000000-0000-0000-0000-000000000001', 100, now(),
+  '2026-11-20', 'UTC', now(), now())$$, 'a payment cannot point at another user''s debt');
+reset role;
+select t.login('anon');
+select t.refused('select 1 from public.expenses', 'anon cannot read expenses');
+select t.refused('select 1 from public.debts', 'anon cannot read debts');
+reset role;
+select t.login('a');
+-- Deleting a debt removes its payments; the linked expense stays, unlinked.
+delete from public.debts where id = '71000000-0000-0000-0000-000000000001';
+select t.eq((select count(*) from public.debt_payments), 0, 'deleting a debt removes its payments');
+select t.eq((select count(*) from public.expenses where debt_payment_id is null), 1,
+            'an expense linked to a removed payment stays, unlinked');
+
 -- ---------------------------------------------------------------- account deletion
 reset role;
 delete from auth.users where id = '00000000-0000-0000-0000-00000000000a';
@@ -318,6 +387,8 @@ select t.eq((select count(*) from public.nutrition_goals), 0, 'deleting the acco
 select t.eq((select count(*) from public.weight_logs), 0, 'deleting the account removes weight');
 select t.eq((select count(*) from public.device_notification_tokens), 0, 'deleting the account removes push tokens');
 select t.eq((select count(*) from public.cloud_sync_metadata), 0, 'deleting the account removes sync status');
+select t.eq((select count(*) from public.expenses), 0, 'deleting the account removes expenses');
+select t.eq((select count(*) from public.finance_categories where user_id = '00000000-0000-0000-0000-00000000000a'), 0, 'deleting the account removes categories');
 
 rollback;
 \echo ALL CHECKS PASSED

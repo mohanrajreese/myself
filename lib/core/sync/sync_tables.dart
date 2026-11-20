@@ -11,6 +11,7 @@ const jsonColumns = <String, Set<String>>{
   'activity_logs': {'checklist_state'},
   'reminders': {'schedule'},
   'workout_templates': {'exercises'},
+  'recurring_expenses': {'schedule'},
 };
 
 /// Unique keys other than `id` used for upserts (03-database.md §5.4).

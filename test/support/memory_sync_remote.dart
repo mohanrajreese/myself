@@ -62,8 +62,9 @@ class MemorySyncRemote implements SyncRemote {
     final s = since.toUtc();
     final all = rows(table)
       ..sort((a, b) {
-        final c = DateTime.parse(a['server_updated_at']! as String)
-            .compareTo(DateTime.parse(b['server_updated_at']! as String));
+        final c = DateTime.parse(
+          a['server_updated_at']! as String,
+        ).compareTo(DateTime.parse(b['server_updated_at']! as String));
         return c != 0 ? c : (a['id']! as String).compareTo(b['id']! as String);
       });
     return all

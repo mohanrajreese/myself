@@ -25,4 +25,10 @@ const syncedTableNames = <String>[
   'workout_exercises',
   'exercise_sets',
   'workout_templates',
+  'finance_categories',
+  'debts',
+  'debt_payments',
+  'recurring_expenses',
+  'expenses',
+  'budgets',
 ];

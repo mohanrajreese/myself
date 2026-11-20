@@ -72,7 +72,8 @@ class LocalPrivateActivityDefinitions extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (tracking_type IN (\'boolean\', \'count\', \'numeric\', \'duration\', \'stopwatch\', \'event_log\', \'checklist\'))',
+    $customConstraints:
+        'NOT NULL CHECK (tracking_type IN (\'boolean\', \'count\', \'numeric\', \'duration\', \'stopwatch\', \'event_log\', \'checklist\'))',
   );
   late final GeneratedColumn<int> targetMilli = GeneratedColumn<int>(
     'target_milli',
@@ -219,7 +220,8 @@ class LocalPrivateActivityLogs extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL REFERENCES local_private_activity_definitions(id)ON DELETE CASCADE',
+    $customConstraints:
+        'NOT NULL REFERENCES local_private_activity_definitions(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
     'status',
@@ -377,7 +379,8 @@ class LocalPrivateHabitLogs extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL REFERENCES local_private_activity_definitions(id)ON DELETE CASCADE',
+    $customConstraints:
+        'NOT NULL REFERENCES local_private_activity_definitions(id)ON DELETE CASCADE',
   );
   late final GeneratedColumn<int> count = GeneratedColumn<int>(
     'count',
@@ -859,7 +862,8 @@ class LocalSensitiveReminders extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (owner_type IN (\'bowel\', \'medication\', \'private_activity\', \'custom\'))',
+    $customConstraints:
+        'NOT NULL CHECK (owner_type IN (\'bowel\', \'medication\', \'private_activity\', \'custom\'))',
   );
   late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
     'owner_id',

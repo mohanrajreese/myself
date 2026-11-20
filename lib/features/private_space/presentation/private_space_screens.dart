@@ -880,8 +880,9 @@ class PrivateRemindersScreen extends ConsumerWidget {
               const SizedBox(height: FbSpace.md),
               FbPickerField(
                 label: l10n.timeLabel,
-                valueText: MaterialLocalizations.of(context)
-                    .formatTimeOfDay(TimeOfDay(hour: minute ~/ 60, minute: minute % 60)),
+                valueText: MaterialLocalizations.of(
+                  context,
+                ).formatTimeOfDay(TimeOfDay(hour: minute ~/ 60, minute: minute % 60)),
                 onTap: () async {
                   final t = await showTimePicker(
                     context: context,
@@ -950,8 +951,9 @@ class PrivateRemindersScreen extends ConsumerWidget {
                         (jsonDecode(r.ruleJson) as Map).cast<String, Object?>(),
                       );
                       final m = rule is Daily && rule.times.isNotEmpty ? rule.times.first : 0;
-                      return MaterialLocalizations.of(context)
-                          .formatTimeOfDay(TimeOfDay(hour: m ~/ 60, minute: m % 60));
+                      return MaterialLocalizations.of(
+                        context,
+                      ).formatTimeOfDay(TimeOfDay(hour: m ~/ 60, minute: m % 60));
                     }(),
                     onTap: () => _edit(context, ref, existing: r),
                     trailing: Switch(

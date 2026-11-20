@@ -49,8 +49,9 @@ const syncTask = 'sync';
 Future<(ReminderService, AppDatabase)?> _openServices() async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
-  final key = (await DatabaseKeyManager(const SecureSecretStore()).keyFor(DatabaseId.app))
-      .valueOrNull;
+  final key = (await DatabaseKeyManager(
+    const SecureSecretStore(),
+  ).keyFor(DatabaseId.app)).valueOrNull;
   if (key == null) return null;
   final db = AppDatabase(openEncryptedDatabase(name: AppDatabase.databaseName, hexKey: key));
   final privateKey = (await DatabaseKeyManager(
@@ -190,8 +191,9 @@ Future<void> pushBackgroundHandler(RemoteMessage message) async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
   var prefs = const PushPreferences();
-  final key = (await DatabaseKeyManager(const SecureSecretStore()).keyFor(DatabaseId.app))
-      .valueOrNull;
+  final key = (await DatabaseKeyManager(
+    const SecureSecretStore(),
+  ).keyFor(DatabaseId.app)).valueOrNull;
   if (key != null) {
     final db = AppDatabase(openEncryptedDatabase(name: AppDatabase.databaseName, hexKey: key));
     try {

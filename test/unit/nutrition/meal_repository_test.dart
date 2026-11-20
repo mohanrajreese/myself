@@ -72,9 +72,9 @@ void main() {
 
   test('validation: at least one item, positive quantity, not in the future', () async {
     expect(
-      (await meals.add(const MealDraft(category: MealCategory.lunch, items: [])))
-          .failureOrNull
-          ?.code,
+      (await meals.add(
+        const MealDraft(category: MealCategory.lunch, items: []),
+      )).failureOrNull?.code,
       'required',
     );
     expect(

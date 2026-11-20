@@ -4,6 +4,7 @@ import '../utils/local_date.dart';
 import 'converters.dart';
 import 'synced_tables.dart';
 import 'tables/activity_tables.dart';
+import 'tables/finance_tables.dart';
 import 'tables/fitness_tables.dart';
 import 'tables/local_tables.dart';
 import 'tables/profile_tables.dart';
@@ -48,6 +49,13 @@ part 'app_database.g.dart';
     LocalWorkoutRoutePoints,
     LocalRecoveryLogs,
     LocalSyncCursors,
+    FinanceCategories,
+    Debts,
+    DebtPayments,
+    RecurringExpenses,
+    Expenses,
+    Budgets,
+    LocalExpenseReceipts,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -66,6 +74,8 @@ class AppDatabase extends _$AppDatabase {
     'local_notification_state_at',
   };
 
+  static const _version10Indexes = {'debt_payments_debt', 'expenses_local_date', 'expenses_meal'};
+
   static const _version7Indexes = {
     'workout_sessions_local_date',
     'workout_exercises_session',
@@ -75,7 +85,7 @@ class AppDatabase extends _$AppDatabase {
   };
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -101,6 +111,7 @@ class AppDatabase extends _$AppDatabase {
             ..._version5Indexes,
             ..._version6Indexes,
             ..._version7Indexes,
+            ..._version10Indexes,
           };
           if (!notInVersion2.contains(index.entityName)) await migrator.create(index);
         }
@@ -175,6 +186,23 @@ class AppDatabase extends _$AppDatabase {
       if (from < 9) {
         // Phase 6: pull cursors for the sync engine.
         await migrator.createTable(localSyncCursors);
+      }
+      if (from < 10) {
+        // Phase 8: money (PRD §5.21).
+        for (final table in <TableInfo<Table, Object?>>[
+          financeCategories,
+          debts,
+          debtPayments,
+          recurringExpenses,
+          expenses,
+          budgets,
+          localExpenseReceipts,
+        ]) {
+          await migrator.createTable(table);
+        }
+        for (final index in allSchemaEntities.whereType<Index>()) {
+          if (_version10Indexes.contains(index.entityName)) await migrator.create(index);
+        }
       }
     },
     beforeOpen: (details) async {

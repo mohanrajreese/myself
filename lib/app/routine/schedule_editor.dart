@@ -166,10 +166,9 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
                 for (var d = 1; d <= 7; d++)
                   FbToggleChip(
                     label: weekdayShort(context, d),
-                    semanticLabel: MaterialLocalizations.of(context)
-                        .formatMediumDate(DateTime(2026, 11, 15 + d))
-                        .split(',')
-                        .first,
+                    semanticLabel: MaterialLocalizations.of(
+                      context,
+                    ).formatMediumDate(DateTime(2026, 11, 15 + d)).split(',').first,
                     circular: true,
                     selected: _days.contains(d),
                     onTap: () => _set(

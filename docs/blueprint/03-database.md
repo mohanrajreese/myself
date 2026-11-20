@@ -118,7 +118,9 @@ Present in `AppDatabase` and in Supabase with the same columns, plus `user_id` a
 | `debts` | `direction` (i_owe/owed_to_me), `counterparty`, `kind` (personal/bank_loan/credit_card/other), `principal_paise`, `interest_rate_bp?`, `start_date`, `due_date?`, `emi_paise?`, `emi_day?` (1–28), `emi_count?`, `first_emi_date?`, `status` (open/settled), `notes?` | EMI fields all set or all null (`CHECK`) |
 | `debt_payments` | `debt_id`, `amount_paise`, `paid_at`, `local_date`, `tz`, `instalment_no?`, `note?` | Child of `debts`; outstanding = principal − sum of payments |
 
-EMI and recurring-expense reminders are rows in `reminders` with new kinds `emi` and `expense` and a nullable `debt_id` (composite foreign key, set null on delete). Receipt photos: local-only `local_expense_receipts` (encrypted files, like `local_meal_photos`).
+| `recurring_expenses` | `name`, `amount_paise`, `category_id`, `method`, `schedule` (JSON rule), `remind`, `active` | Rent and similar; Paid on its reminder records an expense with `recurring_expense_id` |
+
+**Reminders (changed 20 Nov 2026, during the build):** EMI and recurring-expense reminders are not rows in `reminders`. They are derived on the phone from `debts` (next unpaid instalment; `remind`, `remind_days_before` 7–30, default 7) and `recurring_expenses` at each re-plan, and scheduled with the ordinary reminders. This avoids rebuilding `reminders` (SQLite cannot alter a `CHECK`) and its cloud table, and an instalment paid early cancels its remaining reminders automatically. Receipt photos: local-only `local_expense_receipts` (encrypted files, like `local_meal_photos`).
 
 ## 3. Local operational tables (`AppDatabase`, never synced)
 
@@ -172,7 +174,7 @@ SQL-first (§13.2). One file per logical step in `supabase/migrations/`, applied
 | 8 | `…_fitness.sql` | `step_logs`, `exercises`, `workout_sessions`, `workout_exercises`, `exercise_sets`, `workout_templates` | 4 |
 | 9 | `…_hygiene.sql` | `hygiene_logs` | 5 |
 | 10 | `…_devices_and_sync.sql` | `device_notification_tokens`, `cloud_sync_metadata` | 6 |
-| 11 | `…_money.sql` | `finance_categories`, `expenses`, `budgets`, `debts`, `debt_payments`; `reminders` kinds `emi`/`expense` and `debt_id` | 8 |
+| 11 | `…_money.sql` | `finance_categories`, `debts`, `debt_payments`, `recurring_expenses`, `expenses`, `budgets` | 8 |
 
 `supabase/seed.sql` holds only development fixtures for local testing. It never runs against the real project.
 

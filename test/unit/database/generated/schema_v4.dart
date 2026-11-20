@@ -1086,7 +1086,8 @@ class FoodItems extends Table with TableInfo {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    $customConstraints: 'NULL CHECK (junk_category IS NULL OR junk_category IN (\'fast_food\', \'fried_snacks\', \'sweets\', \'sugary_drinks\', \'packaged_snacks\', \'other\'))',
+    $customConstraints:
+        'NULL CHECK (junk_category IS NULL OR junk_category IN (\'fast_food\', \'fried_snacks\', \'sweets\', \'sugary_drinks\', \'packaged_snacks\', \'other\'))',
   );
   late final GeneratedColumn<int> isSaved = GeneratedColumn<int>(
     'is_saved',
@@ -1212,7 +1213,8 @@ class MealLogs extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (meal_category IN (\'early_morning\', \'breakfast\', \'mid_morning\', \'lunch\', \'evening_snack\', \'dinner\', \'late_night\', \'other\'))',
+    $customConstraints:
+        'NOT NULL CHECK (meal_category IN (\'early_morning\', \'breakfast\', \'mid_morning\', \'lunch\', \'evening_snack\', \'dinner\', \'late_night\', \'other\'))',
   );
   late final GeneratedColumn<String> occurredAt = GeneratedColumn<String>(
     'occurred_at',
@@ -1422,7 +1424,8 @@ class MealFoodItems extends Table with TableInfo {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    $customConstraints: 'NULL CHECK (junk_category IS NULL OR junk_category IN (\'fast_food\', \'fried_snacks\', \'sweets\', \'sugary_drinks\', \'packaged_snacks\', \'other\'))',
+    $customConstraints:
+        'NULL CHECK (junk_category IS NULL OR junk_category IN (\'fast_food\', \'fried_snacks\', \'sweets\', \'sugary_drinks\', \'packaged_snacks\', \'other\'))',
   );
   late final GeneratedColumn<String> itemNotes = GeneratedColumn<String>(
     'item_notes',
@@ -1536,7 +1539,8 @@ class SavedMeals extends Table with TableInfo {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    $customConstraints: 'NULL CHECK (meal_category IS NULL OR meal_category IN (\'early_morning\', \'breakfast\', \'mid_morning\', \'lunch\', \'evening_snack\', \'dinner\', \'late_night\', \'other\'))',
+    $customConstraints:
+        'NULL CHECK (meal_category IS NULL OR meal_category IN (\'early_morning\', \'breakfast\', \'mid_morning\', \'lunch\', \'evening_snack\', \'dinner\', \'late_night\', \'other\'))',
   );
   late final GeneratedColumn<String> items = GeneratedColumn<String>(
     'items',

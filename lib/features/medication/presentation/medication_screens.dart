@@ -18,9 +18,9 @@ import '../../../core/widgets/l10n.dart';
 import '../../../core/widgets/tokens.dart';
 import '../domain/medication.dart';
 
-String _time(BuildContext context, int minute) =>
-    MaterialLocalizations.of(context)
-        .formatTimeOfDay(TimeOfDay(hour: minute ~/ 60, minute: minute % 60));
+String _time(BuildContext context, int minute) => MaterialLocalizations.of(
+  context,
+).formatTimeOfDay(TimeOfDay(hour: minute ~/ 60, minute: minute % 60));
 
 /// Medication and supplements: today's doses and the list (§5.18).
 class MedicationScreen extends ConsumerWidget {

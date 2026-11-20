@@ -388,9 +388,9 @@ class PersonalRecordsScreen extends ConsumerWidget {
       RecordKind.fastestPace => paceLabel(context, r.value),
       _ => '${r.value}',
     };
-    final cardio = [for (final k in CardioKind.values) (k, ref.watch(cardioRecordsProvider(k)))]
-        .where((e) => e.$2.isNotEmpty)
-        .toList();
+    final cardio = [
+      for (final k in CardioKind.values) (k, ref.watch(cardioRecordsProvider(k))),
+    ].where((e) => e.$2.isNotEmpty).toList();
     return Scaffold(
       appBar: AppBar(title: Text(l10n.personalRecords)),
       body: ListView(

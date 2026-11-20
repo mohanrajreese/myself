@@ -9,7 +9,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | Item | Value |
 |---|---|
 | Phase | 7 — Quality and release: everything possible without a phone is done (18 Nov 2026); the device test plan and cloud setup are with the owner |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026; Phase 6 screens approved 18 Nov 2026) |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026; Phase 6 screens approved 18 Nov 2026; Phase 8 (Money) screens approved 20 Nov 2026) |
 | Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project (migrations, functions); Google OAuth clients (debug and release fingerprints); Firebase project; release keystore; running `docs/device_test_plan.md` |
 
@@ -24,7 +24,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | 5 Lifestyle and privacy | ⏳ built, phone verification pending | [phase-5.md](reports/phase-5.md) |
 | 6 Reports and synchronisation | ⏳ built, phone and cloud verification pending | [phase-6.md](reports/phase-6.md) |
 | 7 Quality and release | ⏳ automated parts done; device run pending | [phase-7.md](reports/phase-7.md) |
-| 8 Money (PRD §5.21) | ✋ approved 20 Nov 2026; screen designs awaiting approval | — |
+| 8 Money (PRD §5.21) | ◐ designs approved 20 Nov 2026; building | — |
 
 ## Task log
 

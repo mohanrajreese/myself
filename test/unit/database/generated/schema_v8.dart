@@ -1086,7 +1086,8 @@ class FoodItems extends Table with TableInfo {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    $customConstraints: 'NULL CHECK (junk_category IS NULL OR junk_category IN (\'fast_food\', \'fried_snacks\', \'sweets\', \'sugary_drinks\', \'packaged_snacks\', \'other\'))',
+    $customConstraints:
+        'NULL CHECK (junk_category IS NULL OR junk_category IN (\'fast_food\', \'fried_snacks\', \'sweets\', \'sugary_drinks\', \'packaged_snacks\', \'other\'))',
   );
   late final GeneratedColumn<int> isSaved = GeneratedColumn<int>(
     'is_saved',
@@ -1212,7 +1213,8 @@ class MealLogs extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (meal_category IN (\'early_morning\', \'breakfast\', \'mid_morning\', \'lunch\', \'evening_snack\', \'dinner\', \'late_night\', \'other\'))',
+    $customConstraints:
+        'NOT NULL CHECK (meal_category IN (\'early_morning\', \'breakfast\', \'mid_morning\', \'lunch\', \'evening_snack\', \'dinner\', \'late_night\', \'other\'))',
   );
   late final GeneratedColumn<String> occurredAt = GeneratedColumn<String>(
     'occurred_at',
@@ -1422,7 +1424,8 @@ class MealFoodItems extends Table with TableInfo {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    $customConstraints: 'NULL CHECK (junk_category IS NULL OR junk_category IN (\'fast_food\', \'fried_snacks\', \'sweets\', \'sugary_drinks\', \'packaged_snacks\', \'other\'))',
+    $customConstraints:
+        'NULL CHECK (junk_category IS NULL OR junk_category IN (\'fast_food\', \'fried_snacks\', \'sweets\', \'sugary_drinks\', \'packaged_snacks\', \'other\'))',
   );
   late final GeneratedColumn<String> itemNotes = GeneratedColumn<String>(
     'item_notes',
@@ -1536,7 +1539,8 @@ class SavedMeals extends Table with TableInfo {
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    $customConstraints: 'NULL CHECK (meal_category IS NULL OR meal_category IN (\'early_morning\', \'breakfast\', \'mid_morning\', \'lunch\', \'evening_snack\', \'dinner\', \'late_night\', \'other\'))',
+    $customConstraints:
+        'NULL CHECK (meal_category IS NULL OR meal_category IN (\'early_morning\', \'breakfast\', \'mid_morning\', \'lunch\', \'evening_snack\', \'dinner\', \'late_night\', \'other\'))',
   );
   late final GeneratedColumn<String> items = GeneratedColumn<String>(
     'items',
@@ -2181,7 +2185,8 @@ class ActivityDefinitions extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (tracking_type IN (\'boolean\', \'count\', \'numeric\', \'duration\', \'stopwatch\', \'event_log\', \'checklist\'))',
+    $customConstraints:
+        'NOT NULL CHECK (tracking_type IN (\'boolean\', \'count\', \'numeric\', \'duration\', \'stopwatch\', \'event_log\', \'checklist\'))',
   );
   late final GeneratedColumn<String> priority = GeneratedColumn<String>(
     'priority',
@@ -2410,7 +2415,8 @@ class ActivityLogs extends Table with TableInfo {
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    $customConstraints: 'NULL CHECK (scheduled_slot IS NULL OR scheduled_slot BETWEEN 0 AND 1439)',
+    $customConstraints:
+        'NULL CHECK (scheduled_slot IS NULL OR scheduled_slot BETWEEN 0 AND 1439)',
   );
   late final GeneratedColumn<int> countValue = GeneratedColumn<int>(
     'count_value',
@@ -2558,7 +2564,8 @@ class LocalTimerSessions extends Table with TableInfo {
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    $customConstraints: 'NULL CHECK (target_duration_s IS NULL OR target_duration_s BETWEEN 1 AND 86400)',
+    $customConstraints:
+        'NULL CHECK (target_duration_s IS NULL OR target_duration_s BETWEEN 1 AND 86400)',
   );
   late final GeneratedColumn<String> state = GeneratedColumn<String>(
     'state',
@@ -2566,7 +2573,8 @@ class LocalTimerSessions extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (state IN (\'ready\', \'running\', \'paused\', \'completed\', \'cancelled\'))',
+    $customConstraints:
+        'NOT NULL CHECK (state IN (\'ready\', \'running\', \'paused\', \'completed\', \'cancelled\'))',
   );
   late final GeneratedColumn<int> accumulatedMs = GeneratedColumn<int>(
     'accumulated_ms',
@@ -2683,7 +2691,8 @@ class LocalTimerEvents extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (type IN (\'start\', \'pause\', \'resume\', \'finish\', \'cancel\'))',
+    $customConstraints:
+        'NOT NULL CHECK (type IN (\'start\', \'pause\', \'resume\', \'finish\', \'cancel\'))',
   );
   late final GeneratedColumn<String> at = GeneratedColumn<String>(
     'at',
@@ -2761,7 +2770,8 @@ class Reminders extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (kind IN (\'custom\', \'activity\', \'water\', \'workout\', \'sleep\', \'posture\'))',
+    $customConstraints:
+        'NOT NULL CHECK (kind IN (\'custom\', \'activity\', \'water\', \'workout\', \'sleep\', \'posture\'))',
   );
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
     'title',
@@ -2812,7 +2822,8 @@ class Reminders extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (channel_key IN (\'alarms\', \'routines\', \'hydration\', \'fitness\', \'medication\', \'sleep\', \'system\'))',
+    $customConstraints:
+        'NOT NULL CHECK (channel_key IN (\'alarms\', \'routines\', \'hydration\', \'fitness\', \'medication\', \'sleep\', \'system\'))',
   );
   late final GeneratedColumn<String> soundKey = GeneratedColumn<String>(
     'sound_key',
@@ -2849,15 +2860,16 @@ class Reminders extends Table with TableInfo {
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL CHECK (priority IN (\'normal\', \'alarm\'))',
   );
-  late final GeneratedColumn<String> quietHoursBehaviour =
-      GeneratedColumn<String>(
-        'quiet_hours_behaviour',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-        $customConstraints: 'NOT NULL CHECK (quiet_hours_behaviour IN (\'defer\', \'suppress\', \'bypass\'))',
-      );
+  late final GeneratedColumn<String>
+  quietHoursBehaviour = GeneratedColumn<String>(
+    'quiet_hours_behaviour',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL CHECK (quiet_hours_behaviour IN (\'defer\', \'suppress\', \'bypass\'))',
+  );
   late final GeneratedColumn<int> exact = GeneratedColumn<int>(
     'exact',
     aliasedName,
@@ -3006,7 +3018,8 @@ class LocalNotificationState extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (status IN (\'scheduled\', \'snoozed\', \'completed\', \'skipped\', \'dismissed\', \'cancelled\', \'expired\'))',
+    $customConstraints:
+        'NOT NULL CHECK (status IN (\'scheduled\', \'snoozed\', \'completed\', \'skipped\', \'dismissed\', \'cancelled\', \'expired\'))',
   );
   late final GeneratedColumn<int> deferred = GeneratedColumn<int>(
     'deferred',
@@ -3130,7 +3143,8 @@ class StepLogs extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (source IN (\'phone_sensor\', \'phone_sensor_adjusted\', \'manual\'))',
+    $customConstraints:
+        'NOT NULL CHECK (source IN (\'phone_sensor\', \'phone_sensor_adjusted\', \'manual\'))',
   );
   late final GeneratedColumn<String> timezone = GeneratedColumn<String>(
     'timezone',
@@ -3282,7 +3296,8 @@ class Exercises extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (measurement_kind IN (\'weight_reps\', \'reps_only\', \'duration\', \'distance_duration\'))',
+    $customConstraints:
+        'NOT NULL CHECK (measurement_kind IN (\'weight_reps\', \'reps_only\', \'duration\', \'distance_duration\'))',
   );
   late final GeneratedColumn<String> systemKey = GeneratedColumn<String>(
     'system_key',
@@ -3957,7 +3972,8 @@ class LocalStepReadings extends Table with TableInfo {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (source IN (\'service\', \'worker\', \'foreground\', \'shutdown\', \'boot\', \'time_change\'))',
+    $customConstraints:
+        'NOT NULL CHECK (source IN (\'service\', \'worker\', \'foreground\', \'shutdown\', \'boot\', \'time_change\'))',
   );
   @override
   List<GeneratedColumn> get $columns => [

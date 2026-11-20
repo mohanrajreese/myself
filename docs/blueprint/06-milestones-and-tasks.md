@@ -199,7 +199,7 @@ Screen tasks (F-07, F-08, F-09, F-12, F-13, F-14a, F-15) wait for design approva
 
 | ID | Task | PRD |
 |---|---|---|
-| M-01 | Schema: app database v10 (five synced tables, receipt index), `reminders` kinds and `debt_id`; Supabase migration 11 with access-rule checks; outbox allow-list | §5.21, §6.2 |
+| M-01 | Schema: app database v10 (six synced tables, receipt index); Supabase migration 11 with access-rule checks; outbox allow-list | §5.21, §6.2 |
 | M-02 | Rupee amounts: integer paise, parsing and Indian grouping (₹1,23,456.50), tests | §5.21 |
 | M-03 | Categories (seeded, own, archive) and payment methods | §5.21A |
 | M-04 | Expenses: add, edit, delete, search and filter, receipt photo (encrypted, local) | §5.21A |
