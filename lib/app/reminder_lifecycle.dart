@@ -68,10 +68,9 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
       unawaited(ref.read(routerProvider).push(Routes.accountSync));
       return;
     }
-    final activityId = await ref.read(reminderServiceProvider).handle(tap);
-    if (activityId != null && mounted) {
-      unawaited(ref.read(routerProvider).push(Routes.activity(activityId)));
-    }
+    final target = await ref.read(reminderServiceProvider).handle(tap);
+    if (target == null || !mounted) return;
+    unawaited(ref.read(routerProvider).push(target.startsWith('/') ? target : Routes.activity(target)));
   }
 
   @override

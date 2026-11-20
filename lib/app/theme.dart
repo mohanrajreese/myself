@@ -130,9 +130,7 @@ ThemeData buildTheme(Brightness brightness) {
       surfaceTintColor: Colors.transparent,
       showDragHandle: true,
       dragHandleColor: c.outline,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(FbRadius.hero)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(FbRadius.hero))),
     ),
     dialogTheme: DialogThemeData(
       backgroundColor: c.surface,

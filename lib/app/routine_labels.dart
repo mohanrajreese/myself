@@ -10,11 +10,10 @@ import '../core/widgets/tokens.dart';
 import '../features/activities/domain/activity.dart';
 import '../features/activities/domain/activity_day.dart';
 
-String minuteLabel(BuildContext context, int minute) =>
-    MaterialLocalizations.of(context).formatTimeOfDay(
-      TimeOfDay(hour: minute ~/ 60, minute: minute % 60),
-      alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
-    );
+String minuteLabel(BuildContext context, int minute) => MaterialLocalizations.of(context).formatTimeOfDay(
+  TimeOfDay(hour: minute ~/ 60, minute: minute % 60),
+  alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+);
 
 String trackingTypeName(AppLocalizations l, TrackingType t) => switch (t) {
   TrackingType.boolean => l.trackBoolean,
@@ -76,9 +75,7 @@ String weekdaysLabel(BuildContext context, Set<int> days) {
   final names = MaterialLocalizations.of(context);
   final sorted = days.toList()..sort();
   return sorted
-      .map(
-        (d) => names.formatMediumDate(DateTime(2026, 11, 15 + d)).split(',').first.split(' ').first,
-      )
+      .map((d) => names.formatMediumDate(DateTime(2026, 11, 15 + d)).split(',').first.split(' ').first)
       .join(', ');
 }
 
@@ -87,22 +84,16 @@ String scheduleSummary(BuildContext context, ScheduleRule rule) {
   final l = context.l10n;
   String times(List<int> ts) => ts.map((t) => minuteLabel(context, t)).join(', ');
   return switch (rule) {
-    OneTime(:final date, :final time) => l.scheduleOnce(
-      context.shortDate(date),
-      minuteLabel(context, time),
-    ),
+    OneTime(:final date, :final time) => l.scheduleOnce(context.shortDate(date), minuteLabel(context, time)),
     Daily(times: final ts) => l.scheduleDaily(times(ts)),
-    Weekdays(:final weekdays, times: final ts) =>
-      '${weekdaysLabel(context, weekdays)} · ${times(ts)}',
+    Weekdays(:final weekdays, times: final ts) => '${weekdaysLabel(context, weekdays)} · ${times(ts)}',
     Weekly(:final everyWeeks, :final weekdays, times: final ts) => l.scheduleEveryWeeks(
       everyWeeks,
       weekdaysLabel(context, weekdays),
       times(ts),
     ),
     Monthly(:final day, :final nth, times: final ts) =>
-      day != null
-          ? l.scheduleMonthlyDay(day, times(ts))
-          : l.scheduleMonthlyNth(nth ?? 1, times(ts)),
+      day != null ? l.scheduleMonthlyDay(day, times(ts)) : l.scheduleMonthlyNth(nth ?? 1, times(ts)),
     EveryNDays(:final days, times: final ts) => l.scheduleEveryDays(days, times(ts)),
     IntervalRule(:final everyMinutes, :final start, :final end, :final weekdays) =>
       l.scheduleInterval(everyMinutes, minuteLabel(context, start), minuteLabel(context, end)) +

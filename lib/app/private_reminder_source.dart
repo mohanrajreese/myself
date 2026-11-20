@@ -12,11 +12,7 @@ import 'reminder_service.dart';
 /// Medication doses and private reminders, scheduled with a generic title
 /// and secret lock-screen visibility (§3.4 rule 14, §7.3).
 final class DevicePrivateReminderSource implements PrivateReminderSource {
-  DevicePrivateReminderSource({
-    required this.medications,
-    required this.sensitive,
-    required this.genericTitle,
-  });
+  DevicePrivateReminderSource({required this.medications, required this.sensitive, required this.genericTitle});
 
   final MedicationRepository medications;
   final SensitiveReminderRepository sensitive;

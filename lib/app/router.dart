@@ -61,8 +61,7 @@ final setupStatusProvider = Provider<SetupStatus>((ref) {
   return ref
       .watch(profileProvider(account.id))
       .when(
-        data: (profile) =>
-            profile?.onboardingCompleted == true ? SetupStatus.complete : SetupStatus.needed,
+        data: (profile) => profile?.onboardingCompleted == true ? SetupStatus.complete : SetupStatus.needed,
         loading: () => SetupStatus.unknown,
         error: (_, _) => SetupStatus.needed,
       );
@@ -116,18 +115,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const FitnessScreen(),
                 routes: [
                   GoRoute(path: 'steps', builder: (context, state) => const StepsScreen()),
-                  GoRoute(
-                    path: 'history',
-                    builder: (context, state) => const WorkoutHistoryScreen(),
-                  ),
-                  GoRoute(
-                    path: 'records',
-                    builder: (context, state) => const PersonalRecordsScreen(),
-                  ),
-                  GoRoute(
-                    path: 'exercises',
-                    builder: (context, state) => const ExerciseLibraryScreen(),
-                  ),
+                  GoRoute(path: 'history', builder: (context, state) => const WorkoutHistoryScreen()),
+                  GoRoute(path: 'records', builder: (context, state) => const PersonalRecordsScreen()),
+                  GoRoute(path: 'exercises', builder: (context, state) => const ExerciseLibraryScreen()),
                 ],
               ),
             ],
@@ -139,14 +129,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const DiaryScreen(),
                 routes: [
                   GoRoute(path: 'water', builder: (context, state) => const WaterScreen()),
-                  GoRoute(
-                    path: 'saved-meals',
-                    builder: (context, state) => const SavedMealsScreen(),
-                  ),
-                  GoRoute(
-                    path: 'summary',
-                    builder: (context, state) => const NutritionSummaryScreen(),
-                  ),
+                  GoRoute(path: 'saved-meals', builder: (context, state) => const SavedMealsScreen()),
+                  GoRoute(path: 'summary', builder: (context, state) => const NutritionSummaryScreen()),
                 ],
               ),
             ],
@@ -164,8 +148,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                     routes: [
                       GoRoute(
                         path: ':type',
-                        builder: (context, state) =>
-                            MeasurementHistoryScreen(type: state.pathParameters['type']!),
+                        builder: (context, state) => MeasurementHistoryScreen(type: state.pathParameters['type']!),
                       ),
                     ],
                   ),
@@ -173,12 +156,7 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'checkin',
                     builder: (context, state) => const CheckinScreen(),
-                    routes: [
-                      GoRoute(
-                        path: 'history',
-                        builder: (context, state) => const CheckinHistoryScreen(),
-                      ),
-                    ],
+                    routes: [GoRoute(path: 'history', builder: (context, state) => const CheckinHistoryScreen())],
                   ),
                 ],
               ),
@@ -190,20 +168,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: Routes.habits,
                 builder: (context, state) => const HabitsScreen(),
                 routes: [
-                  GoRoute(
-                    path: 'reminders/history',
-                    builder: (context, state) => const NotificationHistoryScreen(),
-                  ),
+                  GoRoute(path: 'reminders/history', builder: (context, state) => const NotificationHistoryScreen()),
                   GoRoute(path: 'hygiene', builder: (context, state) => const HygieneScreen()),
-                  GoRoute(
-                    path: 'medication',
-                    builder: (context, state) => const MedicationScreen(),
-                  ),
+                  GoRoute(path: 'medication', builder: (context, state) => const MedicationScreen()),
                   GoRoute(path: 'recovery', builder: (context, state) => const RecoveryScreen()),
-                  GoRoute(
-                    path: 'screen-time',
-                    builder: (context, state) => const ScreenTimeScreen(),
-                  ),
+                  GoRoute(path: 'screen-time', builder: (context, state) => const ScreenTimeScreen()),
                 ],
               ),
             ],
@@ -235,23 +204,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Routes.addWeight,
-        pageBuilder: (context, state) =>
-            _SheetPage<void>(key: state.pageKey, builder: (_) => const AddWeightSheet()),
+        pageBuilder: (context, state) => _SheetPage<void>(key: state.pageKey, builder: (_) => const AddWeightSheet()),
       ),
       GoRoute(
         path: Routes.addWater,
-        pageBuilder: (context, state) =>
-            _SheetPage<void>(key: state.pageKey, builder: (_) => const WaterSheet()),
+        pageBuilder: (context, state) => _SheetPage<void>(key: state.pageKey, builder: (_) => const WaterSheet()),
       ),
       GoRoute(
         path: Routes.addSleep,
-        pageBuilder: (context, state) =>
-            _SheetPage<void>(key: state.pageKey, builder: (_) => const SleepSheet()),
+        pageBuilder: (context, state) => _SheetPage<void>(key: state.pageKey, builder: (_) => const SleepSheet()),
       ),
       GoRoute(
         path: Routes.foods,
-        builder: (context, state) =>
-            FoodSearchScreen(pick: state.uri.queryParameters['pick'] == '1'),
+        builder: (context, state) => FoodSearchScreen(pick: state.uri.queryParameters['pick'] == '1'),
       ),
       GoRoute(
         path: '/exercise/:id',
@@ -272,13 +237,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/log-cardio/:kind',
-        builder: (context, state) =>
-            CardioLogScreen(kind: WorkoutKind.fromCode(state.pathParameters['kind']!)),
+        builder: (context, state) => CardioLogScreen(kind: WorkoutKind.fromCode(state.pathParameters['kind']!)),
       ),
       GoRoute(
         path: '/gps/:kind',
-        builder: (context, state) =>
-            GpsWorkoutScreen(kind: WorkoutKind.fromCode(state.pathParameters['kind']!)),
+        builder: (context, state) => GpsWorkoutScreen(kind: WorkoutKind.fromCode(state.pathParameters['kind']!)),
       ),
       GoRoute(path: Routes.newActivity, builder: (context, state) => const ActivityEditorScreen()),
       GoRoute(
@@ -326,10 +289,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(path: 'home-layout', builder: (context, state) => const CustomiseHomeScreen()),
           GoRoute(path: 'about', builder: (context, state) => const AboutScreen()),
-          GoRoute(
-            path: 'notifications',
-            builder: (context, state) => const NotificationSettingsScreen(),
-          ),
+          GoRoute(path: 'notifications', builder: (context, state) => const NotificationSettingsScreen()),
           GoRoute(path: 'app-lock', builder: (context, state) => const AppLockSettingsScreen()),
           GoRoute(path: 'account', builder: (context, state) => const AccountSyncScreen()),
           GoRoute(path: 'export', builder: (context, state) => const ExportScreen()),
@@ -338,9 +298,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/medication/:id',
-        builder: (context, state) => MedicationEditorScreen(
-          id: state.pathParameters['id'] == 'new' ? null : state.pathParameters['id'],
-        ),
+        builder: (context, state) =>
+            MedicationEditorScreen(id: state.pathParameters['id'] == 'new' ? null : state.pathParameters['id']),
       ),
       // Private space: every route sits behind the lock (§7.3).
       GoRoute(
@@ -349,8 +308,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: 'habit/:id',
-            builder: (context, state) =>
-                LockGate(child: PrivateHabitScreen(id: state.pathParameters['id']!)),
+            builder: (context, state) => LockGate(child: PrivateHabitScreen(id: state.pathParameters['id']!)),
           ),
           GoRoute(
             path: 'report',
@@ -366,8 +324,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: ':id',
-                builder: (context, state) =>
-                    LockGate(child: PrivateActivityScreen(id: state.pathParameters['id']!)),
+                builder: (context, state) => LockGate(child: PrivateActivityScreen(id: state.pathParameters['id']!)),
               ),
             ],
           ),

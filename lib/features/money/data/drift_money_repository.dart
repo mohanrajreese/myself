@@ -413,7 +413,7 @@ final class DriftMoneyRepository implements MoneyRepository {
             )..where((t) => t.debtId.equals(id) & t.deletedAt.isNull() & t.instalmentNo.isNotNull())).get())
               p.instalmentNo!,
           };
-          final due = emi.dueBy(today).clamp(0, emi.count);
+          final due = emi.dueBy(today.addDays(-1)).clamp(0, emi.count); // before today
           for (var n = 1; n <= due; n++) {
             if (paid.contains(n)) continue;
             final day = emi.dueDate(n);

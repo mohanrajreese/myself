@@ -32,8 +32,7 @@ class AppShell extends StatelessWidget {
           maxScaleFactor: 1.15,
           child: NavigationBar(
             selectedIndex: shell.currentIndex,
-            onDestinationSelected: (index) =>
-                shell.goBranch(index, initialLocation: index == shell.currentIndex),
+            onDestinationSelected: (index) => shell.goBranch(index, initialLocation: index == shell.currentIndex),
             destinations: [
               for (final (icon, selected, label) in destinations)
                 NavigationDestination(icon: Icon(icon), selectedIcon: Icon(selected), label: label),

@@ -2922,5 +2922,54 @@
   "protectWithPassphraseHelp": "AES-256 encrypted zip; needed to open the file",
   "repeatPassphrase": "Repeat passphrase",
   "thisPhoneAfterwards": "This phone afterwards",
-  "typeDelete": "Type DELETE"
+  "typeDelete": "Type DELETE",
+  "moneyEmiInDays": "EMI in {days} days: {name}",
+  "@moneyEmiInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyEmiTomorrow": "EMI due tomorrow: {name}",
+  "@moneyEmiTomorrow": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyEmiToday": "EMI due today: {name}",
+  "@moneyEmiToday": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyEmiBody": "{lender} · instalment {instalment} of {count}",
+  "@moneyEmiBody": {
+    "placeholders": {
+      "lender": {
+        "type": "String"
+      },
+      "instalment": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyRecurringDue": "{name} is due today",
+  "@moneyRecurringDue": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

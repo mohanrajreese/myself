@@ -18,11 +18,7 @@ import '../features/reminders/domain/reminder_repository.dart';
 
 /// Quiet hours as stored in settings.
 final class QuietHoursSetting {
-  const QuietHoursSetting({
-    this.enabled = false,
-    this.start = 22 * 60 + 30,
-    this.end = 6 * 60 + 30,
-  });
+  const QuietHoursSetting({this.enabled = false, this.start = 22 * 60 + 30, this.end = 6 * 60 + 30});
   final bool enabled;
   final int start;
   final int end;
@@ -59,20 +55,20 @@ final class ReminderService {
     required this.clock,
     TimeZoneRules Function(String id)? zoneFor,
     this.privateSource,
+    this.extraSources = const [],
   }) : zoneFor = zoneFor ?? IanaZone.new,
        _scheduler = ReminderScheduler(store: store, gateway: gateway, clock: clock),
-       _privateScheduler = ReminderScheduler(
-         store: store,
-         gateway: gateway,
-         clock: clock,
-         storeName: 'private',
-       );
+       _privateScheduler = ReminderScheduler(store: store, gateway: gateway, clock: clock, storeName: 'private');
 
   /// Sensitive reminders (medication, bowel, private). Null before the
   /// private database is open, for example in a background isolate without
   /// its key.
   final PrivateReminderSource? privateSource;
   final ReminderScheduler _privateScheduler;
+
+  /// Ordinary reminders derived from other data (money: EMIs, recurring
+  /// expenses), planned with the main reminders.
+  final List<ExtraReminderSource> extraSources;
 
   final ReminderRepository reminders;
   final ActivityRepository activities;
@@ -129,6 +125,7 @@ final class ReminderService {
             vibrate: r.vibrate,
             soundUri: r.soundKey,
           ),
+        for (final source in extraSources) ...await source.reminders(),
       ],
       zone: zone,
       quietHours: (await quietHours()).active,
@@ -181,17 +178,18 @@ final class ReminderService {
     return out;
   }
 
-  /// Applies a notification button. Returns the linked activity id when the
-  /// body was tapped, so the app can open it.
+  /// Applies a notification button. When the body was tapped, returns the
+  /// linked activity id, or a route (starting with `/`) to open.
   Future<String?> handle(NotificationTap tap, {int? snoozeMinutes}) async {
     final record = await store.byId(tap.notificationId);
     if (record == null) return null;
     if (record.store == 'private') return _handlePrivate(record, tap, snoozeMinutes);
+    final extra = extraSources.where((s) => s.owns(record.reminderId)).firstOrNull;
+    if (extra != null) return _handleExtra(extra, record, tap, snoozeMinutes);
     final reminder = await reminders.byId(record.reminderId);
     // Ad-hoc "remind me again" from Home carries the activity id.
     final linkedActivity =
-        reminder?.activityId ??
-        (record.reminderId.startsWith('activity:') ? record.reminderId.substring(9) : null);
+        reminder?.activityId ?? (record.reminderId.startsWith('activity:') ? record.reminderId.substring(9) : null);
     final now = clock.now();
     switch (tap.action) {
       case null:
@@ -247,11 +245,47 @@ final class ReminderService {
     }
   }
 
-  Future<String?> _handlePrivate(
+  /// Returns the route to open for a body tap.
+  Future<String?> _handleExtra(
+    ExtraReminderSource source,
     NotificationRecord record,
     NotificationTap tap,
     int? snoozeMinutes,
   ) async {
+    final now = clock.now();
+    switch (tap.action) {
+      case null:
+        return source.route(record.reminderId);
+      case ReminderAction.snooze:
+        final until = now.add(Duration(minutes: snoozeMinutes ?? 10));
+        final text = await source.textFor(record.reminderId);
+        await store.snooze(record.id, until);
+        await gateway.schedule(
+          NotificationRequest(
+            id: record.id,
+            at: until,
+            channelId: record.channelIdOr(channelIdFor(NotificationChannelKey.routines.code)),
+            title: text.title,
+            body: text.body,
+            exact: record.exact,
+          ),
+        );
+        return null;
+      case ReminderAction.complete || ReminderAction.skip:
+        final complete = tap.action == ReminderAction.complete;
+        await gateway.cancel(record.id);
+        await store.setStatus(
+          record.id,
+          complete ? NotificationStatus.completed : NotificationStatus.skipped,
+          actedAt: now,
+        );
+        await source.acted(record.reminderId, record.occurrenceLocal, completed: complete);
+        await replan();
+        return null;
+    }
+  }
+
+  Future<String?> _handlePrivate(NotificationRecord record, NotificationTap tap, int? snoozeMinutes) async {
     final now = clock.now();
     final source = privateSource;
     switch (tap.action) {
@@ -291,5 +325,19 @@ abstract interface class PrivateReminderSource {
   Future<List<SchedulableReminder>> reminders();
 
   /// A notification button was pressed for [reminderId] at [occurrenceLocal].
+  Future<void> acted(String reminderId, String occurrenceLocal, {required bool completed});
+}
+
+/// Reminders derived from ordinary (synced) data, such as EMIs. Their ids
+/// carry a prefix the source recognises.
+abstract interface class ExtraReminderSource {
+  bool owns(String reminderId);
+  Future<List<SchedulableReminder>> reminders();
+
+  /// Text for a snoozed notification.
+  Future<({String title, String? body})> textFor(String reminderId);
+
+  /// Where a tap on the notification body opens.
+  String route(String reminderId);
   Future<void> acted(String reminderId, String occurrenceLocal, {required bool completed});
 }

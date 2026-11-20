@@ -17,6 +17,8 @@ import '../features/reminders/domain/reminder_repository.dart';
 import '../features/timers/data/drift_timer_repository.dart';
 import '../features/timers/domain/timer_repository.dart';
 import '../features/timers/domain/timer_session.dart';
+import 'money_reminder_source.dart';
+import 'notification_setup.dart';
 import 'providers.dart';
 import 'reminder_service.dart';
 
@@ -50,9 +52,7 @@ final notificationStateStoreProvider = Provider<NotificationStateStore>(
 );
 
 /// Overridden at start-up with the plugin-backed gateway and in tests with a fake.
-final notificationGatewayProvider = Provider<NotificationGateway>(
-  (ref) => throw StateError('not provided'),
-);
+final notificationGatewayProvider = Provider<NotificationGateway>((ref) => throw StateError('not provided'));
 final alarmCapabilitiesProvider = Provider<AlarmCapabilities>((ref) => DeviceAlarmCapabilities());
 
 /// Sensitive reminders; set at start-up once the private database is open.
@@ -70,15 +70,20 @@ final reminderServiceProvider = Provider<ReminderService>(
     timeZone: ref.watch(timeZoneSourceProvider),
     clock: ref.watch(clockProvider),
     privateSource: ref.watch(privateReminderSourceProvider),
+    extraSources: [
+      MoneyReminderSource(
+        money: ref.watch(moneyRepositoryProvider),
+        text: moneyReminderText(deviceLocalizations()),
+        clock: ref.watch(clockProvider),
+      ),
+    ],
   ),
 );
 
 /// Re-plans reminders after a change, without blocking the screen.
 void replanReminders(WidgetRef ref) => unawaited(ref.read(reminderServiceProvider).replan());
 
-final activitiesProvider = StreamProvider<List<Activity>>(
-  (ref) => ref.watch(activityRepositoryProvider).watchAll(),
-);
+final activitiesProvider = StreamProvider<List<Activity>>((ref) => ref.watch(activityRepositoryProvider).watchAll());
 
 final activityProvider = Provider.family<Activity?, String>(
   (ref, id) => ref.watch(activitiesProvider).value?.where((a) => a.id == id).firstOrNull,
@@ -88,10 +93,9 @@ final activityLogsOnProvider = StreamProvider.family<List<ActivityLog>, LocalDat
   (ref, date) => ref.watch(activityRepositoryProvider).watchLogsBetween(date, date),
 );
 
-final activityLogsBetweenProvider =
-    StreamProvider.family<List<ActivityLog>, ({LocalDate from, LocalDate to})>(
-      (ref, range) => ref.watch(activityRepositoryProvider).watchLogsBetween(range.from, range.to),
-    );
+final activityLogsBetweenProvider = StreamProvider.family<List<ActivityLog>, ({LocalDate from, LocalDate to})>(
+  (ref, range) => ref.watch(activityRepositoryProvider).watchLogsBetween(range.from, range.to),
+);
 
 final activityHistoryProvider = StreamProvider.family<List<ActivityLog>, String>(
   (ref, id) => ref.watch(activityRepositoryProvider).watchLogsFor(id, limit: 100),
@@ -119,9 +123,7 @@ final activityDaysProvider = Provider.family<List<ActivityDay>?, LocalDate>((ref
   ];
 });
 
-final remindersProvider = StreamProvider<List<Reminder>>(
-  (ref) => ref.watch(reminderRepositoryProvider).watchAll(),
-);
+final remindersProvider = StreamProvider<List<Reminder>>((ref) => ref.watch(reminderRepositoryProvider).watchAll());
 
 final notificationHistoryProvider = StreamProvider<List<NotificationRecord>>((ref) {
   final now = ref.watch(clockProvider).now();
@@ -134,16 +136,9 @@ final activeTimersProvider = StreamProvider<List<TimerSession>>(
   (ref) => ref.watch(timerRepositoryProvider).watchActive(),
 );
 
-final quietHoursProvider = FutureProvider<QuietHoursSetting>(
-  (ref) => ref.watch(reminderServiceProvider).quietHours(),
-);
+final quietHoursProvider = FutureProvider<QuietHoursSetting>((ref) => ref.watch(reminderServiceProvider).quietHours());
 
-typedef ReminderStatus = ({
-  bool notifications,
-  bool exact,
-  bool battery,
-  List<String> disabledChannels,
-});
+typedef ReminderStatus = ({bool notifications, bool exact, bool battery, List<String> disabledChannels});
 
 /// What Android currently allows; re-read when the screen asks.
 final reminderStatusProvider = FutureProvider<ReminderStatus>((ref) async {
@@ -182,6 +177,4 @@ final class DisabledNotificationGateway implements NotificationGateway {
 
 final soundLibraryProvider = Provider<SoundLibrary>((ref) => DeviceSoundLibrary());
 
-final systemSoundsProvider = FutureProvider<List<SoundOption>>(
-  (ref) => ref.watch(soundLibraryProvider).systemSounds(),
-);
+final systemSoundsProvider = FutureProvider<List<SoundOption>>((ref) => ref.watch(soundLibraryProvider).systemSounds());

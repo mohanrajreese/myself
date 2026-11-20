@@ -13,9 +13,8 @@ class PraxisApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => MaterialApp.router(
-    onGenerateTitle: (context) => AppConfig.fromEnvironment.appName.isNotEmpty
-        ? AppConfig.fromEnvironment.appName
-        : context.l10n.appName,
+    onGenerateTitle: (context) =>
+        AppConfig.fromEnvironment.appName.isNotEmpty ? AppConfig.fromEnvironment.appName : context.l10n.appName,
     debugShowCheckedModeBanner: false,
     theme: buildTheme(Brightness.light),
     darkTheme: buildTheme(Brightness.dark),

@@ -15,6 +15,8 @@ import '../features/auth/application/session.dart';
 import '../features/auth/application/session_controller.dart';
 import '../features/auth/domain/account.dart';
 import '../features/auth/domain/auth_repository.dart';
+import '../features/money/data/drift_money_repository.dart';
+import '../features/money/domain/money.dart';
 import '../features/profile/data/drift_goals_repository.dart';
 import '../features/profile/data/drift_profile_repository.dart';
 import '../features/profile/domain/goals.dart';
@@ -43,9 +45,7 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) => throw StateErro
 final initialSessionProvider = Provider<SessionState>((ref) => const SessionState());
 
 /// The account this device is bound to, or null before the first sign-in.
-final currentAccountProvider = Provider<Account?>(
-  (ref) => ref.watch(sessionControllerProvider).account,
-);
+final currentAccountProvider = Provider<Account?>((ref) => ref.watch(sessionControllerProvider).account);
 
 final clockProvider = Provider<Clock>((ref) => systemClock);
 final idGeneratorProvider = Provider<IdGenerator>((ref) => const UuidV7Generator());
@@ -84,9 +84,7 @@ final weightRepositoryProvider = Provider<WeightRepository>(
 );
 
 /// The user's local calendar day.
-final todayProvider = Provider<LocalDate>(
-  (ref) => LocalDate.fromDateTime(ref.watch(clockProvider).now()),
-);
+final todayProvider = Provider<LocalDate>((ref) => LocalDate.fromDateTime(ref.watch(clockProvider).now()));
 
 final currentDailyGoalsProvider = StreamProvider<DailyGoals?>(
   (ref) => ref.watch(goalsRepositoryProvider).watchCurrentDailyGoals(),
@@ -96,9 +94,7 @@ final currentNutritionGoalsProvider = StreamProvider<NutritionTargets?>(
   (ref) => ref.watch(goalsRepositoryProvider).watchCurrentNutritionGoals(),
 );
 
-final latestWeightProvider = StreamProvider<WeightEntry?>(
-  (ref) => ref.watch(weightRepositoryProvider).watchLatest(),
-);
+final latestWeightProvider = StreamProvider<WeightEntry?>((ref) => ref.watch(weightRepositoryProvider).watchLatest());
 
 final todayWeightEntriesProvider = StreamProvider<List<WeightEntry>>(
   (ref) => ref.watch(weightRepositoryProvider).watchOn(ref.watch(todayProvider)),
@@ -117,6 +113,15 @@ final pendingSyncCountProvider = StreamProvider<int>((ref) {
       .watchSingle()
       .map((row) => row.read<int>('n'));
 });
+
+final moneyRepositoryProvider = Provider<MoneyRepository>(
+  (ref) => DriftMoneyRepository(
+    ref.watch(appDatabaseProvider),
+    clock: ref.watch(clockProvider),
+    ids: ref.watch(idGeneratorProvider),
+    timeZone: ref.watch(timeZoneSourceProvider),
+  ),
+);
 
 final waterRepositoryProvider = Provider<WaterRepository>(
   (ref) => DriftWaterRepository(

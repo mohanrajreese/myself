@@ -16,7 +16,9 @@ import '../core/platform/device_time_zone.dart';
 import '../core/utils/clock.dart';
 import '../core/utils/id_generator.dart';
 import '../features/activities/data/drift_activity_repository.dart';
+import '../features/money/data/drift_money_repository.dart';
 import '../features/reminders/data/drift_reminder_repository.dart';
+import 'money_reminder_source.dart';
 import '../core/database/private_database.dart';
 import '../features/medication/data/drift_medication_repository.dart';
 import '../features/private_space/data/drift_sensitive_reminder_repository.dart';
@@ -49,23 +51,14 @@ const syncTask = 'sync';
 Future<(ReminderService, AppDatabase)?> _openServices() async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
-  final key = (await DatabaseKeyManager(
-    const SecureSecretStore(),
-  ).keyFor(DatabaseId.app)).valueOrNull;
+  final key = (await DatabaseKeyManager(const SecureSecretStore()).keyFor(DatabaseId.app)).valueOrNull;
   if (key == null) return null;
   final db = AppDatabase(openEncryptedDatabase(name: AppDatabase.databaseName, hexKey: key));
-  final privateKey = (await DatabaseKeyManager(
-    const SecureSecretStore(),
-  ).keyFor(DatabaseId.private)).valueOrNull;
+  final privateKey = (await DatabaseKeyManager(const SecureSecretStore()).keyFor(DatabaseId.private)).valueOrNull;
   final privateDb = privateKey == null
       ? null
-      : PrivateDatabase(
-          openEncryptedDatabase(name: PrivateDatabase.databaseName, hexKey: privateKey),
-        );
-  final gateway = await createNotificationGateway(
-    onTap: (_) {},
-    onBackgroundTap: notificationTapBackground,
-  );
+      : PrivateDatabase(openEncryptedDatabase(name: PrivateDatabase.databaseName, hexKey: privateKey));
+  final gateway = await createNotificationGateway(onTap: (_) {}, onBackgroundTap: notificationTapBackground);
   final timeZone = DeviceTimeZone();
   const ids = UuidV7Generator();
   final service = ReminderService(
@@ -84,6 +77,13 @@ Future<(ReminderService, AppDatabase)?> _openServices() async {
             sensitive: DriftSensitiveReminderRepository(privateDb, clock: systemClock, ids: ids),
             genericTitle: deviceLocalizations().genericReminderTitle,
           ),
+    extraSources: [
+      MoneyReminderSource(
+        money: DriftMoneyRepository(db, clock: systemClock, ids: ids, timeZone: timeZone),
+        text: moneyReminderText(deviceLocalizations()),
+        clock: systemClock,
+      ),
+    ],
   );
   return (service, db);
 }
@@ -159,11 +159,7 @@ Future<bool> backgroundSync() async {
       publishableKey: config.supabasePublishableKey,
       authOptions: const FlutterAuthClientOptions(localStorage: SecureSessionStorage(secrets)),
     );
-    final result = await SyncEngine(
-      db: db,
-      remote: SupabaseSyncRemote(supabase.client),
-      clock: systemClock,
-    ).syncNow();
+    final result = await SyncEngine(db: db, remote: SupabaseSyncRemote(supabase.client), clock: systemClock).syncNow();
     if (result.failed == 0 && !result.authPaused) {
       await settings.write(SyncController.lastSyncKey, systemClock.now().toUtc().toIso8601String());
     }
@@ -191,15 +187,11 @@ Future<void> pushBackgroundHandler(RemoteMessage message) async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
   var prefs = const PushPreferences();
-  final key = (await DatabaseKeyManager(
-    const SecureSecretStore(),
-  ).keyFor(DatabaseId.app)).valueOrNull;
+  final key = (await DatabaseKeyManager(const SecureSecretStore()).keyFor(DatabaseId.app)).valueOrNull;
   if (key != null) {
     final db = AppDatabase(openEncryptedDatabase(name: AppDatabase.databaseName, hexKey: key));
     try {
-      prefs = PushPreferences.fromJson(
-        await SettingsRepository(db, clock: systemClock).read(PushPreferences.key),
-      );
+      prefs = PushPreferences.fromJson(await SettingsRepository(db, clock: systemClock).read(PushPreferences.key));
     } finally {
       await db.close();
     }
@@ -207,9 +199,6 @@ Future<void> pushBackgroundHandler(RemoteMessage message) async {
   if (!pushAllowed(m.type, prefs)) return;
   final request = pushNotification(m, deviceLocalizations());
   if (request == null) return;
-  final gateway = await createNotificationGateway(
-    onTap: (_) {},
-    onBackgroundTap: notificationTapBackground,
-  );
+  final gateway = await createNotificationGateway(onTap: (_) {}, onBackgroundTap: notificationTapBackground);
   await gateway.show(request);
 }

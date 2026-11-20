@@ -98,10 +98,7 @@ class _TodayList extends ConsumerWidget {
         children: [
           FbEmptyHint(l10n.activitiesEmpty, boxed: true),
           const SizedBox(height: FbSpace.md),
-          OutlinedButton(
-            onPressed: () => context.push(Routes.newActivity),
-            child: Text(l10n.createActivity),
-          ),
+          OutlinedButton(onPressed: () => context.push(Routes.newActivity), child: Text(l10n.createActivity)),
         ],
       );
     }
@@ -120,8 +117,7 @@ class _TodayList extends ConsumerWidget {
         Row(
           children: [
             Expanded(child: Text(context.dayLabel(today), style: context.text.bodyStrong)),
-            if (rows.isNotEmpty)
-              Text(l10n.doneOfTotal(done, rows.length), style: context.text.caption),
+            if (rows.isNotEmpty) Text(l10n.doneOfTotal(done, rows.length), style: context.text.caption),
           ],
         ),
         const SizedBox(height: FbSpace.md),
@@ -173,14 +169,9 @@ class SlotRow extends ConsumerWidget {
     final a = day.activity;
     final target = a.targetMilli;
     final progress = switch (a.trackingType) {
-      TrackingType.count when target != null => l10n.countProgress(
-        slot.progressMilli ~/ 1000,
-        target ~/ 1000,
-      ),
-      TrackingType.duration || TrackingType.stopwatch when target != null => l10n.durationProgress(
-        slot.progressMilli ~/ 60000,
-        target ~/ 60000,
-      ),
+      TrackingType.count when target != null => l10n.countProgress(slot.progressMilli ~/ 1000, target ~/ 1000),
+      TrackingType.duration ||
+      TrackingType.stopwatch when target != null => l10n.durationProgress(slot.progressMilli ~/ 60000, target ~/ 60000),
       TrackingType.checklist => l10n.checklistProgress(
         {for (final log in slot.logs) ...?log.checklistDone}.length,
         a.checklistItems.length,
@@ -217,10 +208,7 @@ class SlotRow extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg, vertical: FbSpace.sm),
           child: Row(
             children: [
-              SizedBox(
-                width: 64,
-                child: Text(minuteLabel(context, slot.minute), style: context.text.caption),
-              ),
+              SizedBox(width: 64, child: Text(minuteLabel(context, slot.minute), style: context.text.caption)),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,9 +218,7 @@ class SlotRow extends ConsumerWidget {
                     const SizedBox(height: 2),
                     SlotBadge(
                       slot.state,
-                      text: slot.state == SlotState.missed
-                          ? l10n.notLoggedAt(minuteLabel(context, slot.minute))
-                          : null,
+                      text: slot.state == SlotState.missed ? l10n.notLoggedAt(minuteLabel(context, slot.minute)) : null,
                     ),
                   ],
                 ),
@@ -280,20 +266,13 @@ class _SnoozeSheetState extends State<SnoozeSheet> {
           runSpacing: FbSpace.sm,
           children: [
             for (final m in const [5, 10, 15, 30])
-              OutlinedButton(
-                onPressed: () => Navigator.of(context).pop(m),
-                child: Text(l10n.minutesShort(m)),
-              ),
+              OutlinedButton(onPressed: () => Navigator.of(context).pop(m), child: Text(l10n.minutesShort(m))),
           ],
         ),
         const SizedBox(height: FbSpace.lg),
         TextField(
           keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: l10n.customMinutes,
-            suffixText: l10n.unitMin,
-            errorText: _error,
-          ),
+          decoration: InputDecoration(labelText: l10n.customMinutes, suffixText: l10n.unitMin, errorText: _error),
           onChanged: (v) => _custom = v,
         ),
         const SizedBox(height: FbSpace.md),
@@ -366,9 +345,7 @@ class _ActivityListState extends ConsumerState<_ActivityList> {
           child: shown.isEmpty
               ? ListView(
                   padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg),
-                  children: [
-                    FbEmptyHint(_archived ? l10n.archivedEmpty : l10n.activitiesEmpty, boxed: true),
-                  ],
+                  children: [FbEmptyHint(_archived ? l10n.archivedEmpty : l10n.activitiesEmpty, boxed: true)],
                 )
               : ReorderableListView(
                   padding: const EdgeInsets.fromLTRB(FbSpace.lg, 0, FbSpace.lg, FbSpace.xxl),
@@ -438,10 +415,7 @@ class _Menu extends ConsumerWidget {
         PopupMenuItem(value: _Action.duplicate, child: Text(l10n.duplicateMeal)),
         if (!a.archived) PopupMenuItem(value: _Action.reschedule, child: Text(l10n.reschedule)),
         if (!a.archived)
-          PopupMenuItem(
-            value: _Action.priority,
-            child: Text(a.isEssential ? l10n.makeOptional : l10n.makeEssential),
-          ),
+          PopupMenuItem(value: _Action.priority, child: Text(a.isEssential ? l10n.makeOptional : l10n.makeEssential)),
         PopupMenuItem(
           value: a.archived ? _Action.restore : _Action.archive,
           child: Text(a.archived ? l10n.restore : l10n.archive),
@@ -462,11 +436,7 @@ class _Menu extends ConsumerWidget {
         final r = await repo.duplicate(a.id, name: l10n.copyName(a.name));
         if (context.mounted) showFbSnackBar(context, r.isOk ? l10n.duplicated : l10n.errSaveFailed);
       case _Action.priority:
-        await repo.update(
-          a.copyWith(
-            priority: a.isEssential ? ActivityPriority.optional : ActivityPriority.essential,
-          ),
-        );
+        await repo.update(a.copyWith(priority: a.isEssential ? ActivityPriority.optional : ActivityPriority.essential));
       case _Action.archive || _Action.restore:
         await repo.setArchived(a.id, archived: action == _Action.archive);
         replanReminders(ref);

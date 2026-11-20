@@ -14,11 +14,7 @@ final class ScreenTimeSettings {
   final String? alertedOn;
 
   static const key = 'screen_time_settings';
-  Map<String, Object?> toJson() => {
-    'target': targetMinutes,
-    'alerts': alerts,
-    'alertedOn': alertedOn,
-  };
+  Map<String, Object?> toJson() => {'target': targetMinutes, 'alerts': alerts, 'alertedOn': alertedOn};
   static ScreenTimeSettings fromJson(Object? j) => switch (j) {
     {'target': final int? t, 'alerts': final bool a} => ScreenTimeSettings(
       targetMinutes: t,
@@ -48,8 +44,7 @@ final class ScreenTimeService {
 
   static const alertNotificationId = 902;
 
-  Future<ScreenTimeSettings> read() async =>
-      ScreenTimeSettings.fromJson(await settings.read(ScreenTimeSettings.key));
+  Future<ScreenTimeSettings> read() async => ScreenTimeSettings.fromJson(await settings.read(ScreenTimeSettings.key));
   Future<void> write(ScreenTimeSettings s) => settings.write(ScreenTimeSettings.key, s.toJson());
 
   /// Refreshes the last [days] days (Android keeps detailed events only a
@@ -85,8 +80,6 @@ final class ScreenTimeService {
         secret: true,
       ),
     );
-    await write(
-      ScreenTimeSettings(targetMinutes: target, alerts: true, alertedOn: today.toString()),
-    );
+    await write(ScreenTimeSettings(targetMinutes: target, alerts: true, alertedOn: today.toString()));
   }
 }
