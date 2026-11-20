@@ -1243,10 +1243,12 @@ Avoid claims that one activity caused another health outcome.
 
 ## 5.21 Money: expenses, budgets, debts and EMIs
 
-> Addendum v2.1, requested by the owner on 20 November 2026. **Status: approved by the owner on 20 November 2026.** Decisions: reached from a Home card (no new tab); synced like other ordinary records; Indian rupees only; no bill splitting.
+> Addendum v2.1, requested by the owner on 20 November 2026. **Status: approved by the owner on 20 November 2026.** Decisions: Money replaces Insights as a bottom tab (Insights opens from the profile menu); nothing on Home; synced like other ordinary records; Indian rupees only; no bill splitting.
 
 ### Placement
-- A **Money** card on Home shows this month's spending, the budget left, and the next EMI due. Tapping it opens the Money section (its own screens, not a bottom tab).
+- **Money is a bottom tab**, in the place of Insights. The bottom bar is: Home, Fitness, Nutrition, Health, Habits, Money (owner, 20 November 2026).
+- **Insights moves to the profile menu** (Settings, opened from the profile button on Home); its screens are unchanged.
+- Home shows no money information.
 - Money is ordinary data (§7.2): synced, not behind the app lock.
 
 ### A. Expenses
@@ -1269,7 +1271,7 @@ Avoid claims that one activity caused another health outcome.
 - Fields: original amount, start date, optional due date, optional annual interest rate (for reference only; no interest is calculated), notes.
 - Payments ledger: each repayment (paid by me, or received by me) with amount, date and note. Outstanding = original amount minus payments recorded. A debt can be marked settled.
 - **EMI loans:** EMI amount, day of the month it is due, number of instalments, first EMI date. The app shows instalments paid, instalments left, and remaining amount (EMI × instalments left), with a note that the bank's own figure may differ.
-- **EMI reminders** use the existing reminder engine: a notification on the due day (and optionally a day before) with Paid, Snooze, Skip. "Paid" records the instalment against the loan and, by default, an expense in "EMI and loan repayments".
+- **EMI reminders** use the existing reminder engine: the first reminder comes **at least 7 days before** the due date (7 by default; up to 30 days may be chosen), then 1 day before and on the due day, each with Paid, Snooze, Skip. "Paid" records the instalment against the loan and, by default, an expense in "EMI and loan repayments".
 - Notifications show "EMI due today" and the lender's name; the amount is shown only when the phone is unlocked.
 
 ### D. Analysis

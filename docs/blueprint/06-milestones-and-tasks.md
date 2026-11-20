@@ -195,7 +195,7 @@ Screen tasks (F-07, F-08, F-09, F-12, F-13, F-14a, F-15) wait for design approva
 
 ## Phase 8 — Money (PRD §5.21, addendum v2.1)
 
-**Deliverable:** expenses, budgets, debts and EMI reminders with analysis, reached from a Home card.
+**Deliverable:** expenses, budgets, debts and EMI reminders with analysis, as a bottom tab in place of Insights.
 
 | ID | Task | PRD |
 |---|---|---|
@@ -205,10 +205,10 @@ Screen tasks (F-07, F-08, F-09, F-12, F-13, F-14a, F-15) wait for design approva
 | M-04 | Expenses: add, edit, delete, search and filter, receipt photo (encrypted, local) | §5.21A |
 | M-05 | Budgets: overall and per category, effective-dated; progress | §5.21B |
 | M-06 | Debts: both directions, kinds, payments ledger, outstanding, settle | §5.21C |
-| M-07 | EMI loans: schedule, instalments paid and left, EMI reminders with Paid/Snooze/Skip recording payment and expense; recurring expenses | §5.21C, §5.15 |
+| M-07 | EMI loans: schedule, instalments paid and left, EMI reminders 7 days before (or earlier), 1 day before and on the due day, with Paid/Snooze/Skip recording payment and expense; recurring expenses | §5.21C, §5.15 |
 | M-08 | Food link: meal cost field, link expense to meal, delete prompt | §5.21E |
 | M-09 | Analysis: month and custom range, categories, methods, trend, budget, EMI share, debts summary, food spending; descriptive sentences | §5.21D |
-| M-10 | Home Money card; export and deletion include Money; sync tables ordered | §5.21, §7.3 |
+| M-10 | Money bottom tab replacing Insights; Insights row in the profile menu; export and deletion include Money; sync tables ordered | §5.21, §7.3 |
 | M-11 | Widget and accessibility tests, device tests, docs, Phase 8 report | §11 |
 
 **Exit criteria:** an expense, a debt and an EMI recorded offline sync with no duplicates; an EMI reminder's Paid records both the instalment and the expense; budgets never change past months.

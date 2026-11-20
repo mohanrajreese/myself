@@ -50,7 +50,7 @@ Toolchain facts checked on 16 November 2026 (orientation only; versions are re-r
 | D7 | Starting targets | **Calories, protein and water are pre-filled from body weight** on the Goals step (per-kilogram rules of thumb, shown as editable estimates). This overrides the PRD's "no calorie prescription" non-goal (§1.3) by owner decision. Rules: `lib/features/profile/domain/goal_suggestions.dart` | Decided |
 | D8 | Fibre target | **A daily fibre target is part of the goals** (owner request, 17 Nov 2026), pre-filled at 14 g per 1,000 kcal of the calorie estimate, 25–40 g, editable. Shown on Home and in the nutrition summary | Decided |
 | D6 | Screen design review | **Every screen's design is shown to the owner and approved before the screen is built.** Designs live on the design canvas linked from the status file | Decided |
-| D9 | Money module (PRD §5.21, addendum v2.1) | **Expenses, budgets, debts with EMI reminders, analysis and a food link**, reached from a Home card; no bill splitting (owner, 20 Nov 2026) | Decided |
+| D9 | Money module (PRD §5.21, addendum v2.1) | **Expenses, budgets, debts with EMI reminders, analysis and a food link**, as a **bottom tab in place of Insights**, which moves to the profile menu; nothing on Home; EMI reminders start at least 7 days before the due date; no bill splitting (owner, 20 Nov 2026) | Decided |
 | D10 | Money privacy tier | **Synced** like ordinary records (§7.2), not behind the app lock; receipt photos stay on the phone (owner, 20 Nov 2026) | Decided |
 | D11 | Currency | **Indian rupees only**, stored as integer paise (owner, 20 Nov 2026) | Decided |
 

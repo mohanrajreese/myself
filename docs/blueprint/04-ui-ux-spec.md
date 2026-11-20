@@ -160,7 +160,7 @@ Progress is saved per step; closing the app resumes where the user stopped.
 │ 07:15  Water 250 ml                    │
 │ 08:00  Breakfast · 420 kcal            │
 └────────────────────────────────────────┘
-│ Home  Fitness  Nutrition  Health  Habits  Insights │
+│ Home  Fitness  Nutrition  Health  Habits  Money    │
 ```
 
 | Element | Behaviour |
