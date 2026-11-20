@@ -15,6 +15,9 @@ LocalDate monthStart(LocalDate d) => LocalDate(d.year, d.month, 1);
 LocalDate monthEnd(LocalDate d) => LocalDate.fromDateTime(DateTime.utc(d.year, d.month + 1, 0));
 LocalDate addMonths(LocalDate d, int n) => LocalDate.fromDateTime(DateTime.utc(d.year, d.month + n, 1));
 
+/// The fixed id of a seeded category.
+String seededCategoryId(String key) => DriftMoneyRepository.categoryId(key);
+
 final emiCategoryId = DriftMoneyRepository.categoryId('emi');
 final foodCategoryIds = {DriftMoneyRepository.categoryId('food'), DriftMoneyRepository.categoryId('groceries')};
 
@@ -32,6 +35,10 @@ final expensesProvider = StreamProvider.family<List<Expense>, DayRange>(
 
 final junkMealIdsProvider = StreamProvider.family<Set<String>, DayRange>(
   (ref, r) => ref.watch(moneyRepositoryProvider).watchJunkMealIds(from: r.from, to: r.to),
+);
+
+final recurringProvider = StreamProvider<List<RecurringExpense>>(
+  (ref) => ref.watch(moneyRepositoryProvider).watchRecurring(),
 );
 
 final budgetsProvider = StreamProvider<List<Budget>>((ref) => ref.watch(moneyRepositoryProvider).watchBudgets());
@@ -143,6 +150,8 @@ final class MoneyActions {
     String? note,
   }) => _thenReplan(_repo.addPayment(debtId, amountPaise: amountPaise, at: at, instalmentNo: instalmentNo, note: note));
   Future<Result<void>> deletePayment(String id) => _thenReplan(_repo.deletePayment(id));
+  Future<Result<RecurringExpense>> saveRecurring(RecurringExpense r) => _thenReplan(_repo.saveRecurring(r));
+  Future<Result<void>> deleteRecurring(String id) => _thenReplan(_repo.deleteRecurring(id));
 }
 
 /// Encrypted receipt photos; set at start-up once the file key is known.

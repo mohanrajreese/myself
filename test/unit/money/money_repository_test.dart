@@ -54,6 +54,14 @@ void main() {
     expect(DriftMoneyRepository.categoryId('food'), food);
   });
 
+  test('custom categories are added and archived; EMI and Other cannot be archived', () async {
+    final pet = ((await money.addCategory('Pet care')) as Ok<FinanceCategory>).value;
+    await money.archiveCategory(pet.id, archived: true);
+    expect((await money.watchCategories().first).firstWhere((c) => c.id == pet.id).archived, isTrue);
+    expect((await money.archiveCategory(emiCat, archived: true)).failureOrNull?.code, 'not_archivable');
+    expect((await money.addCategory('  ')).failureOrNull?.code, 'name_required');
+  });
+
   test('an expense is stored in paise and queued for sync in the same write', () async {
     final before = (await outboxEntries(db)).length;
     final r = await money.addExpense(draft(24000));

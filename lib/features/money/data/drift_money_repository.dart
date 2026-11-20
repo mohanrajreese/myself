@@ -162,7 +162,14 @@ final class DriftMoneyRepository implements MoneyRepository {
   }
 
   @override
-  Future<Result<void>> archiveCategory(String id, {required bool archived}) => Result.guard(
+  Future<Result<void>> archiveCategory(String id, {required bool archived}) async {
+    if (archived && unarchivableCategoryKeys.any((k) => categoryId(k) == id)) {
+      return const Err(ValidationFailure('category', 'not_archivable'));
+    }
+    return _archiveCategory(id, archived: archived);
+  }
+
+  Future<Result<void>> _archiveCategory(String id, {required bool archived}) => Result.guard(
     () => _db.transaction(() async {
       final now = _now;
       final n = await (_db.update(_db.financeCategories)..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(

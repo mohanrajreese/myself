@@ -1,10 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../app/labels.dart';
 import '../../../app/money_labels.dart';
 import '../../../app/money_providers.dart';
 import '../../../app/providers.dart';
+import '../../../app/routes.dart';
 import '../../../app/tracking_providers.dart';
 import '../../../core/platform/photo_picker.dart';
 import '../../../core/units/rupees.dart';
@@ -403,7 +405,19 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     final cats = ref.watch(moneyCategoryMapProvider);
     final q = _query.trim().toLowerCase();
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.moneyExpenses)),
+      appBar: AppBar(
+        title: Text(l10n.moneyExpenses),
+        actions: [
+          PopupMenuButton<String>(
+            tooltip: l10n.moneyMenu,
+            onSelected: (route) => context.push(route),
+            itemBuilder: (_) => [
+              PopupMenuItem(value: Routes.moneyRecurring, child: Text(l10n.moneyRecurringTitle)),
+              PopupMenuItem(value: Routes.moneyCategories, child: Text(l10n.moneyCategoriesTitle)),
+            ],
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         tooltip: l10n.moneyAddExpenseLabel,
         onPressed: () => showExpenseSheet(context),

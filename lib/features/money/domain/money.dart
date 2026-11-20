@@ -35,6 +35,9 @@ final class FinanceCategory {
 }
 
 /// Seeded categories, in order (§5.21A). Names come from l10n by key.
+/// Categories that every expense can fall back on; never archived.
+const unarchivableCategoryKeys = {'emi', 'other'};
+
 const defaultCategoryKeys = [
   ('food', 'food'),
   ('groceries', 'basket'),

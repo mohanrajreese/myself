@@ -35,7 +35,9 @@ void main() {
   Future<void> tapText(WidgetTester tester, String text) => tap(tester, find.text(text));
 
   Future<void> openMoney(WidgetTester tester) async {
-    await app.completeOnboarding(draft: const SetupDraft(name: 'Asha Rao', weightText: '91.8'));
+    await app.completeOnboarding(
+      draft: const SetupDraft(name: 'Asha Rao', weightText: '91.8'),
+    );
     await app.pump(tester, session: signedInSession);
     await drain(tester);
     await tap(tester, find.descendant(of: find.byType(NavigationBar), matching: find.text('Money')));
@@ -134,6 +136,41 @@ void main() {
     expect(find.text('Money analysis'), findsOneWidget);
     expect(find.text('• You spent ₹240 more than in the previous period.'), findsOneWidget);
     expect(find.text('Descriptions of your records only, not financial advice.'), findsOneWidget);
+    await app.dispose(tester);
+  });
+
+  testWidgets('a recurring expense is added from the Expenses menu', (tester) async {
+    await openMoney(tester);
+    await tapText(tester, 'Expenses');
+    await tap(tester, find.byTooltip('More options'));
+    await tapText(tester, 'Recurring expenses');
+    expect(find.textContaining('No recurring expenses yet.'), findsOneWidget);
+    await tap(tester, find.widgetWithText(TextButton, 'Add'));
+    await tester.enterText(field('Name'), 'Rent');
+    await tester.enterText(field('Amount'), '18000');
+    await tapText(tester, 'Net banking');
+    await tapText(tester, 'Save');
+    final row = (await app.db.select(app.db.recurringExpenses).get()).single;
+    expect(row.amountPaise, 1800000);
+    expect(row.method, 'net_banking');
+    expect(find.text('Rent · ₹18,000'), findsOneWidget);
+    await app.dispose(tester);
+  });
+
+  testWidgets('categories can be added, archived and restored', (tester) async {
+    await openMoney(tester);
+    await tapText(tester, 'Expenses');
+    await tap(tester, find.byTooltip('More options'));
+    await tapText(tester, 'Categories');
+    expect(find.bySemanticsLabel('Archive EMI and loan repayments'), findsNothing);
+    await tap(tester, find.bySemanticsLabel('Archive Education'));
+    expect(find.text('Archived'), findsOneWidget);
+    await tap(tester, find.bySemanticsLabel('Restore Education'));
+    expect(find.text('Archived'), findsNothing);
+    await tap(tester, find.bySemanticsLabel('New category'));
+    await tester.enterText(field('Name'), 'Pet care');
+    await tapText(tester, 'Save');
+    expect(find.text('Pet care'), findsOneWidget);
     await app.dispose(tester);
   });
 }

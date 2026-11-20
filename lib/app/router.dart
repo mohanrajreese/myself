@@ -187,6 +187,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(path: 'expenses', builder: (context, state) => const ExpensesScreen()),
                   GoRoute(path: 'budgets', builder: (context, state) => const BudgetsScreen()),
                   GoRoute(path: 'analysis', builder: (context, state) => const MoneyAnalysisScreen()),
+                  GoRoute(path: 'recurring', builder: (context, state) => const RecurringExpensesScreen()),
+                  GoRoute(path: 'categories', builder: (context, state) => const CategoriesScreen()),
                   GoRoute(
                     path: 'debts',
                     builder: (context, state) => const DebtsScreen(),

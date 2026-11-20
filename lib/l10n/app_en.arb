@@ -3699,5 +3699,58 @@
     }
   },
   "moneyNothingInRange": "No expenses in this period.",
-  "moneyChooseRange": "Choose dates"
+  "moneyChooseRange": "Choose dates",
+  "moneyMenu": "More options",
+  "moneyRecurringTitle": "Recurring expenses",
+  "moneyCategoriesTitle": "Categories",
+  "moneyRecurringRow": "{category} · {method} · {schedule}",
+  "@moneyRecurringRow": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "method": {
+        "type": "String"
+      },
+      "schedule": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyReminderOn": "reminder on",
+  "moneyPaused": "paused",
+  "moneyRecurringNote": "On the day, a reminder offers Paid, Snooze or Skip. Paid records the expense; nothing is recorded on its own. The amount is not shown on the lock screen.",
+  "moneyNoRecurring": "No recurring expenses yet. Add rent, bills or subscriptions to be reminded on the day.",
+  "moneyRecurringSheet": "Recurring expense",
+  "moneyRepeats": "Repeats",
+  "moneyActive": "Active",
+  "moneyRecurringSaved": "Saved",
+  "moneyDeleteRecurringTitle": "Delete this recurring expense?",
+  "moneyDeleteRecurringMessage": "Its reminders stop. Expenses already recorded stay.",
+  "moneyNew": "New",
+  "moneyNewCategory": "New category",
+  "moneyBuiltIn": "Built in",
+  "moneyYours": "Yours",
+  "moneyArchive": "Archive",
+  "moneyRestore": "Restore",
+  "moneyArchived": "Archived",
+  "moneyArchivedHint": "hidden when adding expenses",
+  "moneyCategoriesNote": "Archived categories are hidden when adding an expense but stay on past expenses, budgets and analysis. Categories are never deleted, so no expense loses its category. \"EMI and loan repayments\" and \"Other\" cannot be archived.",
+  "moneyCategorySaved": "Category added",
+  "moneyArchiveA11y": "Archive {name}",
+  "@moneyArchiveA11y": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyRestoreA11y": "Restore {name}",
+  "@moneyRestoreA11y": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }
