@@ -9,24 +9,22 @@ final class PushPreferences {
 
   static const key = 'push_preferences';
 
-  Map<String, Object?> toJson() => {
-    'account': account,
-    'sync_problems': syncProblems,
-    'backup_status': backupStatus,
-  };
+  Map<String, Object?> toJson() => {'account': account, 'sync_problems': syncProblems, 'backup_status': backupStatus};
 
   static PushPreferences fromJson(Object? j) => switch (j) {
-    {'account': final bool a, 'sync_problems': final bool s, 'backup_status': final bool b} =>
-      PushPreferences(account: a, syncProblems: s, backupStatus: b),
+    {'account': final bool a, 'sync_problems': final bool s, 'backup_status': final bool b} => PushPreferences(
+      account: a,
+      syncProblems: s,
+      backupStatus: b,
+    ),
     _ => const PushPreferences(),
   };
 
-  PushPreferences copyWith({bool? account, bool? syncProblems, bool? backupStatus}) =>
-      PushPreferences(
-        account: account ?? this.account,
-        syncProblems: syncProblems ?? this.syncProblems,
-        backupStatus: backupStatus ?? this.backupStatus,
-      );
+  PushPreferences copyWith({bool? account, bool? syncProblems, bool? backupStatus}) => PushPreferences(
+    account: account ?? this.account,
+    syncProblems: syncProblems ?? this.syncProblems,
+    backupStatus: backupStatus ?? this.backupStatus,
+  );
 }
 
 /// The device's FCM token and preferences in `device_notification_tokens`.

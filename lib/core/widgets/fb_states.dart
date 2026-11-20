@@ -8,8 +8,7 @@ class FbLoading extends StatelessWidget {
   final String? semanticLabel;
 
   @override
-  Widget build(BuildContext context) =>
-      Center(child: CircularProgressIndicator(semanticsLabel: semanticLabel));
+  Widget build(BuildContext context) => Center(child: CircularProgressIndicator(semanticsLabel: semanticLabel));
 }
 
 class FbErrorState extends StatelessWidget {
@@ -87,9 +86,7 @@ class FbNotice extends StatelessWidget {
                   Expanded(
                     child: Text(
                       message,
-                      style: context.text.caption.copyWith(
-                        color: isError ? c.error : c.onPrimaryContainer,
-                      ),
+                      style: context.text.caption.copyWith(color: isError ? c.error : c.onPrimaryContainer),
                     ),
                   ),
                 ],

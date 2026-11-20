@@ -48,9 +48,7 @@ final class DriftMedicationRepository implements MedicationRepository {
     }
     return Result.guard(() async {
       final id = ids.newId();
-      await _db
-          .into(_db.localMedications)
-          .insert(_fields(draft).copyWith(id: Value(id), createdAt: Value(_now)));
+      await _db.into(_db.localMedications).insert(_fields(draft).copyWith(id: Value(id), createdAt: Value(_now)));
       return Medication(
         id: id,
         name: draft.name.trim(),
@@ -78,15 +76,12 @@ final class DriftMedicationRepository implements MedicationRepository {
   );
 
   @override
-  Stream<List<Medication>> watchAll() =>
-      (_db.select(_db.localMedications)..orderBy([(t) => OrderingTerm(expression: t.createdAt)]))
-          .watch()
-          .map((rows) => [for (final r in rows) _toMed(r)]);
+  Stream<List<Medication>> watchAll() => (_db.select(
+    _db.localMedications,
+  )..orderBy([(t) => OrderingTerm(expression: t.createdAt)])).watch().map((rows) => [for (final r in rows) _toMed(r)]);
 
   @override
-  Future<List<Medication>> all() async => [
-    for (final r in await _db.select(_db.localMedications).get()) _toMed(r),
-  ];
+  Future<List<Medication>> all() async => [for (final r in await _db.select(_db.localMedications).get()) _toMed(r)];
 
   @override
   Future<Result<void>> record(
@@ -97,10 +92,7 @@ final class DriftMedicationRepository implements MedicationRepository {
   }) => Result.guard(
     () => _db.transaction(() async {
       await (_db.delete(_db.localMedicationLogs)..where(
-            (t) =>
-                t.medicationId.equals(medicationId) &
-                t.localDate.equalsValue(day) &
-                t.scheduledSlot.equals(slot),
+            (t) => t.medicationId.equals(medicationId) & t.localDate.equalsValue(day) & t.scheduledSlot.equals(slot),
           ))
           .go();
       await _db

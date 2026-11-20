@@ -34,19 +34,13 @@ class ReminderList extends ConsumerWidget {
           FbNotice(
             l10n.notificationsOffNotice,
             isError: true,
-            action: TextButton(
-              onPressed: () => ensureNotificationPermission(context, ref),
-              child: Text(l10n.allow),
-            ),
+            action: TextButton(onPressed: () => ensureNotificationPermission(context, ref), child: Text(l10n.allow)),
           ),
           const SizedBox(height: FbSpace.md),
         ] else if (status != null && !status.exact && hasAlarm) ...[
           FbNotice(
             l10n.exactOffNotice,
-            action: TextButton(
-              onPressed: () => context.push(Routes.notificationSettings),
-              child: Text(l10n.review),
-            ),
+            action: TextButton(onPressed: () => context.push(Routes.notificationSettings), child: Text(l10n.review)),
           ),
           const SizedBox(height: FbSpace.md),
         ],
@@ -56,10 +50,7 @@ class ReminderList extends ConsumerWidget {
               title: l10n.quietHours,
               subtitle: quiet == null || !quiet.enabled
                   ? l10n.quietHoursOff
-                  : l10n.quietHoursOn(
-                      minuteLabel(context, quiet.start),
-                      minuteLabel(context, quiet.end),
-                    ),
+                  : l10n.quietHoursOn(minuteLabel(context, quiet.start), minuteLabel(context, quiet.end)),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => context.push(Routes.notificationSettings),
             ),

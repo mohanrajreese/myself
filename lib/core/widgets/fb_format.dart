@@ -14,8 +14,7 @@ extension FbFormat on BuildContext {
     return DateFormat('EEE d MMM').format(DateTime(date.year, date.month, date.day));
   }
 
-  String shortDate(LocalDate date) =>
-      DateFormat('d MMM').format(DateTime(date.year, date.month, date.day));
+  String shortDate(LocalDate date) => DateFormat('d MMM').format(DateTime(date.year, date.month, date.day));
 
   String time(DateTime instant) => MaterialLocalizations.of(this).formatTimeOfDay(
     TimeOfDay.fromDateTime(instant.toLocal()),
@@ -30,9 +29,8 @@ extension FbFormat on BuildContext {
 
   String number(int value) => NumberFormat.decimalPattern().format(value);
 
-  String mass(int grams, MassUnit unit) => unit == MassUnit.kg
-      ? l10n.valueKg(formatMass(grams, unit))
-      : l10n.valueLb(formatMass(grams, unit));
+  String mass(int grams, MassUnit unit) =>
+      unit == MassUnit.kg ? l10n.valueKg(formatMass(grams, unit)) : l10n.valueLb(formatMass(grams, unit));
 
   String volume(int ml, VolumeUnit unit) =>
       unit == VolumeUnit.ml ? l10n.valueMl(number(ml)) : l10n.valueFlOz(formatVolume(ml, unit));

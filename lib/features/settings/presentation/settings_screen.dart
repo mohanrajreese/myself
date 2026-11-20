@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../app/providers.dart';
 import '../../../app/routes.dart';
 import '../../../core/widgets/fb_card.dart';
+import '../../../core/widgets/fb_sheet.dart';
 import '../../../core/widgets/fb_choice.dart';
 import '../../../core/widgets/fb_states.dart';
 import '../../../core/widgets/l10n.dart';
@@ -95,13 +96,23 @@ class SettingsScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(name, style: context.text.title),
-                        if (account?.email != null)
-                          Text(account!.email!, style: context.text.bodySmall),
+                        if (account?.email != null) Text(account!.email!, style: context.text.bodySmall),
                       ],
                     ),
                   ),
                 ],
               ),
+            ),
+          ),
+          const SizedBox(height: FbSpace.lg),
+          FbCard(
+            padding: EdgeInsets.zero,
+            child: FbListRow(
+              leading: Icon(Icons.bar_chart_rounded, color: context.colors.primary),
+              title: l10n.tabInsights,
+              subtitle: l10n.settingsInsightsSubtitle,
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => context.push(Routes.insights),
             ),
           ),
           const SizedBox(height: FbSpace.xl),
@@ -111,16 +122,8 @@ class SettingsScreen extends ConsumerWidget {
               value: l10n.rowProfileValue,
               onTap: () => context.push(Routes.settingsProfile),
             ),
-            FbNavRow(
-              title: l10n.rowGoals,
-              value: l10n.rowGoalsValue,
-              onTap: () => context.push(Routes.settingsGoals),
-            ),
-            FbNavRow(
-              title: l10n.rowDay,
-              value: l10n.rowDayValue,
-              onTap: () => context.push(Routes.settingsDay),
-            ),
+            FbNavRow(title: l10n.rowGoals, value: l10n.rowGoalsValue, onTap: () => context.push(Routes.settingsGoals)),
+            FbNavRow(title: l10n.rowDay, value: l10n.rowDayValue, onTap: () => context.push(Routes.settingsDay)),
           ]),
           const SizedBox(height: FbSpace.xl),
           group(l10n.sectionApp, [
@@ -149,25 +152,14 @@ class SettingsScreen extends ConsumerWidget {
               value: l10n.customiseHomeValue,
               onTap: () => context.push(Routes.settingsHome),
             ),
-            FbNavRow(
-              title: l10n.notificationSettingsTitle,
-              onTap: () => context.push(Routes.notificationSettings),
-            ),
+            FbNavRow(title: l10n.notificationSettingsTitle, onTap: () => context.push(Routes.notificationSettings)),
             FbNavRow(title: l10n.appLock, onTap: () => context.push(Routes.appLock)),
             FbNavRow(title: l10n.rowAbout, onTap: () => context.push(Routes.about)),
           ]),
           const SizedBox(height: FbSpace.xl),
           group(l10n.yourData, [
-            FbNavRow(
-              title: l10n.accountAndSync,
-              value: syncText,
-              onTap: () => context.push(Routes.accountSync),
-            ),
-            FbNavRow(
-              title: l10n.exportTitle,
-              value: l10n.exportRowHelp,
-              onTap: () => context.push(Routes.export),
-            ),
+            FbNavRow(title: l10n.accountAndSync, value: syncText, onTap: () => context.push(Routes.accountSync)),
+            FbNavRow(title: l10n.exportTitle, value: l10n.exportRowHelp, onTap: () => context.push(Routes.export)),
             FbNavRow(title: l10n.deleteDataTitle, onTap: () => context.push(Routes.deleteData)),
           ]),
           const SizedBox(height: FbSpace.xl),
@@ -182,10 +174,7 @@ class SettingsScreen extends ConsumerWidget {
                     alignment: Alignment.centerLeft,
                     child: Semantics(
                       button: true,
-                      child: Text(
-                        l10n.signOut,
-                        style: context.text.bodyStrong.copyWith(color: c.error),
-                      ),
+                      child: Text(l10n.signOut, style: context.text.bodyStrong.copyWith(color: c.error)),
                     ),
                   ),
                 ),

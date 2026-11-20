@@ -17,11 +17,10 @@ import '../../../core/widgets/tokens.dart';
 import '../domain/sleep_math.dart';
 import '../domain/sleep_repository.dart';
 
-String _clock(BuildContext context, int minutes) =>
-    MaterialLocalizations.of(context).formatTimeOfDay(
-      TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60),
-      alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
-    );
+String _clock(BuildContext context, int minutes) => MaterialLocalizations.of(context).formatTimeOfDay(
+  TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60),
+  alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+);
 
 /// Sleep history (PRD §5.9).
 class SleepScreen extends ConsumerWidget {
@@ -61,11 +60,7 @@ class SleepScreen extends ConsumerWidget {
           final lastNight = entries.where((e) => e.period.kind == SleepKind.night).firstOrNull;
           final perDay = <LocalDate, int>{};
           for (final p in week.where((p) => p.kind == SleepKind.night)) {
-            perDay.update(
-              p.wakeDate,
-              (m) => m + p.duration.inMinutes,
-              ifAbsent: () => p.duration.inMinutes,
-            );
+            perDay.update(p.wakeDate, (m) => m + p.duration.inMinutes, ifAbsent: () => p.duration.inMinutes);
           }
           final start = today.addDays(-6);
           final dayNames = MaterialLocalizations.of(context).narrowWeekdays;
@@ -83,18 +78,13 @@ class SleepScreen extends ConsumerWidget {
                       Text(l10n.sleepLastNight, style: context.text.label),
                       const SizedBox(height: FbSpace.xs),
                       Text(
-                        lastNight == null
-                            ? l10n.sleepNone
-                            : context.duration(lastNight.period.duration),
+                        lastNight == null ? l10n.sleepNone : context.duration(lastNight.period.duration),
                         style: context.text.displayMetric,
                       ),
                       if (lastNight != null)
                         Text(
                           [
-                            l10n.sleepRange(
-                              context.time(lastNight.period.start),
-                              context.time(lastNight.period.end),
-                            ),
+                            l10n.sleepRange(context.time(lastNight.period.start), context.time(lastNight.period.end)),
                             if (lastNight.quality != null) l10n.qualityValue(lastNight.quality!),
                             if (targetMin != null) l10n.sleepTargetH(_hours(targetMin)),
                           ].join(' · '),
@@ -145,8 +135,7 @@ class SleepScreen extends ConsumerWidget {
     );
   }
 
-  static String _hours(int minutes) =>
-      minutes % 60 == 0 ? '${minutes ~/ 60}' : (minutes / 60).toStringAsFixed(1);
+  static String _hours(int minutes) => minutes % 60 == 0 ? '${minutes ~/ 60}' : (minutes / 60).toStringAsFixed(1);
 }
 
 class _StatCard extends StatelessWidget {
@@ -248,14 +237,7 @@ class _SleepSheetState extends ConsumerState<SleepSheet> {
     final existing = widget.existing;
     final result = existing == null
         ? await repo.add(kind: _kind, start: _start, end: _end, quality: _quality, notes: _note)
-        : (await repo.update(
-            existing.id,
-            kind: _kind,
-            start: _start,
-            end: _end,
-            quality: _quality,
-            notes: _note,
-          ));
+        : (await repo.update(existing.id, kind: _kind, start: _start, end: _end, quality: _quality, notes: _note));
     if (!mounted) return;
     if (result.isOk) {
       showFbSnackBar(context, l10n.saved);
@@ -329,11 +311,7 @@ class _SleepSheetState extends ConsumerState<SleepSheet> {
           Text(context.duration(_end.difference(_start)), style: context.text.bodyStrong),
         ],
         const SizedBox(height: FbSpace.lg),
-        FbScoreRow(
-          label: l10n.qualityLabel,
-          value: _quality,
-          onChanged: (v) => setState(() => _quality = v),
-        ),
+        FbScoreRow(label: l10n.qualityLabel, value: _quality, onChanged: (v) => setState(() => _quality = v)),
         const SizedBox(height: FbSpace.lg),
         FbTextField(
           label: l10n.note,

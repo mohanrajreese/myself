@@ -12,12 +12,7 @@ import '../../../core/utils/local_date.dart';
 import '../domain/wellness.dart';
 
 final class DriftWellnessRepository implements WellnessRepository {
-  DriftWellnessRepository(
-    this._db, {
-    required this.clock,
-    required this.ids,
-    required this.timeZone,
-  });
+  DriftWellnessRepository(this._db, {required this.clock, required this.ids, required this.timeZone});
 
   final AppDatabase _db;
   final Clock clock;
@@ -66,10 +61,8 @@ final class DriftWellnessRepository implements WellnessRepository {
   Future<Result<void>> delete(String id) => Result.guard(
     () => _db.transaction(() async {
       final now = clock.now().toUtc();
-      final changed =
-          await (_db.update(_db.dailyHealthCheckins)
-                ..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
-              .write(DailyHealthCheckinsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
+      final changed = await (_db.update(_db.dailyHealthCheckins)..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
+          .write(DailyHealthCheckinsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
       if (changed > 0) await _db.enqueueForSync('daily_health_checkins', id, now);
     }),
     onError: (_) => const StorageFailure('wellness_write'),

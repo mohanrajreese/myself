@@ -127,10 +127,7 @@ class _GymWorkoutScreenState extends ConsumerState<GymWorkoutScreen> {
         ),
         actions: [
           TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.cancel)),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(controller.text),
-            child: Text(l10n.save),
-          ),
+          TextButton(onPressed: () => Navigator.of(context).pop(controller.text), child: Text(l10n.save)),
         ],
       ),
     );
@@ -193,17 +190,12 @@ class _GymWorkoutScreenState extends ConsumerState<GymWorkoutScreen> {
                       children: [
                         Expanded(
                           child: Text(
-                            l10n.restLeft(
-                              clockLabel(rest),
-                              clockLabel(Duration(seconds: _restLength)),
-                            ),
+                            l10n.restLeft(clockLabel(rest), clockLabel(Duration(seconds: _restLength))),
                             style: context.text.bodyStrong,
                           ),
                         ),
                         OutlinedButton(
-                          onPressed: () => setState(
-                            () => _restEndsAt = _restEndsAt!.add(const Duration(seconds: 30)),
-                          ),
+                          onPressed: () => setState(() => _restEndsAt = _restEndsAt!.add(const Duration(seconds: 30))),
                           child: Text(l10n.plus30s),
                         ),
                         const SizedBox(width: FbSpace.xs),
@@ -272,12 +264,7 @@ class _GymWorkoutScreenState extends ConsumerState<GymWorkoutScreen> {
 }
 
 class _ExerciseCard extends ConsumerWidget {
-  const _ExerciseCard({
-    required this.entry,
-    required this.index,
-    required this.onSetDone,
-    required this.blank,
-  });
+  const _ExerciseCard({required this.entry, required this.index, required this.onSetDone, required this.blank});
   final WorkoutEntry entry;
   final int index;
   final VoidCallback onSetDone;
@@ -338,8 +325,7 @@ class _ExerciseCard extends ConsumerWidget {
               ),
             ],
           ),
-          for (final set in entry.sets)
-            _SetRow(set: set, kind: e.measurementKind, onDone: onSetDone),
+          for (final set in entry.sets) _SetRow(set: set, kind: e.measurementKind, onDone: onSetDone),
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
@@ -374,21 +360,15 @@ class _SetRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final repo = ref.read(workoutRepositoryProvider);
-    Widget field(String label, String value, String? suffix, ValueChanged<String> onChanged) =>
-        Expanded(
-          child: _SetField(label: label, value: value, suffix: suffix, onChanged: onChanged),
-        );
+    Widget field(String label, String value, String? suffix, ValueChanged<String> onChanged) => Expanded(
+      child: _SetField(label: label, value: value, suffix: suffix, onChanged: onChanged),
+    );
     final fields = switch (kind) {
       MeasurementKind.weightReps => [
-        field(
-          l10n.unitKg,
-          set.loadG == null ? '' : formatScaled(set.loadG!, 3, decimals: 1),
-          null,
-          (v) {
-            final g = parseScaled(v, 3);
-            if (g != null) unawaited(repo.updateSet(set.id, _draft(loadG: g)));
-          },
-        ),
+        field(l10n.unitKg, set.loadG == null ? '' : formatScaled(set.loadG!, 3, decimals: 1), null, (v) {
+          final g = parseScaled(v, 3);
+          if (g != null) unawaited(repo.updateSet(set.id, _draft(loadG: g)));
+        }),
         const SizedBox(width: FbSpace.sm),
         field(l10n.repsLabel, set.reps?.toString() ?? '', null, (v) {
           final r = int.tryParse(v);
@@ -408,15 +388,10 @@ class _SetRow extends ConsumerWidget {
         }),
       ],
       MeasurementKind.distanceDuration => [
-        field(
-          l10n.unitKm,
-          set.distanceM == null ? '' : formatScaled(set.distanceM!, 3, decimals: 2),
-          null,
-          (v) {
-            final m = parseScaled(v, 3);
-            if (m != null) unawaited(repo.updateSet(set.id, _draft(distanceM: m)));
-          },
-        ),
+        field(l10n.unitKm, set.distanceM == null ? '' : formatScaled(set.distanceM!, 3, decimals: 2), null, (v) {
+          final m = parseScaled(v, 3);
+          if (m != null) unawaited(repo.updateSet(set.id, _draft(distanceM: m)));
+        }),
         const SizedBox(width: FbSpace.sm),
         field(l10n.minutesLabel, set.durationS == null ? '' : '${set.durationS! ~/ 60}', null, (v) {
           final m = int.tryParse(v);
@@ -519,10 +494,7 @@ class _ExercisePickerSheetState extends ConsumerState<ExercisePickerSheet> {
       children: [
         TextField(
           autofocus: true,
-          decoration: InputDecoration(
-            labelText: l10n.searchExercises,
-            prefixIcon: const Icon(Icons.search_rounded),
-          ),
+          decoration: InputDecoration(labelText: l10n.searchExercises, prefixIcon: const Icon(Icons.search_rounded)),
           onChanged: (v) => setState(() => _query = v),
         ),
         const SizedBox(height: FbSpace.sm),
@@ -623,11 +595,7 @@ class _ExerciseEditorSheetState extends ConsumerState<ExerciseEditorSheet> {
           runSpacing: FbSpace.sm,
           children: [
             for (final m in _muscleGroups)
-              FbToggleChip(
-                label: m,
-                selected: _muscle == m,
-                onTap: () => setState(() => _muscle = m),
-              ),
+              FbToggleChip(label: m, selected: _muscle == m, onTap: () => setState(() => _muscle = m)),
           ],
         ),
         const SizedBox(height: FbSpace.md),
@@ -761,8 +729,7 @@ class _ExerciseLibraryScreenState extends ConsumerState<ExerciseLibraryScreen> {
                       for (final e in shown)
                         FbListRow(
                           title: e.isCustom ? l10n.yoursName(e.name) : e.name,
-                          subtitle:
-                              '${e.muscleGroup} · ${e.equipment} · ${measurementName(l10n, e.measurementKind)}',
+                          subtitle: '${e.muscleGroup} · ${e.equipment} · ${measurementName(l10n, e.measurementKind)}',
                           trailing: const Icon(Icons.chevron_right_rounded),
                           onTap: () => context.push(Routes.exercise(e.id)),
                         ),

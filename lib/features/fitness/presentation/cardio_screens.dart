@@ -62,9 +62,7 @@ class _CardioLogScreenState extends ConsumerState<CardioLogScreen> {
   void initState() {
     super.initState();
     final now = ref.read(clockProvider).now();
-    _end =
-        widget.existing?.endedAt?.toLocal() ??
-        DateTime(now.year, now.month, now.day, now.hour, now.minute);
+    _end = widget.existing?.endedAt?.toLocal() ?? DateTime(now.year, now.month, now.day, now.hour, now.minute);
     _start = widget.existing?.startedAt.toLocal() ?? _end.subtract(const Duration(minutes: 30));
   }
 
@@ -84,20 +82,8 @@ class _CardioLogScreenState extends ConsumerState<CardioLogScreen> {
     });
     final repo = ref.read(workoutRepositoryProvider);
     final result = widget.existing == null
-        ? (await repo.logCardio(
-            kind: _kind,
-            start: _start,
-            end: _end,
-            distanceM: m,
-            notes: _notes,
-          )).map((_) {})
-        : await repo.updateSession(
-            widget.existing!.id,
-            start: _start,
-            end: _end,
-            distanceM: m,
-            notes: _notes,
-          );
+        ? (await repo.logCardio(kind: _kind, start: _start, end: _end, distanceM: m, notes: _notes)).map((_) {})
+        : await repo.updateSession(widget.existing!.id, start: _start, end: _end, distanceM: m, notes: _notes);
     if (!mounted) return;
     if (!result.isOk) {
       setState(() {
@@ -152,9 +138,7 @@ class _CardioLogScreenState extends ConsumerState<CardioLogScreen> {
     final speed = speedMetresPerHour(distanceM: m, durationS: _seconds);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.existing == null ? l10n.logKind(workoutKindName(l10n, _kind)) : l10n.editWorkout,
-        ),
+        title: Text(widget.existing == null ? l10n.logKind(workoutKindName(l10n, _kind)) : l10n.editWorkout),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: FbSpace.sm),
@@ -176,10 +160,7 @@ class _CardioLogScreenState extends ConsumerState<CardioLogScreen> {
             ),
             const SizedBox(height: FbSpace.lg),
           ],
-          if (_error != null) ...[
-            FbNotice(_error!, isError: true),
-            const SizedBox(height: FbSpace.md),
-          ],
+          if (_error != null) ...[FbNotice(_error!, isError: true), const SizedBox(height: FbSpace.md)],
           FbDateTimeField(
             label: l10n.startLabel,
             value: _start,
@@ -187,12 +168,7 @@ class _CardioLogScreenState extends ConsumerState<CardioLogScreen> {
             onChanged: (v) => setState(() => _start = v),
           ),
           const SizedBox(height: FbSpace.md),
-          FbDateTimeField(
-            label: l10n.endLabel,
-            value: _end,
-            last: now,
-            onChanged: (v) => setState(() => _end = v),
-          ),
+          FbDateTimeField(label: l10n.endLabel, value: _end, last: now, onChanged: (v) => setState(() => _end = v)),
           const SizedBox(height: FbSpace.md),
           FbTextField(
             label: l10n.distanceLabel,
@@ -206,10 +182,7 @@ class _CardioLogScreenState extends ConsumerState<CardioLogScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: _Metric(
-                    _seconds > 0 ? clockLabel(Duration(seconds: _seconds)) : '—',
-                    l10n.durationLabel,
-                  ),
+                  child: _Metric(_seconds > 0 ? clockLabel(Duration(seconds: _seconds)) : '—', l10n.durationLabel),
                 ),
                 Expanded(
                   child: _kind == WorkoutKind.cycle
@@ -296,15 +269,9 @@ class _GpsWorkoutScreenState extends ConsumerState<GpsWorkoutScreen> {
       final l10n = context.l10n;
       _sub = ref
           .read(locationTrackerProvider)
-          .track(
-            title: l10n.gpsNotificationTitle(workoutKindName(l10n, widget.kind)),
-            text: l10n.gpsNotificationText,
-          )
+          .track(title: l10n.gpsNotificationTitle(workoutKindName(l10n, widget.kind)), text: l10n.gpsNotificationText)
           .listen(
-            (f) => setState(
-              () =>
-                  _track.add((latE7: f.latE7, lonE7: f.lonE7, accuracyDm: f.accuracyDm, at: f.at)),
-            ),
+            (f) => setState(() => _track.add((latE7: f.latE7, lonE7: f.lonE7, accuracyDm: f.accuracyDm, at: f.at))),
           );
     });
     _tick = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -329,13 +296,7 @@ class _GpsWorkoutScreenState extends ConsumerState<GpsWorkoutScreen> {
     final start = _now.subtract(elapsed);
     final result = await ref
         .read(workoutRepositoryProvider)
-        .logCardio(
-          kind: widget.kind,
-          start: start,
-          end: _now,
-          distanceM: _track.distanceM,
-          route: _track.points,
-        );
+        .logCardio(kind: widget.kind, start: start, end: _now, distanceM: _track.distanceM, route: _track.points);
     if (!mounted) return;
     showFbSnackBar(context, result.isOk ? l10n.workoutSaved : l10n.errSaveFailed);
     context.pop();
@@ -376,11 +337,7 @@ class _GpsWorkoutScreenState extends ConsumerState<GpsWorkoutScreen> {
                 child: Semantics(
                   label: l10n.routeSemantics(km(context, _track.distanceM)),
                   child: CustomPaint(
-                    painter: RoutePainter(
-                      _track.points,
-                      context.colors.primary,
-                      context.colors.outline,
-                    ),
+                    painter: RoutePainter(_track.points, context.colors.primary, context.colors.outline),
                   ),
                 ),
               ),
@@ -399,9 +356,7 @@ class _GpsWorkoutScreenState extends ConsumerState<GpsWorkoutScreen> {
             ),
             const SizedBox(height: FbSpace.md),
             Text(
-              _track.points.isEmpty
-                  ? l10n.gpsWaiting
-                  : (_track.paused ? l10n.timerPaused : l10n.gpsGood),
+              _track.points.isEmpty ? l10n.gpsWaiting : (_track.paused ? l10n.timerPaused : l10n.gpsGood),
               style: context.text.caption,
             ),
             const SizedBox(height: FbSpace.lg),
@@ -411,9 +366,7 @@ class _GpsWorkoutScreenState extends ConsumerState<GpsWorkoutScreen> {
                   child: OutlinedButton(
                     onPressed: _saving
                         ? null
-                        : () => setState(
-                            () => _track.paused ? _track.resume(_now) : _track.pause(_now),
-                          ),
+                        : () => setState(() => _track.paused ? _track.resume(_now) : _track.pause(_now)),
                     child: Text(_track.paused ? l10n.resume : l10n.pause),
                   ),
                 ),
@@ -451,23 +404,14 @@ class RoutePainter extends CustomPainter {
     if (points.length < 2) return;
     final lats = points.map((p) => p.latE7);
     final lons = points.map((p) => p.lonE7);
-    final minLat = lats.reduce((a, b) => a < b ? a : b),
-        maxLat = lats.reduce((a, b) => a > b ? a : b);
-    final minLon = lons.reduce((a, b) => a < b ? a : b),
-        maxLon = lons.reduce((a, b) => a > b ? a : b);
-    final span = [
-      (maxLat - minLat),
-      (maxLon - minLon),
-      1,
-    ].reduce((a, b) => a > b ? a : b).toDouble();
+    final minLat = lats.reduce((a, b) => a < b ? a : b), maxLat = lats.reduce((a, b) => a > b ? a : b);
+    final minLon = lons.reduce((a, b) => a < b ? a : b), maxLon = lons.reduce((a, b) => a > b ? a : b);
+    final span = [(maxLat - minLat), (maxLon - minLon), 1].reduce((a, b) => a > b ? a : b).toDouble();
     const pad = 20.0;
     final scale = (size.shortestSide - pad * 2) / span;
     Offset at(RoutePoint p) => Offset(
       pad + (p.lonE7 - minLon) * scale + (size.width - pad * 2 - (maxLon - minLon) * scale) / 2,
-      size.height -
-          pad -
-          (p.latE7 - minLat) * scale -
-          (size.height - pad * 2 - (maxLat - minLat) * scale) / 2,
+      size.height - pad - (p.latE7 - minLat) * scale - (size.height - pad * 2 - (maxLat - minLat) * scale) / 2,
     );
     final path = Path()..moveTo(at(points.first).dx, at(points.first).dy);
     for (final p in points.skip(1)) {

@@ -36,8 +36,7 @@ class UserGoals extends Table with SyncedColumns {
   IntColumn get targetWeightG => integer().nullable().check(targetWeightG.isBiggerThanValue(0))();
   IntColumn get dailySteps => integer().nullable().check(dailySteps.isBiggerOrEqualValue(0))();
   IntColumn get dailyWaterMl => integer().nullable().check(dailyWaterMl.isBiggerOrEqualValue(0))();
-  IntColumn get sleepTargetMin =>
-      integer().nullable().check(sleepTargetMin.isBetweenValues(0, 1440))();
+  IntColumn get sleepTargetMin => integer().nullable().check(sleepTargetMin.isBetweenValues(0, 1440))();
 
   /// JSON list of text.
   TextColumn get fitnessGoals => text().withDefault(const Constant('[]'))();
@@ -46,8 +45,7 @@ class UserGoals extends Table with SyncedColumns {
 @DataClassName('NutritionGoalRow')
 class NutritionGoals extends Table with SyncedColumns {
   TextColumn get effectiveFrom => text().map(const LocalDateConverter())();
-  IntColumn get energyKcalMilli =>
-      integer().nullable().check(energyKcalMilli.isBiggerOrEqualValue(0))();
+  IntColumn get energyKcalMilli => integer().nullable().check(energyKcalMilli.isBiggerOrEqualValue(0))();
   IntColumn get proteinMg => integer().nullable().check(proteinMg.isBiggerOrEqualValue(0))();
   IntColumn get carbsMg => integer().nullable().check(carbsMg.isBiggerOrEqualValue(0))();
   IntColumn get fatMg => integer().nullable().check(fatMg.isBiggerOrEqualValue(0))();

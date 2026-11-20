@@ -42,8 +42,7 @@ class LocalPrivateActivityDefinitions extends Table with PrivateColumns {
 @DataClassName('PrivateActivityLogRow')
 @TableIndex(name: 'local_private_activity_logs_date', columns: {#localDate})
 class LocalPrivateActivityLogs extends Table with PrivateColumns {
-  TextColumn get definitionId =>
-      text().references(LocalPrivateActivityDefinitions, #id, onDelete: KeyAction.cascade)();
+  TextColumn get definitionId => text().references(LocalPrivateActivityDefinitions, #id, onDelete: KeyAction.cascade)();
   TextColumn get status => text().check(status.isIn(const ['completed', 'skipped']))();
   DateTimeColumn get occurredAt => dateTime()();
   TextColumn get localDate => text().map(const LocalDateConverter())();
@@ -59,8 +58,7 @@ class LocalPrivateActivityLogs extends Table with PrivateColumns {
 @DataClassName('PrivateHabitLogRow')
 @TableIndex(name: 'local_private_habit_logs_date', columns: {#localDate})
 class LocalPrivateHabitLogs extends Table with PrivateColumns {
-  TextColumn get definitionId =>
-      text().references(LocalPrivateActivityDefinitions, #id, onDelete: KeyAction.cascade)();
+  TextColumn get definitionId => text().references(LocalPrivateActivityDefinitions, #id, onDelete: KeyAction.cascade)();
   IntColumn get count => integer().check(count.isBetweenValues(1, 100))();
   DateTimeColumn get occurredAt => dateTime()();
   TextColumn get localDate => text().map(const LocalDateConverter())();
@@ -74,8 +72,7 @@ class LocalBowelLogs extends Table with PrivateColumns {
   DateTimeColumn get occurredAt => dateTime()();
   TextColumn get localDate => text().map(const LocalDateConverter())();
   TextColumn get tz => text()();
-  IntColumn get count =>
-      integer().withDefault(const Constant(1)).check(count.isBetweenValues(1, 20))();
+  IntColumn get count => integer().withDefault(const Constant(1)).check(count.isBetweenValues(1, 20))();
   TextColumn get consistency => text().check(consistency.isIn(const ['hard', 'normal', 'loose']))();
   BoolColumn get straining => boolean().withDefault(const Constant(false))();
   BoolColumn get pain => boolean().nullable()();
@@ -98,8 +95,7 @@ class LocalMedications extends Table with PrivateColumns {
 @DataClassName('MedicationLogRow')
 @TableIndex(name: 'local_medication_logs_med', columns: {#medicationId, #localDate})
 class LocalMedicationLogs extends Table with PrivateColumns {
-  TextColumn get medicationId =>
-      text().references(LocalMedications, #id, onDelete: KeyAction.cascade)();
+  TextColumn get medicationId => text().references(LocalMedications, #id, onDelete: KeyAction.cascade)();
 
   /// The scheduled minute this log answers, if any.
   IntColumn get scheduledSlot => integer().nullable()();

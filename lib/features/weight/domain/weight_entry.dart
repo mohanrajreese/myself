@@ -7,9 +7,8 @@ import '../../../core/utils/local_date.dart';
 const minWeightG = 1000;
 const maxWeightG = 700000;
 
-ValidationFailure? validateWeightG(int grams) => grams < minWeightG || grams > maxWeightG
-    ? const ValidationFailure('weightG', 'out_of_range')
-    : null;
+ValidationFailure? validateWeightG(int grams) =>
+    grams < minWeightG || grams > maxWeightG ? const ValidationFailure('weightG', 'out_of_range') : null;
 
 @immutable
 final class WeightEntry {

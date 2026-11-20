@@ -18,9 +18,8 @@ import '../../../core/widgets/l10n.dart';
 import '../../../core/widgets/tokens.dart';
 import '../domain/medication.dart';
 
-String _time(BuildContext context, int minute) => MaterialLocalizations.of(
-  context,
-).formatTimeOfDay(TimeOfDay(hour: minute ~/ 60, minute: minute % 60));
+String _time(BuildContext context, int minute) =>
+    MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay(hour: minute ~/ 60, minute: minute % 60));
 
 /// Medication and supplements: today's doses and the list (§5.18).
 class MedicationScreen extends ConsumerWidget {
@@ -84,14 +83,8 @@ class MedicationScreen extends ConsumerWidget {
                         : Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              TextButton(
-                                onPressed: () => record(d, DoseStatus.skipped),
-                                child: Text(l10n.skip),
-                              ),
-                              FilledButton(
-                                onPressed: () => record(d, DoseStatus.taken),
-                                child: Text(l10n.taken),
-                              ),
+                              TextButton(onPressed: () => record(d, DoseStatus.skipped), child: Text(l10n.skip)),
+                              FilledButton(onPressed: () => record(d, DoseStatus.taken), child: Text(l10n.taken)),
                             ],
                           ),
                   ),
@@ -184,9 +177,7 @@ class _MedicationEditorScreenState extends ConsumerState<MedicationEditorScreen>
     );
     if (draft.problems.isNotEmpty) return;
     final repo = ref.read(medicationRepositoryProvider);
-    final ok = _existing == null
-        ? (await repo.create(draft)).isOk
-        : (await repo.update(draft)).isOk;
+    final ok = _existing == null ? (await repo.create(draft)).isOk : (await repo.update(draft)).isOk;
     if (!mounted) return;
     if (!ok) {
       showFbSnackBar(context, l10n.errSaveFailed);
@@ -257,11 +248,7 @@ class _MedicationEditorScreenState extends ConsumerState<MedicationEditorScreen>
             value: _remind,
             onChanged: (v) => setState(() => _remind = v),
           ),
-          FbSwitchRow(
-            title: l10n.activeLabel,
-            value: _active,
-            onChanged: (v) => setState(() => _active = v),
-          ),
+          FbSwitchRow(title: l10n.activeLabel, value: _active, onChanged: (v) => setState(() => _active = v)),
           const SizedBox(height: FbSpace.md),
           FbTextField(
             label: l10n.notesLabel,

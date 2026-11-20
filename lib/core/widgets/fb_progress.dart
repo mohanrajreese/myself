@@ -26,12 +26,7 @@ class FbProgressBar extends StatelessWidget {
 /// Ring with an optional percentage in the middle. With a null [fraction]
 /// only the empty track is drawn.
 class FbProgressRing extends StatelessWidget {
-  const FbProgressRing({
-    required this.fraction,
-    required this.semanticLabel,
-    this.size = 76,
-    super.key,
-  });
+  const FbProgressRing({required this.fraction, required this.semanticLabel, this.size = 76, super.key});
 
   final double? fraction;
   final String semanticLabel;
@@ -54,10 +49,7 @@ class FbProgressRing extends StatelessWidget {
                   child: ExcludeSemantics(
                     child: Text(
                       '${(value * 100).round()}%',
-                      style: context.text.bodySmall.copyWith(
-                        color: c.textPrimary,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: context.text.bodySmall.copyWith(color: c.textPrimary, fontWeight: FontWeight.w700),
                     ),
                   ),
                 ),
@@ -90,6 +82,5 @@ class _RingPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_RingPainter old) =>
-      old.value != value || old.track != track || old.color != color;
+  bool shouldRepaint(_RingPainter old) => old.value != value || old.track != track || old.color != color;
 }

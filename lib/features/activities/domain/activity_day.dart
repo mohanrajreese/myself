@@ -11,12 +11,7 @@ enum DayState { done, inProgress, due, missed, skipped, notScheduled }
 typedef Now = ({LocalDate date, int minute});
 
 final class Slot {
-  const Slot({
-    required this.minute,
-    required this.state,
-    required this.logs,
-    this.progressMilli = 0,
-  });
+  const Slot({required this.minute, required this.state, required this.logs, this.progressMilli = 0});
   final int minute;
   final SlotState state;
   final List<ActivityLog> logs;
@@ -39,12 +34,7 @@ final class ActivityDay {
 
   /// [logs] are this activity's logs for [date]; [now] is the current local
   /// date and minute, which decides between "due" and "not logged".
-  factory ActivityDay.of(
-    Activity activity,
-    LocalDate date,
-    List<ActivityLog> logs, {
-    required Now now,
-  }) {
+  factory ActivityDay.of(Activity activity, LocalDate date, List<ActivityLog> logs, {required Now now}) {
     final rule = activity.ruleOn(date);
     final times = rule == null ? const <int>[] : _calc.timesOn(rule, date);
     final byLog = <int, List<ActivityLog>>{for (final t in times) t: []};

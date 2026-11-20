@@ -6,12 +6,7 @@ import '../../../core/utils/local_date.dart';
 
 @immutable
 final class WaterEntry {
-  const WaterEntry({
-    required this.id,
-    required this.amountMl,
-    required this.occurredAt,
-    required this.localDate,
-  });
+  const WaterEntry({required this.id, required this.amountMl, required this.occurredAt, required this.localDate});
   final String id;
   final int amountMl;
   final DateTime occurredAt;

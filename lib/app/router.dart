@@ -39,6 +39,7 @@ import '../features/settings/presentation/account_sync_screen.dart';
 import '../features/settings/presentation/data_screens.dart';
 import '../features/insights/domain/report.dart';
 import '../features/insights/presentation/insights_screens.dart';
+import '../features/money/presentation/money_screens.dart';
 import '../features/private_space/presentation/private_report_screen.dart';
 import 'app_shell.dart';
 import 'sync_controller.dart';
@@ -180,25 +181,48 @@ final routerProvider = Provider<GoRouter>((ref) {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: Routes.insights,
-                builder: (context, state) => const InsightsScreen(),
+                path: Routes.money,
+                builder: (context, state) => const MoneyScreen(),
                 routes: [
+                  GoRoute(path: 'expenses', builder: (context, state) => const ExpensesScreen()),
+                  GoRoute(path: 'budgets', builder: (context, state) => const BudgetsScreen()),
+                  GoRoute(path: 'analysis', builder: (context, state) => const MoneyAnalysisScreen()),
                   GoRoute(
-                    path: 'report/:kind',
-                    builder: (context, state) => ReportScreen(
-                      kind: ReportKind.values.byName(state.pathParameters['kind']!),
-                      selection: switch (state.extra) {
-                        final Selection s => s,
-                        _ => (
-                          period: ReportPeriod.week,
-                          range: periodRange(ReportPeriod.week, ref.read(todayProvider)),
-                        ),
-                      },
-                    ),
+                    path: 'debts',
+                    builder: (context, state) => const DebtsScreen(),
+                    routes: [
+                      GoRoute(path: 'new', builder: (context, state) => const DebtFormScreen()),
+                      GoRoute(
+                        path: ':id',
+                        builder: (context, state) => DebtDetailScreen(id: state.pathParameters['id']!),
+                        routes: [
+                          GoRoute(
+                            path: 'edit',
+                            builder: (context, state) => DebtFormScreen(id: state.pathParameters['id']),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
             ],
+          ),
+        ],
+      ),
+      GoRoute(
+        path: Routes.insights,
+        builder: (context, state) => const InsightsScreen(),
+        routes: [
+          GoRoute(
+            path: 'report/:kind',
+            builder: (context, state) => ReportScreen(
+              kind: ReportKind.values.byName(state.pathParameters['kind']!),
+              selection: switch (state.extra) {
+                final Selection s => s,
+                _ => (period: ReportPeriod.week, range: periodRange(ReportPeriod.week, ref.read(todayProvider))),
+              },
+            ),
           ),
         ],
       ),

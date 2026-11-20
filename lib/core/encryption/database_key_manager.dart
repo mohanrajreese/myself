@@ -32,9 +32,7 @@ final class DatabaseKeyManager {
     try {
       final existing = await _store.read(id.storageKey);
       if (existing != null) {
-        return _hexKey.hasMatch(existing)
-            ? Ok(existing)
-            : const Err(StorageFailure('database_key_corrupt'));
+        return _hexKey.hasMatch(existing) ? Ok(existing) : const Err(StorageFailure('database_key_corrupt'));
       }
       final created = _newKey();
       await _store.write(id.storageKey, created);

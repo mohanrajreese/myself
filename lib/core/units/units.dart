@@ -62,9 +62,5 @@ int? millilitresFromText(String text, VolumeUnit unit) => switch (unit) {
 
 String formatVolume(int millilitres, VolumeUnit unit) => switch (unit) {
   VolumeUnit.ml => '$millilitres',
-  VolumeUnit.flOz => formatScaled(
-    divRound(millilitres * 100000000000, _mlPerFlOzE10),
-    1,
-    decimals: 1,
-  ),
+  VolumeUnit.flOz => formatScaled(divRound(millilitres * 100000000000, _mlPerFlOzE10), 1, decimals: 1),
 };

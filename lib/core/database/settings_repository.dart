@@ -12,28 +12,20 @@ final class SettingsRepository {
   final Clock _clock;
 
   Future<Object?> read(String key) async {
-    final row = await (_db.select(
-      _db.localAppSettings,
-    )..where((t) => t.key.equals(key))).getSingleOrNull();
+    final row = await (_db.select(_db.localAppSettings)..where((t) => t.key.equals(key))).getSingleOrNull();
     return row == null ? null : jsonDecode(row.valueJson);
   }
 
-  Stream<Object?> watch(String key) =>
-      (_db.select(_db.localAppSettings)..where((t) => t.key.equals(key)))
-          .watchSingleOrNull()
-          .map((row) => row == null ? null : jsonDecode(row.valueJson))
-          .distinct((a, b) => jsonEncode(a) == jsonEncode(b));
+  Stream<Object?> watch(String key) => (_db.select(_db.localAppSettings)..where((t) => t.key.equals(key)))
+      .watchSingleOrNull()
+      .map((row) => row == null ? null : jsonDecode(row.valueJson))
+      .distinct((a, b) => jsonEncode(a) == jsonEncode(b));
 
   Future<void> write(String key, Object value) => _db
       .into(_db.localAppSettings)
       .insertOnConflictUpdate(
-        LocalAppSettingsCompanion.insert(
-          key: key,
-          valueJson: jsonEncode(value),
-          updatedAt: _clock.now().toUtc(),
-        ),
+        LocalAppSettingsCompanion.insert(key: key, valueJson: jsonEncode(value), updatedAt: _clock.now().toUtc()),
       );
 
-  Future<void> remove(String key) =>
-      (_db.delete(_db.localAppSettings)..where((t) => t.key.equals(key))).go();
+  Future<void> remove(String key) => (_db.delete(_db.localAppSettings)..where((t) => t.key.equals(key))).go();
 }

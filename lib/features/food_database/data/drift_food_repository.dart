@@ -90,9 +90,7 @@ final class DriftFoodRepository implements FoodRepository {
       final now = clock.now().toUtc();
       final id = ids.newId();
       await _db.transaction(() async {
-        await _db
-            .into(_db.foodItems)
-            .insert(_fields(draft, now).copyWith(id: Value(id), createdAt: Value(now)));
+        await _db.into(_db.foodItems).insert(_fields(draft, now).copyWith(id: Value(id), createdAt: Value(now)));
         await _db.enqueueForSync(_table, id, now);
       });
       return _mine(await (_db.select(_db.foodItems)..where((t) => t.id.equals(id))).getSingle());
@@ -114,18 +112,17 @@ final class DriftFoodRepository implements FoodRepository {
   Future<Result<void>> delete(String id) =>
       _write(id, (now) => FoodItemsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
 
-  Future<Result<void>> _write(String id, FoodItemsCompanion Function(DateTime now) change) =>
-      Result.guard(
-        () => _db.transaction(() async {
-          final now = clock.now().toUtc();
-          final changed = await (_db.update(
-            _db.foodItems,
-          )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(change(now));
-          if (changed == 0) throw StateError('missing');
-          await _db.enqueueForSync(_table, id, now);
-        }),
-        onError: (_) => const StorageFailure('food_write'),
-      );
+  Future<Result<void>> _write(String id, FoodItemsCompanion Function(DateTime now) change) => Result.guard(
+    () => _db.transaction(() async {
+      final now = clock.now().toUtc();
+      final changed = await (_db.update(
+        _db.foodItems,
+      )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(change(now));
+      if (changed == 0) throw StateError('missing');
+      await _db.enqueueForSync(_table, id, now);
+    }),
+    onError: (_) => const StorageFailure('food_write'),
+  );
 
   Future<FoodItemRow?> _copyOf(String catalogueId) =>
       (_db.select(_db.foodItems)
@@ -143,10 +140,7 @@ final class DriftFoodRepository implements FoodRepository {
         await _db
             .into(_db.foodItems)
             .insert(
-              _fields(
-                draft,
-                now,
-              ).copyWith(id: Value(id), createdAt: Value(now), catalogueRef: Value(catalogueId)),
+              _fields(draft, now).copyWith(id: Value(id), createdAt: Value(now), catalogueRef: Value(catalogueId)),
             );
         await _db.enqueueForSync(_table, id, now);
       });
@@ -167,17 +161,13 @@ final class DriftFoodRepository implements FoodRepository {
     if (food.isMine) {
       final result = await update(food.id, draft);
       if (!result.isOk) return Err(result.failureOrNull!);
-      return Ok(
-        _mine(await (_db.select(_db.foodItems)..where((t) => t.id.equals(food.id))).getSingle()),
-      );
+      return Ok(_mine(await (_db.select(_db.foodItems)..where((t) => t.id.equals(food.id))).getSingle()));
     }
     final existing = await _copyOf(food.id);
     if (existing == null) return _createCopy(food.id, draft);
     final result = await update(existing.id, draft);
     if (!result.isOk) return Err(result.failureOrNull!);
-    return Ok(
-      _mine(await (_db.select(_db.foodItems)..where((t) => t.id.equals(existing.id))).getSingle()),
-    );
+    return Ok(_mine(await (_db.select(_db.foodItems)..where((t) => t.id.equals(existing.id))).getSingle()));
   }
 
   @override
@@ -186,28 +176,15 @@ final class DriftFoodRepository implements FoodRepository {
     final changed = await _db.customUpdate(
       'UPDATE food_items SET use_count = use_count + 1, last_used_at = ?, updated_at = ? '
       'WHERE id = ? AND deleted_at IS NULL',
-      variables: [
-        Variable.withDateTime(at.toUtc()),
-        Variable.withDateTime(now),
-        Variable.withString(id),
-      ],
+      variables: [Variable.withDateTime(at.toUtc()), Variable.withDateTime(now), Variable.withString(id)],
       updates: {_db.foodItems},
     );
     if (changed > 0) await _db.enqueueForSync(_table, id, now);
   });
 
   @override
-  Future<List<Food>> search(
-    String query, {
-    FoodFilter filter = FoodFilter.all,
-    int limit = 50,
-  }) async {
-    final words = query
-        .trim()
-        .toLowerCase()
-        .split(RegExp(r'\s+'))
-        .where((w) => w.isNotEmpty)
-        .toList();
+  Future<List<Food>> search(String query, {FoodFilter filter = FoodFilter.all, int limit = 50}) async {
+    final words = query.trim().toLowerCase().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
     Expression<bool> matches(GeneratedColumn<String> name) => words.fold<Expression<bool>>(
       const Constant(true),
       (all, word) => all & name.lower().like('%${_escape(word)}%', escapeChar: r'\'),
@@ -221,9 +198,7 @@ final class DriftFoodRepository implements FoodRepository {
         return where;
       })
       ..orderBy([
-        (t) => filter == FoodFilter.recent
-            ? OrderingTerm.desc(t.lastUsedAt)
-            : OrderingTerm.desc(t.useCount),
+        (t) => filter == FoodFilter.recent ? OrderingTerm.desc(t.lastUsedAt) : OrderingTerm.desc(t.useCount),
         (t) => OrderingTerm.asc(t.name),
       ])
       ..limit(limit);
@@ -244,6 +219,5 @@ final class DriftFoodRepository implements FoodRepository {
     return [...mine, ...catalogue.map(_catalogue)];
   }
 
-  static String _escape(String word) =>
-      word.replaceAll(r'\', r'\\').replaceAll('%', r'\%').replaceAll('_', r'\_');
+  static String _escape(String word) => word.replaceAll(r'\', r'\\').replaceAll('%', r'\%').replaceAll('_', r'\_');
 }

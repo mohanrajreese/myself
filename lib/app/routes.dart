@@ -16,6 +16,14 @@ abstract final class Routes {
   static const health = '/health';
   static const habits = '/habits';
   static const insights = '/insights';
+  static const money = '/money';
+  static const moneyExpenses = '/money/expenses';
+  static const moneyBudgets = '/money/budgets';
+  static const moneyDebts = '/money/debts';
+  static const moneyNewDebt = '/money/debts/new';
+  static String moneyDebt(String id) => '/money/debts/$id';
+  static String moneyEditDebt(String id) => '/money/debts/$id/edit';
+  static const moneyAnalysis = '/money/analysis';
   static const addWeight = '/add-weight';
   static const weight = '/health/weight';
   static const measurements = '/health/measurements';

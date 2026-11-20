@@ -42,11 +42,8 @@ class AboutScreen extends ConsumerWidget {
           ),
           const SizedBox(height: FbSpace.lg),
           OutlinedButton(
-            onPressed: () => showLicensePage(
-              context: context,
-              applicationName: l10n.appName,
-              applicationVersion: version,
-            ),
+            onPressed: () =>
+                showLicensePage(context: context, applicationName: l10n.appName, applicationVersion: version),
             child: Text(l10n.aboutLicences),
           ),
         ],

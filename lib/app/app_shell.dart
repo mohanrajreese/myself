@@ -18,7 +18,7 @@ class AppShell extends StatelessWidget {
       (Icons.restaurant_outlined, Icons.restaurant_rounded, l10n.tabNutrition),
       (Icons.favorite_border_rounded, Icons.favorite_rounded, l10n.tabHealth),
       (Icons.check_circle_outline_rounded, Icons.check_circle_rounded, l10n.tabHabits),
-      (Icons.bar_chart_outlined, Icons.bar_chart_rounded, l10n.tabInsights),
+      (Icons.account_balance_wallet_outlined, Icons.account_balance_wallet_rounded, l10n.tabMoney),
     ];
     return Scaffold(
       body: shell,

@@ -116,10 +116,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
               );
               if (picked != null) {
                 setState(
-                  () => _range = (
-                    from: LocalDate.fromDateTime(picked.start),
-                    to: LocalDate.fromDateTime(picked.end),
-                  ),
+                  () => _range = (from: LocalDate.fromDateTime(picked.start), to: LocalDate.fromDateTime(picked.end)),
                 );
               }
             },
@@ -127,10 +124,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
           if (r != null)
             Align(
               alignment: Alignment.centerLeft,
-              child: TextButton(
-                onPressed: () => setState(() => _range = null),
-                child: Text(l.exportEverything),
-              ),
+              child: TextButton(onPressed: () => setState(() => _range = null), child: Text(l.exportEverything)),
             ),
           const SizedBox(height: FbSpace.md),
           FbCard(
@@ -164,10 +158,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
             const SizedBox(height: FbSpace.sm),
             _Secret(label: l.repeatPassphrase, onChanged: (v) => _repeat = v),
           ],
-          if (_error != null) ...[
-            const SizedBox(height: FbSpace.sm),
-            FbNotice(_error!, isError: true),
-          ],
+          if (_error != null) ...[const SizedBox(height: FbSpace.sm), FbNotice(_error!, isError: true)],
           const SizedBox(height: FbSpace.lg),
           FbPrimaryButton(label: l.createExport, onPressed: _busy ? null : _export, busy: _busy),
           const SizedBox(height: FbSpace.md),
@@ -272,10 +263,7 @@ class _DeleteDataScreenState extends ConsumerState<DeleteDataScreen> {
 
   Future<void> _deleteAccount() async {
     final l = context.l10n;
-    final typed = await showDialog<bool>(
-      context: context,
-      builder: (_) => const _TypeDeleteDialog(),
-    );
+    final typed = await showDialog<bool>(context: context, builder: (_) => const _TypeDeleteDialog());
     if (typed != true || !mounted) return;
     setState(() => _busy = true);
     final outcome = await ref.read(deleteAccountProvider)(erasePhone: _erasePhone);
@@ -304,10 +292,7 @@ class _DeleteDataScreenState extends ConsumerState<DeleteDataScreen> {
           children: [
             Align(
               alignment: Alignment.centerLeft,
-              child: TextButton(
-                onPressed: () => context.push(Routes.export),
-                child: Text(l.exportFirst),
-              ),
+              child: TextButton(onPressed: () => context.push(Routes.export), child: Text(l.exportFirst)),
             ),
             const SizedBox(height: FbSpace.sm),
             FbCard(
@@ -336,10 +321,7 @@ class _DeleteDataScreenState extends ConsumerState<DeleteDataScreen> {
                 children: [
                   Text(l.deleteAccount, style: context.text.bodyStrong),
                   const SizedBox(height: FbSpace.xs),
-                  Text(
-                    cloud ? l.deleteAccountHelp : l.deleteAccountUnavailable,
-                    style: context.text.bodySmall,
-                  ),
+                  Text(cloud ? l.deleteAccountHelp : l.deleteAccountUnavailable, style: context.text.bodySmall),
                   if (cloud) ...[
                     const SizedBox(height: FbSpace.sm),
                     Text(l.thisPhoneAfterwards, style: context.text.label),
@@ -414,10 +396,7 @@ class _TypeDeleteDialogState extends State<_TypeDeleteDialog> {
       ),
       actions: [
         TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l.cancel)),
-        TextButton(
-          onPressed: ok ? () => Navigator.of(context).pop(true) : null,
-          child: Text(l.deleteAccount),
-        ),
+        TextButton(onPressed: ok ? () => Navigator.of(context).pop(true) : null, child: Text(l.deleteAccount)),
       ],
     );
   }

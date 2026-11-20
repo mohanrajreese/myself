@@ -7,15 +7,7 @@ import 'package:drift/drift.dart';
 import '../converters.dart';
 import 'synced_columns.dart';
 
-const trackingTypeCodes = [
-  'boolean',
-  'count',
-  'numeric',
-  'duration',
-  'stopwatch',
-  'event_log',
-  'checklist',
-];
+const trackingTypeCodes = ['boolean', 'count', 'numeric', 'duration', 'stopwatch', 'event_log', 'checklist'];
 
 /// An ordinary activity the user defined (§5.14). Private activities live in
 /// `PrivateDatabase` (decision C5).
@@ -29,8 +21,7 @@ class ActivityDefinitions extends Table with SyncedColumns {
   TextColumn get priority => text().check(priority.isIn(const ['essential', 'optional']))();
 
   /// Thousandths of [targetUnit] (count, numeric) or seconds × 1000 (duration).
-  IntColumn get targetMilli =>
-      integer().nullable().check(targetMilli.isNull() | targetMilli.isBiggerThanValue(0))();
+  IntColumn get targetMilli => integer().nullable().check(targetMilli.isNull() | targetMilli.isBiggerThanValue(0))();
   TextColumn get targetUnit => text().nullable()();
 
   /// Current schedule rule as JSON (`ScheduleRule`).
@@ -64,12 +55,10 @@ class ActivityLogs extends Table with SyncedColumns {
   /// The scheduled time (minutes after midnight) this log answers, if any.
   IntColumn get scheduledSlot =>
       integer().nullable().check(scheduledSlot.isNull() | scheduledSlot.isBetweenValues(0, 1439))();
-  IntColumn get countValue =>
-      integer().nullable().check(countValue.isNull() | countValue.isBiggerOrEqualValue(0))();
+  IntColumn get countValue => integer().nullable().check(countValue.isNull() | countValue.isBiggerOrEqualValue(0))();
   IntColumn get numericValueMilli => integer().nullable()();
   TextColumn get unit => text().nullable()();
-  IntColumn get durationS =>
-      integer().nullable().check(durationS.isNull() | durationS.isBetweenValues(0, 86400))();
+  IntColumn get durationS => integer().nullable().check(durationS.isNull() | durationS.isBetweenValues(0, 86400))();
 
   /// JSON list of the checklist item ids that were done.
   TextColumn get checklistState => text().nullable()();
@@ -85,11 +74,9 @@ class LocalTimerSessions extends Table {
   TextColumn get kind => text().check(kind.isIn(const ['stopwatch', 'countdown', 'rest']))();
   TextColumn get activityDefinitionId => text().nullable()();
   TextColumn get workoutSessionId => text().nullable()();
-  IntColumn get targetDurationS => integer().nullable().check(
-    targetDurationS.isNull() | targetDurationS.isBetweenValues(1, 86400),
-  )();
-  TextColumn get state =>
-      text().check(state.isIn(const ['ready', 'running', 'paused', 'completed', 'cancelled']))();
+  IntColumn get targetDurationS =>
+      integer().nullable().check(targetDurationS.isNull() | targetDurationS.isBetweenValues(1, 86400))();
+  TextColumn get state => text().check(state.isIn(const ['ready', 'running', 'paused', 'completed', 'cancelled']))();
 
   /// Milliseconds run before [lastResumedAt].
   IntColumn get accumulatedMs => integer().withDefault(const Constant(0))();
@@ -107,10 +94,8 @@ class LocalTimerSessions extends Table {
 @TableIndex(name: 'local_timer_events_session', columns: {#sessionId})
 class LocalTimerEvents extends Table {
   TextColumn get id => text()();
-  TextColumn get sessionId =>
-      text().references(LocalTimerSessions, #id, onDelete: KeyAction.cascade)();
-  TextColumn get type =>
-      text().check(type.isIn(const ['start', 'pause', 'resume', 'finish', 'cancel']))();
+  TextColumn get sessionId => text().references(LocalTimerSessions, #id, onDelete: KeyAction.cascade)();
+  TextColumn get type => text().check(type.isIn(const ['start', 'pause', 'resume', 'finish', 'cancel']))();
   DateTimeColumn get at => dateTime()();
 
   @override
@@ -139,8 +124,7 @@ class Reminders extends Table with SyncedColumns {
   IntColumn get snoozeDefaultMin =>
       integer().withDefault(const Constant(10)).check(snoozeDefaultMin.isBetweenValues(1, 720))();
   TextColumn get priority => text().check(priority.isIn(const ['normal', 'alarm']))();
-  TextColumn get quietHoursBehaviour =>
-      text().check(quietHoursBehaviour.isIn(const ['defer', 'suppress', 'bypass']))();
+  TextColumn get quietHoursBehaviour => text().check(quietHoursBehaviour.isIn(const ['defer', 'suppress', 'bypass']))();
   BoolColumn get exact => boolean().withDefault(const Constant(false))();
   BoolColumn get enabled => boolean().withDefault(const Constant(true))();
   TextColumn get startDate => text().map(const LocalDateConverter()).nullable()();
@@ -165,15 +149,7 @@ class LocalNotificationState extends Table {
   TextColumn get channelId => text()();
   TextColumn get mode => text().check(mode.isIn(const ['exact', 'inexact']))();
   TextColumn get status => text().check(
-    status.isIn(const [
-      'scheduled',
-      'snoozed',
-      'completed',
-      'skipped',
-      'dismissed',
-      'cancelled',
-      'expired',
-    ]),
+    status.isIn(const ['scheduled', 'snoozed', 'completed', 'skipped', 'dismissed', 'cancelled', 'expired']),
   )();
   BoolColumn get deferred => boolean().withDefault(const Constant(false))();
   IntColumn get snoozeCount => integer().withDefault(const Constant(0))();

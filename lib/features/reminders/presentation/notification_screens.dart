@@ -102,10 +102,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                   leading: state(s.exact),
                   trailing: s.exact
                       ? null
-                      : OutlinedButton(
-                          onPressed: () => askForExactAlarms(context, ref),
-                          child: Text(l10n.allow),
-                        ),
+                      : OutlinedButton(onPressed: () => askForExactAlarms(context, ref), child: Text(l10n.allow)),
                 ),
                 FbListRow(
                   title: l10n.batteryRow,
@@ -115,11 +112,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                       ? null
                       : OutlinedButton(onPressed: caps.openBatterySettings, child: Text(l10n.open)),
                 ),
-                FbListRow(
-                  title: l10n.rebootRow,
-                  subtitle: l10n.rebootRowHelp,
-                  leading: state(true),
-                ),
+                FbListRow(title: l10n.rebootRow, subtitle: l10n.rebootRowHelp, leading: state(true)),
               ],
             ),
           const SizedBox(height: FbSpace.lg),
@@ -133,8 +126,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                   title: l10n.quietHours,
                   subtitle: l10n.quietHoursHelp,
                   value: quiet.enabled,
-                  onChanged: (v) =>
-                      _saveQuiet(QuietHoursSetting(enabled: v, start: quiet.start, end: quiet.end)),
+                  onChanged: (v) => _saveQuiet(QuietHoursSetting(enabled: v, start: quiet.start, end: quiet.end)),
                 ),
                 if (quiet.enabled) ...[
                   FbListRow(
@@ -144,9 +136,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                     onTap: () async {
                       final m = await _pickTime(quiet.start);
                       if (m != null) {
-                        await _saveQuiet(
-                          QuietHoursSetting(enabled: true, start: m, end: quiet.end),
-                        );
+                        await _saveQuiet(QuietHoursSetting(enabled: true, start: m, end: quiet.end));
                       }
                     },
                   ),
@@ -157,9 +147,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                     onTap: () async {
                       final m = await _pickTime(quiet.end);
                       if (m != null) {
-                        await _saveQuiet(
-                          QuietHoursSetting(enabled: true, start: quiet.start, end: m),
-                        );
+                        await _saveQuiet(QuietHoursSetting(enabled: true, start: quiet.start, end: m));
                       }
                     },
                   ),
@@ -183,10 +171,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                   onTap: () => caps.openChannelSettings(channelIdFor(c.code)),
                   trailing: TextButton(
                     onPressed: () => caps.playTestSound(channelIdFor(c.code)),
-                    child: Text(
-                      l10n.testAction,
-                      semanticsLabel: l10n.testSoundOf(channelName(l10n, c)),
-                    ),
+                    child: Text(l10n.testAction, semanticsLabel: l10n.testSoundOf(channelName(l10n, c))),
                   ),
                 ),
             ],
@@ -219,10 +204,7 @@ class SlotBadgeText extends StatelessWidget {
     return Semantics(
       label: ok ? context.l10n.allowed : context.l10n.off,
       excludeSemantics: true,
-      child: Icon(
-        ok ? Icons.check_circle_rounded : Icons.error_outline_rounded,
-        color: ok ? c.success : c.warning,
-      ),
+      child: Icon(ok ? Icons.check_circle_rounded : Icons.error_outline_rounded, color: ok ? c.success : c.warning),
     );
   }
 }
@@ -235,12 +217,8 @@ class NotificationHistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final history = ref.watch(notificationHistoryProvider);
-    final reminders = {
-      for (final r in ref.watch(remindersProvider).value ?? const <Reminder>[]) r.id: r,
-    };
-    final activities = {
-      for (final a in ref.watch(activitiesProvider).value ?? const <Activity>[]) a.id: a,
-    };
+    final reminders = {for (final r in ref.watch(remindersProvider).value ?? const <Reminder>[]) r.id: r};
+    final activities = {for (final a in ref.watch(activitiesProvider).value ?? const <Activity>[]) a.id: a};
     final today = ref.watch(todayProvider);
     final list = history.value;
     return Scaffold(
@@ -260,8 +238,7 @@ class NotificationHistoryScreen extends ConsumerWidget {
                           title:
                               reminders[r.reminderId]?.title ??
                               (r.reminderId.startsWith('activity:')
-                                  ? activities[r.reminderId.substring(9)]?.name ??
-                                        l10n.genericReminder
+                                  ? activities[r.reminderId.substring(9)]?.name ?? l10n.genericReminder
                                   : l10n.genericReminder),
                           subtitle:
                               '${context.dayLabel(LocalDate.fromDateTime(r.at.toLocal()), today: today)} '
@@ -285,10 +262,6 @@ class NotificationHistoryScreen extends ConsumerWidget {
       NotificationStatus.expired => l10n.outcomeShown,
       _ => l10n.outcomeShown,
     };
-    return [
-      base,
-      if (r.deferred) l10n.outcomeDeferred,
-      if (!r.exact) l10n.outcomeInexact,
-    ].join(' · ');
+    return [base, if (r.deferred) l10n.outcomeDeferred, if (!r.exact) l10n.outcomeInexact].join(' · ');
   }
 }

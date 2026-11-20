@@ -309,6 +309,34 @@ final class DriftMoneyRepository implements MoneyRepository {
     return row == null ? null : _expense(row);
   }
 
+  @override
+  Future<Result<void>> setHasReceipt(String expenseId, bool value) => Result.guard(
+    () => _db.transaction(() async {
+      final now = _now;
+      final n = await (_db.update(_db.expenses)..where((t) => t.id.equals(expenseId) & t.deletedAt.isNull())).write(
+        ExpensesCompanion(hasReceipt: Value(value), updatedAt: Value(now)),
+      );
+      if (n > 0) await _sync('expenses', expenseId);
+    }),
+    onError: (_) => _fail,
+  );
+
+  @override
+  Stream<Set<String>> watchJunkMealIds({required LocalDate from, required LocalDate to}) {
+    final items = _db.mealFoodItems;
+    final meals = _db.mealLogs;
+    final q = _db.selectOnly(items).join([innerJoin(meals, meals.id.equalsExp(items.mealLogId))])
+      ..addColumns([items.mealLogId])
+      ..where(
+        items.junkCategory.isNotNull() &
+            items.deletedAt.isNull() &
+            meals.deletedAt.isNull() &
+            meals.localDate.isBiggerOrEqualValue(from.toString()) &
+            meals.localDate.isSmallerOrEqualValue(to.toString()),
+      );
+    return q.watch().map((rows) => {for (final r in rows) r.read(items.mealLogId)!});
+  }
+
   // ---- budgets ----
 
   @override

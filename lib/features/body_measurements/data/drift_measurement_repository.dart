@@ -11,12 +11,7 @@ import '../../../core/utils/id_generator.dart';
 import '../domain/measurements.dart';
 
 final class DriftMeasurementRepository implements MeasurementRepository {
-  DriftMeasurementRepository(
-    this._db, {
-    required this.clock,
-    required this.ids,
-    required this.timeZone,
-  });
+  DriftMeasurementRepository(this._db, {required this.clock, required this.ids, required this.timeZone});
 
   final AppDatabase _db;
   final Clock clock;
@@ -68,17 +63,13 @@ final class DriftMeasurementRepository implements MeasurementRepository {
         await _db.into(_db.bodyMeasurements).insert(companion);
         await _db.enqueueForSync(_table, id, stamp.nowUtc);
       });
-      return _toDomain(
-        await (_db.select(_db.bodyMeasurements)..where((t) => t.id.equals(id))).getSingle(),
-      );
+      return _toDomain(await (_db.select(_db.bodyMeasurements)..where((t) => t.id.equals(id))).getSingle());
     }, onError: (_) => const StorageFailure('measurement_write'));
   }
 
   @override
   Future<Result<void>> update(String id, {required int valueMilli, String? notes}) async {
-    final existing = await (_db.select(
-      _db.bodyMeasurements,
-    )..where((t) => t.id.equals(id))).getSingleOrNull();
+    final existing = await (_db.select(_db.bodyMeasurements)..where((t) => t.id.equals(id))).getSingleOrNull();
     if (existing == null) return const Err(StorageFailure('measurement_missing'));
     final failure = validateMeasurement(existing.measurementType, valueMilli);
     if (failure != null) return Err(failure);
@@ -86,11 +77,7 @@ final class DriftMeasurementRepository implements MeasurementRepository {
       () => _db.transaction(() async {
         final now = clock.now().toUtc();
         await (_db.update(_db.bodyMeasurements)..where((t) => t.id.equals(id))).write(
-          BodyMeasurementsCompanion(
-            valueMilli: Value(valueMilli),
-            notes: Value(_clean(notes)),
-            updatedAt: Value(now),
-          ),
+          BodyMeasurementsCompanion(valueMilli: Value(valueMilli), notes: Value(_clean(notes)), updatedAt: Value(now)),
         );
         await _db.enqueueForSync(_table, id, now);
       }),
@@ -102,10 +89,8 @@ final class DriftMeasurementRepository implements MeasurementRepository {
   Future<Result<void>> delete(String id) => Result.guard(
     () => _db.transaction(() async {
       final now = clock.now().toUtc();
-      final changed =
-          await (_db.update(_db.bodyMeasurements)
-                ..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
-              .write(BodyMeasurementsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
+      final changed = await (_db.update(_db.bodyMeasurements)..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
+          .write(BodyMeasurementsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
       if (changed > 0) await _db.enqueueForSync(_table, id, now);
     }),
     onError: (_) => const StorageFailure('measurement_write'),

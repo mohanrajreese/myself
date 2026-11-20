@@ -295,6 +295,10 @@ abstract interface class MoneyRepository {
   Future<Result<void>> deleteExpense(String id);
   Stream<List<Expense>> watchExpenses({required LocalDate from, required LocalDate to});
   Future<Expense?> expenseForMeal(String mealLogId);
+  Future<Result<void>> setHasReceipt(String expenseId, bool value);
+
+  /// Meals in the range with at least one junk-food item (§5.21D).
+  Stream<Set<String>> watchJunkMealIds({required LocalDate from, required LocalDate to});
 
   Future<Result<void>> setBudget({required String? categoryId, required int amountPaise, required LocalDate from});
   Future<Result<void>> removeBudget({required String? categoryId, required LocalDate from});

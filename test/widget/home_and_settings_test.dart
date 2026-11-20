@@ -98,13 +98,13 @@ void main() {
 
     testWidgets('each tab opens', (tester) async {
       await start(tester);
-      await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('Insights')));
+      await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('Money')));
       for (var i = 0; i < 20; i++) {
         await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 5)));
         await tester.pump(const Duration(milliseconds: 50));
       }
       await tester.pumpAndSettle();
-      expect(find.text('In brief'), findsOneWidget);
+      expect(find.text('Spent this month'), findsOneWidget);
       await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('Nutrition')));
       await tester.pumpAndSettle();
       expect(find.textContaining('Today, '), findsOneWidget);

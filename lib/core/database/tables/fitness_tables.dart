@@ -12,8 +12,7 @@ import 'synced_columns.dart';
 class StepLogs extends Table with SyncedColumns {
   TextColumn get logDate => text().map(const LocalDateConverter())();
   IntColumn get steps => integer().check(steps.isBiggerOrEqualValue(0))();
-  TextColumn get source =>
-      text().check(source.isIn(const ['phone_sensor', 'phone_sensor_adjusted', 'manual']))();
+  TextColumn get source => text().check(source.isIn(const ['phone_sensor', 'phone_sensor_adjusted', 'manual']))();
   TextColumn get timezone => text()();
   DateTimeColumn get collectedAt => dateTime().nullable()();
 
@@ -50,8 +49,7 @@ class WorkoutSessions extends Table with SyncedColumns {
   IntColumn get durationS => integer().check(durationS.isBetweenValues(0, 86400))();
   TextColumn get localDate => text().map(const LocalDateConverter())();
   TextColumn get tz => text()();
-  IntColumn get distanceM =>
-      integer().nullable().check(distanceM.isNull() | distanceM.isBetweenValues(0, 500000))();
+  IntColumn get distanceM => integer().nullable().check(distanceM.isNull() | distanceM.isBetweenValues(0, 500000))();
 
   /// Informational only; never added to daily step totals (§5.7).
   IntColumn get steps => integer().nullable()();
@@ -76,16 +74,11 @@ class ExerciseSets extends Table with SyncedColumns {
   TextColumn get workoutExerciseId => text().references(WorkoutExercises, #id)();
   IntColumn get setNumber => integer().check(setNumber.isBiggerOrEqualValue(1))();
   IntColumn get reps => integer().nullable().check(reps.isNull() | reps.isBetweenValues(0, 1000))();
-  IntColumn get loadG =>
-      integer().nullable().check(loadG.isNull() | loadG.isBetweenValues(0, 1000000))();
-  TextColumn get entryUnit =>
-      text().nullable().check(entryUnit.isNull() | entryUnit.isIn(const ['kg', 'lb']))();
-  IntColumn get distanceM =>
-      integer().nullable().check(distanceM.isNull() | distanceM.isBetweenValues(0, 500000))();
-  IntColumn get durationS =>
-      integer().nullable().check(durationS.isNull() | durationS.isBetweenValues(0, 86400))();
-  IntColumn get restS =>
-      integer().nullable().check(restS.isNull() | restS.isBetweenValues(0, 3600))();
+  IntColumn get loadG => integer().nullable().check(loadG.isNull() | loadG.isBetweenValues(0, 1000000))();
+  TextColumn get entryUnit => text().nullable().check(entryUnit.isNull() | entryUnit.isIn(const ['kg', 'lb']))();
+  IntColumn get distanceM => integer().nullable().check(distanceM.isNull() | distanceM.isBetweenValues(0, 500000))();
+  IntColumn get durationS => integer().nullable().check(durationS.isNull() | durationS.isBetweenValues(0, 86400))();
+  IntColumn get restS => integer().nullable().check(restS.isNull() | restS.isBetweenValues(0, 3600))();
   DateTimeColumn get completedAt => dateTime().nullable()();
 }
 
@@ -110,9 +103,8 @@ class LocalStepReadings extends Table {
   DateTimeColumn get wallTimeUtc => dateTime()();
   TextColumn get tz => text()();
   IntColumn get utcOffsetS => integer()();
-  TextColumn get source => text().check(
-    source.isIn(const ['service', 'worker', 'foreground', 'shutdown', 'boot', 'time_change']),
-  )();
+  TextColumn get source =>
+      text().check(source.isIn(const ['service', 'worker', 'foreground', 'shutdown', 'boot', 'time_change']))();
 
   @override
   List<Set<Column<Object>>> get uniqueKeys => [

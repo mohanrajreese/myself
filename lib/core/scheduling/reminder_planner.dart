@@ -19,8 +19,7 @@ final class QuietHours {
   final int start;
   final int end;
 
-  bool contains(int minute) =>
-      start <= end ? minute >= start && minute < end : minute >= start || minute < end;
+  bool contains(int minute) => start <= end ? minute >= start && minute < end : minute >= start || minute < end;
 }
 
 /// The planner's view of a reminder: no titles or text (privacy, §7.1).
@@ -68,8 +67,7 @@ final class PlannedOccurrence {
   /// Identifies the occurrence across re-plans, so scheduling is idempotent.
   String get key => '$reminderId@${local.date}T${_hhmm(local.minute)}';
 
-  static String _hhmm(int m) =>
-      '${(m ~/ 60).toString().padLeft(2, '0')}:${(m % 60).toString().padLeft(2, '0')}';
+  static String _hhmm(int m) => '${(m ~/ 60).toString().padLeft(2, '0')}:${(m % 60).toString().padLeft(2, '0')}';
 }
 
 /// Applies quiet hours, start and end dates, "only if not done" and the
@@ -111,28 +109,16 @@ class ReminderPlanner {
         final behaviour = r.alarm && r.quietBehaviour == QuietBehaviour.defer
             ? QuietBehaviour.bypass
             : r.quietBehaviour;
-        if (quietHours != null &&
-            quietHours.contains(o.minute) &&
-            behaviour != QuietBehaviour.bypass) {
+        if (quietHours != null && quietHours.contains(o.minute) && behaviour != QuietBehaviour.bypass) {
           if (behaviour == QuietBehaviour.suppress) continue;
-          final endDay = quietHours.start > quietHours.end && o.minute >= quietHours.start
-              ? o.date.addDays(1)
-              : o.date;
+          final endDay = quietHours.start > quietHours.end && o.minute >= quietHours.start ? o.date.addDays(1) : o.date;
           fireLocal = LocalOccurrence(endDay, quietHours.end);
           deferred = true;
         }
         final fireAt = _calc.resolve(fireLocal, zone);
         if (fireAt.isBefore(from) || !fireAt.isBefore(to)) continue;
         if (!seen.add(fireAt)) continue; // deferred occurrences collapse
-        out.add(
-          PlannedOccurrence(
-            reminderId: r.id,
-            local: o,
-            fireAt: fireAt,
-            exact: r.alarm,
-            deferred: deferred,
-          ),
-        );
+        out.add(PlannedOccurrence(reminderId: r.id, local: o, fireAt: fireAt, exact: r.alarm, deferred: deferred));
       }
     }
     out.sort((a, b) => a.fireAt.compareTo(b.fireAt));

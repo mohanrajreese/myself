@@ -62,13 +62,8 @@ final class TimerSession {
     required TimerKind kind,
     Duration? targetDuration,
     String? activityId,
-  }) => TimerSession(
-    id: id,
-    kind: kind,
-    state: TimerState.ready,
-    targetDuration: targetDuration,
-    activityId: activityId,
-  );
+  }) =>
+      TimerSession(id: id, kind: kind, state: TimerState.ready, targetDuration: targetDuration, activityId: activityId);
 
   /// Rebuilds a session by applying [events] in order to [initial].
   factory TimerSession.replay(TimerSession initial, Iterable<TimerEvent> events) {
@@ -123,22 +118,18 @@ final class TimerSession {
 
   Result<TimerSession> apply(TimerEvent e) {
     final at = e.at.toUtc();
-    TimerSession next(
-      TimerState state, {
-      Duration? accumulated,
-      DateTime? resumed,
-      bool clearResumed = false,
-    }) => TimerSession(
-      id: id,
-      kind: kind,
-      state: state,
-      targetDuration: targetDuration,
-      activityId: activityId,
-      accumulated: accumulated ?? this.accumulated,
-      lastResumedAt: clearResumed ? null : (resumed ?? lastResumedAt),
-      startedAt: startedAt ?? (e.type == TimerEventType.start ? at : null),
-      endedAt: state.isFinal ? at : null,
-    );
+    TimerSession next(TimerState state, {Duration? accumulated, DateTime? resumed, bool clearResumed = false}) =>
+        TimerSession(
+          id: id,
+          kind: kind,
+          state: state,
+          targetDuration: targetDuration,
+          activityId: activityId,
+          accumulated: accumulated ?? this.accumulated,
+          lastResumedAt: clearResumed ? null : (resumed ?? lastResumedAt),
+          startedAt: startedAt ?? (e.type == TimerEventType.start ? at : null),
+          endedAt: state.isFinal ? at : null,
+        );
     return switch ((state, e.type)) {
       (TimerState.ready, TimerEventType.start) => Ok(next(TimerState.running, resumed: at)),
       (TimerState.running, TimerEventType.pause) => Ok(

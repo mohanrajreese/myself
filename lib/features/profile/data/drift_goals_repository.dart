@@ -13,9 +13,7 @@ import '../domain/goals.dart';
 import '../domain/goals_repository.dart';
 
 final class DriftGoalsRepository implements GoalsRepository {
-  DriftGoalsRepository(this._db, {required Clock clock, required IdGenerator ids})
-    : _clock = clock,
-      _ids = ids;
+  DriftGoalsRepository(this._db, {required Clock clock, required IdGenerator ids}) : _clock = clock, _ids = ids;
 
   final AppDatabase _db;
   final Clock _clock;
@@ -23,25 +21,19 @@ final class DriftGoalsRepository implements GoalsRepository {
 
   LocalDate get _today => LocalDate.fromDateTime(_clock.now());
 
-  SimpleSelectStatement<$UserGoalsTable, UserGoalRow> _dailyOn(LocalDate date) =>
-      _db.select(_db.userGoals)
-        ..where(
-          (t) => t.effectiveFrom.isSmallerOrEqualValue(date.toString()) & t.deletedAt.isNull(),
-        )
-        ..orderBy([(t) => OrderingTerm.desc(t.effectiveFrom)])
-        ..limit(1);
+  SimpleSelectStatement<$UserGoalsTable, UserGoalRow> _dailyOn(LocalDate date) => _db.select(_db.userGoals)
+    ..where((t) => t.effectiveFrom.isSmallerOrEqualValue(date.toString()) & t.deletedAt.isNull())
+    ..orderBy([(t) => OrderingTerm.desc(t.effectiveFrom)])
+    ..limit(1);
 
   SimpleSelectStatement<$NutritionGoalsTable, NutritionGoalRow> _nutritionOn(LocalDate date) =>
       _db.select(_db.nutritionGoals)
-        ..where(
-          (t) => t.effectiveFrom.isSmallerOrEqualValue(date.toString()) & t.deletedAt.isNull(),
-        )
+        ..where((t) => t.effectiveFrom.isSmallerOrEqualValue(date.toString()) & t.deletedAt.isNull())
         ..orderBy([(t) => OrderingTerm.desc(t.effectiveFrom)])
         ..limit(1);
 
   @override
-  Future<DailyGoals?> dailyGoalsOn(LocalDate date) async =>
-      _daily(await _dailyOn(date).getSingleOrNull());
+  Future<DailyGoals?> dailyGoalsOn(LocalDate date) async => _daily(await _dailyOn(date).getSingleOrNull());
 
   @override
   Future<NutritionTargets?> nutritionGoalsOn(LocalDate date) async =>
@@ -51,8 +43,7 @@ final class DriftGoalsRepository implements GoalsRepository {
   Stream<DailyGoals?> watchCurrentDailyGoals() => _dailyOn(_today).watchSingleOrNull().map(_daily);
 
   @override
-  Stream<NutritionTargets?> watchCurrentNutritionGoals() =>
-      _nutritionOn(_today).watchSingleOrNull().map(_nutrition);
+  Stream<NutritionTargets?> watchCurrentNutritionGoals() => _nutritionOn(_today).watchSingleOrNull().map(_nutrition);
 
   @override
   Future<Result<void>> saveDailyGoals(DailyGoals goals) async {
@@ -62,10 +53,9 @@ final class DriftGoalsRepository implements GoalsRepository {
       () => _db.transaction(() async {
         final now = _clock.now().toUtc();
         final today = _today;
-        final existing =
-            await (_db.select(_db.userGoals)
-                  ..where((t) => t.effectiveFrom.equalsValue(today) & t.deletedAt.isNull()))
-                .getSingleOrNull();
+        final existing = await (_db.select(
+          _db.userGoals,
+        )..where((t) => t.effectiveFrom.equalsValue(today) & t.deletedAt.isNull())).getSingleOrNull();
         final id = existing?.id ?? _ids.newId();
         await _db
             .into(_db.userGoals)
@@ -96,10 +86,9 @@ final class DriftGoalsRepository implements GoalsRepository {
       () => _db.transaction(() async {
         final now = _clock.now().toUtc();
         final today = _today;
-        final existing =
-            await (_db.select(_db.nutritionGoals)
-                  ..where((t) => t.effectiveFrom.equalsValue(today) & t.deletedAt.isNull()))
-                .getSingleOrNull();
+        final existing = await (_db.select(
+          _db.nutritionGoals,
+        )..where((t) => t.effectiveFrom.equalsValue(today) & t.deletedAt.isNull())).getSingleOrNull();
         final id = existing?.id ?? _ids.newId();
         await _db
             .into(_db.nutritionGoals)

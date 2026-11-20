@@ -94,10 +94,7 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
             autofocus: widget.pick,
             style: context.text.body,
             textInputAction: TextInputAction.search,
-            decoration: InputDecoration(
-              hintText: l10n.searchHint,
-              prefixIcon: const Icon(Icons.search_rounded),
-            ),
+            decoration: InputDecoration(hintText: l10n.searchHint, prefixIcon: const Icon(Icons.search_rounded)),
             onChanged: (_) => _search(),
           ),
         ),
@@ -135,10 +132,7 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
               Text(l10n.yourFoods, style: context.text.label),
               const SizedBox(height: FbSpace.sm),
               FbListCard(
-                children: [
-                  for (final f in mine)
-                    _FoodRow(food: f, onTap: () => _open(f), onEdit: () => _edit(f)),
-                ],
+                children: [for (final f in mine) _FoodRow(food: f, onTap: () => _open(f), onEdit: () => _edit(f))],
               ),
               const SizedBox(height: FbSpace.lg),
             ],
@@ -146,10 +140,7 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
               Text(l10n.catalogue, style: context.text.label),
               const SizedBox(height: FbSpace.sm),
               FbListCard(
-                children: [
-                  for (final f in catalogue)
-                    _FoodRow(food: f, onTap: () => _open(f), onEdit: () => _edit(f)),
-                ],
+                children: [for (final f in catalogue) _FoodRow(food: f, onTap: () => _open(f), onEdit: () => _edit(f))],
               ),
             ],
           ],
@@ -189,9 +180,7 @@ class _FoodRow extends StatelessWidget {
     return FbListRow(
       title: food.name,
       subtitle: parts.join(' · '),
-      leading: food.hasConflict
-          ? Icon(Icons.warning_amber_rounded, color: context.colors.warning)
-          : null,
+      leading: food.hasConflict ? Icon(Icons.warning_amber_rounded, color: context.colors.warning) : null,
       onTap: onTap,
       trailing: IconButton(
         tooltip: l10n.editFoodLabel(food.name),
@@ -230,8 +219,7 @@ class _FoodEditorScreenState extends ConsumerState<FoodEditorScreen> {
   Map<String, String> _errors = const {};
   bool _busy = false;
 
-  static String _text(int? milli) =>
-      milli == null ? '' : formatScaled(milli, 3, decimals: milli % 1000 == 0 ? 0 : 1);
+  static String _text(int? milli) => milli == null ? '' : formatScaled(milli, 3, decimals: milli % 1000 == 0 ? 0 : 1);
 
   bool get _gramBased => _food != null && _food.servingUnit == 'g';
 
@@ -287,10 +275,7 @@ class _FoodEditorScreenState extends ConsumerState<FoodEditorScreen> {
       showFbSnackBar(context, l10n.foodSaved);
       Navigator.of(context).pop(result.valueOrNull);
     } else {
-      showFbSnackBar(
-        context,
-        result.failureOrNull is ValidationFailure ? l10n.errCheckFields : l10n.errSaveFailed,
-      );
+      showFbSnackBar(context, result.failureOrNull is ValidationFailure ? l10n.errCheckFields : l10n.errSaveFailed);
     }
   }
 
@@ -315,16 +300,8 @@ class _FoodEditorScreenState extends ConsumerState<FoodEditorScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final food = _food;
-    final perLabel = _gramBased
-        ? food!.servingLabel
-        : (_serving.trim().isEmpty ? l10n.unitServing : _serving.trim());
-    Widget number(
-      String key,
-      String label,
-      String value,
-      String suffix,
-      ValueChanged<String> onChanged,
-    ) => FbTextField(
+    final perLabel = _gramBased ? food!.servingLabel : (_serving.trim().isEmpty ? l10n.unitServing : _serving.trim());
+    Widget number(String key, String label, String value, String suffix, ValueChanged<String> onChanged) => FbTextField(
       label: label,
       value: value,
       suffix: suffix,
@@ -339,11 +316,7 @@ class _FoodEditorScreenState extends ConsumerState<FoodEditorScreen> {
         title: Text(food == null ? l10n.newFoodTitle : l10n.editFood),
         actions: [
           if (food != null && food.isMine)
-            IconButton(
-              tooltip: l10n.delete,
-              onPressed: _delete,
-              icon: const Icon(Icons.delete_outline_rounded),
-            ),
+            IconButton(tooltip: l10n.delete, onPressed: _delete, icon: const Icon(Icons.delete_outline_rounded)),
         ],
       ),
       body: SafeArea(
@@ -358,10 +331,7 @@ class _FoodEditorScreenState extends ConsumerState<FoodEditorScreen> {
                     const SizedBox(height: FbSpace.md),
                   ],
                   if (food != null && food.hasConflict) ...[
-                    FbNotice(
-                      l10n.conflictWarning(context.kcal(kcalFromMacros(food.values))),
-                      isError: true,
-                    ),
+                    FbNotice(l10n.conflictWarning(context.kcal(kcalFromMacros(food.values))), isError: true),
                     const SizedBox(height: FbSpace.md),
                   ],
                   if (food != null && food.isEstimate) ...[
@@ -413,13 +383,7 @@ class _FoodEditorScreenState extends ConsumerState<FoodEditorScreen> {
                   const SizedBox(height: FbSpace.md),
                   FbFieldPair(
                     first: number('kcal', l10n.energyLabel, _kcal, l10n.unitKcal, (v) => _kcal = v),
-                    second: number(
-                      'protein',
-                      l10n.proteinLabel,
-                      _protein,
-                      l10n.unitG,
-                      (v) => _protein = v,
-                    ),
+                    second: number('protein', l10n.proteinLabel, _protein, l10n.unitG, (v) => _protein = v),
                   ),
                   const SizedBox(height: FbSpace.lg),
                   FbFieldPair(

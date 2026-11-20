@@ -51,9 +51,7 @@ class FitnessScreen extends ConsumerWidget {
       templateId = picked?.id;
       name = picked?.name ?? name;
     }
-    final id =
-        (await ref.read(workoutRepositoryProvider).startGym(name: name, templateId: templateId))
-            .valueOrNull;
+    final id = (await ref.read(workoutRepositoryProvider).startGym(name: name, templateId: templateId)).valueOrNull;
     if (id != null && context.mounted) unawaited(context.push(Routes.workout(id)));
   }
 
@@ -64,8 +62,7 @@ class FitnessScreen extends ConsumerWidget {
     final goal = ref.watch(currentDailyGoalsProvider).value?.dailySteps;
     final steps = ref.watch(stepDayProvider(today)).value;
     final status = ref.watch(stepStatusProvider).value;
-    final week =
-        ref.watch(workoutsBetweenProvider((from: today.addDays(-6), to: today))).value ?? const [];
+    final week = ref.watch(workoutsBetweenProvider((from: today.addDays(-6), to: today))).value ?? const [];
     final active = ref.watch(activeGymProvider);
     final distance = week.fold(0, (n, s) => n + (s.kind == WorkoutKind.gym ? 0 : s.distanceM ?? 0));
     final time = week.fold(0, (n, s) => n + s.durationS);
@@ -97,9 +94,7 @@ class FitnessScreen extends ConsumerWidget {
                         children: [
                           Text(l10n.stepsTodayTitle, style: context.text.label),
                           Text(
-                            status == null || status.permission
-                                ? context.number(total)
-                                : l10n.stepsNotSetUp,
+                            status == null || status.permission ? context.number(total) : l10n.stepsNotSetUp,
                             style: context.text.title,
                           ),
                           Text(
@@ -109,10 +104,7 @@ class FitnessScreen extends ConsumerWidget {
                                 ? l10n.stepsTapToSetUp
                                 : goal == null
                                 ? l10n.noTarget
-                                : l10n.stepsToGoOf(
-                                    context.number((goal - total).clamp(0, goal)),
-                                    context.number(goal),
-                                  ),
+                                : l10n.stepsToGoOf(context.number((goal - total).clamp(0, goal)), context.number(goal)),
                             style: context.text.caption,
                           ),
                         ],
@@ -132,10 +124,7 @@ class FitnessScreen extends ConsumerWidget {
                 Row(
                   children: [
                     Expanded(child: FbSectionTitle(l10n.thisWeek)),
-                    TextButton(
-                      onPressed: () => context.push(Routes.workoutHistory),
-                      child: Text(l10n.historyTitle),
-                    ),
+                    TextButton(onPressed: () => context.push(Routes.workoutHistory), child: Text(l10n.historyTitle)),
                   ],
                 ),
                 Row(
@@ -189,9 +178,7 @@ class FitnessScreen extends ConsumerWidget {
               ),
               FbListRow(
                 title: l10n.templates,
-                subtitle: (ref.watch(templatesProvider).value ?? const [])
-                    .map((t) => t.name)
-                    .join(' · '),
+                subtitle: (ref.watch(templatesProvider).value ?? const []).map((t) => t.name).join(' · '),
                 trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () => context.push(Routes.workoutHistory),
               ),

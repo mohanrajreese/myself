@@ -45,9 +45,7 @@ final class DriftProfileRepository implements ProfileRepository {
       final now = wallNow.toUtc();
       final timezone = await _timeZone.currentTimeZoneId();
       await _db.transaction(() async {
-        final existing = await (_db.select(
-          _db.profiles,
-        )..where((t) => t.id.equals(accountId))).getSingleOrNull();
+        final existing = await (_db.select(_db.profiles)..where((t) => t.id.equals(accountId))).getSingleOrNull();
         await _db
             .into(_db.profiles)
             .insertOnConflictUpdate(
@@ -80,8 +78,7 @@ final class DriftProfileRepository implements ProfileRepository {
     final now = _clock.now().toUtc();
     await _db.transaction(() async {
       final changed =
-          await (_db.update(_db.profiles)
-                ..where((t) => t.id.equals(accountId) & t.onboardingCompletedAt.isNull()))
+          await (_db.update(_db.profiles)..where((t) => t.id.equals(accountId) & t.onboardingCompletedAt.isNull()))
               .write(ProfilesCompanion(onboardingCompletedAt: Value(now), updatedAt: Value(now)));
       if (changed > 0) await _db.enqueueForSync('profiles', accountId, now);
     });

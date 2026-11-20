@@ -14,14 +14,10 @@ import '../domain/weight_entry.dart';
 import '../domain/weight_repository.dart';
 
 final class DriftWeightRepository implements WeightRepository {
-  DriftWeightRepository(
-    this._db, {
-    required Clock clock,
-    required IdGenerator ids,
-    required TimeZoneSource timeZone,
-  }) : _clock = clock,
-       _ids = ids,
-       _timeZone = timeZone;
+  DriftWeightRepository(this._db, {required Clock clock, required IdGenerator ids, required TimeZoneSource timeZone})
+    : _clock = clock,
+      _ids = ids,
+      _timeZone = timeZone;
 
   final AppDatabase _db;
   final Clock _clock;
@@ -29,11 +25,7 @@ final class DriftWeightRepository implements WeightRepository {
   final TimeZoneSource _timeZone;
 
   @override
-  Future<Result<WeightEntry>> add({
-    required int weightG,
-    required MassUnit entryUnit,
-    String? notes,
-  }) async {
+  Future<Result<WeightEntry>> add({required int weightG, required MassUnit entryUnit, String? notes}) async {
     final failure = validateWeightG(weightG);
     if (failure != null) return Err(failure);
     return Result.guard(() async {
@@ -70,11 +62,10 @@ final class DriftWeightRepository implements WeightRepository {
     }, onError: (_) => const StorageFailure('weight_write'));
   }
 
-  SimpleSelectStatement<$WeightLogsTable, WeightLogRow> get _latestQuery =>
-      _db.select(_db.weightLogs)
-        ..where((t) => t.deletedAt.isNull())
-        ..orderBy([(t) => OrderingTerm.desc(t.occurredAt)])
-        ..limit(1);
+  SimpleSelectStatement<$WeightLogsTable, WeightLogRow> get _latestQuery => _db.select(_db.weightLogs)
+    ..where((t) => t.deletedAt.isNull())
+    ..orderBy([(t) => OrderingTerm.desc(t.occurredAt)])
+    ..limit(1);
 
   @override
   Future<WeightEntry?> latest() async => _toDomain(await _latestQuery.getSingleOrNull());
@@ -103,12 +94,7 @@ final class DriftWeightRepository implements WeightRepository {
         );
 
   @override
-  Future<Result<void>> update(
-    String id, {
-    required int weightG,
-    DateTime? occurredAt,
-    String? notes,
-  }) async {
+  Future<Result<void>> update(String id, {required int weightG, DateTime? occurredAt, String? notes}) async {
     final failure = validateWeightG(weightG);
     if (failure != null) return Err(failure);
     if (occurredAt != null && occurredAt.isAfter(_clock.now())) {
@@ -117,20 +103,15 @@ final class DriftWeightRepository implements WeightRepository {
     return Result.guard(
       () => _db.transaction(() async {
         final now = _clock.now().toUtc();
-        final changed =
-            await (_db.update(
-              _db.weightLogs,
-            )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
-              WeightLogsCompanion(
-                weightG: Value(weightG),
-                notes: Value(notes == null || notes.trim().isEmpty ? null : notes.trim()),
-                occurredAt: occurredAt == null ? const Value.absent() : Value(occurredAt.toUtc()),
-                localDate: occurredAt == null
-                    ? const Value.absent()
-                    : Value(LocalDate.fromDateTime(occurredAt.toLocal())),
-                updatedAt: Value(now),
-              ),
-            );
+        final changed = await (_db.update(_db.weightLogs)..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
+          WeightLogsCompanion(
+            weightG: Value(weightG),
+            notes: Value(notes == null || notes.trim().isEmpty ? null : notes.trim()),
+            occurredAt: occurredAt == null ? const Value.absent() : Value(occurredAt.toUtc()),
+            localDate: occurredAt == null ? const Value.absent() : Value(LocalDate.fromDateTime(occurredAt.toLocal())),
+            updatedAt: Value(now),
+          ),
+        );
         if (changed > 0) await _db.enqueueForSync('weight_logs', id, now);
       }),
       onError: (_) => const StorageFailure('weight_write'),
@@ -169,9 +150,9 @@ final class DriftWeightRepository implements WeightRepository {
   Future<Result<void>> delete(String id) => Result.guard(
     () => _db.transaction(() async {
       final now = _clock.now().toUtc();
-      final changed =
-          await (_db.update(_db.weightLogs)..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
-              .write(WeightLogsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
+      final changed = await (_db.update(_db.weightLogs)..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
+        WeightLogsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+      );
       if (changed > 0) await _db.enqueueForSync('weight_logs', id, now);
     }),
     onError: (_) => const StorageFailure('weight_write'),

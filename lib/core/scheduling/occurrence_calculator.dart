@@ -14,14 +14,12 @@ final class LocalOccurrence implements Comparable<LocalOccurrence> {
   }
 
   @override
-  bool operator ==(Object other) =>
-      other is LocalOccurrence && other.date == date && other.minute == minute;
+  bool operator ==(Object other) => other is LocalOccurrence && other.date == date && other.minute == minute;
   @override
   int get hashCode => Object.hash(date, minute);
 
   @override
-  String toString() =>
-      '$date ${(minute ~/ 60).toString().padLeft(2, '0')}:${(minute % 60).toString().padLeft(2, '0')}';
+  String toString() => '$date ${(minute ~/ 60).toString().padLeft(2, '0')}:${(minute % 60).toString().padLeft(2, '0')}';
 }
 
 /// The UTC offset in force at an instant. Production code wraps the
@@ -56,13 +54,11 @@ class OccurrenceCalculator {
     Daily(:final times) => times,
     Weekdays(:final weekdays, :final times) => weekdays.contains(day.weekday) ? times : const [],
     Weekly(:final everyWeeks, :final anchor, :final weekdays, :final times) =>
-      weekdays.contains(day.weekday) &&
-              _mondayOf(day).daysSince(_mondayOf(anchor)) ~/ 7 % everyWeeks == 0
+      weekdays.contains(day.weekday) && _mondayOf(day).daysSince(_mondayOf(anchor)) ~/ 7 % everyWeeks == 0
           ? times
           : const [],
     Monthly() => _monthlyMatches(rule, day) ? rule.times : const [],
-    EveryNDays(:final days, :final anchor, :final times) =>
-      day.daysSince(anchor) % days == 0 ? times : const [],
+    EveryNDays(:final days, :final anchor, :final times) => day.daysSince(anchor) % days == 0 ? times : const [],
     IntervalRule(:final everyMinutes, :final start, :final end, :final weekdays) =>
       weekdays != null && !weekdays.contains(day.weekday)
           ? const []

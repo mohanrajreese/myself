@@ -34,19 +34,12 @@ class AccountSyncScreen extends ConsumerWidget {
     String? last() {
       final t = status.lastSyncedAt?.toLocal();
       if (t == null) return null;
-      return l10n.lastSynced(
-        '${context.dayLabel(LocalDate.fromDateTime(t), today: today)} ${context.time(t)}',
-      );
+      return l10n.lastSynced('${context.dayLabel(LocalDate.fromDateTime(t), today: today)} ${context.time(t)}');
     }
 
     final (IconData icon, Color color, String headline, String? detail) = switch (status.phase) {
       SyncPhase.off => (Icons.cloud_off_outlined, c.textSecondary, l10n.syncOff, l10n.syncOffHelp),
-      SyncPhase.signedOut => (
-        Icons.login_rounded,
-        c.textSecondary,
-        l10n.syncSignedOut,
-        l10n.syncSignedOutHelp,
-      ),
+      SyncPhase.signedOut => (Icons.login_rounded, c.textSecondary, l10n.syncSignedOut, l10n.syncSignedOutHelp),
       SyncPhase.restoring => (Icons.cloud_download_outlined, c.primary, l10n.syncRestoring, null),
       SyncPhase.syncing => (Icons.sync_rounded, c.primary, l10n.syncSyncing(pending), null),
       SyncPhase.problem => (
@@ -80,10 +73,7 @@ class AccountSyncScreen extends ConsumerWidget {
                       Icon(icon, color: color),
                       const SizedBox(width: FbSpace.sm),
                       Expanded(
-                        child: Text(
-                          headline,
-                          style: context.text.bodyStrong.copyWith(color: color),
-                        ),
+                        child: Text(headline, style: context.text.bodyStrong.copyWith(color: color)),
                       ),
                     ],
                   ),
@@ -99,15 +89,9 @@ class AccountSyncScreen extends ConsumerWidget {
                 if (status.phase != SyncPhase.off && status.phase != SyncPhase.signedOut) ...[
                   const SizedBox(height: FbSpace.md),
                   OutlinedButton.icon(
-                    onPressed: busy
-                        ? null
-                        : () => unawaited(ref.read(syncControllerProvider.notifier).syncNow()),
+                    onPressed: busy ? null : () => unawaited(ref.read(syncControllerProvider.notifier).syncNow()),
                     icon: busy
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
+                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                         : const Icon(Icons.sync_rounded),
                     label: Text(l10n.syncNow),
                   ),
@@ -142,25 +126,22 @@ class AccountSyncScreen extends ConsumerWidget {
                     title: l10n.pushAccount,
                     subtitle: l10n.pushAccountHelp,
                     value: prefs.account,
-                    onChanged: (v) => ref
-                        .read(pushControllerProvider.notifier)
-                        .setPreferences(prefs.copyWith(account: v)),
+                    onChanged: (v) =>
+                        ref.read(pushControllerProvider.notifier).setPreferences(prefs.copyWith(account: v)),
                   ),
                   FbSwitchRow(
                     title: l10n.pushSyncProblems,
                     subtitle: l10n.pushSyncProblemsHelp,
                     value: prefs.syncProblems,
-                    onChanged: (v) => ref
-                        .read(pushControllerProvider.notifier)
-                        .setPreferences(prefs.copyWith(syncProblems: v)),
+                    onChanged: (v) =>
+                        ref.read(pushControllerProvider.notifier).setPreferences(prefs.copyWith(syncProblems: v)),
                   ),
                   FbSwitchRow(
                     title: l10n.pushBackup,
                     subtitle: l10n.pushBackupHelp,
                     value: prefs.backupStatus,
-                    onChanged: (v) => ref
-                        .read(pushControllerProvider.notifier)
-                        .setPreferences(prefs.copyWith(backupStatus: v)),
+                    onChanged: (v) =>
+                        ref.read(pushControllerProvider.notifier).setPreferences(prefs.copyWith(backupStatus: v)),
                   ),
                 ],
               ),

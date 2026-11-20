@@ -46,9 +46,7 @@ class _RecoveryScreenState extends ConsumerState<RecoveryScreen> {
             isRestDay: _rest ?? saved?.isRestDay ?? false,
             soreness: _edited ? _soreness : saved?.soreness,
             recovery: _edited ? _recovery : saved?.recovery,
-            notes: (_notes ?? saved?.notes ?? '').trim().isEmpty
-                ? null
-                : (_notes ?? saved?.notes)!.trim(),
+            notes: (_notes ?? saved?.notes ?? '').trim().isEmpty ? null : (_notes ?? saved?.notes)!.trim(),
           ),
         );
     if (mounted) showFbSnackBar(context, r.isOk ? l10n.saved : l10n.errSaveFailed);
@@ -67,12 +65,7 @@ class _RecoveryScreenState extends ConsumerState<RecoveryScreen> {
     } else if (on) {
       await repo.create(
         reminderPreset(ReminderKind.posture, title: title, today: ref.read(todayProvider)).copyWith(
-          rule: IntervalRule(
-            everyMinutes: everyMinutes,
-            start: 9 * 60,
-            end: 17 * 60,
-            weekdays: const {1, 2, 3, 4, 5},
-          ),
+          rule: IntervalRule(everyMinutes: everyMinutes, start: 9 * 60, end: 17 * 60, weekdays: const {1, 2, 3, 4, 5}),
         ),
       );
     }

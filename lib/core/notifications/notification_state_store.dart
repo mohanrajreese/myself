@@ -72,11 +72,9 @@ final class NotificationStateStore {
   );
 
   Future<List<NotificationRecord>> active({String store = 'main'}) async => [
-    for (final r
-        in await (_db.select(_db.localNotificationState)..where(
-              (t) => t.reminderStore.equals(store) & t.status.isIn(const ['scheduled', 'snoozed']),
-            ))
-            .get())
+    for (final r in await (_db.select(
+      _db.localNotificationState,
+    )..where((t) => t.reminderStore.equals(store) & t.status.isIn(const ['scheduled', 'snoozed']))).get())
       _toRecord(r),
   ];
 
@@ -141,25 +139,18 @@ final class NotificationStateStore {
     return (await byId(id))!;
   }
 
-  Future<void> reschedule(
-    int id, {
-    required DateTime at,
-    required bool exact,
-    required bool deferred,
-  }) => (_db.update(_db.localNotificationState)..where((t) => t.notificationId.equals(id))).write(
-    LocalNotificationStateCompanion(
-      occurrenceAt: Value(at.toUtc()),
-      mode: Value(exact ? 'exact' : 'inexact'),
-      deferred: Value(deferred),
-    ),
-  );
+  Future<void> reschedule(int id, {required DateTime at, required bool exact, required bool deferred}) =>
+      (_db.update(_db.localNotificationState)..where((t) => t.notificationId.equals(id))).write(
+        LocalNotificationStateCompanion(
+          occurrenceAt: Value(at.toUtc()),
+          mode: Value(exact ? 'exact' : 'inexact'),
+          deferred: Value(deferred),
+        ),
+      );
 
   Future<void> setStatus(int id, NotificationStatus status, {DateTime? actedAt}) =>
       (_db.update(_db.localNotificationState)..where((t) => t.notificationId.equals(id))).write(
-        LocalNotificationStateCompanion(
-          status: Value(status.code),
-          actedAt: Value(actedAt?.toUtc()),
-        ),
+        LocalNotificationStateCompanion(status: Value(status.code), actedAt: Value(actedAt?.toUtc())),
       );
 
   Future<void> snooze(int id, DateTime until) async {
@@ -175,10 +166,7 @@ final class NotificationStateStore {
   }
 
   /// History for the notification centre, newest first, up to [until].
-  Stream<List<NotificationRecord>> watchHistory({
-    required DateTime since,
-    required DateTime until,
-  }) =>
+  Stream<List<NotificationRecord>> watchHistory({required DateTime since, required DateTime until}) =>
       (_db.select(_db.localNotificationState)
             ..where(
               (t) =>
@@ -190,7 +178,6 @@ final class NotificationStateStore {
           .map((rows) => [for (final r in rows) _toRecord(r)]);
 
   /// Removes rows older than [before] (kept 30 days, 03 §8).
-  Future<int> prune(DateTime before) => (_db.delete(
-    _db.localNotificationState,
-  )..where((t) => t.occurrenceAt.isSmallerThanValue(before.toUtc()))).go();
+  Future<int> prune(DateTime before) =>
+      (_db.delete(_db.localNotificationState)..where((t) => t.occurrenceAt.isSmallerThanValue(before.toUtc()))).go();
 }

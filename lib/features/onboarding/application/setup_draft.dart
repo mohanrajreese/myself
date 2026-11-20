@@ -175,8 +175,7 @@ final class SetupDraft {
   SetupDraft withImperial(bool value) {
     if (value == imperial) return this;
     final next = value ? UnitPreferences.imperial : UnitPreferences.metric;
-    String mass(int? grams, String original) =>
-        grams == null ? original : formatMass(grams, next.mass);
+    String mass(int? grams, String original) => grams == null ? original : formatMass(grams, next.mass);
     return copyWith(
       imperial: value,
       weightText: mass(weightG, weightText),

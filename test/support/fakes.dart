@@ -18,6 +18,7 @@ import 'package:fitbuddy/core/utils/id_generator.dart';
 import 'package:fitbuddy/core/platform/push_messaging.dart';
 import 'package:fitbuddy/core/platform/document_saver.dart';
 import 'package:fitbuddy/core/sync/push_registry.dart';
+import 'package:fitbuddy/features/money/domain/receipts.dart';
 import 'package:fitbuddy/features/nutrition/domain/meal_photos.dart';
 
 AppDatabase memoryDatabase() {
@@ -49,6 +50,29 @@ class FixedTimeZone implements TimeZoneSource {
 Future<List<({String table, String id})>> outboxEntries(AppDatabase db) async {
   final rows = await db.customSelect('SELECT entity_table, entity_id FROM sync_outbox ORDER BY seq').get();
   return [for (final row in rows) (table: row.read<String>('entity_table'), id: row.read<String>('entity_id'))];
+}
+
+/// Receipt photos kept in memory.
+class MemoryReceiptStore implements ReceiptStore {
+  final Map<String, List<int>> receipts = {};
+
+  @override
+  Future<Result<void>> attach(String expenseId, List<int> imageBytes) async {
+    receipts[expenseId] = imageBytes;
+    return const Ok(null);
+  }
+
+  @override
+  Future<List<int>?> read(String expenseId) async => receipts[expenseId];
+
+  @override
+  Future<Result<void>> remove(String expenseId) async {
+    receipts.remove(expenseId);
+    return const Ok(null);
+  }
+
+  @override
+  Future<void> removeAll() async => receipts.clear();
 }
 
 /// Meal photos kept in memory.

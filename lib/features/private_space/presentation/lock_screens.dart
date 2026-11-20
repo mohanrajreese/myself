@@ -24,9 +24,7 @@ class LockGate extends ConsumerWidget {
     final lock = ref.watch(lockControllerProvider);
     final v = lock.value;
     if (v == null) {
-      return Scaffold(
-        body: lock.hasError ? FbErrorState(message: l10n.errLoadFailed) : const FbLoading(),
-      );
+      return Scaffold(body: lock.hasError ? FbErrorState(message: l10n.errLoadFailed) : const FbLoading());
     }
     if (!v.hasPin || !v.settings.enabled) {
       return Scaffold(
@@ -44,10 +42,7 @@ class LockGate extends ConsumerWidget {
                   const SizedBox(height: FbSpace.xs),
                   Text(l10n.lockNeededBody, style: context.text.bodySmall),
                   const SizedBox(height: FbSpace.md),
-                  FilledButton(
-                    onPressed: () => context.push(Routes.appLock),
-                    child: Text(l10n.setUpLock),
-                  ),
+                  FilledButton(onPressed: () => context.push(Routes.appLock), child: Text(l10n.setUpLock)),
                 ],
               ),
             ),
@@ -161,10 +156,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                 ],
               ),
             ),
-            if (_error != null) ...[
-              const SizedBox(height: FbSpace.md),
-              FbNotice(_error!, isError: true),
-            ],
+            if (_error != null) ...[const SizedBox(height: FbSpace.md), FbNotice(_error!, isError: true)],
             const SizedBox(height: FbSpace.lg),
             Center(
               child: Wrap(
@@ -172,14 +164,11 @@ class _LockScreenState extends ConsumerState<LockScreen> {
                 runSpacing: FbSpace.md,
                 alignment: WrapAlignment.center,
                 children: [
-                  for (final d in const ['1', '2', '3', '4', '5', '6', '7', '8', '9'])
-                    key(d, onTap: () => _digit(d)),
+                  for (final d in const ['1', '2', '3', '4', '5', '6', '7', '8', '9']) key(d, onTap: () => _digit(d)),
                   key(
                     '⌫',
                     semantics: l10n.deleteDigit,
-                    onTap: _pin.isEmpty
-                        ? null
-                        : () => setState(() => _pin = _pin.substring(0, _pin.length - 1)),
+                    onTap: _pin.isEmpty ? null : () => setState(() => _pin = _pin.substring(0, _pin.length - 1)),
                   ),
                   key('0', onTap: () => _digit('0')),
                   key('✓', semantics: l10n.unlockAction, onTap: _pin.length < 4 ? null : _try),
@@ -205,12 +194,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
 class AppLockSettingsScreen extends ConsumerWidget {
   const AppLockSettingsScreen({super.key});
 
-  static const _choices = [
-    Duration.zero,
-    Duration(minutes: 1),
-    Duration(minutes: 5),
-    Duration(minutes: 15),
-  ];
+  static const _choices = [Duration.zero, Duration(minutes: 1), Duration(minutes: 5), Duration(minutes: 15)];
 
   Future<void> _setPin(BuildContext context, WidgetRef ref) async {
     final pin = await showFbSheet<String>(context, const PinSetupSheet());
@@ -225,8 +209,7 @@ class AppLockSettingsScreen extends ConsumerWidget {
     final async = ref.watch(lockControllerProvider);
     final v = async.value;
     final c = ref.read(lockControllerProvider.notifier);
-    String after(Duration d) =>
-        d == Duration.zero ? l10n.lockImmediately : l10n.lockAfterMinutes(d.inMinutes);
+    String after(Duration d) => d == Duration.zero ? l10n.lockImmediately : l10n.lockAfterMinutes(d.inMinutes);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.appLock)),
       body: v == null
@@ -281,10 +264,7 @@ class AppLockSettingsScreen extends ConsumerWidget {
                                 title: l10n.lockAfter,
                                 children: [
                                   for (final d in _choices)
-                                    ListTile(
-                                      title: Text(after(d)),
-                                      onTap: () => Navigator.of(context).pop(d),
-                                    ),
+                                    ListTile(title: Text(after(d)), onTap: () => Navigator.of(context).pop(d)),
                                 ],
                               ),
                             );
@@ -356,10 +336,7 @@ class _PinSetupSheetState extends State<PinSetupSheet> {
           decoration: deco(l10n.repeatPin),
           onChanged: (v) => _second = v,
         ),
-        if (_error != null) ...[
-          const SizedBox(height: FbSpace.sm),
-          FbNotice(_error!, isError: true),
-        ],
+        if (_error != null) ...[const SizedBox(height: FbSpace.sm), FbNotice(_error!, isError: true)],
         const SizedBox(height: FbSpace.md),
         Text(l10n.pinRules, style: context.text.caption),
         const SizedBox(height: FbSpace.lg),

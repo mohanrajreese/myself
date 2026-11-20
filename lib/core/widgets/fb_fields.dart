@@ -38,9 +38,7 @@ class FbTextField extends StatefulWidget {
   final Iterable<String>? autofillHints;
 
   /// Digits with at most one decimal separator.
-  static final decimal = <TextInputFormatter>[
-    FilteringTextInputFormatter.allow(RegExp(r'^\d{0,4}([.,]\d{0,2})?')),
-  ];
+  static final decimal = <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'^\d{0,4}([.,]\d{0,2})?'))];
   static final digits = <TextInputFormatter>[
     FilteringTextInputFormatter.digitsOnly,
     LengthLimitingTextInputFormatter(6),
@@ -146,9 +144,7 @@ class FbPickerField extends StatelessWidget {
             TextSpan(
               text: label,
               style: t.label,
-              children: [
-                if (optionalLabel != null) TextSpan(text: ' ($optionalLabel)', style: t.caption),
-              ],
+              children: [if (optionalLabel != null) TextSpan(text: ' ($optionalLabel)', style: t.caption)],
             ),
           ),
         ),
@@ -176,9 +172,7 @@ class FbPickerField extends StatelessWidget {
                         child: ExcludeSemantics(
                           child: Text(
                             valueText ?? hint ?? '',
-                            style: valueText == null
-                                ? t.body.copyWith(color: c.textDisabled)
-                                : t.body,
+                            style: valueText == null ? t.body.copyWith(color: c.textDisabled) : t.body,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),

@@ -3006,5 +3006,698 @@
   "moneyCatTravel": "Travel",
   "moneyCatGifts": "Gifts",
   "moneyCatEmi": "EMI and loan repayments",
-  "moneyCatOther": "Other"
+  "moneyCatOther": "Other",
+  "tabMoney": "Money",
+  "settingsInsightsSubtitle": "Weekly and monthly reports on steps, food, sleep, workouts and more",
+  "moneyAddExpense": "Expense",
+  "moneyAddExpenseLabel": "Add expense",
+  "moneyPrevMonth": "Previous month",
+  "moneyNextMonth": "Next month",
+  "moneySpentThisMonth": "Spent this month",
+  "moneySpentIn": "Spent in {month}",
+  "@moneySpentIn": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyBudgetLine": "{percent}% of {budget} · {left} left",
+  "@moneyBudgetLine": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "budget": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyBudgetOverLine": "Over budget by {over} · {percent}% of {budget}",
+  "@moneyBudgetOverLine": {
+    "placeholders": {
+      "over": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      },
+      "budget": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyDaysToGo": "{days, plural, =1{1 day to go} other{{days} days to go}}",
+  "@moneyDaysToGo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyBudgetA11y": "{spent} of {budget} budget used, {percent} percent",
+  "@moneyBudgetA11y": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "budget": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyNoBudget": "No monthly budget set.",
+  "moneySetBudget": "Set a budget",
+  "moneyComparedSameDate": "{month} to the same date: {amount}",
+  "@moneyComparedSameDate": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyComparedWhole": "{month}: {amount}",
+  "@moneyComparedWhole": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyExpenses": "Expenses",
+  "moneyBudgets": "Budgets",
+  "moneyDebts": "Debts",
+  "moneyAnalysis": "Analysis",
+  "moneyUpcomingEmis": "Upcoming EMIs",
+  "moneyEmiRow": "{date} · instalment {n} of {count}",
+  "@moneyEmiRow": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyTopCategories": "Top categories",
+  "moneyRecent": "Recent",
+  "moneySeeAll": "See all",
+  "moneyNothingInMonth": "No expenses in this month yet. Add one with Expense.",
+  "moneyYouOwe": "You owe",
+  "moneyOwedToYou": "Owed to you",
+  "moneyLinkedMeal": "linked to a meal",
+  "moneyPercentA11y": "{percent} percent",
+  "@moneyPercentA11y": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyLoadFailed": "Money records could not be loaded.",
+  "moneyReceipt": "receipt",
+  "moneyAmount": "Amount",
+  "moneyCategory": "Category",
+  "moneyMore": "More…",
+  "moneyAllCategories": "All categories",
+  "moneyWhen": "When",
+  "moneyReceiptPhoto": "Receipt photo",
+  "moneyReceiptAttached": "Receipt attached",
+  "moneyRemoveReceipt": "Remove receipt",
+  "moneyLinkMeal": "Link to a meal",
+  "moneyLinkedTo": "Linked: {meal}",
+  "@moneyLinkedTo": {
+    "placeholders": {
+      "meal": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyNoMealsThatDay": "No meals logged that day.",
+  "moneyNotLinked": "Not linked",
+  "moneyEditExpense": "Edit expense",
+  "moneyExpenseSaved": "Expense saved",
+  "moneyDeleteExpenseTitle": "Delete this expense?",
+  "moneySearchHint": "Search notes and categories",
+  "moneySearchLabel": "Search expenses",
+  "moneyAnyMethod": "Any method",
+  "moneyMonth": "Month",
+  "moneyCountTotal": "{count, plural, =1{1 expense} other{{count} expenses}} · Total {total}",
+  "@moneyCountTotal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyDayTotal": "{day} · {total}",
+  "@moneyDayTotal": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyNoMatch": "No expenses match these filters.",
+  "moneyMonthDaysLeft": "{month} · {days, plural, =1{1 day left} other{{days} days left}}",
+  "@moneyMonthDaysLeft": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyMonthlyBudget": "Monthly budget",
+  "moneySpentLeftLine": "{spent} spent · {left} left · {percent}%",
+  "@moneySpentLeftLine": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyByCategory": "By category",
+  "moneyOfBudget": "{spent} of {budget}",
+  "@moneyOfBudget": {
+    "placeholders": {
+      "spent": {
+        "type": "String"
+      },
+      "budget": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyLeftLine": "{percent}% · {left} left",
+  "@moneyLeftLine": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyOverLine": "Over by {over} ({percent}%)",
+  "@moneyOverLine": {
+    "placeholders": {
+      "over": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyAddCategoryBudget": "Budget for a category",
+  "moneyStartsFrom": "Starts from",
+  "moneyThisMonthOption": "This month ({month})",
+  "@moneyThisMonthOption": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyNextMonthOption": "Next month ({month})",
+  "@moneyNextMonthOption": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyEarlierKeep": "Earlier months keep the budget they had.",
+  "moneyRemoveBudget": "Remove budget",
+  "moneyBudgetSaved": "Budget saved",
+  "moneyBudgetRemoved": "Budget removed",
+  "moneyNoBudgetYet": "No monthly budget yet. Set one to see progress here.",
+  "moneyNoCategoryBudgets": "No category budgets.",
+  "moneyBudgetFor": "Budget for {category}",
+  "@moneyBudgetFor": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyOverBudgetA11y": "{percent} percent, over budget",
+  "@moneyOverBudgetA11y": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyDebtsTitle": "Debts and loans",
+  "moneyAdd": "Add",
+  "moneyAddDebtLabel": "Add a debt or loan",
+  "moneyOpenCount": "{count} open",
+  "@moneyOpenCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyIOwe": "I owe",
+  "moneyOwedToMe": "Owed to me",
+  "moneySettled": "Settled",
+  "moneyKindPersonal": "Personal",
+  "moneyKindBankLoan": "Bank loan",
+  "moneyKindCreditCard": "Credit card",
+  "moneyKindOther": "Other",
+  "moneyEmiOnDay": "EMI {amount} on day {day}",
+  "@moneyEmiOnDay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyPaidOf": "{paid} of {count} paid",
+  "@moneyPaidOf": {
+    "placeholders": {
+      "paid": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyNextOn": "next {date}",
+  "@moneyNextOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyBorrowedOn": "borrowed {amount} on {date}",
+  "@moneyBorrowedOn": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyLentOn": "lent {amount} on {date}",
+  "@moneyLentOn": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyRepaid": "{amount} repaid",
+  "@moneyRepaid": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyReceived": "{amount} received",
+  "@moneyReceived": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyDueOn": "due {date}",
+  "@moneyDueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyDebtsNote": "Outstanding is the original amount minus the payments you record. For EMI loans the remaining amount is EMI × instalments left; your bank's statement may differ.",
+  "moneyNoDebts": "Nothing here yet.",
+  "moneyInstalmentsA11y": "{paid} of {count} instalments paid",
+  "@moneyInstalmentsA11y": {
+    "placeholders": {
+      "paid": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyStartedOn": "started {date}",
+  "@moneyStartedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyRateReference": "{rate}% a year (reference)",
+  "@moneyRateReference": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyRemainingEmi": "Remaining (EMI × instalments left)",
+  "moneyOutstanding": "Outstanding",
+  "moneyEmiProgress": "{paid} of {count} paid · {left} left · ends {month}",
+  "@moneyEmiProgress": {
+    "placeholders": {
+      "paid": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      },
+      "left": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyEmiPaidSoFar": "Original loan {original} · paid so far {paid}. The bank's figure includes interest and may differ.",
+  "@moneyEmiPaidSoFar": {
+    "placeholders": {
+      "original": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyOriginalRepaid": "Original {original} · repaid {paid}",
+  "@moneyOriginalRepaid": {
+    "placeholders": {
+      "original": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyOriginalReceived": "Original {original} · received {paid}",
+  "@moneyOriginalReceived": {
+    "placeholders": {
+      "original": {
+        "type": "String"
+      },
+      "paid": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyNextEmi": "Next EMI: {amount}",
+  "@moneyNextEmi": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyNextEmiLine": "{date} · instalment {n}",
+  "@moneyNextEmiLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyMarkPaid": "Mark paid",
+  "moneyEmiReminder": "EMI reminder",
+  "moneyEmiReminderLine": "{days} days before, 1 day before and on day {day}, at 09:00",
+  "@moneyEmiReminderLine": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyRecordAsExpense": "Record as an expense too",
+  "moneyRecordAsExpenseLine": "In \"EMI and loan repayments\"",
+  "moneyPayments": "Payments",
+  "moneyOtherPayment": "Other payment",
+  "moneyInstalmentN": "Instalment {n}",
+  "@moneyInstalmentN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyPayment": "Payment",
+  "moneyNoPayments": "No payments recorded yet.",
+  "moneyDeletePaymentTitle": "Delete this payment?",
+  "moneyDeletePaymentMessage": "Its amount goes back into the outstanding total. An expense recorded from it is deleted too.",
+  "moneyMarkSettled": "Mark as settled",
+  "moneyReopen": "Reopen",
+  "moneyPaymentSaved": "Payment recorded",
+  "moneyAlreadyPaid": "That instalment is already marked paid.",
+  "moneyPartPaymentNote": "A part-payment reduces the outstanding amount but not the number of instalments.",
+  "moneyNewDebt": "New debt or loan",
+  "moneyEditDebt": "Edit debt or loan",
+  "moneyDirection": "Direction",
+  "moneyKind": "Kind",
+  "moneyDebtName": "Name",
+  "moneyCounterparty": "Bank or lender (or the person)",
+  "moneyOriginalAmount": "Original amount",
+  "moneyStartDate": "Start date",
+  "moneyInterestRate": "Interest rate, % a year (for reference)",
+  "moneyPaidInEmis": "Paid in EMIs",
+  "moneyEmiAmount": "EMI amount",
+  "moneyDueDay": "Due on day (1–28)",
+  "moneyEmiCount": "Number of EMIs",
+  "moneyFirstEmi": "First EMI",
+  "moneyPastEmis": "{count, plural, =1{1 EMI falls before today.} other{{count} EMIs fall before today.}} Mark them as paid?",
+  "@moneyPastEmis": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyYesAll": "Yes, all {count}",
+  "@moneyYesAll": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyNoAddThem": "No, I'll add them",
+  "moneyRemindMe": "Remind me",
+  "moneyFirstReminder": "First reminder",
+  "moneyDaysBefore": "{days} days before",
+  "@moneyDaysBefore": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyDueDateOptional": "Due date",
+  "moneyChooseDate": "Choose a date",
+  "moneyClear": "Clear",
+  "moneyDebtSaved": "Saved",
+  "moneyDeleteDebtTitle": "Delete this debt?",
+  "moneyDeleteDebtMessage": "Its payments are deleted too. Expenses already recorded from them stay.",
+  "errDueDay": "Enter a day from 1 to 28.",
+  "errEmiCount": "Enter a number from 1 to 600.",
+  "errRate": "Enter a rate from 0 to 100.",
+  "moneyAnalysisTitle": "Money analysis",
+  "moneyRangeMonth": "Month",
+  "moneyRangeCustom": "Custom",
+  "moneyComparedRange": "{range} · compared with {previous}",
+  "@moneyComparedRange": {
+    "placeholders": {
+      "range": {
+        "type": "String"
+      },
+      "previous": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyInBrief": "In brief",
+  "moneyNotAdvice": "Descriptions of your records only, not financial advice.",
+  "moneyFactMore": "You spent {amount} more than in the previous period.",
+  "@moneyFactMore": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyFactLess": "You spent {amount} less than in the previous period.",
+  "@moneyFactLess": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyFactSame": "You spent the same as in the previous period.",
+  "moneyFactEmi": "EMIs and loan repayments were {percent}% of your spending.",
+  "@moneyFactEmi": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyFactFood": "Linked meals came to {total} across {meals, plural, =1{1 meal} other{{meals} meals}}, about {average} a meal.",
+  "@moneyFactFood": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      },
+      "meals": {
+        "type": "int"
+      },
+      "average": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyFactOver": "{category} is {amount} over its budget.",
+  "@moneyFactOver": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyFactBudget": "You have used {percent}% of the monthly budget.",
+  "@moneyFactBudget": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneySpendingPerDay": "Spending per day",
+  "moneyDailySummary": "Highest on {day}: {amount}",
+  "@moneyDailySummary": {
+    "placeholders": {
+      "day": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyCategoryHeader": "Category",
+  "moneyThisPeriod": "This period",
+  "moneyPreviousPeriod": "Before",
+  "moneyByMethod": "By payment method",
+  "moneyMethodShare": "{amount} · {percent}%",
+  "@moneyMethodShare": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyFoodAndMeals": "Food and meals",
+  "moneyFoodSpending": "Food and groceries",
+  "moneyLinkedMeals": "Linked meals",
+  "moneyLinkedMealsValue": "{count} · {average} average",
+  "@moneyLinkedMealsValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "average": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyJunkMeals": "Junk-food meals",
+  "moneyJunkMealsValue": "{count} · {amount}",
+  "@moneyJunkMealsValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyEmisNext30": "EMIs in the next 30 days",
+  "moneyEmisNext30Value": "{count} · {amount}",
+  "@moneyEmisNext30Value": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyNothingInRange": "No expenses in this period.",
+  "moneyChooseRange": "Choose dates"
 }

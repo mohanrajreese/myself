@@ -22,20 +22,15 @@ final class AppLockSettings {
   /// Lock the whole app, not only private areas.
   final bool wholeApp;
 
-  AppLockSettings copyWith({bool? enabled, bool? biometric, Duration? lockAfter, bool? wholeApp}) =>
-      AppLockSettings(
-        enabled: enabled ?? this.enabled,
-        biometric: biometric ?? this.biometric,
-        lockAfter: lockAfter ?? this.lockAfter,
-        wholeApp: wholeApp ?? this.wholeApp,
-      );
+  AppLockSettings copyWith({bool? enabled, bool? biometric, Duration? lockAfter, bool? wholeApp}) => AppLockSettings(
+    enabled: enabled ?? this.enabled,
+    biometric: biometric ?? this.biometric,
+    lockAfter: lockAfter ?? this.lockAfter,
+    wholeApp: wholeApp ?? this.wholeApp,
+  );
 
-  String encode() => jsonEncode({
-    'enabled': enabled,
-    'biometric': biometric,
-    'lockAfterS': lockAfter.inSeconds,
-    'wholeApp': wholeApp,
-  });
+  String encode() =>
+      jsonEncode({'enabled': enabled, 'biometric': biometric, 'lockAfterS': lockAfter.inSeconds, 'wholeApp': wholeApp});
 
   static AppLockSettings decode(String? json) {
     if (json == null) return const AppLockSettings();
@@ -55,8 +50,7 @@ final class AppLockSettings {
 
 /// PIN storage: a salted PBKDF2-HMAC-SHA256 hash, never the PIN (C8).
 final class PinStore {
-  PinStore(this._secrets, {this.iterations = 120000, Random? random})
-    : _random = random ?? Random.secure();
+  PinStore(this._secrets, {this.iterations = 120000, Random? random}) : _random = random ?? Random.secure();
 
   final SecretStore _secrets;
   final int iterations;
@@ -84,11 +78,7 @@ final class PinStore {
     final hash = await _hash(pin, salt, iterations);
     await _secrets.write(
       _pinKey,
-      jsonEncode({
-        'salt': base64Encode(salt),
-        'hash': base64Encode(hash),
-        'iterations': iterations,
-      }),
+      jsonEncode({'salt': base64Encode(salt), 'hash': base64Encode(hash), 'iterations': iterations}),
     );
   }
 
@@ -111,8 +101,7 @@ final class PinStore {
     await writeSettings(const AppLockSettings());
   }
 
-  Future<AppLockSettings> readSettings() async =>
-      AppLockSettings.decode(await _secrets.read(_settingsKey));
+  Future<AppLockSettings> readSettings() async => AppLockSettings.decode(await _secrets.read(_settingsKey));
   Future<void> writeSettings(AppLockSettings s) => _secrets.write(_settingsKey, s.encode());
 }
 

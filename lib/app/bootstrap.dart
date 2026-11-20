@@ -25,7 +25,10 @@ import '../core/utils/logger.dart';
 import '../features/auth/application/session.dart';
 import '../features/food_database/data/catalogue_importer.dart';
 import '../features/nutrition/data/drift_meal_repository.dart';
+import '../features/money/data/drift_money_repository.dart';
+import '../features/money/data/encrypted_receipt_store.dart';
 import '../features/nutrition/data/encrypted_meal_photo_store.dart';
+import 'money_providers.dart';
 import '../features/auth/application/session_controller.dart';
 import '../features/auth/data/supabase_google_auth_repository.dart';
 import '../features/auth/data/unconfigured_auth_repository.dart';
@@ -79,6 +82,23 @@ Future<void> bootstrap() async {
             for (var i = 0; i < fileKey.length; i += 2) int.parse(fileKey.substring(i, i + 2), radix: 16),
           ]),
           meals: DriftMealRepository(
+            database,
+            clock: systemClock,
+            ids: const UuidV7Generator(),
+            timeZone: DeviceTimeZone(),
+          ),
+          clock: systemClock,
+          ids: const UuidV7Generator(),
+        );
+  final receiptStore = fileKey == null
+      ? null
+      : EncryptedReceiptStore(
+          db: database,
+          directory: Directory('${(await getApplicationSupportDirectory()).path}/receipts'),
+          cipher: FileCipher([
+            for (var i = 0; i < fileKey.length; i += 2) int.parse(fileKey.substring(i, i + 2), radix: 16),
+          ]),
+          money: DriftMoneyRepository(
             database,
             clock: systemClock,
             ids: const UuidV7Generator(),
@@ -160,6 +180,7 @@ Future<void> bootstrap() async {
         initialThemeModeProvider.overrideWithValue(themeMode),
         onlineProvider.overrideWith((ref) => _online()),
         if (photoStore != null) mealPhotoStoreProvider.overrideWithValue(photoStore),
+        if (receiptStore != null) receiptStoreProvider.overrideWithValue(receiptStore),
         notificationGatewayProvider.overrideWithValue(gateway),
         notificationTapsProvider.overrideWith((ref) => taps.stream),
         launchTapProvider.overrideWithValue(launchTap),

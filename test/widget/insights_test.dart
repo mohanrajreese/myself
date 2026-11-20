@@ -45,7 +45,10 @@ void main() {
     );
     await app.pump(tester, session: signedInSession);
     await drain(tester);
-    await tap(tester, find.descendant(of: find.byType(NavigationBar), matching: find.text('Insights')));
+    // Insights lives in the profile menu (owner, 20 Nov 2026).
+    await tap(tester, find.byTooltip('Profile and settings'));
+    await tap(tester, find.text('Insights'));
+    await drain(tester);
   }
 
   testWidgets('a first week has nothing to compare and says so', (tester) async {

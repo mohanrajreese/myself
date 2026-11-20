@@ -31,10 +31,7 @@ class _LogoPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final s = size.width / 72;
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(20 * s)),
-      Paint()..color = background,
-    );
+    canvas.drawRRect(RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(20 * s)), Paint()..color = background);
 
     final strokePaint = Paint()
       ..color = line
@@ -133,20 +130,13 @@ class FbStepScaffold extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: FbSpace.md),
-                  ExcludeSemantics(
-                    child: Text(l10n.stepOf(current, total), style: context.text.label),
-                  ),
+                  ExcludeSemantics(child: Text(l10n.stepOf(current, total), style: context.text.label)),
                 ],
               ),
             ),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(
-                  FbSpace.xxl,
-                  FbSpace.lg,
-                  FbSpace.xxl,
-                  FbSpace.xxl,
-                ),
+                padding: const EdgeInsets.fromLTRB(FbSpace.xxl, FbSpace.lg, FbSpace.xxl, FbSpace.xxl),
                 children: [
                   Semantics(header: true, child: Text(title, style: context.text.headline)),
                   const SizedBox(height: FbSpace.sm),
@@ -175,12 +165,7 @@ class FbStepScaffold extends StatelessWidget {
 
 /// Full-width main action. Shows a spinner and ignores taps while [busy].
 class FbPrimaryButton extends StatelessWidget {
-  const FbPrimaryButton({
-    required this.label,
-    required this.onPressed,
-    this.busy = false,
-    super.key,
-  });
+  const FbPrimaryButton({required this.label, required this.onPressed, this.busy = false, super.key});
 
   final String label;
   final VoidCallback? onPressed;

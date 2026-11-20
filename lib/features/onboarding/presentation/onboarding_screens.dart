@@ -212,9 +212,7 @@ class _Summary extends StatelessWidget {
             l10n.dailyFibreLabel: orNotSet(draft.fibreText, l10n.unitG),
             l10n.dailyWaterLabel: orNotSet(draft.waterText, volume),
             if (draft.fitnessGoals.isNotEmpty)
-              l10n.fitnessGoalsLabel: draft.fitnessGoals
-                  .map((g) => fitnessGoalLabel(l10n, g))
-                  .join(', '),
+              l10n.fitnessGoalsLabel: draft.fitnessGoals.map((g) => fitnessGoalLabel(l10n, g)).join(', '),
           },
         ),
         const SizedBox(height: FbSpace.md),
@@ -230,9 +228,7 @@ class _Summary extends StatelessWidget {
                 ? l10n.notSet
                 : l10n.hoursValue(draft.sleepHoursText.trim()),
             // narrowWeekdays starts on Sunday; ISO weekday 7 is Sunday.
-            l10n.workoutDaysLabel: days.isEmpty
-                ? l10n.none
-                : days.map((d) => dayNames[d % 7]).join(' '),
+            l10n.workoutDaysLabel: days.isEmpty ? l10n.none : days.map((d) => dayNames[d % 7]).join(' '),
             l10n.summaryReminders: reminders.isEmpty ? l10n.none : reminders.join(', '),
           },
         ),

@@ -85,9 +85,7 @@ class _LatestRow extends ConsumerWidget {
     } else {
       final delta = measurement.valueMilli - previous.valueMilli;
       final amount = measurementValue(l10n, delta.abs(), measurement.type, length);
-      final change = delta == 0
-          ? l10n.changeSame
-          : (delta < 0 ? l10n.changeDown(amount) : l10n.changeUp(amount));
+      final change = delta == 0 ? l10n.changeSame : (delta < 0 ? l10n.changeDown(amount) : l10n.changeUp(amount));
       since = l10n.measurementSince(change, context.shortDate(previous.localDate));
     }
     return FbListRow(
@@ -120,8 +118,7 @@ class MeasurementHistoryScreen extends ConsumerWidget {
       );
     }
     final first = history.isEmpty ? null : history.first.localDate;
-    double display(int milli) =>
-        double.parse(measurementValue(l10n, milli, type, length).split(' ').first);
+    double display(int milli) => double.parse(measurementValue(l10n, milli, type, length).split(' ').first);
 
     return Scaffold(
       appBar: AppBar(title: Text(name)),
@@ -136,10 +133,7 @@ class MeasurementHistoryScreen extends ConsumerWidget {
                 measurementValue(l10n, history.last.valueMilli, type, length),
               ),
               chart: FbLineChart(
-                points: [
-                  for (final m in history)
-                    (x: dayOffset(first!, m.localDate), y: display(m.valueMilli)),
-                ],
+                points: [for (final m in history) (x: dayOffset(first!, m.localDate), y: display(m.valueMilli))],
                 bottomLabel: (x) => context.shortDate(first!.addDays(x.round())),
                 leftLabel: (y) => y.toStringAsFixed(0),
               ),
@@ -156,10 +150,7 @@ class MeasurementHistoryScreen extends ConsumerWidget {
                     subtitle: [context.dayLabel(m.localDate), ?m.notes].join(' · '),
                     trailing: TextButton(
                       onPressed: () => showFbSheet<void>(context, MeasurementSheet(existing: m)),
-                      child: Text(
-                        l10n.edit,
-                        semanticsLabel: l10n.editEntryLabel(context.shortDate(m.localDate)),
-                      ),
+                      child: Text(l10n.edit, semanticsLabel: l10n.editEntryLabel(context.shortDate(m.localDate))),
                     ),
                   ),
               ],
@@ -203,10 +194,7 @@ class _MeasurementSheetState extends ConsumerState<MeasurementSheet> {
         ),
         actions: [
           TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.cancel)),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(controller.text),
-            child: Text(l10n.add),
-          ),
+          TextButton(onPressed: () => Navigator.of(context).pop(controller.text), child: Text(l10n.add)),
         ],
       ),
     );
@@ -229,12 +217,7 @@ class _MeasurementSheetState extends ConsumerState<MeasurementSheet> {
     final repo = ref.read(measurementRepositoryProvider);
     final existing = widget.existing;
     final result = existing == null
-        ? await repo.add(
-            type: _type,
-            valueMilli: milli,
-            entryUnit: length == LengthUnit.cm ? 'cm' : 'in',
-            notes: _note,
-          )
+        ? await repo.add(type: _type, valueMilli: milli, entryUnit: length == LengthUnit.cm ? 'cm' : 'in', notes: _note)
         : await repo.update(existing.id, valueMilli: milli, notes: _note);
     if (!mounted) return;
     if (result.isOk) {
@@ -243,9 +226,7 @@ class _MeasurementSheetState extends ConsumerState<MeasurementSheet> {
     } else {
       setState(() {
         _busy = false;
-        _error = result.failureOrNull?.code == 'out_of_range'
-            ? l10n.errOutOfRange
-            : l10n.errSaveFailed;
+        _error = result.failureOrNull?.code == 'out_of_range' ? l10n.errOutOfRange : l10n.errSaveFailed;
       });
     }
   }

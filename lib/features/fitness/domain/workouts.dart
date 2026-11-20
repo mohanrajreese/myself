@@ -37,10 +37,7 @@ final class Exercise {
   final MeasurementKind measurementKind;
   final bool archived;
 
-  List<String> get problems => [
-    if (name.trim().isEmpty) 'name_required',
-    if (name.trim().length > 80) 'name_too_long',
-  ];
+  List<String> get problems => [if (name.trim().isEmpty) 'name_required', if (name.trim().length > 80) 'name_too_long'];
 }
 
 enum WorkoutKind {
@@ -132,12 +129,7 @@ final class WorkoutSession {
 typedef PlannedSet = ({int? reps, int? loadG, int? durationS, int? distanceM});
 
 final class WorkoutTemplate {
-  const WorkoutTemplate({
-    required this.id,
-    required this.name,
-    required this.exercises,
-    this.useCount = 0,
-  });
+  const WorkoutTemplate({required this.id, required this.name, required this.exercises, this.useCount = 0});
   final String id;
   final String name;
   final List<({String exerciseId, List<PlannedSet> sets})> exercises;
@@ -176,15 +168,7 @@ final class WorkoutTemplate {
 /// A GPS fix, stored on the phone only (C3).
 typedef RoutePoint = ({int latE7, int lonE7, int? accuracyDm, DateTime at});
 
-typedef SetDraft = ({
-  int? reps,
-  int? loadG,
-  String? entryUnit,
-  int? distanceM,
-  int? durationS,
-  int? restS,
-  bool done,
-});
+typedef SetDraft = ({int? reps, int? loadG, String? entryUnit, int? distanceM, int? durationS, int? restS, bool done});
 
 abstract interface class WorkoutRepository {
   /// Adds or refreshes the bundled exercise list (deterministic ids).

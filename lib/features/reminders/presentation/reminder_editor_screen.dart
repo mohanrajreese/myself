@@ -53,20 +53,14 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
 
   Future<void> _load() async {
     final today = ref.read(todayProvider);
-    final existing = widget.id == null
-        ? null
-        : await ref.read(reminderRepositoryProvider).byId(widget.id!);
+    final existing = widget.id == null ? null : await ref.read(reminderRepositoryProvider).byId(widget.id!);
     if (!mounted) return;
     final l10n = context.l10n;
     setState(() {
       _existing = existing;
       _r =
           existing ??
-          reminderPreset(
-            ReminderKind.custom,
-            title: '',
-            today: today,
-          ).copyWith(rule: Daily(times: [9 * 60]));
+          reminderPreset(ReminderKind.custom, title: '', today: today).copyWith(rule: Daily(times: [9 * 60]));
       if (existing == null) _r = _r.copyWith(title: l10n.reminderDefaultTitle);
       _rule = _r.rule;
       _loaded = true;
@@ -213,8 +207,7 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
         children: [
           if (activities.isEmpty) FbEmptyHint(l10n.activitiesEmpty),
           ListTile(title: Text(l10n.noActivity), onTap: () => Navigator.of(context).pop('')),
-          for (final a in activities)
-            ListTile(title: Text(a.name), onTap: () => Navigator.of(context).pop(a.id)),
+          for (final a in activities) ListTile(title: Text(a.name), onTap: () => Navigator.of(context).pop(a.id)),
         ],
       ),
     );
@@ -267,11 +260,7 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
           title: Text(_existing == null ? l10n.newReminderTitle : l10n.editReminderTitle),
           actions: [
             if (_existing != null)
-              IconButton(
-                tooltip: l10n.delete,
-                onPressed: _delete,
-                icon: const Icon(Icons.delete_outline_rounded),
-              ),
+              IconButton(tooltip: l10n.delete, onPressed: _delete, icon: const Icon(Icons.delete_outline_rounded)),
             Padding(
               padding: const EdgeInsets.only(right: FbSpace.sm),
               child: FilledButton(onPressed: _busy ? null : _save, child: Text(l10n.save)),
@@ -281,10 +270,7 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
         body: ListView(
           padding: const EdgeInsets.fromLTRB(FbSpace.xl, FbSpace.sm, FbSpace.xl, FbSpace.xxl),
           children: [
-            if (_error != null) ...[
-              FbNotice(_error!, isError: true),
-              const SizedBox(height: FbSpace.md),
-            ],
+            if (_error != null) ...[FbNotice(_error!, isError: true), const SizedBox(height: FbSpace.md)],
             Text(l10n.reminderTypeLabel, style: context.text.label),
             const SizedBox(height: FbSpace.sm),
             Wrap(
@@ -292,11 +278,7 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
               runSpacing: FbSpace.sm,
               children: [
                 for (final k in ReminderKind.values)
-                  FbToggleChip(
-                    label: reminderKindName(l10n, k),
-                    selected: _r.kind == k,
-                    onTap: () => _pickKind(k),
-                  ),
+                  FbToggleChip(label: reminderKindName(l10n, k), selected: _r.kind == k, onTap: () => _pickKind(k)),
               ],
             ),
             const SizedBox(height: FbSpace.md),
@@ -348,10 +330,7 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
               options: {false: l10n.priorityNormal, true: l10n.priorityAlarm},
               selected: _r.alarm,
               onChanged: (v) => _change(
-                (r) => r.copyWith(
-                  alarm: v,
-                  quietBehaviour: v ? QuietBehaviour.bypass : QuietBehaviour.defer,
-                ),
+                (r) => r.copyWith(alarm: v, quietBehaviour: v ? QuietBehaviour.bypass : QuietBehaviour.defer),
               ),
             ),
             const SizedBox(height: FbSpace.xs),
@@ -364,17 +343,11 @@ class _ReminderEditorScreenState extends ConsumerState<ReminderEditorScreen> {
                   FbListRow(
                     title: l10n.soundLabel,
                     subtitle: l10n.soundValue(
-                      soundTitle(
-                        l10n,
-                        _r.soundKey,
-                        ref.watch(systemSoundsProvider).value ?? const [],
-                      ),
+                      soundTitle(l10n, _r.soundKey, ref.watch(systemSoundsProvider).value ?? const []),
                     ),
                     trailing: TextButton(
                       onPressed: () => _r.soundKey == null
-                          ? ref
-                                .read(alarmCapabilitiesProvider)
-                                .playTestSound(channelIdFor(_r.channel.code))
+                          ? ref.read(alarmCapabilitiesProvider).playTestSound(channelIdFor(_r.channel.code))
                           : ref.read(soundLibraryProvider).play(_r.soundKey!),
                       child: Text(l10n.testAction),
                     ),

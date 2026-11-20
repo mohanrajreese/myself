@@ -84,16 +84,8 @@ class _EditSetupScreenState extends ConsumerState<EditSetupScreen> {
                       padding: const EdgeInsets.all(FbSpace.xxl),
                       children: [
                         switch (widget.section) {
-                          SetupSection.profile => SetupProfileForm(
-                            draft: draft,
-                            errors: _errors,
-                            showWeight: false,
-                          ),
-                          SetupSection.goals => SetupGoalsForm(
-                            draft: draft,
-                            errors: _errors,
-                            editing: true,
-                          ),
+                          SetupSection.profile => SetupProfileForm(draft: draft, errors: _errors, showWeight: false),
+                          SetupSection.goals => SetupGoalsForm(draft: draft, errors: _errors, editing: true),
                           SetupSection.day => SetupDayForm(draft: draft, errors: _errors),
                         },
                       ],
@@ -105,10 +97,7 @@ class _EditSetupScreenState extends ConsumerState<EditSetupScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (_saveFailed || _errors.isNotEmpty) ...[
-                          FbNotice(
-                            _saveFailed ? l10n.errSaveFailed : l10n.errCheckFields,
-                            isError: true,
-                          ),
+                          FbNotice(_saveFailed ? l10n.errSaveFailed : l10n.errCheckFields, isError: true),
                           const SizedBox(height: FbSpace.md),
                         ],
                         FbPrimaryButton(label: l10n.save, onPressed: _save, busy: _busy),

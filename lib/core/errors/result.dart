@@ -22,11 +22,10 @@ sealed class Result<T> {
     Err<T>(:final failure) => Err(failure),
   };
 
-  R when<R>({required R Function(T value) ok, required R Function(Failure failure) err}) =>
-      switch (this) {
-        Ok<T>(:final value) => ok(value),
-        Err<T>(:final failure) => err(failure),
-      };
+  R when<R>({required R Function(T value) ok, required R Function(Failure failure) err}) => switch (this) {
+    Ok<T>(:final value) => ok(value),
+    Err<T>(:final failure) => err(failure),
+  };
 
   /// Runs [body]; anything it throws becomes the failure chosen by [onError].
   /// The thrown object's message is deliberately not kept.

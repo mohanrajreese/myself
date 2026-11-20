@@ -48,8 +48,7 @@ class _PrivateReportScreenState extends ConsumerState<PrivateReportScreen> {
     final doses = ref.watch(doseLogsProvider(r)).value ?? const <DoseLog>[];
     final activities = ref.watch(privateActivitiesProvider).value ?? const <PrivateActivity>[];
 
-    int bowelIn(DateRange x) =>
-        bowel.where((b) => x.contains(b.localDate)).fold(0, (n, b) => n + b.count);
+    int bowelIn(DateRange x) => bowel.where((b) => x.contains(b.localDate)).fold(0, (n, b) => n + b.count);
     String perDay(int n, int days) => (n / days).toStringAsFixed(1);
     final nowMinute = ref.watch(clockProvider).now();
 
@@ -74,11 +73,7 @@ class _PrivateReportScreenState extends ConsumerState<PrivateReportScreen> {
         padding: const EdgeInsets.fromLTRB(FbSpace.lg, FbSpace.sm, FbSpace.lg, FbSpace.xxl),
         children: [
           FbSegmented<ReportPeriod>(
-            options: {
-              ReportPeriod.week: l.week,
-              ReportPeriod.month: l.month,
-              ReportPeriod.custom: l.periodCustom,
-            },
+            options: {ReportPeriod.week: l.week, ReportPeriod.month: l.month, ReportPeriod.custom: l.periodCustom},
             selected: _period,
             onChanged: (v) async {
               if (v == ReportPeriod.custom) {
@@ -89,10 +84,7 @@ class _PrivateReportScreenState extends ConsumerState<PrivateReportScreen> {
                 );
                 if (picked == null) return;
                 setState(() {
-                  _custom = (
-                    from: LocalDate.fromDateTime(picked.start),
-                    to: LocalDate.fromDateTime(picked.end),
-                  );
+                  _custom = (from: LocalDate.fromDateTime(picked.start), to: LocalDate.fromDateTime(picked.end));
                   _period = v;
                 });
                 return;
@@ -108,19 +100,13 @@ class _PrivateReportScreenState extends ConsumerState<PrivateReportScreen> {
           const SizedBox(height: FbSpace.md),
           _Section(
             title: l.privateHabits,
-            rows: [
-              for (final t in types)
-                _HabitRow(name: habitName(l, t), typeId: t.id, range: r, previous: p),
-            ],
+            rows: [for (final t in types) _HabitRow(name: habitName(l, t), typeId: t.id, range: r, previous: p)],
             footer: l.countsOnly,
           ),
           _Section(
             title: l.bowelLog,
             rows: [
-              _Line(
-                l.perDayLabel,
-                l.valueWithPrevious(perDay(bowelIn(r), r.days), perDay(bowelIn(p), p.days)),
-              ),
+              _Line(l.perDayLabel, l.valueWithPrevious(perDay(bowelIn(r), r.days), perDay(bowelIn(p), p.days))),
               _Line(
                 l.normalHardLoose,
                 [
@@ -179,14 +165,8 @@ class _Section extends StatelessWidget {
         children: [
           Text(title, style: context.text.bodyStrong),
           const SizedBox(height: FbSpace.sm),
-          if (rows.isEmpty)
-            Text(context.l10n.nothingRecorded, style: context.text.bodySmall)
-          else
-            ...rows,
-          if (footer != null) ...[
-            const SizedBox(height: FbSpace.xs),
-            Text(footer!, style: context.text.caption),
-          ],
+          if (rows.isEmpty) Text(context.l10n.nothingRecorded, style: context.text.bodySmall) else ...rows,
+          if (footer != null) ...[const SizedBox(height: FbSpace.xs), Text(footer!, style: context.text.caption)],
         ],
       ),
     ),
@@ -215,12 +195,7 @@ class _Line extends StatelessWidget {
 }
 
 class _HabitRow extends ConsumerWidget {
-  const _HabitRow({
-    required this.name,
-    required this.typeId,
-    required this.range,
-    required this.previous,
-  });
+  const _HabitRow({required this.name, required this.typeId, required this.range, required this.previous});
   final String name;
   final String typeId;
   final DateRange range;
@@ -231,8 +206,7 @@ class _HabitRow extends ConsumerWidget {
     final logs =
         ref.watch(habitLogsProvider((type: typeId, from: previous.from, to: range.to))).value ??
         const <PrivateHabitLog>[];
-    int sum(DateRange r) =>
-        logs.where((x) => r.contains(x.localDate)).fold(0, (n, x) => n + x.count);
+    int sum(DateRange r) => logs.where((x) => r.contains(x.localDate)).fold(0, (n, x) => n + x.count);
     return _Line(name, context.l10n.timesWithPrevious(sum(range), sum(previous)));
   }
 }
@@ -245,8 +219,7 @@ class _ActivityRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final logs =
-        ref.watch(privateActivityLogsProvider(activity.id)).value ?? const <PrivateActivityLog>[];
+    final logs = ref.watch(privateActivityLogsProvider(activity.id)).value ?? const <PrivateActivityLog>[];
     int n(DateRange r) => logs.where((x) => r.contains(x.localDate)).length;
     return _Line(activity.name, context.l10n.logsWithPrevious(n(range), n(previous)));
   }

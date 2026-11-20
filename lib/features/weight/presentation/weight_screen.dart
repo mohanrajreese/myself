@@ -61,9 +61,7 @@ class _WeightScreenState extends ConsumerState<WeightScreen> {
   }
 
   Future<void> _more() async {
-    final page = await ref
-        .read(weightRepositoryProvider)
-        .page(limit: _pageSize, before: _entries.last.occurredAt);
+    final page = await ref.read(weightRepositoryProvider).page(limit: _pageSize, before: _entries.last.occurredAt);
     if (!mounted) return;
     setState(() {
       _entries = [..._entries, ...page];
@@ -112,14 +110,8 @@ class _WeightScreenState extends ConsumerState<WeightScreen> {
             spacing: FbSpace.sm,
             runSpacing: FbSpace.sm,
             children: [
-              _Stat(
-                l10n.statCurrent,
-                latest == null ? l10n.notSet : context.mass(latest.weightG, units.mass),
-              ),
-              _Stat(
-                l10n.statTarget,
-                target == null ? l10n.notSet : context.mass(target, units.mass),
-              ),
+              _Stat(l10n.statCurrent, latest == null ? l10n.notSet : context.mass(latest.weightG, units.mass)),
+              _Stat(l10n.statTarget, target == null ? l10n.notSet : context.mass(target, units.mass)),
               _Stat(
                 l10n.statChange(_range.days),
                 change == null ? l10n.notSet : context.massChange(change, units.mass),
@@ -140,10 +132,7 @@ class _WeightScreenState extends ConsumerState<WeightScreen> {
             FbChartCard(
               summary: l10n.weightChartSummary(
                 _range.days,
-                context.mass(
-                  inRange.firstWhere((e) => !e.localDate.isBefore(start)).weightG,
-                  units.mass,
-                ),
+                context.mass(inRange.firstWhere((e) => !e.localDate.isBefore(start)).weightG, units.mass),
                 context.mass(inRange.last.weightG, units.mass),
               ),
               chart: FbLineChart(
@@ -176,10 +165,7 @@ class _WeightScreenState extends ConsumerState<WeightScreen> {
                     ].join(' · '),
                     trailing: TextButton(
                       onPressed: () => showFbSheet<void>(context, WeightEditSheet(entry: e)),
-                      child: Text(
-                        l10n.edit,
-                        semanticsLabel: l10n.editEntryLabel(context.shortDate(e.localDate)),
-                      ),
+                      child: Text(l10n.edit, semanticsLabel: l10n.editEntryLabel(context.shortDate(e.localDate))),
                     ),
                   ),
               ],

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../features/auth/application/session_controller.dart';
 import 'private_providers.dart';
+import 'money_providers.dart';
 import 'providers.dart';
 import 'push_controller.dart';
 import 'routine_providers.dart';
@@ -31,6 +32,7 @@ Future<void> erasePhoneData(Ref ref) async {
     }
   }
   await ref.read(mealPhotoStoreProvider).removeAll();
+  await ref.read(receiptStoreProvider).removeAll();
   try {
     final private = ref.read(privateRepositoryProvider);
     for (final p in await private.watchPhotos().first) {

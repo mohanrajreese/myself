@@ -25,10 +25,7 @@ class FbSegmented<T> extends StatelessWidget {
       container: true,
       label: semanticLabel,
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: c.surfaceVariant,
-          borderRadius: BorderRadius.circular(FbRadius.chip),
-        ),
+        decoration: BoxDecoration(color: c.surfaceVariant, borderRadius: BorderRadius.circular(FbRadius.chip)),
         child: Padding(
           padding: const EdgeInsets.all(FbSpace.xs),
           child: Row(
@@ -110,10 +107,7 @@ class FbToggleChip extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: FbSize.touch,
-              minWidth: circular ? FbSize.touch : 0,
-            ),
+            constraints: BoxConstraints(minHeight: FbSize.touch, minWidth: circular ? FbSize.touch : 0),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: circular ? 0 : FbSpace.lg),
               child: Row(
@@ -142,13 +136,7 @@ class FbToggleChip extends StatelessWidget {
 
 /// Title, description and a switch on one row.
 class FbSwitchRow extends StatelessWidget {
-  const FbSwitchRow({
-    required this.title,
-    required this.value,
-    required this.onChanged,
-    this.subtitle,
-    super.key,
-  });
+  const FbSwitchRow({required this.title, required this.value, required this.onChanged, this.subtitle, super.key});
 
   final String title;
   final String? subtitle;

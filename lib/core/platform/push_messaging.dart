@@ -75,15 +75,11 @@ final class FirebasePushMessaging implements PushMessaging {
   @override
   Stream<String> get tokenRefresh => _m.onRegistered.map((t) => _last = t);
   @override
-  Stream<PushMessage> get foreground => FirebaseMessaging.onMessage
-      .map((m) => pushMessageFrom(m.data))
-      .where((m) => m != null)
-      .cast();
+  Stream<PushMessage> get foreground =>
+      FirebaseMessaging.onMessage.map((m) => pushMessageFrom(m.data)).where((m) => m != null).cast();
   @override
-  Stream<PushMessage> get opened => FirebaseMessaging.onMessageOpenedApp
-      .map((m) => pushMessageFrom(m.data))
-      .where((m) => m != null)
-      .cast();
+  Stream<PushMessage> get opened =>
+      FirebaseMessaging.onMessageOpenedApp.map((m) => pushMessageFrom(m.data)).where((m) => m != null).cast();
   @override
   Future<PushMessage?> initialMessage() async {
     final m = await _m.getInitialMessage();

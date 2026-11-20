@@ -69,10 +69,7 @@ class AppDatabase extends _$AppDatabase {
     'local_timer_events_session',
   };
 
-  static const _version6Indexes = {
-    'local_notification_state_reminder',
-    'local_notification_state_at',
-  };
+  static const _version6Indexes = {'local_notification_state_reminder', 'local_notification_state_at'};
 
   static const _version10Indexes = {'debt_payments_debt', 'expenses_local_date', 'expenses_meal'};
 
@@ -121,9 +118,7 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createTable(localFoodCatalogue);
         await migrator.createTable(localMealPhotos);
         await migrator.create(
-          allSchemaEntities.whereType<Index>().firstWhere(
-            (index) => index.entityName == 'local_food_catalogue_name',
-          ),
+          allSchemaEntities.whereType<Index>().firstWhere((index) => index.entityName == 'local_food_catalogue_name'),
         );
       }
       if (from < 4) {

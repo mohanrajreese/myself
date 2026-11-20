@@ -3,13 +3,7 @@ import '../../../core/utils/local_date.dart';
 
 /// Rest day and recovery ratings for one day (§5.19).
 final class RecoveryLog {
-  const RecoveryLog({
-    required this.date,
-    this.isRestDay = false,
-    this.soreness,
-    this.recovery,
-    this.notes,
-  });
+  const RecoveryLog({required this.date, this.isRestDay = false, this.soreness, this.recovery, this.notes});
   final LocalDate date;
   final bool isRestDay;
 

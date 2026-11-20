@@ -27,8 +27,7 @@ final class SecureSessionStorage extends LocalStorage {
   Future<String?> accessToken() => _store.read(_key);
 
   @override
-  Future<void> persistSession(String persistSessionString) =>
-      _store.write(_key, persistSessionString);
+  Future<void> persistSession(String persistSessionString) => _store.write(_key, persistSessionString);
 
   @override
   Future<void> removePersistedSession() => _store.delete(_key);
@@ -54,10 +53,7 @@ final class SupabaseGoogleAuthRepository implements AuthRepository {
       final idToken = google.authentication.idToken;
       if (idToken == null) return const Err(AuthFailure('google_sign_in_failed'));
 
-      final response = await client.auth.signInWithIdToken(
-        provider: OAuthProvider.google,
-        idToken: idToken,
-      );
+      final response = await client.auth.signInWithIdToken(provider: OAuthProvider.google, idToken: idToken);
       final user = response.user;
       if (user == null) return const Err(AuthFailure('backend_rejected'));
       return Ok(

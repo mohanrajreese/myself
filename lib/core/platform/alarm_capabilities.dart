@@ -41,8 +41,7 @@ final class DeviceAlarmCapabilities implements AlarmCapabilities {
   @override
   Future<List<String>> disabledChannels() => _try(_api.disabledChannels, const <String>[]);
   @override
-  Future<void> openChannelSettings(String channelId) =>
-      _try(() => _api.openChannelSettings(channelId), null);
+  Future<void> openChannelSettings(String channelId) => _try(() => _api.openChannelSettings(channelId), null);
   @override
   Future<void> openNotificationSettings() => _try(_api.openNotificationSettings, null);
   @override

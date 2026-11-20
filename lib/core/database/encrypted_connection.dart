@@ -37,9 +37,6 @@ QueryExecutor openEncryptedDatabase({required String name, required String hexKe
   validateHexKey(hexKey);
   return driftDatabase(
     name: name,
-    native: DriftNativeOptions(
-      shareAcrossIsolates: true,
-      setup: (database) => configureEncryption(database, hexKey),
-    ),
+    native: DriftNativeOptions(shareAcrossIsolates: true, setup: (database) => configureEncryption(database, hexKey)),
   );
 }

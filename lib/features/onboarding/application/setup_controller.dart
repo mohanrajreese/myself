@@ -16,9 +16,7 @@ abstract final class SetupKeys {
   static const resumePath = 'onboarding_step';
 }
 
-final setupControllerProvider = AsyncNotifierProvider<SetupController, SetupDraft>(
-  SetupController.new,
-);
+final setupControllerProvider = AsyncNotifierProvider<SetupController, SetupDraft>(SetupController.new);
 
 /// Holds what the user is entering during onboarding, and what they are
 /// editing later in Settings. Progress through onboarding is saved after each
@@ -111,9 +109,7 @@ class SetupController extends AsyncNotifier<SetupDraft> {
       suggested.suggestionsApplied
           ? suggested
           : draft.copyWith(
-              waterText: draft.waterText.isEmpty
-                  ? formatVolume(2500, draft.units.volume)
-                  : draft.waterText,
+              waterText: draft.waterText.isEmpty ? formatVolume(2500, draft.units.volume) : draft.waterText,
             ),
     );
   }
@@ -144,19 +140,13 @@ class SetupController extends AsyncNotifier<SetupDraft> {
   Future<Result<void>> _save({required bool recordWeight}) async {
     final draft = _draft;
     final today = ref.read(todayProvider);
-    final errors = {
-      ...draft.profileErrors(today: today),
-      ...draft.goalErrors(),
-      ...draft.dayErrors(),
-    };
+    final errors = {...draft.profileErrors(today: today), ...draft.goalErrors(), ...draft.dayErrors()};
     if (errors.isNotEmpty) {
       final first = errors.entries.first;
       return Err(ValidationFailure(first.key, first.value));
     }
 
-    final profile = await ref
-        .read(profileRepositoryProvider)
-        .save(_accountId, draft.toProfileDraft());
+    final profile = await ref.read(profileRepositoryProvider).save(_accountId, draft.toProfileDraft());
     if (!profile.isOk) return Err(profile.failureOrNull!);
 
     final weightG = draft.weightG;

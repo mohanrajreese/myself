@@ -2,14 +2,7 @@
 /// (system key, name, category, muscle group, equipment, measurement kind)
 const exerciseSeed = <(String, String, String, String, String, String)>[
   ('bench_press', 'Bench press', 'strength', 'chest', 'barbell', 'weight_reps'),
-  (
-    'incline_dumbbell_press',
-    'Incline dumbbell press',
-    'strength',
-    'chest',
-    'dumbbell',
-    'weight_reps',
-  ),
+  ('incline_dumbbell_press', 'Incline dumbbell press', 'strength', 'chest', 'dumbbell', 'weight_reps'),
   ('push_up', 'Push-up', 'strength', 'chest', 'body weight', 'reps_only'),
   ('chest_fly', 'Chest fly', 'strength', 'chest', 'dumbbell', 'weight_reps'),
   ('overhead_press', 'Overhead press', 'strength', 'shoulders', 'barbell', 'weight_reps'),

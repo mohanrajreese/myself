@@ -82,10 +82,7 @@ class FbDateTimeField extends StatelessWidget {
         lastDate: last,
       );
       if (date == null || !context.mounted) return;
-      final time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(value),
-      );
+      final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(value));
       if (time == null) return;
       onChanged(DateTime(date.year, date.month, date.day, time.hour, time.minute));
     }
@@ -97,10 +94,7 @@ class FbDateTimeField extends StatelessWidget {
         if (errorText != null)
           Padding(
             padding: const EdgeInsets.only(top: FbSpace.xs, left: FbSpace.lg),
-            child: Text(
-              errorText!,
-              style: context.text.caption.copyWith(color: context.colors.error),
-            ),
+            child: Text(errorText!, style: context.text.caption.copyWith(color: context.colors.error)),
           ),
       ],
     );
@@ -168,14 +162,7 @@ class FbScoreRow extends StatelessWidget {
 
 /// A tappable list row inside a card: main text, secondary text, trailing action.
 class FbListRow extends StatelessWidget {
-  const FbListRow({
-    required this.title,
-    this.subtitle,
-    this.trailing,
-    this.leading,
-    this.onTap,
-    super.key,
-  });
+  const FbListRow({required this.title, this.subtitle, this.trailing, this.leading, this.onTap, super.key});
 
   final String title;
   final String? subtitle;

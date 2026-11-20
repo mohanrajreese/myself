@@ -24,10 +24,7 @@ Future<void> addWater(BuildContext context, WidgetRef ref, int ml, {DateTime? at
   final units = ref.read(unitsProvider);
   final result = await ref.read(waterRepositoryProvider).add(ml, at: at);
   if (!context.mounted) return;
-  showFbSnackBar(
-    context,
-    result.isOk ? l10n.waterAdded(context.volume(ml, units.volume)) : l10n.errSaveFailed,
-  );
+  showFbSnackBar(context, result.isOk ? l10n.waterAdded(context.volume(ml, units.volume)) : l10n.errSaveFailed);
 }
 
 String _quickLabel(BuildContext context, int ml, VolumeUnit unit) =>
@@ -69,9 +66,8 @@ class _WaterScreenState extends ConsumerState<WaterScreen> {
     final target = ref.watch(currentDailyGoalsProvider).value?.dailyWaterMl;
     final start = today.addDays(-(_range.days - 1));
     final totals = ref.watch(waterTotalsProvider((from: start, to: today))).value ?? const {};
-    double display(int ml) => units.volume == VolumeUnit.ml
-        ? ml.toDouble()
-        : double.parse(formatVolume(ml, units.volume));
+    double display(int ml) =>
+        units.volume == VolumeUnit.ml ? ml.toDouble() : double.parse(formatVolume(ml, units.volume));
     final fraction = target == null || target == 0 ? null : total / target;
     final dayNames = MaterialLocalizations.of(context).narrowWeekdays;
 
@@ -91,10 +87,7 @@ class _WaterScreenState extends ConsumerState<WaterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(l10n.waterToday, style: context.text.label),
-                        Text(
-                          context.volume(total, units.volume),
-                          style: context.text.displayMetric,
-                        ),
+                        Text(context.volume(total, units.volume), style: context.text.displayMetric),
                         if (target != null)
                           Text(
                             total >= target
@@ -124,9 +117,7 @@ class _WaterScreenState extends ConsumerState<WaterScreen> {
             summary: l10n.waterChartSummary(_range.days),
             height: 150,
             chart: FbBarChart(
-              values: [
-                for (var i = 0; i < _range.days; i++) display(totals[start.addDays(i)] ?? 0),
-              ],
+              values: [for (var i = 0; i < _range.days; i++) display(totals[start.addDays(i)] ?? 0)],
               bottomLabel: (i) => _range == ChartRange.week
                   ? dayNames[start.addDays(i).weekday % 7]
                   : context.shortDate(start.addDays(i)),
@@ -292,12 +283,7 @@ class _WaterSheetState extends ConsumerState<WaterSheet> {
           onChanged: (v) => setState(() => _text = v),
         ),
         const SizedBox(height: FbSpace.lg),
-        FbDateTimeField(
-          label: l10n.timeLabel,
-          value: _at ?? now,
-          last: now,
-          onChanged: (v) => setState(() => _at = v),
-        ),
+        FbDateTimeField(label: l10n.timeLabel, value: _at ?? now, last: now, onChanged: (v) => setState(() => _at = v)),
         const SizedBox(height: FbSpace.xl),
         FbPrimaryButton(label: l10n.save, onPressed: _save),
       ],

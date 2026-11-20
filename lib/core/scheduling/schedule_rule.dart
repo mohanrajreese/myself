@@ -16,15 +16,9 @@ sealed class ScheduleRule {
   static ScheduleRule fromJson(Map<String, Object?> json) {
     try {
       return switch (json['type']) {
-        'one_time' => OneTime(
-          date: LocalDate.parse(json['date']! as String),
-          time: json['time']! as int,
-        ),
+        'one_time' => OneTime(date: LocalDate.parse(json['date']! as String), time: json['time']! as int),
         'daily' => Daily(times: _ints(json['times'])),
-        'weekdays' => Weekdays(
-          weekdays: _ints(json['weekdays']).toSet(),
-          times: _ints(json['times']),
-        ),
+        'weekdays' => Weekdays(weekdays: _ints(json['weekdays']).toSet(), times: _ints(json['times'])),
         'weekly' => Weekly(
           everyWeeks: json['every']! as int,
           anchor: LocalDate.parse(json['anchor']! as String),
@@ -34,11 +28,7 @@ sealed class ScheduleRule {
         'monthly' =>
           json['day'] != null
               ? Monthly.dayOfMonth(json['day']! as int, times: _ints(json['times']))
-              : Monthly.nthWeekday(
-                  json['nth']! as int,
-                  json['weekday']! as int,
-                  times: _ints(json['times']),
-                ),
+              : Monthly.nthWeekday(json['nth']! as int, json['weekday']! as int, times: _ints(json['times'])),
         'every_n_days' => EveryNDays(
           days: json['every']! as int,
           anchor: LocalDate.parse(json['anchor']! as String),
@@ -80,8 +70,7 @@ bool _sameList(List<int> a, List<int> b) {
   return true;
 }
 
-bool _sameSet(Set<int>? a, Set<int>? b) =>
-    a == null || b == null ? a == b : a.length == b.length && a.containsAll(b);
+bool _sameSet(Set<int>? a, Set<int>? b) => a == null || b == null ? a == b : a.length == b.length && a.containsAll(b);
 
 final class OneTime extends ScheduleRule {
   const OneTime({required this.date, required this.time});
@@ -127,11 +116,7 @@ final class Weekdays extends ScheduleRule {
   List<String> get problems => [..._weekdayProblems(weekdays), ..._timeProblems(times)];
 
   @override
-  Map<String, Object?> toJson() => {
-    'type': 'weekdays',
-    'weekdays': _sortedUnique(weekdays),
-    'times': times,
-  };
+  Map<String, Object?> toJson() => {'type': 'weekdays', 'weekdays': _sortedUnique(weekdays), 'times': times};
 
   @override
   bool operator ==(Object other) =>
@@ -143,13 +128,9 @@ final class Weekdays extends ScheduleRule {
 /// Every [everyWeeks] weeks, counted from the week (Monday to Sunday) that
 /// contains [anchor].
 final class Weekly extends ScheduleRule {
-  Weekly({
-    required this.everyWeeks,
-    required this.anchor,
-    required Set<int> weekdays,
-    required Iterable<int> times,
-  }) : weekdays = Set.unmodifiable(weekdays),
-       times = _sortedUnique(times);
+  Weekly({required this.everyWeeks, required this.anchor, required Set<int> weekdays, required Iterable<int> times})
+    : weekdays = Set.unmodifiable(weekdays),
+      times = _sortedUnique(times);
   final int everyWeeks;
   final LocalDate anchor;
   final Set<int> weekdays;
@@ -179,8 +160,7 @@ final class Weekly extends ScheduleRule {
       _sameSet(other.weekdays, weekdays) &&
       _sameList(other.times, times);
   @override
-  int get hashCode =>
-      Object.hash(everyWeeks, anchor, Object.hashAllUnordered(weekdays), Object.hashAll(times));
+  int get hashCode => Object.hash(everyWeeks, anchor, Object.hashAllUnordered(weekdays), Object.hashAll(times));
 }
 
 /// On a day of the month (the month's last day when it is shorter), or on
@@ -230,32 +210,20 @@ final class Monthly extends ScheduleRule {
 /// Every [days] days on the dates that are a whole number of periods from
 /// [anchor], before or after it.
 final class EveryNDays extends ScheduleRule {
-  EveryNDays({required this.days, required this.anchor, required Iterable<int> times})
-    : times = _sortedUnique(times);
+  EveryNDays({required this.days, required this.anchor, required Iterable<int> times}) : times = _sortedUnique(times);
   final int days;
   final LocalDate anchor;
   final List<int> times;
 
   @override
-  List<String> get problems => [
-    if (days < 1 || days > 366) 'every_out_of_range',
-    ..._timeProblems(times),
-  ];
+  List<String> get problems => [if (days < 1 || days > 366) 'every_out_of_range', ..._timeProblems(times)];
 
   @override
-  Map<String, Object?> toJson() => {
-    'type': 'every_n_days',
-    'every': days,
-    'anchor': anchor.toString(),
-    'times': times,
-  };
+  Map<String, Object?> toJson() => {'type': 'every_n_days', 'every': days, 'anchor': anchor.toString(), 'times': times};
 
   @override
   bool operator ==(Object other) =>
-      other is EveryNDays &&
-      other.days == days &&
-      other.anchor == anchor &&
-      _sameList(other.times, times);
+      other is EveryNDays && other.days == days && other.anchor == anchor && _sameList(other.times, times);
   @override
   int get hashCode => Object.hash(days, anchor, Object.hashAll(times));
 }
@@ -263,12 +231,8 @@ final class EveryNDays extends ScheduleRule {
 /// Every [everyMinutes] from [start] to [end] (included when it falls on the
 /// step), on [weekdays] or every day when null.
 final class IntervalRule extends ScheduleRule {
-  IntervalRule({
-    required this.everyMinutes,
-    required this.start,
-    required this.end,
-    Set<int>? weekdays,
-  }) : weekdays = weekdays == null ? null : Set.unmodifiable(weekdays);
+  IntervalRule({required this.everyMinutes, required this.start, required this.end, Set<int>? weekdays})
+    : weekdays = weekdays == null ? null : Set.unmodifiable(weekdays);
   final int everyMinutes;
   final int start;
   final int end;
@@ -299,10 +263,6 @@ final class IntervalRule extends ScheduleRule {
       other.end == end &&
       _sameSet(other.weekdays, weekdays);
   @override
-  int get hashCode => Object.hash(
-    everyMinutes,
-    start,
-    end,
-    weekdays == null ? null : Object.hashAllUnordered(weekdays!),
-  );
+  int get hashCode =>
+      Object.hash(everyMinutes, start, end, weekdays == null ? null : Object.hashAllUnordered(weekdays!));
 }

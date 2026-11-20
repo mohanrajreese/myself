@@ -69,14 +69,10 @@ class ReminderScheduler {
       quietHours: quietHours,
       done: done,
     );
-    final settled = await store.settledKeys(
-      now.subtract(const Duration(days: 2)),
-      store: storeName,
-    );
+    final settled = await store.settledKeys(now.subtract(const Duration(days: 2)), store: storeName);
     final desired = {
       for (final o in planned)
-        if (!settled.contains('${o.reminderId}@${localKey(o.local)}'))
-          '${o.reminderId}@${localKey(o.local)}': o,
+        if (!settled.contains('${o.reminderId}@${localKey(o.local)}')) '${o.reminderId}@${localKey(o.local)}': o,
     };
 
     var scheduled = 0, cancelled = 0, moved = 0, expired = 0;
@@ -135,16 +131,15 @@ class ReminderScheduler {
     return (scheduled: scheduled, cancelled: cancelled, moved: moved, expired: expired);
   }
 
-  NotificationRequest _request(int id, SchedulableReminder r, DateTime at, bool exact) =>
-      NotificationRequest(
-        id: id,
-        at: at,
-        channelId: r.channelId,
-        title: r.title,
-        body: r.body,
-        exact: exact,
-        secret: r.secret,
-        vibrate: r.vibrate,
-        soundUri: r.soundUri,
-      );
+  NotificationRequest _request(int id, SchedulableReminder r, DateTime at, bool exact) => NotificationRequest(
+    id: id,
+    at: at,
+    channelId: r.channelId,
+    title: r.title,
+    body: r.body,
+    exact: exact,
+    secret: r.secret,
+    vibrate: r.vibrate,
+    soundUri: r.soundUri,
+  );
 }
