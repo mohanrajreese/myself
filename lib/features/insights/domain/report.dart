@@ -23,7 +23,10 @@ enum ReportPeriod { day, week, month, custom }
 /// The day, week (Monday–Sunday) or calendar month containing [anchor].
 DateRange periodRange(ReportPeriod p, LocalDate anchor) => switch (p) {
   ReportPeriod.day || ReportPeriod.custom => (from: anchor, to: anchor),
-  ReportPeriod.week => (from: anchor.addDays(1 - anchor.weekday), to: anchor.addDays(7 - anchor.weekday)),
+  ReportPeriod.week => (
+    from: anchor.addDays(1 - anchor.weekday),
+    to: anchor.addDays(7 - anchor.weekday),
+  ),
   ReportPeriod.month => (
     from: _monthStart(anchor.year, anchor.month),
     to: _monthStart(anchor.year, anchor.month + 1).addDays(-1),
@@ -41,7 +44,8 @@ DateRange stepPeriod(ReportPeriod p, DateRange r, int by) => switch (p) {
 
 /// For a calendar month, the previous calendar month; otherwise the same
 /// number of days just before.
-DateRange previousPeriod(ReportPeriod p, DateRange r) => p == ReportPeriod.month ? stepPeriod(p, r, -1) : r.previous;
+DateRange previousPeriod(ReportPeriod p, DateRange r) =>
+    p == ReportPeriod.month ? stepPeriod(p, r, -1) : r.previous;
 
 /// Everything a report shows, as one integer per day per measure in base
 /// units. A missing day means no records, never zero.
@@ -73,7 +77,12 @@ enum Metric {
 }
 
 final class PeriodReport {
-  const PeriodReport({required this.range, required this.series, this.measurements = const {}, this.newRecords = 0});
+  const PeriodReport({
+    required this.range,
+    required this.series,
+    this.measurements = const {},
+    this.newRecords = 0,
+  });
   final DateRange range;
   final Map<Metric, Map<LocalDate, int>> series;
 
@@ -104,7 +113,8 @@ final class PeriodReport {
     return v[last];
   }
 
-  int get workouts => total(Metric.walks) + total(Metric.runs) + total(Metric.rides) + total(Metric.gymSessions);
+  int get workouts =>
+      total(Metric.walks) + total(Metric.runs) + total(Metric.rides) + total(Metric.gymSessions);
 
   /// Share of scheduled essential occurrences that were done, 0–100.
   int? get essentialPercent {
@@ -150,11 +160,26 @@ List<Insight> insightsFor(PeriodReport now, PeriodReport before, {int limit = 5}
   add(InsightKind.sleepAverage, now.average(Metric.sleepMin), before.average(Metric.sleepMin), 10);
   add(InsightKind.weightLatest, now.latest(Metric.weightG), before.latest(Metric.weightG), 200);
   add(InsightKind.waterAverage, now.average(Metric.waterMl), before.average(Metric.waterMl), 200);
-  add(InsightKind.kcalAverage, now.average(Metric.kcalMilli), before.average(Metric.kcalMilli), 100000);
-  add(InsightKind.proteinAverage, now.average(Metric.proteinMg), before.average(Metric.proteinMg), 5000);
+  add(
+    InsightKind.kcalAverage,
+    now.average(Metric.kcalMilli),
+    before.average(Metric.kcalMilli),
+    100000,
+  );
+  add(
+    InsightKind.proteinAverage,
+    now.average(Metric.proteinMg),
+    before.average(Metric.proteinMg),
+    5000,
+  );
   add(InsightKind.fibreAverage, now.average(Metric.fibreMg), before.average(Metric.fibreMg), 3000);
   add(InsightKind.essentialPercent, now.essentialPercent, before.essentialPercent, 5);
-  add(InsightKind.screenAverage, now.average(Metric.screenMs), before.average(Metric.screenMs), 10 * 60000);
+  add(
+    InsightKind.screenAverage,
+    now.average(Metric.screenMs),
+    before.average(Metric.screenMs),
+    10 * 60000,
+  );
   if (now.workouts > 0 || before.workouts > 0) {
     add(InsightKind.workouts, now.workouts, before.workouts, 1);
   }

@@ -48,8 +48,13 @@ class FixedTimeZone implements TimeZoneSource {
 }
 
 Future<List<({String table, String id})>> outboxEntries(AppDatabase db) async {
-  final rows = await db.customSelect('SELECT entity_table, entity_id FROM sync_outbox ORDER BY seq').get();
-  return [for (final row in rows) (table: row.read<String>('entity_table'), id: row.read<String>('entity_id'))];
+  final rows = await db
+      .customSelect('SELECT entity_table, entity_id FROM sync_outbox ORDER BY seq')
+      .get();
+  return [
+    for (final row in rows)
+      (table: row.read<String>('entity_table'), id: row.read<String>('entity_id')),
+  ];
 }
 
 /// Receipt photos kept in memory.

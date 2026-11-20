@@ -51,12 +51,16 @@ final class SupabaseSyncRemote implements SyncRemote {
     final filtered = afterId == null
         ? base.gte('server_updated_at', ts)
         : base.or('server_updated_at.gt.$ts,and(server_updated_at.eq.$ts,id.gt.$afterId)');
-    final rows = await filtered.order('server_updated_at', ascending: true).order('id', ascending: true).limit(limit);
+    final rows = await filtered
+        .order('server_updated_at', ascending: true)
+        .order('id', ascending: true)
+        .limit(limit);
     return [for (final r in rows) Map<String, Object?>.from(r)];
   });
 
   @override
-  Future<void> deleteAccount() => _guard(() => _client.functions.invoke('delete-account', method: HttpMethod.post));
+  Future<void> deleteAccount() =>
+      _guard(() => _client.functions.invoke('delete-account', method: HttpMethod.post));
 
   @override
   Future<void> reportStatus({

@@ -14,7 +14,12 @@ void main() {
   setUp(() {
     db = memoryDatabase();
     time = MutableClock(DateTime(2026, 11, 16, 7, 15));
-    water = DriftWaterRepository(db, clock: time.clock, ids: SequentialIds(), timeZone: const FixedTimeZone());
+    water = DriftWaterRepository(
+      db,
+      clock: time.clock,
+      ids: SequentialIds(),
+      timeZone: const FixedTimeZone(),
+    );
   });
   tearDown(() => db.close());
 

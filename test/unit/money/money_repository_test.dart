@@ -18,7 +18,12 @@ void main() {
   setUp(() async {
     db = memoryDatabase();
     time = MutableClock(DateTime(2026, 11, 20, 13, 10));
-    money = DriftMoneyRepository(db, clock: time.clock, ids: SequentialIds(), timeZone: const FixedTimeZone());
+    money = DriftMoneyRepository(
+      db,
+      clock: time.clock,
+      ids: SequentialIds(),
+      timeZone: const FixedTimeZone(),
+    );
     await money.seedCategories({'food': 'Food', 'emi': 'EMI and loan repayments'});
   });
   tearDown(() => db.close());
@@ -57,8 +62,14 @@ void main() {
   test('custom categories are added and archived; EMI and Other cannot be archived', () async {
     final pet = ((await money.addCategory('Pet care')) as Ok<FinanceCategory>).value;
     await money.archiveCategory(pet.id, archived: true);
-    expect((await money.watchCategories().first).firstWhere((c) => c.id == pet.id).archived, isTrue);
-    expect((await money.archiveCategory(emiCat, archived: true)).failureOrNull?.code, 'not_archivable');
+    expect(
+      (await money.watchCategories().first).firstWhere((c) => c.id == pet.id).archived,
+      isTrue,
+    );
+    expect(
+      (await money.archiveCategory(emiCat, archived: true)).failureOrNull?.code,
+      'not_archivable',
+    );
     expect((await money.addCategory('  ')).failureOrNull?.code, 'name_required');
   });
 
@@ -68,7 +79,9 @@ void main() {
     final e = (r as Ok<Expense>).value;
     expect(e.localDate, LocalDate(2026, 11, 20));
     expect((await outboxEntries(db)).skip(before), [(table: 'expenses', id: e.id)]);
-    final listed = await money.watchExpenses(from: LocalDate(2026, 11, 1), to: LocalDate(2026, 11, 30)).first;
+    final listed = await money
+        .watchExpenses(from: LocalDate(2026, 11, 1), to: LocalDate(2026, 11, 30))
+        .first;
     expect(listed.single.amountPaise, 24000);
   });
 
@@ -83,7 +96,10 @@ void main() {
     final e = ((await money.addExpense(draft(24000))) as Ok<Expense>).value;
     await money.updateExpense(e.id, draft(26000));
     final range = (from: LocalDate(2026, 11, 1), to: LocalDate(2026, 11, 30));
-    expect((await money.watchExpenses(from: range.from, to: range.to).first).single.amountPaise, 26000);
+    expect(
+      (await money.watchExpenses(from: range.from, to: range.to).first).single.amountPaise,
+      26000,
+    );
     await money.deleteExpense(e.id);
     expect(await money.watchExpenses(from: range.from, to: range.to).first, isEmpty);
   });
@@ -114,7 +130,11 @@ void main() {
     await money.setBudget(categoryId: food, amountPaise: 500000, from: LocalDate(2026, 10, 1));
     await money.removeBudget(categoryId: food, from: LocalDate(2026, 11, 1));
     final all = await money.watchBudgets().first;
-    expect(all, hasLength(4), reason: 'same month and category updates in place; removal is a zero row');
+    expect(
+      all,
+      hasLength(4),
+      reason: 'same month and category updates in place; removal is a zero row',
+    );
     expect(budgetFor(LocalDate(2026, 10, 1), null, all)?.amountPaise, 2500000);
     expect(budgetFor(LocalDate(2026, 11, 1), null, all)?.amountPaise, 3200000);
     expect(budgetFor(LocalDate(2026, 10, 1), food, all)?.amountPaise, 500000);
@@ -122,7 +142,8 @@ void main() {
   });
 
   test('a loan added late can mark past instalments paid without inventing expenses', () async {
-    final loan = ((await money.saveDebt(homeLoan(), markPastInstalmentsPaid: true)) as Ok<Debt>).value;
+    final loan =
+        ((await money.saveDebt(homeLoan(), markPastInstalmentsPaid: true)) as Ok<Debt>).value;
     final paid = await money.payments(debtId: loan.id);
     expect(paid, hasLength(38));
     expect(paid.last.localDate, LocalDate(2023, 10, 5));
@@ -136,20 +157,31 @@ void main() {
   });
 
   test('paying an EMI records the instalment and an expense in EMI and loan repayments', () async {
-    final loan = ((await money.saveDebt(homeLoan(), markPastInstalmentsPaid: true)) as Ok<Debt>).value;
+    final loan =
+        ((await money.saveDebt(homeLoan(), markPastInstalmentsPaid: true)) as Ok<Debt>).value;
     final p =
-        ((await money.addPayment(loan.id, amountPaise: 1250000, at: time.now, instalmentNo: 39)) as Ok).value
+        ((await money.addPayment(loan.id, amountPaise: 1250000, at: time.now, instalmentNo: 39))
+                    as Ok)
+                .value
             as DebtPayment;
     final expenses = await db.select(db.expenses).get();
     expect(expenses.single.categoryId, emiCat);
     expect(expenses.single.debtPaymentId, p.id);
     expect(expenses.single.note, 'Home loan');
     // The same instalment cannot be paid twice.
-    final again = await money.addPayment(loan.id, amountPaise: 1250000, at: time.now, instalmentNo: 39);
+    final again = await money.addPayment(
+      loan.id,
+      amountPaise: 1250000,
+      at: time.now,
+      instalmentNo: 39,
+    );
     expect(again.failureOrNull?.code, 'instalment_paid');
     // Deleting the payment removes the expense recorded from it.
     await money.deletePayment(p.id);
-    expect(await money.watchExpenses(from: LocalDate(2026, 11, 1), to: LocalDate(2026, 11, 30)).first, isEmpty);
+    expect(
+      await money.watchExpenses(from: LocalDate(2026, 11, 1), to: LocalDate(2026, 11, 30)).first,
+      isEmpty,
+    );
     expect(DebtStatus(loan, await money.payments(debtId: loan.id)).nextInstalment, 39);
   });
 

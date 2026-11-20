@@ -14,7 +14,8 @@ final class LocalDate implements Comparable<LocalDate> {
   const LocalDate._(this.year, this.month, this.day);
 
   /// The calendar day shown by a wall-clock [dateTime].
-  factory LocalDate.fromDateTime(DateTime dateTime) => LocalDate._(dateTime.year, dateTime.month, dateTime.day);
+  factory LocalDate.fromDateTime(DateTime dateTime) =>
+      LocalDate._(dateTime.year, dateTime.month, dateTime.day);
 
   /// The local day of [instant] for a zone that is [utcOffset] ahead of UTC.
   factory LocalDate.ofInstant(DateTime instant, Duration utcOffset) =>

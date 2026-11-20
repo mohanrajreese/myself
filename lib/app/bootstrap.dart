@@ -68,7 +68,9 @@ Future<void> bootstrap() async {
     return;
   }
 
-  final database = AppDatabase(openEncryptedDatabase(name: AppDatabase.databaseName, hexKey: hexKey));
+  final database = AppDatabase(
+    openEncryptedDatabase(name: AppDatabase.databaseName, hexKey: hexKey),
+  );
   final settings = SettingsRepository(database, clock: systemClock);
 
   // Meal photos: encrypted files in app-private storage (never synced).
@@ -79,7 +81,8 @@ Future<void> bootstrap() async {
           db: database,
           directory: Directory('${(await getApplicationSupportDirectory()).path}/meal_photos'),
           cipher: FileCipher([
-            for (var i = 0; i < fileKey.length; i += 2) int.parse(fileKey.substring(i, i + 2), radix: 16),
+            for (var i = 0; i < fileKey.length; i += 2)
+              int.parse(fileKey.substring(i, i + 2), radix: 16),
           ]),
           meals: DriftMealRepository(
             database,
@@ -96,7 +99,8 @@ Future<void> bootstrap() async {
           db: database,
           directory: Directory('${(await getApplicationSupportDirectory()).path}/receipts'),
           cipher: FileCipher([
-            for (var i = 0; i < fileKey.length; i += 2) int.parse(fileKey.substring(i, i + 2), radix: 16),
+            for (var i = 0; i < fileKey.length; i += 2)
+              int.parse(fileKey.substring(i, i + 2), radix: 16),
           ]),
           money: DriftMoneyRepository(
             database,
@@ -109,13 +113,18 @@ Future<void> bootstrap() async {
         );
   LicenseRegistry.addLicense(() async* {
     for (final font in const ['Inter', 'PlusJakartaSans']) {
-      yield LicenseEntryWithLineBreaks([font], await rootBundle.loadString('assets/fonts/$font-OFL.txt'));
+      yield LicenseEntryWithLineBreaks([
+        font,
+      ], await rootBundle.loadString('assets/fonts/$font-OFL.txt'));
     }
   });
   // Bundled food catalogues; each is imported once per version, in the background.
   final importer = CatalogueImporter(database, settings);
   unawaited(() async {
-    for (final asset in const ['assets/catalogue/usda_sr_legacy.json', 'assets/catalogue/indb.json']) {
+    for (final asset in const [
+      'assets/catalogue/usda_sr_legacy.json',
+      'assets/catalogue/indb.json',
+    ]) {
       try {
         await importer.importIfNeeded(await rootBundle.loadString(asset));
       } on Object catch (error) {
@@ -127,11 +136,16 @@ Future<void> bootstrap() async {
   final privateKey = (await DatabaseKeyManager(secrets).keyFor(DatabaseId.private)).valueOrNull;
   final privateDb = privateKey == null
       ? null
-      : PrivateDatabase(openEncryptedDatabase(name: PrivateDatabase.databaseName, hexKey: privateKey));
+      : PrivateDatabase(
+          openEncryptedDatabase(name: PrivateDatabase.databaseName, hexKey: privateKey),
+        );
   final supportDir = await getApplicationSupportDirectory();
   final fileCipher = fileKey == null
       ? null
-      : FileCipher([for (var i = 0; i < fileKey.length; i += 2) int.parse(fileKey.substring(i, i + 2), radix: 16)]);
+      : FileCipher([
+          for (var i = 0; i < fileKey.length; i += 2)
+            int.parse(fileKey.substring(i, i + 2), radix: 16),
+        ]);
   final l10n = deviceLocalizations();
 
   // Reminders: channels, taps, and the six-hourly top-up (05 §A5).
@@ -141,14 +155,21 @@ Future<void> bootstrap() async {
   NotificationGateway gateway = const DisabledNotificationGateway();
   NotificationTap? launchTap;
   try {
-    final local = await createNotificationGateway(onTap: taps.add, onBackgroundTap: notificationTapBackground);
+    final local = await createNotificationGateway(
+      onTap: taps.add,
+      onBackgroundTap: notificationTapBackground,
+    );
     launchTap = await local.launchTap();
     gateway = local;
     await DeviceAlarmCapabilities().takePendingSystemEvent();
   } on Object catch (error) {
     logger.failure('notifications_init_failed', error);
   }
-  unawaited(registerBackgroundJobs().catchError((Object error) => logger.failure('reminder_top_up_failed', error)));
+  unawaited(
+    registerBackgroundJobs().catchError(
+      (Object error) => logger.failure('reminder_top_up_failed', error),
+    ),
+  );
   final session = await loadSession(settings);
   final themeMode = themeModeFromSetting(await settings.read(themeModeSettingKey));
   final (auth, supabaseClient) = await _createAuth(AppConfig.fromEnvironment, secrets, logger);
@@ -169,7 +190,9 @@ Future<void> bootstrap() async {
         authRepositoryProvider.overrideWithValue(auth),
         if (supabaseClient != null) ...[
           syncRemoteProvider.overrideWithValue(SupabaseSyncRemote(supabaseClient)),
-          pushRegistryProvider.overrideWithValue(SupabasePushRegistry(supabaseClient, () => systemClock.now())),
+          pushRegistryProvider.overrideWithValue(
+            SupabasePushRegistry(supabaseClient, () => systemClock.now()),
+          ),
         ],
         pushMessagingProvider.overrideWithValue(push),
         localDataEraserProvider.overrideWith(
@@ -222,7 +245,10 @@ Future<(AuthRepository, SupabaseClient?)> _createAuth(
       authOptions: FlutterAuthClientOptions(localStorage: SecureSessionStorage(secrets)),
     );
     return (
-      SupabaseGoogleAuthRepository(client: supabase.client, googleWebClientId: config.googleWebClientId),
+      SupabaseGoogleAuthRepository(
+        client: supabase.client,
+        googleWebClientId: config.googleWebClientId,
+      ),
       supabase.client,
     );
   } on Object catch (error) {
@@ -233,7 +259,8 @@ Future<(AuthRepository, SupabaseClient?)> _createAuth(
 
 Stream<bool> _online() async* {
   final connectivity = Connectivity();
-  bool connected(List<ConnectivityResult> results) => results.any((result) => result != ConnectivityResult.none);
+  bool connected(List<ConnectivityResult> results) =>
+      results.any((result) => result != ConnectivityResult.none);
   yield connected(await connectivity.checkConnectivity());
   yield* connectivity.onConnectivityChanged.map(connected);
 }

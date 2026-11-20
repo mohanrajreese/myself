@@ -32,6 +32,10 @@ Future<LocalNotificationGateway> createNotificationGateway({
   final gateway = LocalNotificationGateway(
     actionLabels: (complete: l.actionComplete, snooze: l.actionSnooze, skip: l.actionSkip),
   );
-  await gateway.initialize(channels: channelLabels(l), onTap: onTap, onBackgroundTap: onBackgroundTap);
+  await gateway.initialize(
+    channels: channelLabels(l),
+    onTap: onTap,
+    onBackgroundTap: onBackgroundTap,
+  );
   return gateway;
 }

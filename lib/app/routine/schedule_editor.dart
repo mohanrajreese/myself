@@ -15,7 +15,13 @@ enum RepeatKind { once, daily, weekdays, interval, weekly, everyNDays, monthly }
 /// Picks a [ScheduleRule]; shared by the activity builder and the reminder
 /// editor. Reports the current rule (or null when incomplete) on change.
 class ScheduleEditor extends StatefulWidget {
-  const ScheduleEditor({required this.initial, required this.today, required this.onChanged, this.label, super.key});
+  const ScheduleEditor({
+    required this.initial,
+    required this.today,
+    required this.onChanged,
+    this.label,
+    super.key,
+  });
   final ScheduleRule initial;
   final LocalDate today;
   final ValueChanged<ScheduleRule?> onChanged;
@@ -84,14 +90,24 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
       RepeatKind.daily => Daily(times: _times),
       RepeatKind.weekdays => Weekdays(weekdays: _days, times: _times),
       RepeatKind.weekly =>
-        every == null ? null : Weekly(everyWeeks: every, anchor: widget.today, weekdays: _days, times: _times),
-      RepeatKind.everyNDays => every == null ? null : EveryNDays(days: every, anchor: widget.today, times: _times),
+        every == null
+            ? null
+            : Weekly(everyWeeks: every, anchor: widget.today, weekdays: _days, times: _times),
+      RepeatKind.everyNDays =>
+        every == null ? null : EveryNDays(days: every, anchor: widget.today, times: _times),
       RepeatKind.monthly =>
-        int.tryParse(_monthDay.trim()) == null ? null : Monthly.dayOfMonth(int.parse(_monthDay.trim()), times: _times),
+        int.tryParse(_monthDay.trim()) == null
+            ? null
+            : Monthly.dayOfMonth(int.parse(_monthDay.trim()), times: _times),
       RepeatKind.interval =>
         every == null
             ? null
-            : IntervalRule(everyMinutes: every, start: _start, end: _end, weekdays: _days.length == 7 ? null : _days),
+            : IntervalRule(
+                everyMinutes: every,
+                start: _start,
+                end: _end,
+                weekdays: _days.length == 7 ? null : _days,
+              ),
     };
   }
 
@@ -120,7 +136,8 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
       RepeatKind.monthly: l10n.repeatMonthly,
       RepeatKind.once: l10n.repeatOnce,
     };
-    final usesDays = _kind == RepeatKind.weekdays || _kind == RepeatKind.weekly || _kind == RepeatKind.interval;
+    final usesDays =
+        _kind == RepeatKind.weekdays || _kind == RepeatKind.weekly || _kind == RepeatKind.interval;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -131,7 +148,11 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
           runSpacing: FbSpace.sm,
           children: [
             for (final e in names.entries)
-              FbToggleChip(label: e.value, selected: _kind == e.key, onTap: () => _set(() => _kind = e.key)),
+              FbToggleChip(
+                label: e.value,
+                selected: _kind == e.key,
+                onTap: () => _set(() => _kind = e.key),
+              ),
           ],
         ),
         if (usesDays) ...[
@@ -150,7 +171,9 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
                     ).formatMediumDate(DateTime(2026, 11, 15 + d)).split(',').first,
                     circular: true,
                     selected: _days.contains(d),
-                    onTap: () => _set(() => _days.contains(d) && _days.length > 1 ? _days.remove(d) : _days.add(d)),
+                    onTap: () => _set(
+                      () => _days.contains(d) && _days.length > 1 ? _days.remove(d) : _days.add(d),
+                    ),
                   ),
               ],
             ),
@@ -171,7 +194,9 @@ class _ScheduleEditorState extends State<ScheduleEditor> {
               if (d != null) _set(() => _date = LocalDate.fromDateTime(d));
             },
           ),
-        if (_kind == RepeatKind.weekly || _kind == RepeatKind.everyNDays || _kind == RepeatKind.interval) ...[
+        if (_kind == RepeatKind.weekly ||
+            _kind == RepeatKind.everyNDays ||
+            _kind == RepeatKind.interval) ...[
           const SizedBox(height: FbSpace.sm),
           FbTextField(
             label: l10n.everyLabel,

@@ -20,10 +20,12 @@ IconData workoutIcon(WorkoutKind k) => switch (k) {
   WorkoutKind.cycle => Icons.directions_bike_rounded,
 };
 
-String km(BuildContext context, int metres) => context.l10n.valueKm((metres / 1000).toStringAsFixed(2));
+String km(BuildContext context, int metres) =>
+    context.l10n.valueKm((metres / 1000).toStringAsFixed(2));
 
-String paceLabel(BuildContext context, int secondsPerKm) =>
-    context.l10n.pacePerKm('${secondsPerKm ~/ 60}:${(secondsPerKm % 60).toString().padLeft(2, '0')}');
+String paceLabel(BuildContext context, int secondsPerKm) => context.l10n.pacePerKm(
+  '${secondsPerKm ~/ 60}:${(secondsPerKm % 60).toString().padLeft(2, '0')}',
+);
 
 String speedLabel(BuildContext context, int metresPerHour) =>
     context.l10n.speedKmh((metresPerHour / 1000).toStringAsFixed(1));
@@ -37,7 +39,9 @@ String clockLabel(Duration d) {
 
 String kgLabel(BuildContext context, int grams) {
   final kg = grams / 1000;
-  return context.l10n.valueKg(kg == kg.roundToDouble() ? kg.toStringAsFixed(0) : kg.toStringAsFixed(1));
+  return context.l10n.valueKg(
+    kg == kg.roundToDouble() ? kg.toStringAsFixed(0) : kg.toStringAsFixed(1),
+  );
 }
 
 /// One line describing a session for lists.

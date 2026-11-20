@@ -135,7 +135,10 @@ class _Total extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: context.text.caption),
-          Text(formatRupees(list.fold(0, (s, d) => s + d.remainingPaise)), style: context.text.title),
+          Text(
+            formatRupees(list.fold(0, (s, d) => s + d.remainingPaise)),
+            style: context.text.title,
+          ),
           Text(context.l10n.moneyOpenCount(list.length), style: context.text.caption),
         ],
       ),
@@ -215,7 +218,10 @@ class DebtDetailScreen extends ConsumerWidget {
       );
     }
     if (status == null) {
-      return Scaffold(appBar: AppBar(), body: async.isLoading ? const FbLoading() : FbEmptyHint(l10n.moneyNoDebts));
+      return Scaffold(
+        appBar: AppBar(),
+        body: async.isLoading ? const FbLoading() : FbEmptyHint(l10n.moneyNoDebts),
+      );
     }
     final d = status.debt;
     final emi = d.emi;
@@ -228,7 +234,12 @@ class DebtDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(d.name),
-        actions: [TextButton(onPressed: () => context.push(Routes.moneyEditDebt(id)), child: Text(l10n.edit))],
+        actions: [
+          TextButton(
+            onPressed: () => context.push(Routes.moneyEditDebt(id)),
+            child: Text(l10n.edit),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(FbSpace.lg, 0, FbSpace.lg, FbSpace.xxl),
@@ -248,13 +259,19 @@ class DebtDetailScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(emi != null ? l10n.moneyRemainingEmi : l10n.moneyOutstanding, style: context.text.caption),
+                Text(
+                  emi != null ? l10n.moneyRemainingEmi : l10n.moneyOutstanding,
+                  style: context.text.caption,
+                ),
                 Text(formatRupees(status.remainingPaise), style: context.text.displayMetric),
                 if (emi != null) ...[
                   const SizedBox(height: FbSpace.sm),
                   MoneyBar(
                     fraction: status.paidInstalments.length / emi.count,
-                    semanticLabel: l10n.moneyInstalmentsA11y(status.paidInstalments.length, emi.count),
+                    semanticLabel: l10n.moneyInstalmentsA11y(
+                      status.paidInstalments.length,
+                      emi.count,
+                    ),
                   ),
                   const SizedBox(height: FbSpace.sm),
                   Text(
@@ -267,15 +284,24 @@ class DebtDetailScreen extends ConsumerWidget {
                     style: context.text.bodySmall,
                   ),
                   Text(
-                    l10n.moneyEmiPaidSoFar(formatRupees(d.principalPaise), formatRupees(status.paidPaise)),
+                    l10n.moneyEmiPaidSoFar(
+                      formatRupees(d.principalPaise),
+                      formatRupees(status.paidPaise),
+                    ),
                     style: context.text.caption,
                   ),
                 ] else
                   Text(
                     [
                       iOwe
-                          ? l10n.moneyOriginalRepaid(formatRupees(d.principalPaise), formatRupees(status.paidPaise))
-                          : l10n.moneyOriginalReceived(formatRupees(d.principalPaise), formatRupees(status.paidPaise)),
+                          ? l10n.moneyOriginalRepaid(
+                              formatRupees(d.principalPaise),
+                              formatRupees(status.paidPaise),
+                            )
+                          : l10n.moneyOriginalReceived(
+                              formatRupees(d.principalPaise),
+                              formatRupees(status.paidPaise),
+                            ),
                       if (d.dueDate != null) l10n.moneyDueOn(_longDate(d.dueDate!)),
                     ].join(' · '),
                     style: context.text.bodySmall,
@@ -293,9 +319,15 @@ class DebtDetailScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.moneyNextEmi(formatRupees(emi.emiPaise)), style: context.text.bodyStrong),
                           Text(
-                            l10n.moneyNextEmiLine(context.shortDate(status.nextDue!), status.nextInstalment!),
+                            l10n.moneyNextEmi(formatRupees(emi.emiPaise)),
+                            style: context.text.bodyStrong,
+                          ),
+                          Text(
+                            l10n.moneyNextEmiLine(
+                              context.shortDate(status.nextDue!),
+                              status.nextInstalment!,
+                            ),
                             style: context.text.caption,
                           ),
                         ],
@@ -311,7 +343,10 @@ class DebtDetailScreen extends ConsumerWidget {
                         instalmentNo: status.nextInstalment,
                       );
                       if (context.mounted) {
-                        showFbSnackBar(context, r.isOk ? l10n.moneyPaymentSaved : l10n.errSaveFailed);
+                        showFbSnackBar(
+                          context,
+                          r.isOk ? l10n.moneyPaymentSaved : l10n.errSaveFailed,
+                        );
                       }
                     },
                     child: Text(l10n.moneyMarkPaid),
@@ -356,7 +391,9 @@ class DebtDetailScreen extends ConsumerWidget {
               children: [
                 for (final p in payments)
                   FbListRow(
-                    title: p.instalmentNo == null ? l10n.moneyPayment : l10n.moneyInstalmentN(p.instalmentNo!),
+                    title: p.instalmentNo == null
+                        ? l10n.moneyPayment
+                        : l10n.moneyInstalmentN(p.instalmentNo!),
                     subtitle: [_longDate(p.localDate), ?p.note].join(' · '),
                     trailing: Text(formatRupees(p.amountPaise), style: context.text.bodyStrong),
                     onTap: () async {
@@ -431,7 +468,9 @@ class _PaymentSheetState extends ConsumerState<_PaymentSheet> {
       return;
     }
     setState(() => _busy = true);
-    final r = await ref.read(moneyActionsProvider).addPayment(widget.debtId, amountPaise: paise, at: _at, note: _note);
+    final r = await ref
+        .read(moneyActionsProvider)
+        .addPayment(widget.debtId, amountPaise: paise, at: _at, note: _note);
     if (!mounted) return;
     if (!r.isOk) {
       setState(() => (_busy = false, _error = l10n.errSaveFailed));
@@ -574,7 +613,9 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
     if (_counterparty.trim().isEmpty) errors['counterparty'] = l10n.errRequired;
     if (principal == null || principal <= 0) errors['amount'] = l10n.errAmountInvalid;
     final rate = _rate.trim().isEmpty ? null : double.tryParse(_rate.replaceAll(',', '.'));
-    if (_rate.trim().isNotEmpty && (rate == null || rate < 0 || rate > 100)) errors['rate'] = l10n.errRate;
+    if (_rate.trim().isNotEmpty && (rate == null || rate < 0 || rate > 100)) {
+      errors['rate'] = l10n.errRate;
+    }
     final emiEnabled = _emiOn && _kind != DebtKind.personal;
     EmiPlan? plan;
     if (emiEnabled) {
@@ -585,7 +626,9 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
       if (day == null || day < 1 || day > 28) errors['day'] = l10n.errDueDay;
       if (count == null || count < 1 || count > 600) errors['count'] = l10n.errEmiCount;
       if (_firstEmi == null) errors['first'] = l10n.errRequired;
-      if (errors.isEmpty) plan = EmiPlan(emiPaise: paise!, day: day!, count: count!, first: _firstEmi!);
+      if (errors.isEmpty) {
+        plan = EmiPlan(emiPaise: paise!, day: day!, count: count!, first: _firstEmi!);
+      }
     }
     setState(
       () => _errors
@@ -620,7 +663,10 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
     if (saved == null) {
       setState(() => _busy = false);
       final code = r.failureOrNull;
-      showFbSnackBar(context, code is ValidationFailure ? l10n.errAmountInvalid : l10n.errSaveFailed);
+      showFbSnackBar(
+        context,
+        code is ValidationFailure ? l10n.errAmountInvalid : l10n.errSaveFailed,
+      );
       return;
     }
     showFbSnackBar(context, l10n.moneyDebtSaved);
@@ -644,15 +690,16 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
     context.go(Routes.moneyDebts);
   }
 
-  Widget _money(String label, String value, String? error, ValueChanged<String> onChanged) => FbTextField(
-    label: label,
-    value: value,
-    suffix: '₹',
-    errorText: error,
-    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-    inputFormatters: rupeeInputFormatters,
-    onChanged: onChanged,
-  );
+  Widget _money(String label, String value, String? error, ValueChanged<String> onChanged) =>
+      FbTextField(
+        label: label,
+        value: value,
+        suffix: '₹',
+        errorText: error,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: rupeeInputFormatters,
+        onChanged: onChanged,
+      );
 
   Widget _date(
     String label,
@@ -675,7 +722,8 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
           if (d != null) setState(() => onPicked(d));
         },
       ),
-      if (error != null) Text(error, style: context.text.caption.copyWith(color: context.colors.error)),
+      if (error != null)
+        Text(error, style: context.text.caption.copyWith(color: context.colors.error)),
     ],
   );
 
@@ -708,7 +756,10 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
         children: [
           FbSegmented<DebtDirection>(
             semanticLabel: l10n.moneyDirection,
-            options: {DebtDirection.iOwe: l10n.moneyIOwe, DebtDirection.owedToMe: l10n.moneyOwedToMe},
+            options: {
+              DebtDirection.iOwe: l10n.moneyIOwe,
+              DebtDirection.owedToMe: l10n.moneyOwedToMe,
+            },
             selected: _direction,
             onChanged: (v) => setState(() => _direction = v),
           ),
@@ -720,7 +771,11 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
             runSpacing: FbSpace.sm,
             children: [
               for (final k in DebtKind.values)
-                FbToggleChip(label: kindLabel(l10n, k), selected: k == _kind, onTap: () => setState(() => _kind = k)),
+                FbToggleChip(
+                  label: kindLabel(l10n, k),
+                  selected: k == _kind,
+                  onTap: () => setState(() => _kind = k),
+                ),
             ],
           ),
           const SizedBox(height: FbSpace.lg),
@@ -762,7 +817,11 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  FbSwitchRow(title: l10n.moneyPaidInEmis, value: _emiOn, onChanged: (v) => setState(() => _emiOn = v)),
+                  FbSwitchRow(
+                    title: l10n.moneyPaidInEmis,
+                    value: _emiOn,
+                    onChanged: (v) => setState(() => _emiOn = v),
+                  ),
                   if (_emiOn) ...[
                     FbFieldPair(
                       first: _money(
@@ -776,7 +835,10 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
                         value: _emiDay,
                         errorText: _errors['day'],
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(2)],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(2),
+                        ],
                         onChanged: (v) => setState(() => _emiDay = v),
                       ),
                     ),
@@ -787,10 +849,18 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
                         value: _emiCount,
                         errorText: _errors['count'],
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(3)],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(3),
+                        ],
                         onChanged: (v) => setState(() => _emiCount = v),
                       ),
-                      second: _date(l10n.moneyFirstEmi, _firstEmi, (d) => _firstEmi = d, error: _errors['first']),
+                      second: _date(
+                        l10n.moneyFirstEmi,
+                        _firstEmi,
+                        (d) => _firstEmi = d,
+                        error: _errors['first'],
+                      ),
                     ),
                     if (past > 0) ...[
                       const SizedBox(height: FbSpace.md),
@@ -832,7 +902,12 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
             ),
           if (!emiAllowed || !_emiOn) ...[
             const SizedBox(height: FbSpace.lg),
-            _date(l10n.moneyDueDateOptional, _due, (d) => _due = d, onClear: () => setState(() => _due = null)),
+            _date(
+              l10n.moneyDueDateOptional,
+              _due,
+              (d) => _due = d,
+              onClear: () => setState(() => _due = null),
+            ),
           ],
           const SizedBox(height: FbSpace.lg),
           FbTextField(

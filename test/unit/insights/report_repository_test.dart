@@ -20,7 +20,12 @@ void main() {
   setUp(() {
     db = memoryDatabase();
     time = MutableClock(DateTime(2026, 11, 18, 21));
-    activities = DriftActivityRepository(db, clock: time.clock, ids: SequentialIds(), timeZone: const FixedTimeZone());
+    activities = DriftActivityRepository(
+      db,
+      clock: time.clock,
+      ids: SequentialIds(),
+      timeZone: const FixedTimeZone(),
+    );
     reports = DriftReportRepository(db, activities: activities, clock: time.clock);
   });
   tearDown(() => db.close());
@@ -35,15 +40,19 @@ void main() {
   });
 
   test('sums and picks per day from each table, ignoring deleted rows and other weeks', () async {
-    await sql("INSERT INTO step_logs VALUES ('s1', ?, ?, NULL, '2026-11-16', 8000, 'phone_sensor', 'UTC', NULL)", [
-      stamp,
-      stamp,
-    ]);
-    await sql("INSERT INTO step_logs VALUES ('s2', ?, ?, NULL, '2026-11-15', 99999, 'phone_sensor', 'UTC', NULL)", [
-      stamp,
-      stamp,
-    ]);
-    for (final (id, ml, deleted) in [('w1', 500, 'NULL'), ('w2', 750, 'NULL'), ('w3', 4000, "'$stamp'")]) {
+    await sql(
+      "INSERT INTO step_logs VALUES ('s1', ?, ?, NULL, '2026-11-16', 8000, 'phone_sensor', 'UTC', NULL)",
+      [stamp, stamp],
+    );
+    await sql(
+      "INSERT INTO step_logs VALUES ('s2', ?, ?, NULL, '2026-11-15', 99999, 'phone_sensor', 'UTC', NULL)",
+      [stamp, stamp],
+    );
+    for (final (id, ml, deleted) in [
+      ('w1', 500, 'NULL'),
+      ('w2', 750, 'NULL'),
+      ('w3', 4000, "'$stamp'"),
+    ]) {
       await sql(
         'INSERT INTO water_logs (id, created_at, updated_at, deleted_at, amount_ml, occurred_at, local_date, tz) '
         "VALUES (?, ?2, ?2, $deleted, ?, ?2, '2026-11-17', 'UTC')",
@@ -75,48 +84,55 @@ void main() {
     expect(r.total(Metric.junkItems), 1);
   });
 
-  test('essential activities: done over occurrences that are due or past, not future ones', () async {
-    // Created a week earlier, so its schedule covers the whole week.
-    time.now = DateTime(2026, 11, 10, 9);
-    final a = (await activities.create(
-      Activity(
-        id: '',
-        name: 'Stretch',
-        category: 'movement',
-        iconKey: 'yoga',
-        trackingType: TrackingType.boolean,
-        priority: ActivityPriority.essential,
-        schedule: Daily(times: [8 * 60, 22 * 60]),
-        scheduleHistory: [
-          ScheduleChange(
-            from: LocalDate(2026, 11, 1),
-            rule: Daily(times: [8 * 60, 22 * 60]),
-          ),
-        ],
-      ),
-    )).valueOrNull!;
-    time.now = DateTime(2026, 11, 18, 21);
-    await activities.addLog(
-      a.id,
-      LogDraft(status: ActivityLogStatus.completed, occurredAt: DateTime(2026, 11, 16, 8, 5), scheduledSlot: 480),
-    );
-    time.now = DateTime(2026, 11, 18, 21);
-    final r = await reports.load(week);
-    // 16 and 17 Nov: 2 each; 18 Nov at 21:00: 08:00 has passed, 22:00 is still due.
-    expect(r.total(Metric.essentialScheduled), 5);
-    expect(r.total(Metric.essentialDone), 1);
-    expect(r.essentialPercent, 20);
-  });
+  test(
+    'essential activities: done over occurrences that are due or past, not future ones',
+    () async {
+      // Created a week earlier, so its schedule covers the whole week.
+      time.now = DateTime(2026, 11, 10, 9);
+      final a = (await activities.create(
+        Activity(
+          id: '',
+          name: 'Stretch',
+          category: 'movement',
+          iconKey: 'yoga',
+          trackingType: TrackingType.boolean,
+          priority: ActivityPriority.essential,
+          schedule: Daily(times: [8 * 60, 22 * 60]),
+          scheduleHistory: [
+            ScheduleChange(
+              from: LocalDate(2026, 11, 1),
+              rule: Daily(times: [8 * 60, 22 * 60]),
+            ),
+          ],
+        ),
+      )).valueOrNull!;
+      time.now = DateTime(2026, 11, 18, 21);
+      await activities.addLog(
+        a.id,
+        LogDraft(
+          status: ActivityLogStatus.completed,
+          occurredAt: DateTime(2026, 11, 16, 8, 5),
+          scheduledSlot: 480,
+        ),
+      );
+      time.now = DateTime(2026, 11, 18, 21);
+      final r = await reports.load(week);
+      // 16 and 17 Nov: 2 each; 18 Nov at 21:00: 08:00 has passed, 22:00 is still due.
+      expect(r.total(Metric.essentialScheduled), 5);
+      expect(r.total(Metric.essentialDone), 1);
+      expect(r.essentialPercent, 20);
+    },
+  );
 
   test('the report updates when a table changes', () async {
     final stream = reports.watch(week);
     final values = <int?>[];
     final sub = stream.listen((r) => values.add(r.average(Metric.steps)));
     await pumpEventQueue();
-    await sql("INSERT INTO step_logs VALUES ('s1', ?, ?, NULL, '2026-11-17', 6000, 'phone_sensor', 'UTC', NULL)", [
-      stamp,
-      stamp,
-    ]);
+    await sql(
+      "INSERT INTO step_logs VALUES ('s1', ?, ?, NULL, '2026-11-17', 6000, 'phone_sensor', 'UTC', NULL)",
+      [stamp, stamp],
+    );
     await db.customUpdate('UPDATE step_logs SET steps = steps', updates: {db.stepLogs});
     await pumpEventQueue();
     await sub.cancel();

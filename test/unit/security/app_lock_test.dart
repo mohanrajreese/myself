@@ -33,7 +33,9 @@ void main() {
 
     test('settings round-trip and survive bad data', () async {
       final pins = PinStore(InMemorySecretStore(), iterations: 1000);
-      await pins.writeSettings(const AppLockSettings(enabled: true, biometric: true, lockAfter: Duration(minutes: 5)));
+      await pins.writeSettings(
+        const AppLockSettings(enabled: true, biometric: true, lockAfter: Duration(minutes: 5)),
+      );
       final s = await pins.readSettings();
       expect((s.enabled, s.biometric, s.lockAfter), (true, true, const Duration(minutes: 5)));
       expect(AppLockSettings.decode('nonsense').enabled, isFalse);

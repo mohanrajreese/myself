@@ -65,7 +65,12 @@ class _AddWeightSheetState extends ConsumerState<AddWeightSheet> {
     final text = _text ?? lastText ?? '';
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(FbSpace.xl, 0, FbSpace.xl, FbSpace.xxl + MediaQuery.viewInsetsOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(
+        FbSpace.xl,
+        0,
+        FbSpace.xl,
+        FbSpace.xxl + MediaQuery.viewInsetsOf(context).bottom,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,11 +78,16 @@ class _AddWeightSheetState extends ConsumerState<AddWeightSheet> {
           Row(
             children: [
               Expanded(
-                child: Semantics(header: true, child: Text(l10n.addWeightTitle, style: context.text.title)),
+                child: Semantics(
+                  header: true,
+                  child: Text(l10n.addWeightTitle, style: context.text.title),
+                ),
               ),
               if (lastText != null)
                 Text(
-                  l10n.lastWeight(unit == MassUnit.kg ? l10n.valueKg(lastText) : l10n.valueLb(lastText)),
+                  l10n.lastWeight(
+                    unit == MassUnit.kg ? l10n.valueKg(lastText) : l10n.valueLb(lastText),
+                  ),
                   style: context.text.bodySmall,
                 ),
             ],

@@ -135,7 +135,12 @@ final class DriftReportRepository {
     }
 
     await _activities(r, put);
-    return PeriodReport(range: r, series: series, measurements: measurements, newRecords: await _newRecords(r));
+    return PeriodReport(
+      range: r,
+      series: series,
+      measurements: measurements,
+      newRecords: await _newRecords(r),
+    );
   }
 
   Future<void> _activities(DateRange r, void Function(Metric, LocalDate, int?) put) async {
@@ -155,7 +160,12 @@ final class DriftReportRepository {
           for (final l in logs)
             if (l.activityId == a.id && l.localDate == date) l,
         ];
-        final ad = ActivityDay.of(a, date, dayLogs, now: (date: today, minute: now.hour * 60 + now.minute));
+        final ad = ActivityDay.of(
+          a,
+          date,
+          dayLogs,
+          now: (date: today, minute: now.hour * 60 + now.minute),
+        );
         for (final s in ad.slots) {
           if (s.state == SlotState.due) continue;
           scheduled++;

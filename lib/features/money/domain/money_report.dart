@@ -62,7 +62,11 @@ final class MoneyReport {
     final days = to.daysSince(from) + 1;
     if (from.day == 1) {
       // A month (or part of one) compares with the same days of the month before.
-      final start = LocalDate(from.month == 1 ? from.year - 1 : from.year, from.month == 1 ? 12 : from.month - 1, 1);
+      final start = LocalDate(
+        from.month == 1 ? from.year - 1 : from.year,
+        from.month == 1 ? 12 : from.month - 1,
+        1,
+      );
       final lastDay = DateTime.utc(start.year, start.month + 1, 0).day;
       final end = LocalDate(start.year, start.month, days.clamp(1, lastDay));
       return (from: start, to: end);
@@ -155,7 +159,9 @@ final class MoneyReport {
       previousTotalPaise: previous.fold(0, (s, e) => s + e.amountPaise),
       byCategory: byCategory,
       previousByCategory: sumBy(previous),
-      byMethod: Map.fromEntries(byMethod.entries.toList()..sort((a, b) => b.value.compareTo(a.value))),
+      byMethod: Map.fromEntries(
+        byMethod.entries.toList()..sort((a, b) => b.value.compareTo(a.value)),
+      ),
       daily: daily,
       budgetPaise: overall,
       categoryBudgets: perCategory,

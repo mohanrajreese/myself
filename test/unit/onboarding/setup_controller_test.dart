@@ -20,7 +20,9 @@ void main() {
     overrides: [
       appDatabaseProvider.overrideWithValue(db),
       authRepositoryProvider.overrideWithValue(FakeAuthRepository()),
-      initialSessionProvider.overrideWithValue(const SessionState(account: testAccount, signedIn: true)),
+      initialSessionProvider.overrideWithValue(
+        const SessionState(account: testAccount, signedIn: true),
+      ),
       clockProvider.overrideWithValue(time.clock),
       idGeneratorProvider.overrideWithValue(SequentialIds()),
       timeZoneSourceProvider.overrideWithValue(const FixedTimeZone()),
@@ -82,7 +84,9 @@ void main() {
       expect(draft().kcalText, '2300');
       expect(draft().proteinText, '145');
 
-      controller.edit((d) => d.copyWith(targetWeightText: '', fitnessGoals: [FitnessGoalKeys.buildStrength]));
+      controller.edit(
+        (d) => d.copyWith(targetWeightText: '', fitnessGoals: [FitnessGoalKeys.buildStrength]),
+      );
       controller.recalculate();
       expect(draft().kcalText, '2750');
       expect(draft().proteinText, '145');
@@ -164,18 +168,25 @@ void main() {
     expect(nutrition.fibreMg, 30000);
 
     final settings = container.read(settingsRepositoryProvider);
-    expect(await settings.read(SetupKeys.reminderPrefs), {'water': true, 'workout': false, 'bedtime': false});
+    expect(await settings.read(SetupKeys.reminderPrefs), {
+      'water': true,
+      'workout': false,
+      'bedtime': false,
+    });
     expect(await settings.read(SetupKeys.draft), isNull);
   });
 
-  test('only a name is needed to finish; no weight is logged and no nutrition goal is made', () async {
-    final controller = await ready();
-    controller.edit((d) => d.copyWith(name: 'Asha'));
-    controller.prepareGoals();
-    expect((await controller.finishOnboarding()).isOk, isTrue);
-    expect(await container.read(weightRepositoryProvider).latest(), isNull);
-    expect(await db.select(db.nutritionGoals).get(), isEmpty);
-  });
+  test(
+    'only a name is needed to finish; no weight is logged and no nutrition goal is made',
+    () async {
+      final controller = await ready();
+      controller.edit((d) => d.copyWith(name: 'Asha'));
+      controller.prepareGoals();
+      expect((await controller.finishOnboarding()).isOk, isTrue);
+      expect(await container.read(weightRepositoryProvider).latest(), isNull);
+      expect(await db.select(db.nutritionGoals).get(), isEmpty);
+    },
+  );
 
   test('invalid input stops the save and reports the field', () async {
     final controller = await ready();

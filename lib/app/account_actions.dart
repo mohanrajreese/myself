@@ -98,7 +98,8 @@ final erasePhoneDataProvider = Provider<Future<void> Function()>(
   },
 );
 
-final deleteAccountProvider = Provider<Future<DeleteAccountOutcome> Function({required bool erasePhone})>(
-  (ref) =>
-      ({required bool erasePhone}) => deleteAccount(ref, erasePhone: erasePhone),
-);
+final deleteAccountProvider =
+    Provider<Future<DeleteAccountOutcome> Function({required bool erasePhone})>(
+      (ref) =>
+          ({required bool erasePhone}) => deleteAccount(ref, erasePhone: erasePhone),
+    );

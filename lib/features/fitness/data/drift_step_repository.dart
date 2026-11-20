@@ -11,7 +11,12 @@ import '../domain/step_attribution.dart';
 import '../domain/step_repository.dart';
 
 final class DriftStepRepository implements StepRepository {
-  DriftStepRepository(this._db, {required this.clock, required this.ids, this.engine = const StepAttributionEngine()});
+  DriftStepRepository(
+    this._db, {
+    required this.clock,
+    required this.ids,
+    this.engine = const StepAttributionEngine(),
+  });
 
   final AppDatabase _db;
   final Clock clock;
@@ -57,15 +62,18 @@ final class DriftStepRepository implements StepRepository {
               mode: InsertMode.insertOrIgnore,
             );
       }
-      final earliest = readings.map((r) => r.reading.wallTimeUtc).reduce((a, b) => a.isBefore(b) ? a : b);
+      final earliest = readings
+          .map((r) => r.reading.wallTimeUtc)
+          .reduce((a, b) => a.isBefore(b) ? a : b);
       final firstAffected = LocalDate.ofInstant(
         earliest,
         Duration(seconds: readings.first.reading.utcOffsetSeconds),
       ).addDays(-1);
       await _recompute(firstAffected, readings.last.tz);
-      await (_db.delete(
-        _db.localStepReadings,
-      )..where((t) => t.wallTimeUtc.isSmallerThanValue(clock.now().toUtc().subtract(_retention)))).go();
+      await (_db.delete(_db.localStepReadings)..where(
+            (t) => t.wallTimeUtc.isSmallerThanValue(clock.now().toUtc().subtract(_retention)),
+          ))
+          .go();
     });
   }, onError: (_) => const StorageFailure('step_write'));
 
@@ -117,7 +125,9 @@ final class DriftStepRepository implements StepRepository {
     DateTime? collectedAt,
   }) async {
     final now = clock.now().toUtc();
-    final existing = await (_db.select(_db.stepLogs)..where((t) => t.logDate.equalsValue(date))).getSingleOrNull();
+    final existing = await (_db.select(
+      _db.stepLogs,
+    )..where((t) => t.logDate.equalsValue(date))).getSingleOrNull();
     final total = steps < 0 ? 0 : steps;
     final source = adjusted ? 'phone_sensor_adjusted' : 'phone_sensor';
     if (existing != null && existing.steps == total && existing.source == source) return;
@@ -179,9 +189,10 @@ final class DriftStepRepository implements StepRepository {
   }
 
   @override
-  Stream<StepDay?> watchDay(LocalDate date) => (_db.select(
-    _db.localStepDaily,
-  )..where((t) => t.localDate.equalsValue(date))).watchSingleOrNull().map((r) => r == null ? null : _toDay(r));
+  Stream<StepDay?> watchDay(LocalDate date) =>
+      (_db.select(_db.localStepDaily)..where((t) => t.localDate.equalsValue(date)))
+          .watchSingleOrNull()
+          .map((r) => r == null ? null : _toDay(r));
 
   @override
   Stream<List<StepDay>> watchRange(LocalDate from, LocalDate to) =>

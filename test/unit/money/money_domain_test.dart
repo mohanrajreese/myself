@@ -58,7 +58,10 @@ void main() {
 
     test('all instalments paid: no next due date', () {
       final small = EmiPlan(emiPaise: 215000, day: 10, count: 2, first: d(2026, 9, 10));
-      final s = DebtStatus(loan(emi: small, principal: 430000), [pay(1, amount: 215000), pay(2, amount: 215000)]);
+      final s = DebtStatus(loan(emi: small, principal: 430000), [
+        pay(1, amount: 215000),
+        pay(2, amount: 215000),
+      ]);
       expect(s.nextInstalment, isNull);
       expect(s.nextDue, isNull);
       expect(s.remainingPaise, 0);
@@ -96,7 +99,11 @@ void main() {
   });
 
   test('EMI reminders: lead days before, the day before, and the due day', () {
-    expect(emiReminderDays(d(2026, 12, 5), 7).map((r) => r.day), [d(2026, 11, 28), d(2026, 12, 4), d(2026, 12, 5)]);
+    expect(emiReminderDays(d(2026, 12, 5), 7).map((r) => r.day), [
+      d(2026, 11, 28),
+      d(2026, 12, 4),
+      d(2026, 12, 5),
+    ]);
     expect(emiReminderDays(d(2026, 12, 5), 14).first.day, d(2026, 11, 21));
   });
 
@@ -116,7 +123,10 @@ void main() {
       expect(budgetFor(d(2026, 11, 1), 'shopping', all), isNull);
     });
     test('a zero row removes a budget from that month on only', () {
-      final withEnd = [...all, Budget(id: 'd', effectiveFrom: d(2026, 12, 1), categoryId: 'food', amountPaise: 0)];
+      final withEnd = [
+        ...all,
+        Budget(id: 'd', effectiveFrom: d(2026, 12, 1), categoryId: 'food', amountPaise: 0),
+      ];
       expect(budgetFor(d(2026, 11, 1), 'food', withEnd)?.amountPaise, 500000);
       expect(budgetFor(d(2026, 12, 1), 'food', withEnd), isNull);
     });

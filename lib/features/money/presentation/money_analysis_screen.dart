@@ -59,7 +59,11 @@ class _MoneyAnalysisScreenState extends ConsumerState<MoneyAnalysisScreen> {
       ),
       SpendVsPrevious() => l10n.moneyFactSame,
       EmiShare(:final percent) => l10n.moneyFactEmi(percent),
-      final FoodPerMeal f => l10n.moneyFactFood(formatRupees(f.totalPaise), f.meals, formatRupees(f.averagePaise)),
+      final FoodPerMeal f => l10n.moneyFactFood(
+        formatRupees(f.totalPaise),
+        f.meals,
+        formatRupees(f.averagePaise),
+      ),
       CategoryOverBudget(:final categoryId, :final overPaise) => l10n.moneyFactOver(
         categoryLabel(l10n, cats[categoryId]),
         formatRupees(overPaise),
@@ -72,7 +76,9 @@ class _MoneyAnalysisScreenState extends ConsumerState<MoneyAnalysisScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final today = ref.watch(todayProvider);
-    final range = _custom && _range != null ? _range! : monthRange(ref.watch(moneyMonthProvider), today);
+    final range = _custom && _range != null
+        ? _range!
+        : monthRange(ref.watch(moneyMonthProvider), today);
     final prev = MoneyReport.previousRange(range.from, range.to);
     final async = ref.watch(moneyReportProvider(range));
     final cats = ref.watch(moneyCategoryMapProvider);
@@ -89,7 +95,12 @@ class _MoneyAnalysisScreenState extends ConsumerState<MoneyAnalysisScreen> {
           const SizedBox(height: FbSpace.sm),
           Row(
             children: [
-              Expanded(child: Text(l10n.moneyComparedRange(_span(range), _span(prev)), style: context.text.bodySmall)),
+              Expanded(
+                child: Text(
+                  l10n.moneyComparedRange(_span(range), _span(prev)),
+                  style: context.text.bodySmall,
+                ),
+              ),
               if (_custom) TextButton(onPressed: _chooseRange, child: Text(l10n.moneyChooseRange)),
             ],
           ),
@@ -107,7 +118,10 @@ class _MoneyAnalysisScreenState extends ConsumerState<MoneyAnalysisScreen> {
     final l10n = context.l10n;
     final facts = r.facts;
     final days = r.daily.entries.toList();
-    final top = days.fold<MapEntry<LocalDate, int>?>(null, (m, e) => m == null || e.value > m.value ? e : m);
+    final top = days.fold<MapEntry<LocalDate, int>?>(
+      null,
+      (m, e) => m == null || e.value > m.value ? e : m,
+    );
     final catKeys = {...r.byCategory.keys, ...r.previousByCategory.keys}.toList()
       ..sort((a, b) => (r.byCategory[b] ?? 0).compareTo(r.byCategory[a] ?? 0));
     return Column(
@@ -118,7 +132,10 @@ class _MoneyAnalysisScreenState extends ConsumerState<MoneyAnalysisScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Semantics(header: true, child: Text(l10n.moneyInBrief, style: context.text.bodyStrong)),
+              Semantics(
+                header: true,
+                child: Text(l10n.moneyInBrief, style: context.text.bodyStrong),
+              ),
               const SizedBox(height: FbSpace.sm),
               if (facts.isEmpty) Text(l10n.moneyNothingInRange, style: context.text.body),
               for (final f in facts)
@@ -139,7 +156,10 @@ class _MoneyAnalysisScreenState extends ConsumerState<MoneyAnalysisScreen> {
                 ? l10n.moneySpendingPerDay
                 : l10n.moneyDailySummary(context.shortDate(top.key), formatRupees(top.value)),
             height: 140,
-            chart: FbBarChart(values: [for (final e in days) e.value / 100], bottomLabel: (i) => '${days[i].key.day}'),
+            chart: FbBarChart(
+              values: [for (final e in days) e.value / 100],
+              bottomLabel: (i) => '${days[i].key.day}',
+            ),
           ),
           MoneySectionHeader(l10n.moneyByCategory),
           FbCard(
@@ -205,7 +225,12 @@ class _MoneyAnalysisScreenState extends ConsumerState<MoneyAnalysisScreen> {
 }
 
 class _TableRow extends StatelessWidget {
-  const _TableRow({required this.first, required this.second, required this.third, this.header = false});
+  const _TableRow({
+    required this.first,
+    required this.second,
+    required this.third,
+    this.header = false,
+  });
   final String first;
   final String second;
   final String third;
@@ -222,7 +247,11 @@ class _TableRow extends StatelessWidget {
             Expanded(flex: 3, child: Text(first, style: style)),
             Expanded(
               flex: 2,
-              child: Text(second, textAlign: TextAlign.end, style: header ? style : context.text.bodyStrong),
+              child: Text(
+                second,
+                textAlign: TextAlign.end,
+                style: header ? style : context.text.bodyStrong,
+              ),
             ),
             Expanded(
               flex: 2,

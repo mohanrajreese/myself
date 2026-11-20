@@ -58,7 +58,12 @@ final class EncryptedMealPhotoStore implements MealPhotoStore {
         await _db
             .into(_db.localMealPhotos)
             .insert(
-              LocalMealPhotosCompanion.insert(id: id, mealLogId: mealId, fileName: name, takenAt: clock.now().toUtc()),
+              LocalMealPhotosCompanion.insert(
+                id: id,
+                mealLogId: mealId,
+                fileName: name,
+                takenAt: clock.now().toUtc(),
+              ),
             );
       });
       if (previous != null) await _deleteFile(previous.fileName);

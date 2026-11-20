@@ -41,7 +41,12 @@ String formatWakeTime(BuildContext context, String hhmm) {
 
 /// Name, birth date, height, units and (during onboarding) current weight.
 class SetupProfileForm extends ConsumerWidget {
-  const SetupProfileForm({required this.draft, required this.errors, this.showWeight = true, super.key});
+  const SetupProfileForm({
+    required this.draft,
+    required this.errors,
+    this.showWeight = true,
+    super.key,
+  });
 
   final SetupDraft draft;
   final Map<String, String> errors;
@@ -138,7 +143,12 @@ class SetupProfileForm extends ConsumerWidget {
 
 /// Daily targets and fitness goals, with weight-based estimates (D7).
 class SetupGoalsForm extends ConsumerWidget {
-  const SetupGoalsForm({required this.draft, required this.errors, this.editing = false, super.key});
+  const SetupGoalsForm({
+    required this.draft,
+    required this.errors,
+    this.editing = false,
+    super.key,
+  });
 
   final SetupDraft draft;
   final Map<String, String> errors;
@@ -155,7 +165,10 @@ class SetupGoalsForm extends ConsumerWidget {
     const decimal = TextInputType.numberWithOptions(decimal: true);
 
     Future<void> addOwnGoal() async {
-      final text = await showDialog<String>(context: context, builder: (_) => const _AddGoalDialog());
+      final text = await showDialog<String>(
+        context: context,
+        builder: (_) => const _AddGoalDialog(),
+      );
       final goal = text?.trim() ?? '';
       if (goal.isEmpty || draft.fitnessGoals.contains(goal)) return;
       controller.edit((d) => d.copyWith(fitnessGoals: [...d.fitnessGoals, goal]));
@@ -247,7 +260,10 @@ class SetupGoalsForm extends ConsumerWidget {
         if (hasWeight)
           FbNotice(
             l10n.estimateNotice,
-            action: OutlinedButton(onPressed: controller.recalculate, child: Text(l10n.recalculate)),
+            action: OutlinedButton(
+              onPressed: controller.recalculate,
+              child: Text(l10n.recalculate),
+            ),
           )
         else
           FbNotice(editing ? l10n.estimateNeedsWeightEdit : l10n.estimateNeedsWeight),
@@ -265,7 +281,11 @@ class SetupGoalsForm extends ConsumerWidget {
                 onTap: () => toggleGoal(goal),
               ),
             ActionChip(
-              avatar: Icon(Icons.add_rounded, color: context.colors.textSecondary, size: FbSpace.xl),
+              avatar: Icon(
+                Icons.add_rounded,
+                color: context.colors.textSecondary,
+                size: FbSpace.xl,
+              ),
               label: Text(l10n.addYourOwn),
               onPressed: addOwnGoal,
               materialTapTargetSize: MaterialTapTargetSize.padded,
@@ -309,7 +329,10 @@ class _AddGoalDialogState extends State<_AddGoalDialog> {
       ),
       actions: [
         TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.cancel)),
-        TextButton(onPressed: () => Navigator.of(context).pop(_controller.text), child: Text(l10n.add)),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(_controller.text),
+          child: Text(l10n.add),
+        ),
       ],
     );
   }
@@ -341,7 +364,8 @@ class SetupDayForm extends ConsumerWidget {
         initialEntryMode: TimePickerEntryMode.input,
       );
       if (picked != null) {
-        final text = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+        final text =
+            '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
         controller.edit((d) => d.copyWith(wakeTime: () => text));
       }
     }

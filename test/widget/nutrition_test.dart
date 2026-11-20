@@ -87,7 +87,9 @@ void main() {
   });
 
   group('Meals', () {
-    testWidgets('a meal with a new food is saved and shown in the diary and on Home', (tester) async {
+    testWidgets('a meal with a new food is saved and shown in the diary and on Home', (
+      tester,
+    ) async {
       await start(tester);
       await addOatsToNewMeal(tester);
       await tapText(tester, 'Save meal');
@@ -146,7 +148,9 @@ void main() {
       await app.dispose(tester);
     });
 
-    testWidgets('a meal cost records a linked Food expense; deleting asks about it', (tester) async {
+    testWidgets('a meal cost records a linked Food expense; deleting asks about it', (
+      tester,
+    ) async {
       await start(tester);
       await addOatsToNewMeal(tester);
       await tester.enterText(field('Cost'), '240');

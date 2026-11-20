@@ -1272,7 +1272,7 @@ Avoid claims that one activity caused another health outcome.
 - Payments ledger: each repayment (paid by me, or received by me) with amount, date and note. Outstanding = original amount minus payments recorded. A debt can be marked settled.
 - **EMI loans:** EMI amount, day of the month it is due, number of instalments, first EMI date. The app shows instalments paid, instalments left, and remaining amount (EMI × instalments left), with a note that the bank's own figure may differ.
 - **EMI reminders** use the existing reminder engine: the first reminder comes **at least 7 days before** the due date (7 by default; up to 30 days may be chosen), then 1 day before and on the due day, each with Paid, Snooze, Skip. "Paid" records the instalment against the loan and, by default, an expense in "EMI and loan repayments".
-- Notifications show "EMI due today" and the lender's name; the amount is shown only when the phone is unlocked.
+- Notifications show "EMI due today" and the lender's name. The amount is never in the notification text; it is shown when the loan is opened (owner, 20 Nov 2026: Android cannot show a separate lock-screen version through the notification plugin).
 
 ### D. Analysis
 - For a month or a custom range: total spent, by category, by payment method, daily trend, against budget, compared with the previous period.

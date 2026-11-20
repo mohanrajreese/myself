@@ -22,7 +22,9 @@ void main() {
       await tester.scrollUntilVisible(
         finder,
         200,
-        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).last,
+        scrollable: find
+            .byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down)
+            .last,
       );
     }
     final f = last ? finder.last : finder.first;
@@ -32,7 +34,8 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> tapText(WidgetTester tester, String text) => tap(tester, find.text(text), last: true);
+  Future<void> tapText(WidgetTester tester, String text) =>
+      tap(tester, find.text(text), last: true);
 
   /// Lets background re-planning finish (it runs without scheduling frames).
   Future<void> drain(WidgetTester tester) async {
@@ -80,7 +83,10 @@ void main() {
   testWidgets('an empty Habits tab offers to create an activity', (tester) async {
     await start(tester);
     await openHabits(tester);
-    expect(find.text('No activities yet. Create one for each routine you want to track.'), findsOneWidget);
+    expect(
+      find.text('No activities yet. Create one for each routine you want to track.'),
+      findsOneWidget,
+    );
     await tapText(tester, 'Create an activity');
     expect(find.text('New activity'), findsOneWidget);
     await app.dispose(tester);
@@ -104,7 +110,9 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('a passed time reads "Not logged", never as a failure, and Done logs it', (tester) async {
+  testWidgets('a passed time reads "Not logged", never as a failure, and Done logs it', (
+    tester,
+  ) async {
     await start(tester);
     await createActivity(tester, name: 'Morning brushing');
     await backToHabits(tester);
@@ -115,7 +123,9 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('a day the activity is not scheduled is shown as not scheduled, not missed', (tester) async {
+  testWidgets('a day the activity is not scheduled is shown as not scheduled, not missed', (
+    tester,
+  ) async {
     await start(tester);
     // 16 Nov 2026 is a Monday: keep only the other weekdays.
     await createActivity(tester, name: 'Gym', selectedDays: true, unselectDays: ['M']);
@@ -167,22 +177,33 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('turning on reminders for an activity schedules a week of notifications', (tester) async {
+  testWidgets('turning on reminders for an activity schedules a week of notifications', (
+    tester,
+  ) async {
     await start(tester);
     await createActivity(tester, name: 'Walking', remind: true);
     await tester.pumpAndSettle();
     expect(await app.db.select(app.db.reminders).get(), hasLength(1));
-    expect(app.notifications.pending, hasLength(7), reason: '08:00 today has passed; Tuesday to next Monday remain');
+    expect(
+      app.notifications.pending,
+      hasLength(7),
+      reason: '08:00 today has passed; Tuesday to next Monday remain',
+    );
     final states = await app.db.select(app.db.localNotificationState).get();
     expect(states.every((s) => s.status == NotificationStatus.scheduled.code), isTrue);
     await app.dispose(tester);
   });
 
-  testWidgets('a water reminder is created from its preset and can be switched off', (tester) async {
+  testWidgets('a water reminder is created from its preset and can be switched off', (
+    tester,
+  ) async {
     await start(tester);
     await openHabits(tester);
     await tapText(tester, 'Reminders');
-    expect(find.text('No reminders yet. Add one, or turn on "Remind me" in an activity.'), findsOneWidget);
+    expect(
+      find.text('No reminders yet. Add one, or turn on "Remind me" in an activity.'),
+      findsOneWidget,
+    );
     await tap(tester, find.widgetWithText(FilledButton, 'Reminder'));
     await tapText(tester, 'Water');
     await tap(tester, find.widgetWithText(FilledButton, 'Save'));
@@ -212,7 +233,9 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('notification settings show status, open exact-alarm access and save quiet hours', (tester) async {
+  testWidgets('notification settings show status, open exact-alarm access and save quiet hours', (
+    tester,
+  ) async {
     await start(tester);
     app.alarms.exact = false;
     await tap(tester, find.byTooltip('Profile and settings'));
@@ -231,7 +254,9 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('the stopwatch logs its time when finished, and nothing when cancelled', (tester) async {
+  testWidgets('the stopwatch logs its time when finished, and nothing when cancelled', (
+    tester,
+  ) async {
     await start(tester);
     await openHabits(tester);
     await tap(tester, find.widgetWithText(FilledButton, 'Activity'));
@@ -308,7 +333,9 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('a reminder can use a phone sound or a sound file, each on its own channel', (tester) async {
+  testWidgets('a reminder can use a phone sound or a sound file, each on its own channel', (
+    tester,
+  ) async {
     await start(tester);
     await openHabits(tester);
     await tapText(tester, 'Reminders');

@@ -47,8 +47,9 @@ String _periodWord(ReportPeriod p) => switch (p) {
   ReportPeriod.custom => 'period',
 };
 
-String rangeLabel(BuildContext context, DateRange r) =>
-    r.days == 1 ? context.dayLabel(r.from) : '${context.shortDate(r.from)} – ${context.shortDate(r.to)} ${r.to.year}';
+String rangeLabel(BuildContext context, DateRange r) => r.days == 1
+    ? context.dayLabel(r.from)
+    : '${context.shortDate(r.from)} – ${context.shortDate(r.to)} ${r.to.year}';
 
 /// One sentence per insight, descriptive only (04 §7: "increased",
 /// "compared with"; never "because" or advice).
@@ -67,12 +68,22 @@ String insightSentence(BuildContext context, Insight i, ReportPeriod p, UnitPref
     InsightKind.fibreAverage => l.insightFibre(dir, context.grams(d), period),
     InsightKind.workouts => l.insightWorkouts(i.current, i.previous, period),
     InsightKind.essentialPercent => l.insightEssential(i.current, i.previous, period),
-    InsightKind.screenAverage => l.insightScreen(dir, context.duration(Duration(milliseconds: d)), period),
+    InsightKind.screenAverage => l.insightScreen(
+      dir,
+      context.duration(Duration(milliseconds: d)),
+      period,
+    ),
   };
 }
 
 /// "1,200 more", "0.6 kg lower", or null when there is nothing to compare.
-String? _change(BuildContext context, int? now, int? before, String Function(int) fmt, {bool lowerWord = false}) {
+String? _change(
+  BuildContext context,
+  int? now,
+  int? before,
+  String Function(int) fmt, {
+  bool lowerWord = false,
+}) {
   if (now == null || before == null) return null;
   final l = context.l10n;
   final d = now - before;
@@ -99,7 +110,10 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
   Future<void> _choose(ReportPeriod p) async {
     final today = ref.read(todayProvider);
     if (p == ReportPeriod.custom) {
-      final picked = await showFbSheet<DateRange>(context, CustomRangeSheet(today: today, initial: _range));
+      final picked = await showFbSheet<DateRange>(
+        context,
+        CustomRangeSheet(today: today, initial: _range),
+      );
       if (picked == null) return;
       setState(() {
         _period = p;
@@ -151,7 +165,11 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               Expanded(
                 child: Column(
                   children: [
-                    Text(rangeLabel(context, range), style: context.text.bodyStrong, textAlign: TextAlign.center),
+                    Text(
+                      rangeLabel(context, range),
+                      style: context.text.bodyStrong,
+                      textAlign: TextAlign.center,
+                    ),
                     Text(
                       l10n.comparedWith(rangeLabel(context, prevRange)),
                       style: context.text.caption,
@@ -162,7 +180,9 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               ),
               IconButton(
                 tooltip: l10n.nextPeriod,
-                onPressed: atEnd ? null : () => setState(() => _range = stepPeriod(_period, range, 1)),
+                onPressed: atEnd
+                    ? null
+                    : () => setState(() => _range = stepPeriod(_period, range, 1)),
                 icon: const Icon(Icons.chevron_right_rounded),
               ),
             ],
@@ -215,7 +235,10 @@ class _Body extends StatelessWidget {
                 for (final i in insights)
                   Padding(
                     padding: const EdgeInsets.only(bottom: FbSpace.xs),
-                    child: Text('• ${insightSentence(context, i, sel.period, units)}', style: context.text.body),
+                    child: Text(
+                      '• ${insightSentence(context, i, sel.period, units)}',
+                      style: context.text.body,
+                    ),
                   ),
               const SizedBox(height: FbSpace.xs),
               Text(l.insightsDisclaimer, style: context.text.caption),
@@ -225,19 +248,30 @@ class _Body extends StatelessWidget {
         const SizedBox(height: FbSpace.md),
         LayoutBuilder(
           builder: (context, c) {
-            final cols = c.maxWidth >= 340 && MediaQuery.textScalerOf(context).scale(1) < 1.6 ? 2 : 1;
+            final cols = c.maxWidth >= 340 && MediaQuery.textScalerOf(context).scale(1) < 1.6
+                ? 2
+                : 1;
             final cards = [
               card(
                 ReportKind.steps,
                 l.stepsDailyAverage,
-                now.average(Metric.steps) == null ? '–' : context.number(now.average(Metric.steps)!),
-                _change(context, now.average(Metric.steps), b?.average(Metric.steps), context.number) ??
+                now.average(Metric.steps) == null
+                    ? '–'
+                    : context.number(now.average(Metric.steps)!),
+                _change(
+                      context,
+                      now.average(Metric.steps),
+                      b?.average(Metric.steps),
+                      context.number,
+                    ) ??
                     logged(Metric.steps),
               ),
               card(
                 ReportKind.weight,
                 l.weightLatest,
-                now.latest(Metric.weightG) == null ? '–' : context.mass(now.latest(Metric.weightG)!, units.mass),
+                now.latest(Metric.weightG) == null
+                    ? '–'
+                    : context.mass(now.latest(Metric.weightG)!, units.mass),
                 _change(
                       context,
                       now.latest(Metric.weightG),
@@ -250,13 +284,17 @@ class _Body extends StatelessWidget {
               card(
                 ReportKind.nutrition,
                 l.caloriesDailyAverage,
-                now.average(Metric.kcalMilli) == null ? '–' : context.kcal(now.average(Metric.kcalMilli)!),
+                now.average(Metric.kcalMilli) == null
+                    ? '–'
+                    : context.kcal(now.average(Metric.kcalMilli)!),
                 logged(Metric.kcalMilli),
               ),
               card(
                 ReportKind.water,
                 l.waterDailyAverage,
-                now.average(Metric.waterMl) == null ? '–' : context.volume(now.average(Metric.waterMl)!, units.volume),
+                now.average(Metric.waterMl) == null
+                    ? '–'
+                    : context.volume(now.average(Metric.waterMl)!, units.volume),
                 logged(Metric.waterMl),
               ),
               card(
@@ -280,7 +318,8 @@ class _Body extends StatelessWidget {
                 workouts == 0
                     ? l.noneRecorded
                     : [
-                        if (now.total(Metric.gymSessions) > 0) l.gymCount(now.total(Metric.gymSessions)),
+                        if (now.total(Metric.gymSessions) > 0)
+                          l.gymCount(now.total(Metric.gymSessions)),
                         if (now.total(Metric.walks) > 0) l.walkCount(now.total(Metric.walks)),
                         if (now.total(Metric.runs) > 0) l.runCount(now.total(Metric.runs)),
                         if (now.total(Metric.rides) > 0) l.rideCount(now.total(Metric.rides)),
@@ -292,7 +331,10 @@ class _Body extends StatelessWidget {
                 now.essentialPercent == null ? '–' : '${now.essentialPercent}%',
                 now.essentialPercent == null
                     ? l.noneScheduled
-                    : l.essentialOf(now.total(Metric.essentialDone), now.total(Metric.essentialScheduled)),
+                    : l.essentialOf(
+                        now.total(Metric.essentialDone),
+                        now.total(Metric.essentialScheduled),
+                      ),
               ),
               card(
                 ReportKind.screenTime,
@@ -434,7 +476,11 @@ class _CustomRangeSheetState extends State<CustomRangeSheet> {
           runSpacing: FbSpace.sm,
           children: [
             for (final e in presets.entries)
-              FbToggleChip(label: e.key, selected: _range == e.value, onTap: () => setState(() => _range = e.value)),
+              FbToggleChip(
+                label: e.key,
+                selected: _range == e.value,
+                onTap: () => setState(() => _range = e.value),
+              ),
           ],
         ),
         const SizedBox(height: FbSpace.md),
@@ -451,13 +497,19 @@ class _CustomRangeSheetState extends State<CustomRangeSheet> {
             );
             if (picked != null) {
               setState(
-                () => _range = (from: LocalDate.fromDateTime(picked.start), to: LocalDate.fromDateTime(picked.end)),
+                () => _range = (
+                  from: LocalDate.fromDateTime(picked.start),
+                  to: LocalDate.fromDateTime(picked.end),
+                ),
               );
             }
           },
         ),
         const SizedBox(height: FbSpace.sm),
-        Text(l.customRangeHelp(_range.days, rangeLabel(context, _range.previous)), style: context.text.caption),
+        Text(
+          l.customRangeHelp(_range.days, rangeLabel(context, _range.previous)),
+          style: context.text.caption,
+        ),
         const SizedBox(height: FbSpace.lg),
         FbPrimaryButton(label: l.showReport, onPressed: () => Navigator.of(context).pop(_range)),
       ],
@@ -500,18 +552,42 @@ class ReportScreen extends ConsumerWidget {
     final (Metric? chart, List<ReportRow> rows) = switch (kind) {
       ReportKind.steps => (
         Metric.steps,
-        <ReportRow>[(l.stepsDailyAverage, now.average(Metric.steps), before.average(Metric.steps), context.number)],
+        <ReportRow>[
+          (
+            l.stepsDailyAverage,
+            now.average(Metric.steps),
+            before.average(Metric.steps),
+            context.number,
+          ),
+        ],
       ),
       ReportKind.weight => (
         Metric.weightG,
-        <ReportRow>[(l.weightLatest, now.latest(Metric.weightG), before.latest(Metric.weightG), mass)],
+        <ReportRow>[
+          (l.weightLatest, now.latest(Metric.weightG), before.latest(Metric.weightG), mass),
+        ],
       ),
       ReportKind.nutrition => (
         Metric.kcalMilli,
         <ReportRow>[
-          (l.calories, now.average(Metric.kcalMilli), before.average(Metric.kcalMilli), context.kcal),
-          (l.protein, now.average(Metric.proteinMg), before.average(Metric.proteinMg), context.grams),
-          (l.carbohydrates, now.average(Metric.carbsMg), before.average(Metric.carbsMg), context.grams),
+          (
+            l.calories,
+            now.average(Metric.kcalMilli),
+            before.average(Metric.kcalMilli),
+            context.kcal,
+          ),
+          (
+            l.protein,
+            now.average(Metric.proteinMg),
+            before.average(Metric.proteinMg),
+            context.grams,
+          ),
+          (
+            l.carbohydrates,
+            now.average(Metric.carbsMg),
+            before.average(Metric.carbsMg),
+            context.grams,
+          ),
           (l.fat, now.average(Metric.fatMg), before.average(Metric.fatMg), context.grams),
           (l.fibre, now.average(Metric.fibreMg), before.average(Metric.fibreMg), context.grams),
         ],
@@ -529,7 +605,9 @@ class ReportScreen extends ConsumerWidget {
       ),
       ReportKind.sleep => (
         Metric.sleepMin,
-        <ReportRow>[(l.sleepAverageNight, now.average(Metric.sleepMin), before.average(Metric.sleepMin), dur)],
+        <ReportRow>[
+          (l.sleepAverageNight, now.average(Metric.sleepMin), before.average(Metric.sleepMin), dur),
+        ],
       ),
       ReportKind.workouts => (
         null,
@@ -540,13 +618,23 @@ class ReportScreen extends ConsumerWidget {
           (l.runningDistance, now.total(Metric.runM), before.total(Metric.runM), km),
           (l.cycling, now.total(Metric.rides), before.total(Metric.rides), context.number),
           (l.cyclingDistance, now.total(Metric.cycleM), before.total(Metric.cycleM), km),
-          (l.gymSessions, now.total(Metric.gymSessions), before.total(Metric.gymSessions), context.number),
+          (
+            l.gymSessions,
+            now.total(Metric.gymSessions),
+            before.total(Metric.gymSessions),
+            context.number,
+          ),
         ],
       ),
       ReportKind.gym => (
         Metric.gymSessions,
         <ReportRow>[
-          (l.gymSessions, now.total(Metric.gymSessions), before.total(Metric.gymSessions), context.number),
+          (
+            l.gymSessions,
+            now.total(Metric.gymSessions),
+            before.total(Metric.gymSessions),
+            context.number,
+          ),
           (l.newRecords, now.newRecords, before.newRecords, context.number),
         ],
       ),
@@ -554,7 +642,12 @@ class ReportScreen extends ConsumerWidget {
         null,
         <ReportRow>[
           (l.essentialDonePercent, now.essentialPercent, before.essentialPercent, pct),
-          (l.essentialDoneCount, now.total(Metric.essentialDone), before.total(Metric.essentialDone), context.number),
+          (
+            l.essentialDoneCount,
+            now.total(Metric.essentialDone),
+            before.total(Metric.essentialDone),
+            context.number,
+          ),
           (
             l.essentialScheduledCount,
             now.total(Metric.essentialScheduled),
@@ -565,7 +658,14 @@ class ReportScreen extends ConsumerWidget {
       ),
       ReportKind.screenTime => (
         Metric.screenMs,
-        <ReportRow>[(l.screenTimeDaily, now.average(Metric.screenMs), before.average(Metric.screenMs), screen)],
+        <ReportRow>[
+          (
+            l.screenTimeDaily,
+            now.average(Metric.screenMs),
+            before.average(Metric.screenMs),
+            screen,
+          ),
+        ],
       ),
       ReportKind.wellness => (
         null,
@@ -573,14 +673,29 @@ class ReportScreen extends ConsumerWidget {
           (l.wMood, now.average(Metric.moodMilli), before.average(Metric.moodMilli), score),
           (l.wEnergy, now.average(Metric.energyMilli), before.average(Metric.energyMilli), score),
           (l.wStress, now.average(Metric.stressMilli), before.average(Metric.stressMilli), score),
-          (l.wWellness, now.average(Metric.wellnessMilli), before.average(Metric.wellnessMilli), score),
+          (
+            l.wWellness,
+            now.average(Metric.wellnessMilli),
+            before.average(Metric.wellnessMilli),
+            score,
+          ),
         ],
       ),
       ReportKind.junk => (
         Metric.junkItems,
         <ReportRow>[
-          (l.junkItems, now.total(Metric.junkItems), before.total(Metric.junkItems), context.number),
-          (l.junkDays, now.daysWith(Metric.junkItems), before.daysWith(Metric.junkItems), context.number),
+          (
+            l.junkItems,
+            now.total(Metric.junkItems),
+            before.total(Metric.junkItems),
+            context.number,
+          ),
+          (
+            l.junkDays,
+            now.daysWith(Metric.junkItems),
+            before.daysWith(Metric.junkItems),
+            context.number,
+          ),
         ],
       ),
       ReportKind.measurements => (
@@ -598,7 +713,11 @@ class ReportScreen extends ConsumerWidget {
     };
 
     final missing = chart == null ? 0 : range.days - now.daysWith(chart);
-    final insights = insightsFor(now, before, limit: 10).where((i) => _belongs(i.kind, kind)).toList();
+    final insights = insightsFor(
+      now,
+      before,
+      limit: 10,
+    ).where((i) => _belongs(i.kind, kind)).toList();
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
@@ -611,7 +730,11 @@ class ReportScreen extends ConsumerWidget {
           ),
           const SizedBox(height: FbSpace.md),
           if (chart != null && range.days > 1) ...[
-            _ReportChart(report: now, metric: chart, summary: _chartSummary(context, now, chart, rows)),
+            _ReportChart(
+              report: now,
+              metric: chart,
+              summary: _chartSummary(context, now, chart, rows),
+            ),
             if (missing > 0) ...[
               const SizedBox(height: FbSpace.xs),
               Text(l.daysWithoutRecords(missing), style: context.text.caption),
@@ -640,7 +763,10 @@ class ReportScreen extends ConsumerWidget {
                   Text(l.inBrief, style: context.text.bodyStrong),
                   const SizedBox(height: FbSpace.xs),
                   for (final i in insights)
-                    Text(insightSentence(context, i, selection.period, u), style: context.text.body),
+                    Text(
+                      insightSentence(context, i, selection.period, u),
+                      style: context.text.body,
+                    ),
                 ],
               ),
             ),
@@ -657,7 +783,9 @@ class ReportScreen extends ConsumerWidget {
     InsightKind.sleepAverage => k == ReportKind.sleep,
     InsightKind.weightLatest => k == ReportKind.weight,
     InsightKind.waterAverage => k == ReportKind.water,
-    InsightKind.kcalAverage || InsightKind.proteinAverage || InsightKind.fibreAverage => k == ReportKind.nutrition,
+    InsightKind.kcalAverage ||
+    InsightKind.proteinAverage ||
+    InsightKind.fibreAverage => k == ReportKind.nutrition,
     InsightKind.workouts => k == ReportKind.workouts,
     InsightKind.essentialPercent => k == ReportKind.activities,
     InsightKind.screenAverage => k == ReportKind.screenTime,
@@ -755,18 +883,28 @@ class _TableRow extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 44),
         padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg, vertical: FbSpace.sm),
         decoration: BoxDecoration(
-          border: header ? null : Border(top: BorderSide(color: context.colors.outline.withValues(alpha: 0.5))),
+          border: header
+              ? null
+              : Border(top: BorderSide(color: context.colors.outline.withValues(alpha: 0.5))),
         ),
         child: Row(
           children: [
             Expanded(flex: 3, child: Text(label, style: style)),
             Expanded(
               flex: 2,
-              child: Text(now, textAlign: TextAlign.end, style: header ? style : context.text.bodyStrong),
+              child: Text(
+                now,
+                textAlign: TextAlign.end,
+                style: header ? style : context.text.bodyStrong,
+              ),
             ),
             Expanded(
               flex: 2,
-              child: Text(before, textAlign: TextAlign.end, style: header ? style : context.text.bodySmall),
+              child: Text(
+                before,
+                textAlign: TextAlign.end,
+                style: header ? style : context.text.bodySmall,
+              ),
             ),
           ],
         ),

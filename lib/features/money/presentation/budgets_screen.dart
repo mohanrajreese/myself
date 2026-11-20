@@ -32,7 +32,8 @@ class BudgetsScreen extends ConsumerWidget {
         title: Text(l10n.moneyBudgets),
         actions: [
           TextButton(
-            onPressed: () => _editBudget(context, categoryId: null, current: report.value?.budgetPaise),
+            onPressed: () =>
+                _editBudget(context, categoryId: null, current: report.value?.budgetPaise),
             child: Text(l10n.edit),
           ),
         ],
@@ -96,8 +97,14 @@ class BudgetsScreen extends ConsumerWidget {
             const SizedBox(height: FbSpace.md),
             OutlinedButton.icon(
               onPressed: () async {
-                final id = await _pickCategory(context, ref, exclude: value.categoryBudgets.keys.toSet());
-                if (id != null && context.mounted) await _editBudget(context, categoryId: id, current: null);
+                final id = await _pickCategory(
+                  context,
+                  ref,
+                  exclude: value.categoryBudgets.keys.toSet(),
+                );
+                if (id != null && context.mounted) {
+                  await _editBudget(context, categoryId: id, current: null);
+                }
               },
               icon: const Icon(Icons.add_rounded),
               label: Text(l10n.moneyAddCategoryBudget),
@@ -109,7 +116,11 @@ class BudgetsScreen extends ConsumerWidget {
     );
   }
 
-  static Future<String?> _pickCategory(BuildContext context, WidgetRef ref, {required Set<String> exclude}) {
+  static Future<String?> _pickCategory(
+    BuildContext context,
+    WidgetRef ref, {
+    required Set<String> exclude,
+  }) {
     final l10n = context.l10n;
     final cats = [
       for (final c in ref.read(moneyCategoriesProvider).value ?? const <FinanceCategory>[])
@@ -120,18 +131,27 @@ class BudgetsScreen extends ConsumerWidget {
       FbSheetBody(
         title: l10n.moneyCategory,
         children: [
-          for (final c in cats) FbListRow(title: categoryLabel(l10n, c), onTap: () => Navigator.of(context).pop(c.id)),
+          for (final c in cats)
+            FbListRow(title: categoryLabel(l10n, c), onTap: () => Navigator.of(context).pop(c.id)),
         ],
       ),
     );
   }
 
-  static Future<void> _editBudget(BuildContext context, {required String? categoryId, required int? current}) =>
-      showFbSheet<void>(context, _BudgetSheet(categoryId: categoryId, current: current));
+  static Future<void> _editBudget(
+    BuildContext context, {
+    required String? categoryId,
+    required int? current,
+  }) => showFbSheet<void>(context, _BudgetSheet(categoryId: categoryId, current: current));
 }
 
 class _BudgetLine extends StatelessWidget {
-  const _BudgetLine({required this.title, required this.spent, required this.budget, this.big = false});
+  const _BudgetLine({
+    required this.title,
+    required this.spent,
+    required this.budget,
+    this.big = false,
+  });
   final String title;
   final int spent;
   final int budget;
@@ -149,7 +169,9 @@ class _BudgetLine extends StatelessWidget {
           children: [
             Expanded(child: Text(title, style: big ? context.text.bodySmall : context.text.body)),
             Text(
-              big ? formatRupees(budget) : l10n.moneyOfBudget(formatRupees(spent), formatRupees(budget)),
+              big
+                  ? formatRupees(budget)
+                  : l10n.moneyOfBudget(formatRupees(spent), formatRupees(budget)),
               style: big ? context.text.title : context.text.bodyStrong,
             ),
           ],
@@ -172,7 +194,11 @@ class _BudgetLine extends StatelessWidget {
                 over
                     ? l10n.moneyOverLine(formatRupees(spent - budget), pct)
                     : big
-                    ? l10n.moneySpentLeftLine(formatRupees(spent), formatRupees(budget - spent), pct)
+                    ? l10n.moneySpentLeftLine(
+                        formatRupees(spent),
+                        formatRupees(budget - spent),
+                        pct,
+                      )
                     : l10n.moneyLeftLine(pct, formatRupees(budget - spent)),
                 style: context.text.caption,
               ),
@@ -226,7 +252,9 @@ class _BudgetSheetState extends ConsumerState<_BudgetSheet> {
 
   Future<void> _remove() async {
     final l10n = context.l10n;
-    await ref.read(moneyRepositoryProvider).removeBudget(categoryId: widget.categoryId, from: _from);
+    await ref
+        .read(moneyRepositoryProvider)
+        .removeBudget(categoryId: widget.categoryId, from: _from);
     if (!mounted) return;
     showFbSnackBar(context, l10n.moneyBudgetRemoved);
     Navigator.of(context).pop();

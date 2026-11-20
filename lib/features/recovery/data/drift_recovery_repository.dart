@@ -45,9 +45,10 @@ final class DriftRecoveryRepository implements RecoveryRepository {
   }
 
   @override
-  Stream<RecoveryLog?> watchDay(LocalDate date) => (_db.select(
-    _db.localRecoveryLogs,
-  )..where((t) => t.localDate.equalsValue(date))).watchSingleOrNull().map((r) => r == null ? null : _to(r));
+  Stream<RecoveryLog?> watchDay(LocalDate date) =>
+      (_db.select(_db.localRecoveryLogs)..where((t) => t.localDate.equalsValue(date)))
+          .watchSingleOrNull()
+          .map((r) => r == null ? null : _to(r));
 
   @override
   Stream<List<RecoveryLog>> watchRecent({int limit = 30}) =>

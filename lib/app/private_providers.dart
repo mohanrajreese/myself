@@ -25,7 +25,9 @@ import 'routine_providers.dart';
 import 'screen_time_service.dart';
 
 /// Opened at start-up with its own key; overridden there and in tests.
-final privateDatabaseProvider = Provider<PrivateDatabase>((ref) => throw StateError('not provided'));
+final privateDatabaseProvider = Provider<PrivateDatabase>(
+  (ref) => throw StateError('not provided'),
+);
 final secretStoreProvider = Provider<SecretStore>((ref) => const SecureSecretStore());
 final progressPhotoDirProvider = Provider<Directory?>((ref) => null);
 final fileCipherProvider = Provider<FileCipher?>((ref) => null);
@@ -68,7 +70,10 @@ final recoveryRepositoryProvider = Provider<RecoveryRepository>(
 );
 
 final screenTimeRepositoryProvider = Provider<ScreenTimeRepository>(
-  (ref) => DriftScreenTimeRepository(ref.watch(privateDatabaseProvider), clock: ref.watch(clockProvider)),
+  (ref) => DriftScreenTimeRepository(
+    ref.watch(privateDatabaseProvider),
+    clock: ref.watch(clockProvider),
+  ),
 );
 
 /// Overridden at start-up so the alert text is localised.
@@ -88,21 +93,27 @@ final screenTimeServiceProvider = Provider<ScreenTimeService>(
 final screenTimeSettingsProvider = FutureProvider<ScreenTimeSettings>(
   (ref) => ref.watch(screenTimeServiceProvider).read(),
 );
-final usageAccessProvider = FutureProvider<bool>((ref) => ref.watch(usageReaderProvider).hasAccess());
+final usageAccessProvider = FutureProvider<bool>(
+  (ref) => ref.watch(usageReaderProvider).hasAccess(),
+);
 
-final screenTimeDaysProvider = StreamProvider.family<List<ScreenTimeDay>, ({LocalDate from, LocalDate to})>(
-  (ref, r) => ref.watch(screenTimeRepositoryProvider).watchDays(from: r.from, to: r.to),
-);
-final screenTimeAppsProvider = StreamProvider.family<List<AppMinutes>, ({LocalDate from, LocalDate to})>(
-  (ref, r) => ref.watch(screenTimeRepositoryProvider).watchApps(from: r.from, to: r.to),
-);
+final screenTimeDaysProvider =
+    StreamProvider.family<List<ScreenTimeDay>, ({LocalDate from, LocalDate to})>(
+      (ref, r) => ref.watch(screenTimeRepositoryProvider).watchDays(from: r.from, to: r.to),
+    );
+final screenTimeAppsProvider =
+    StreamProvider.family<List<AppMinutes>, ({LocalDate from, LocalDate to})>(
+      (ref, r) => ref.watch(screenTimeRepositoryProvider).watchApps(from: r.from, to: r.to),
+    );
 
 final habitTypesProvider = StreamProvider<List<PrivateHabitType>>(
   (ref) => ref.watch(privateRepositoryProvider).watchHabitTypes(),
 );
-final habitLogsProvider = StreamProvider.family<List<PrivateHabitLog>, ({String type, LocalDate from, LocalDate to})>(
-  (ref, r) => ref.watch(privateRepositoryProvider).watchHabitLogs(r.type, from: r.from, to: r.to),
-);
+final habitLogsProvider =
+    StreamProvider.family<List<PrivateHabitLog>, ({String type, LocalDate from, LocalDate to})>(
+      (ref, r) =>
+          ref.watch(privateRepositoryProvider).watchHabitLogs(r.type, from: r.from, to: r.to),
+    );
 final bowelLogsProvider = StreamProvider.family<List<BowelLog>, ({LocalDate from, LocalDate to})>(
   (ref, r) => ref.watch(privateRepositoryProvider).watchBowel(from: r.from, to: r.to),
 );
@@ -135,7 +146,12 @@ final recoveryRecentProvider = StreamProvider<List<RecoveryLog>>(
 
 /// What the lock screen and gate need.
 final class LockView {
-  const LockView({required this.settings, required this.unlocked, required this.hasPin, this.blockedFor});
+  const LockView({
+    required this.settings,
+    required this.unlocked,
+    required this.hasPin,
+    this.blockedFor,
+  });
   final AppLockSettings settings;
   final bool unlocked;
   final bool hasPin;
@@ -231,5 +247,8 @@ final lockControllerProvider = AsyncNotifierProvider<LockController, LockView>(L
 
 /// Refreshes screen time without blocking the screen.
 void refreshScreenTime(WidgetRef ref) => unawaited(
-  ref.read(screenTimeServiceProvider).refresh().then((_) => ref.invalidate(usageAccessProvider), onError: (_) {}),
+  ref
+      .read(screenTimeServiceProvider)
+      .refresh()
+      .then((_) => ref.invalidate(usageAccessProvider), onError: (_) {}),
 );

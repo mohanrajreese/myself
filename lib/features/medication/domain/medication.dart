@@ -76,7 +76,9 @@ List<Dose> dosesOn(
   final out = <Dose>[];
   for (final m in meds.where((m) => m.active)) {
     for (final minute in calc.timesOn(m.rule, day)) {
-      final log = logs.where((l) => l.medicationId == m.id && l.localDate == day && l.slot == minute).firstOrNull;
+      final log = logs
+          .where((l) => l.medicationId == m.id && l.localDate == day && l.slot == minute)
+          .firstOrNull;
       final passed = day.isBefore(today) || (day == today && minute < nowMinute);
       final state = switch (log?.status) {
         DoseStatus.taken => DoseState.taken,

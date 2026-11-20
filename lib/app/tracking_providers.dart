@@ -35,7 +35,8 @@ final waterOnProvider = StreamProvider.family<List<WaterEntry>, LocalDate>(
 );
 
 final waterTotalOnProvider = Provider.family<int, LocalDate>(
-  (ref, date) => ref.watch(waterOnProvider(date)).value?.fold<int>(0, (sum, e) => sum + e.amountMl) ?? 0,
+  (ref, date) =>
+      ref.watch(waterOnProvider(date)).value?.fold<int>(0, (sum, e) => sum + e.amountMl) ?? 0,
 );
 
 final mealsOnProvider = StreamProvider.family<List<Meal>, LocalDate>(
@@ -43,7 +44,8 @@ final mealsOnProvider = StreamProvider.family<List<Meal>, LocalDate>(
 );
 
 final nutritionOnProvider = Provider.family<NutritionValues, LocalDate>(
-  (ref, date) => sumNutrition((ref.watch(mealsOnProvider(date)).value ?? const []).map((m) => m.total)),
+  (ref, date) =>
+      sumNutrition((ref.watch(mealsOnProvider(date)).value ?? const []).map((m) => m.total)),
 );
 
 typedef DateRange = ({LocalDate from, LocalDate to});
@@ -74,7 +76,10 @@ final waterTotalsProvider = FutureProvider.family<Map<LocalDate, int>, DateRange
   return ref.watch(waterRepositoryProvider).totalsBetween(range.from, range.to);
 });
 
-final nutritionTotalsProvider = FutureProvider.family<Map<LocalDate, NutritionValues>, DateRange>((ref, range) {
+final nutritionTotalsProvider = FutureProvider.family<Map<LocalDate, NutritionValues>, DateRange>((
+  ref,
+  range,
+) {
   ref.watch(mealsOnProvider(range.to));
   return ref.watch(mealRepositoryProvider).totalsBetween(range.from, range.to);
 });
@@ -84,7 +89,9 @@ final junkBetweenProvider = FutureProvider.family<List<JunkEntry>, DateRange>((r
   return ref.watch(mealRepositoryProvider).junkBetween(range.from, range.to);
 });
 
-final savedMealsProvider = StreamProvider<List<SavedMeal>>((ref) => ref.watch(mealRepositoryProvider).watchSaved());
+final savedMealsProvider = StreamProvider<List<SavedMeal>>(
+  (ref) => ref.watch(mealRepositoryProvider).watchSaved(),
+);
 
 /// Night sleep that ended on [date] (the day it counts towards).
 final sleepOnProvider = Provider.family<Duration?, LocalDate>((ref, date) {

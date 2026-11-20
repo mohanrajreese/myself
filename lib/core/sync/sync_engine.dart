@@ -11,7 +11,13 @@ import 'sync_tables.dart';
 
 /// What one sync run did.
 final class SyncResult {
-  const SyncResult({this.pushed = 0, this.pulled = 0, this.failed = 0, this.errorCode, this.authPaused = false});
+  const SyncResult({
+    this.pushed = 0,
+    this.pulled = 0,
+    this.failed = 0,
+    this.errorCode,
+    this.authPaused = false,
+  });
   final int pushed;
   final int pulled;
   final int failed;
@@ -61,7 +67,8 @@ final class SyncEngine {
     return r + await push();
   }
 
-  TableInfo<Table, dynamic> _table(String name) => db.allTables.firstWhere((t) => t.actualTableName == name);
+  TableInfo<Table, dynamic> _table(String name) =>
+      db.allTables.firstWhere((t) => t.actualTableName == name);
 
   String _iso(DateTime t) => t.toUtc().toIso8601String();
 
@@ -148,7 +155,11 @@ final class SyncEngine {
     updates: {db.syncOutbox},
   );
 
-  Map<String, Object?> _toRemote(TableInfo<Table, dynamic> info, String table, Map<String, Object?> row) {
+  Map<String, Object?> _toRemote(
+    TableInfo<Table, dynamic> info,
+    String table,
+    Map<String, Object?> row,
+  ) {
     final json = jsonColumns[table] ?? const {};
     return {
       for (final c in info.$columns)
@@ -188,7 +199,12 @@ final class SyncEngine {
     var pulled = 0;
     final info = _table(table);
     while (true) {
-      final page = await remote.changedSince(table, since: since, afterId: afterId, limit: pullPage);
+      final page = await remote.changedSince(
+        table,
+        since: since,
+        afterId: afterId,
+        limit: pullPage,
+      );
       if (page.isEmpty) break;
       for (final row in page) {
         if (await _apply(info, table, row)) pulled++;
@@ -214,7 +230,11 @@ final class SyncEngine {
 
   /// Writes a pulled row unless the local copy is newer or waiting to be
   /// pushed. Never creates an outbox entry. Returns whether it was written.
-  Future<bool> _apply(TableInfo<Table, dynamic> info, String table, Map<String, Object?> row) async {
+  Future<bool> _apply(
+    TableInfo<Table, dynamic> info,
+    String table,
+    Map<String, Object?> row,
+  ) async {
     final id = row['id']! as String;
     final pendingLocal = await db
         .customSelect(
@@ -225,9 +245,13 @@ final class SyncEngine {
     if (pendingLocal != null) return false;
     final remoteUpdated = DateTime.parse(row['updated_at']! as String);
     final local = await db
-        .customSelect('SELECT updated_at FROM $table WHERE id = ?', variables: [Variable.withString(id)])
+        .customSelect(
+          'SELECT updated_at FROM $table WHERE id = ?',
+          variables: [Variable.withString(id)],
+        )
         .getSingleOrNull();
-    if (local != null && !DateTime.parse(local.read<String>('updated_at')).isBefore(remoteUpdated)) {
+    if (local != null &&
+        !DateTime.parse(local.read<String>('updated_at')).isBefore(remoteUpdated)) {
       return false;
     }
 
@@ -236,7 +260,11 @@ final class SyncEngine {
       await db.customUpdate(
         'DELETE FROM $table WHERE $natural = ? AND id <> ? '
         'AND NOT EXISTS (SELECT 1 FROM sync_outbox WHERE entity_table = ? AND entity_id = $table.id)',
-        variables: [Variable.withString('${row[natural]}'), Variable.withString(id), Variable.withString(table)],
+        variables: [
+          Variable.withString('${row[natural]}'),
+          Variable.withString(id),
+          Variable.withString(table),
+        ],
         updates: {info},
       );
     }
@@ -252,7 +280,9 @@ final class SyncEngine {
         null => const Variable(null),
         _ when json.contains(c.name) => Variable.withString(v is String ? v : jsonEncode(v)),
         final bool b => Variable.withBool(b),
-        final String s when c.type == DriftSqlType.dateTime => Variable.withString(_iso(DateTime.parse(s))),
+        final String s when c.type == DriftSqlType.dateTime => Variable.withString(
+          _iso(DateTime.parse(s)),
+        ),
         final int n => Variable.withInt(n),
         final num n => Variable.withInt(n.round()),
         _ => Variable.withString('$v'),

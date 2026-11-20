@@ -39,7 +39,11 @@ const _maintainBandG = 500;
 int _roundTo(int value, int step) => ((value + step ~/ 2) ~/ step) * step;
 
 /// Returns null when there is no weight to work from.
-GoalSuggestion? suggestGoals({required int? weightG, int? targetWeightG, bool buildStrength = false}) {
+GoalSuggestion? suggestGoals({
+  required int? weightG,
+  int? targetWeightG,
+  bool buildStrength = false,
+}) {
   if (weightG == null || weightG <= 0) return null;
 
   final direction = switch (targetWeightG) {

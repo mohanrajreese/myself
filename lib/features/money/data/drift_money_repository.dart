@@ -28,7 +28,8 @@ final class DriftMoneyRepository implements MoneyRepository {
   static const _fail = StorageFailure('money_write');
 
   /// Same id on every phone, so seeded categories never duplicate on sync.
-  static String categoryId(String key) => _uuid.v5(Namespace.url.value, 'https://fitbuddy.app/finance-category/$key');
+  static String categoryId(String key) =>
+      _uuid.v5(Namespace.url.value, 'https://fitbuddy.app/finance-category/$key');
 
   DateTime get _now => clock.now().toUtc();
   Future<void> _sync(String table, String id) => _db.enqueueForSync(table, id, _now);
@@ -72,7 +73,12 @@ final class DriftMoneyRepository implements MoneyRepository {
     dueDate: r.dueDate,
     emi: r.emiPaise == null
         ? null
-        : EmiPlan(emiPaise: r.emiPaise!, day: r.emiDay!, count: r.emiCount!, first: r.firstEmiDate!),
+        : EmiPlan(
+            emiPaise: r.emiPaise!,
+            day: r.emiDay!,
+            count: r.emiCount!,
+            first: r.firstEmiDate!,
+          ),
     remind: r.remind,
     remindDaysBefore: r.remindDaysBefore,
     recordAsExpense: r.recordAsExpense,
@@ -108,7 +114,9 @@ final class DriftMoneyRepository implements MoneyRepository {
     final now = _now;
     for (final (i, (key, icon)) in defaultCategoryKeys.indexed) {
       final id = categoryId(key);
-      final exists = await (_db.select(_db.financeCategories)..where((t) => t.id.equals(id))).getSingleOrNull();
+      final exists = await (_db.select(
+        _db.financeCategories,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
       if (exists != null) continue;
       await _db
           .into(_db.financeCategories)
@@ -172,9 +180,10 @@ final class DriftMoneyRepository implements MoneyRepository {
   Future<Result<void>> _archiveCategory(String id, {required bool archived}) => Result.guard(
     () => _db.transaction(() async {
       final now = _now;
-      final n = await (_db.update(_db.financeCategories)..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
-        FinanceCategoriesCompanion(archived: Value(archived), updatedAt: Value(now)),
-      );
+      final n =
+          await (_db.update(_db.financeCategories)
+                ..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
+              .write(FinanceCategoriesCompanion(archived: Value(archived), updatedAt: Value(now)));
       if (n > 0) await _sync('finance_categories', id);
     }),
     onError: (_) => _fail,
@@ -183,12 +192,20 @@ final class DriftMoneyRepository implements MoneyRepository {
   // ---- expenses ----
 
   @override
-  Future<Result<Expense>> addExpense(ExpenseDraft draft, {String? debtPaymentId, String? recurringExpenseId}) async {
-    if (!_validAmount(draft.amountPaise)) return const Err(ValidationFailure('amount', 'amount_invalid'));
+  Future<Result<Expense>> addExpense(
+    ExpenseDraft draft, {
+    String? debtPaymentId,
+    String? recurringExpenseId,
+  }) async {
+    if (!_validAmount(draft.amountPaise)) {
+      return const Err(ValidationFailure('amount', 'amount_invalid'));
+    }
     return Result.guard(() async {
       final stamp = await stampFor(clock, timeZone, at: draft.at);
       final id = ids.newId();
-      await _db.transaction(() => _insertExpense(id, draft, stamp, debtPaymentId, recurringExpenseId));
+      await _db.transaction(
+        () => _insertExpense(id, draft, stamp, debtPaymentId, recurringExpenseId),
+      );
       return Expense(
         id: id,
         amountPaise: draft.amountPaise,
@@ -237,23 +254,28 @@ final class DriftMoneyRepository implements MoneyRepository {
 
   @override
   Future<Result<void>> updateExpense(String id, ExpenseDraft draft) async {
-    if (!_validAmount(draft.amountPaise)) return const Err(ValidationFailure('amount', 'amount_invalid'));
+    if (!_validAmount(draft.amountPaise)) {
+      return const Err(ValidationFailure('amount', 'amount_invalid'));
+    }
     return Result.guard(() async {
       final stamp = await stampFor(clock, timeZone, at: draft.at);
       await _db.transaction(() async {
-        final n = await (_db.update(_db.expenses)..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
-          ExpensesCompanion(
-            updatedAt: Value(stamp.nowUtc),
-            amountPaise: Value(draft.amountPaise),
-            categoryId: Value(draft.categoryId),
-            method: Value(draft.method.code),
-            occurredAt: Value(stamp.occurredAt),
-            localDate: Value(stamp.localDate),
-            tz: Value(stamp.tz),
-            note: Value(_note(draft.note)),
-            mealLogId: Value(draft.mealLogId),
-          ),
-        );
+        final n =
+            await (_db.update(
+              _db.expenses,
+            )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
+              ExpensesCompanion(
+                updatedAt: Value(stamp.nowUtc),
+                amountPaise: Value(draft.amountPaise),
+                categoryId: Value(draft.categoryId),
+                method: Value(draft.method.code),
+                occurredAt: Value(stamp.occurredAt),
+                localDate: Value(stamp.localDate),
+                tz: Value(stamp.tz),
+                note: Value(_note(draft.note)),
+                mealLogId: Value(draft.mealLogId),
+              ),
+            );
         if (n == 0) throw StateError('missing');
         await _sync('expenses', id);
       });
@@ -320,9 +342,10 @@ final class DriftMoneyRepository implements MoneyRepository {
   Future<Result<void>> setHasReceipt(String expenseId, bool value) => Result.guard(
     () => _db.transaction(() async {
       final now = _now;
-      final n = await (_db.update(_db.expenses)..where((t) => t.id.equals(expenseId) & t.deletedAt.isNull())).write(
-        ExpensesCompanion(hasReceipt: Value(value), updatedAt: Value(now)),
-      );
+      final n =
+          await (_db.update(_db.expenses)
+                ..where((t) => t.id.equals(expenseId) & t.deletedAt.isNull()))
+              .write(ExpensesCompanion(hasReceipt: Value(value), updatedAt: Value(now)));
       if (n > 0) await _sync('expenses', expenseId);
     }),
     onError: (_) => _fail,
@@ -347,7 +370,11 @@ final class DriftMoneyRepository implements MoneyRepository {
   // ---- budgets ----
 
   @override
-  Future<Result<void>> setBudget({required String? categoryId, required int amountPaise, required LocalDate from}) {
+  Future<Result<void>> setBudget({
+    required String? categoryId,
+    required int amountPaise,
+    required LocalDate from,
+  }) {
     if (amountPaise < 0 || amountPaise > maxRupeePaise) {
       return Future.value(const Err(ValidationFailure('amount', 'amount_invalid')));
     }
@@ -390,12 +417,18 @@ final class DriftMoneyRepository implements MoneyRepository {
       setBudget(categoryId: categoryId, amountPaise: 0, from: from);
 
   @override
-  Stream<List<Budget>> watchBudgets() => (_db.select(_db.budgets)..where((t) => t.deletedAt.isNull())).watch().map(
-    (rows) => [
-      for (final r in rows)
-        Budget(id: r.id, effectiveFrom: r.effectiveFrom, categoryId: r.categoryId, amountPaise: r.amountPaise),
-    ],
-  );
+  Stream<List<Budget>> watchBudgets() =>
+      (_db.select(_db.budgets)..where((t) => t.deletedAt.isNull())).watch().map(
+        (rows) => [
+          for (final r in rows)
+            Budget(
+              id: r.id,
+              effectiveFrom: r.effectiveFrom,
+              categoryId: r.categoryId,
+              amountPaise: r.amountPaise,
+            ),
+        ],
+      );
 
   // ---- debts ----
 
@@ -432,7 +465,9 @@ final class DriftMoneyRepository implements MoneyRepository {
       final today = LocalDate.fromDateTime(clock.now().toLocal());
       final id = debt.id.isEmpty ? ids.newId() : debt.id;
       await _db.transaction(() async {
-        final existing = await (_db.select(_db.debts)..where((t) => t.id.equals(id))).getSingleOrNull();
+        final existing = await (_db.select(
+          _db.debts,
+        )..where((t) => t.id.equals(id))).getSingleOrNull();
         final values = _debtCompanion(debt, now);
         if (existing == null) {
           await _db.into(_db.debts).insert(values.copyWith(id: Value(id), createdAt: Value(now)));
@@ -443,9 +478,12 @@ final class DriftMoneyRepository implements MoneyRepository {
         final emi = debt.emi;
         if (markPastInstalmentsPaid && emi != null) {
           final paid = {
-            for (final p in await (_db.select(
-              _db.debtPayments,
-            )..where((t) => t.debtId.equals(id) & t.deletedAt.isNull() & t.instalmentNo.isNotNull())).get())
+            for (final p
+                in await (_db.select(_db.debtPayments)..where(
+                      (t) =>
+                          t.debtId.equals(id) & t.deletedAt.isNull() & t.instalmentNo.isNotNull(),
+                    ))
+                    .get())
               p.instalmentNo!,
           };
           final due = emi.dueBy(today.addDays(-1)).clamp(0, emi.count); // before today
@@ -518,9 +556,10 @@ final class DriftMoneyRepository implements MoneyRepository {
   Future<Result<void>> setSettled(String id, {required bool settled}) => Result.guard(
     () => _db.transaction(() async {
       final now = _now;
-      final n = await (_db.update(_db.debts)..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
-        DebtsCompanion(status: Value(settled ? 'settled' : 'open'), updatedAt: Value(now)),
-      );
+      final n = await (_db.update(_db.debts)..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
+          .write(
+            DebtsCompanion(status: Value(settled ? 'settled' : 'open'), updatedAt: Value(now)),
+          );
       if (n > 0) await _sync('debts', id);
     }),
     onError: (_) => _fail,
@@ -551,11 +590,18 @@ final class DriftMoneyRepository implements MoneyRepository {
       final stamp = await stampFor(clock, timeZone, at: at);
       final id = ids.newId();
       await _db.transaction(() async {
-        final row = await (_db.select(_db.debts)..where((t) => t.id.equals(debtId) & t.deletedAt.isNull())).getSingle();
+        final row = await (_db.select(
+          _db.debts,
+        )..where((t) => t.id.equals(debtId) & t.deletedAt.isNull())).getSingle();
         if (instalmentNo != null) {
-          final dup = await (_db.select(
-            _db.debtPayments,
-          )..where((t) => t.debtId.equals(debtId) & t.instalmentNo.equals(instalmentNo) & t.deletedAt.isNull())).get();
+          final dup =
+              await (_db.select(_db.debtPayments)..where(
+                    (t) =>
+                        t.debtId.equals(debtId) &
+                        t.instalmentNo.equals(instalmentNo) &
+                        t.deletedAt.isNull(),
+                  ))
+                  .get();
           if (dup.isNotEmpty) throw const ValidationFailure('instalment', 'instalment_paid');
         }
         await _db
@@ -622,7 +668,11 @@ final class DriftMoneyRepository implements MoneyRepository {
 
   SimpleSelectStatement<$DebtPaymentsTable, DebtPaymentRow> _livePayments(String? debtId) =>
       _db.select(_db.debtPayments)
-        ..where((t) => t.deletedAt.isNull() & (debtId == null ? const Constant(true) : t.debtId.equals(debtId)))
+        ..where(
+          (t) =>
+              t.deletedAt.isNull() &
+              (debtId == null ? const Constant(true) : t.debtId.equals(debtId)),
+        )
         ..orderBy([(t) => OrderingTerm.desc(t.paidAt)]);
 
   @override
@@ -638,7 +688,9 @@ final class DriftMoneyRepository implements MoneyRepository {
   @override
   Future<Result<RecurringExpense>> saveRecurring(RecurringExpense r) async {
     if (r.name.trim().isEmpty) return const Err(ValidationFailure('name', 'name_required'));
-    if (!_validAmount(r.amountPaise)) return const Err(ValidationFailure('amount', 'amount_invalid'));
+    if (!_validAmount(r.amountPaise)) {
+      return const Err(ValidationFailure('amount', 'amount_invalid'));
+    }
     return Result.guard(() async {
       final now = _now;
       final id = r.id.isEmpty ? ids.newId() : r.id;
@@ -653,9 +705,13 @@ final class DriftMoneyRepository implements MoneyRepository {
         active: Value(r.active),
       );
       await _db.transaction(() async {
-        final existing = await (_db.select(_db.recurringExpenses)..where((t) => t.id.equals(id))).getSingleOrNull();
+        final existing = await (_db.select(
+          _db.recurringExpenses,
+        )..where((t) => t.id.equals(id))).getSingleOrNull();
         if (existing == null) {
-          await _db.into(_db.recurringExpenses).insert(values.copyWith(id: Value(id), createdAt: Value(now)));
+          await _db
+              .into(_db.recurringExpenses)
+              .insert(values.copyWith(id: Value(id), createdAt: Value(now)));
         } else {
           await (_db.update(_db.recurringExpenses)..where((t) => t.id.equals(id))).write(values);
         }
@@ -698,5 +754,6 @@ final class DriftMoneyRepository implements MoneyRepository {
       _liveRecurring.watch().map((rows) => rows.map(_recurring).toList());
 
   @override
-  Future<List<RecurringExpense>> recurring() async => (await _liveRecurring.get()).map(_recurring).toList();
+  Future<List<RecurringExpense>> recurring() async =>
+      (await _liveRecurring.get()).map(_recurring).toList();
 }

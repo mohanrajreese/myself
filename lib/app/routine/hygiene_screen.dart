@@ -16,22 +16,32 @@ import 'habits_screen.dart';
 
 /// The standard hygiene routines (§5.10), created only when the user asks.
 List<Activity> hygieneRoutines(AppLocalizations l, LocalDate today) {
-  Activity make(String key, String name, String icon, ScheduleRule rule, [List<ChecklistItem> steps = const []]) =>
-      Activity(
-        id: '',
-        name: name,
-        category: 'hygiene',
-        iconKey: icon,
-        trackingType: steps.isEmpty ? TrackingType.boolean : TrackingType.checklist,
-        priority: ActivityPriority.optional,
-        schedule: rule,
-        scheduleHistory: [ScheduleChange(from: today, rule: rule)],
-        checklistItems: steps,
-        systemKey: 'hygiene.$key',
-      );
+  Activity make(
+    String key,
+    String name,
+    String icon,
+    ScheduleRule rule, [
+    List<ChecklistItem> steps = const [],
+  ]) => Activity(
+    id: '',
+    name: name,
+    category: 'hygiene',
+    iconKey: icon,
+    trackingType: steps.isEmpty ? TrackingType.boolean : TrackingType.checklist,
+    priority: ActivityPriority.optional,
+    schedule: rule,
+    scheduleHistory: [ScheduleChange(from: today, rule: rule)],
+    checklistItems: steps,
+    systemKey: 'hygiene.$key',
+  );
   return [
     make('bath', l.hygieneBath, 'brush', Daily(times: const [7 * 60])),
-    make('head_wash', l.hygieneHeadWash, 'brush', Weekdays(weekdays: const {3, 6}, times: const [7 * 60])),
+    make(
+      'head_wash',
+      l.hygieneHeadWash,
+      'brush',
+      Weekdays(weekdays: const {3, 6}, times: const [7 * 60]),
+    ),
     make('brush_morning', l.hygieneBrushMorning, 'brush', Daily(times: const [7 * 60 + 30])),
     make('brush_night', l.hygieneBrushNight, 'brush', Daily(times: const [22 * 60])),
     make('floss', l.hygieneFloss, 'brush', Daily(times: const [22 * 60])),
@@ -119,10 +129,16 @@ class HygieneScreen extends ConsumerWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(l10n.doneOfTotal(rows.length - open.length, rows.length), style: context.text.bodyStrong),
+                  child: Text(
+                    l10n.doneOfTotal(rows.length - open.length, rows.length),
+                    style: context.text.bodyStrong,
+                  ),
                 ),
                 if (open.isNotEmpty)
-                  TextButton(onPressed: () => _allDone(context, ref, open), child: Text(l10n.markAllDone)),
+                  TextButton(
+                    onPressed: () => _allDone(context, ref, open),
+                    child: Text(l10n.markAllDone),
+                  ),
               ],
             ),
             const SizedBox(height: FbSpace.sm),
@@ -135,7 +151,10 @@ class HygieneScreen extends ConsumerWidget {
           ],
           if (!hasStandard) ...[
             const SizedBox(height: FbSpace.md),
-            OutlinedButton(onPressed: () => _seed(context, ref), child: Text(l10n.addStandardRoutines)),
+            OutlinedButton(
+              onPressed: () => _seed(context, ref),
+              child: Text(l10n.addStandardRoutines),
+            ),
           ],
           const SizedBox(height: FbSpace.md),
           Text(l10n.hygieneNote, style: context.text.caption),

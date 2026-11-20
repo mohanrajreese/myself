@@ -53,13 +53,16 @@ final class ChecklistItem {
   static ChecklistItem fromJson(Map<String, Object?> json) =>
       ChecklistItem(json['id']! as String, json['label']! as String);
 
-  static String listToJson(List<ChecklistItem> items) => jsonEncode([for (final i in items) i.toJson()]);
+  static String listToJson(List<ChecklistItem> items) =>
+      jsonEncode([for (final i in items) i.toJson()]);
   static List<ChecklistItem> listFromJson(String json) => [
-    for (final e in jsonDecode(json) as List<Object?>) fromJson((e! as Map).cast<String, Object?>()),
+    for (final e in jsonDecode(json) as List<Object?>)
+      fromJson((e! as Map).cast<String, Object?>()),
   ];
 
   @override
-  bool operator ==(Object other) => other is ChecklistItem && other.id == id && other.label == label;
+  bool operator ==(Object other) =>
+      other is ChecklistItem && other.id == id && other.label == label;
   @override
   int get hashCode => Object.hash(id, label);
 }
@@ -81,7 +84,8 @@ final class ScheduleChange {
   ];
 
   @override
-  bool operator ==(Object other) => other is ScheduleChange && other.from == from && other.rule == rule;
+  bool operator ==(Object other) =>
+      other is ScheduleChange && other.from == from && other.rule == rule;
   @override
   int get hashCode => Object.hash(from, rule);
 }

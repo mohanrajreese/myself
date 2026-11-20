@@ -18,7 +18,11 @@ import '../features/reminders/domain/reminder_repository.dart';
 
 /// Quiet hours as stored in settings.
 final class QuietHoursSetting {
-  const QuietHoursSetting({this.enabled = false, this.start = 22 * 60 + 30, this.end = 6 * 60 + 30});
+  const QuietHoursSetting({
+    this.enabled = false,
+    this.start = 22 * 60 + 30,
+    this.end = 6 * 60 + 30,
+  });
   final bool enabled;
   final int start;
   final int end;
@@ -58,7 +62,12 @@ final class ReminderService {
     this.extraSources = const [],
   }) : zoneFor = zoneFor ?? IanaZone.new,
        _scheduler = ReminderScheduler(store: store, gateway: gateway, clock: clock),
-       _privateScheduler = ReminderScheduler(store: store, gateway: gateway, clock: clock, storeName: 'private');
+       _privateScheduler = ReminderScheduler(
+         store: store,
+         gateway: gateway,
+         clock: clock,
+         storeName: 'private',
+       );
 
   /// Sensitive reminders (medication, bowel, private). Null before the
   /// private database is open, for example in a background isolate without
@@ -189,7 +198,8 @@ final class ReminderService {
     final reminder = await reminders.byId(record.reminderId);
     // Ad-hoc "remind me again" from Home carries the activity id.
     final linkedActivity =
-        reminder?.activityId ?? (record.reminderId.startsWith('activity:') ? record.reminderId.substring(9) : null);
+        reminder?.activityId ??
+        (record.reminderId.startsWith('activity:') ? record.reminderId.substring(9) : null);
     final now = clock.now();
     switch (tap.action) {
       case null:
@@ -285,7 +295,11 @@ final class ReminderService {
     }
   }
 
-  Future<String?> _handlePrivate(NotificationRecord record, NotificationTap tap, int? snoozeMinutes) async {
+  Future<String?> _handlePrivate(
+    NotificationRecord record,
+    NotificationTap tap,
+    int? snoozeMinutes,
+  ) async {
     final now = clock.now();
     final source = privateSource;
     switch (tap.action) {

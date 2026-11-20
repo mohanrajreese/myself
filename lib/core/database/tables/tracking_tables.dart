@@ -18,7 +18,14 @@ const mealCategoryCodes = [
   'other',
 ];
 
-const junkCategoryCodes = ['fast_food', 'fried_snacks', 'sweets', 'sugary_drinks', 'packaged_snacks', 'other'];
+const junkCategoryCodes = [
+  'fast_food',
+  'fried_snacks',
+  'sweets',
+  'sugary_drinks',
+  'packaged_snacks',
+  'other',
+];
 
 @DataClassName('BodyMeasurementRow')
 @TableIndex(name: 'body_measurements_type_date', columns: {#measurementType, #localDate})
@@ -88,7 +95,8 @@ class MealLogs extends Table with SyncedColumns {
 @TableIndex(name: 'meal_food_items_meal', columns: {#mealLogId})
 class MealFoodItems extends Table with SyncedColumns {
   TextColumn get mealLogId => text().references(MealLogs, #id)();
-  TextColumn get foodItemId => text().nullable().references(FoodItems, #id, onDelete: KeyAction.setNull)();
+  TextColumn get foodItemId =>
+      text().nullable().references(FoodItems, #id, onDelete: KeyAction.setNull)();
   TextColumn get foodName => text()();
   IntColumn get quantityMilli => integer().check(quantityMilli.isBiggerThanValue(0))();
   TextColumn get unit => text()();

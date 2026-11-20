@@ -62,7 +62,8 @@ final class DriftReminderRepository implements ReminderRepository {
     endDate: Value(r.endDate),
   );
 
-  Failure? _invalid(Reminder r) => r.problems.isEmpty ? null : ValidationFailure('reminder', r.problems.first);
+  Failure? _invalid(Reminder r) =>
+      r.problems.isEmpty ? null : ValidationFailure('reminder', r.problems.first);
 
   @override
   Future<Result<Reminder>> create(Reminder draft) async {
@@ -81,16 +82,17 @@ final class DriftReminderRepository implements ReminderRepository {
     }, onError: (_) => const StorageFailure('reminder_write'));
   }
 
-  Future<Result<void>> _write(String id, RemindersCompanion Function(DateTime now) change) => Result.guard(
-    () => _db.transaction(() async {
-      final now = clock.now().toUtc();
-      final changed = await (_db.update(
-        _db.reminders,
-      )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(change(now));
-      if (changed > 0) await _db.enqueueForSync(_table, id, now);
-    }),
-    onError: (_) => const StorageFailure('reminder_write'),
-  );
+  Future<Result<void>> _write(String id, RemindersCompanion Function(DateTime now) change) =>
+      Result.guard(
+        () => _db.transaction(() async {
+          final now = clock.now().toUtc();
+          final changed = await (_db.update(
+            _db.reminders,
+          )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(change(now));
+          if (changed > 0) await _db.enqueueForSync(_table, id, now);
+        }),
+        onError: (_) => const StorageFailure('reminder_write'),
+      );
 
   @override
   Future<Result<void>> update(Reminder reminder) async {
@@ -112,7 +114,8 @@ final class DriftReminderRepository implements ReminderRepository {
     ..orderBy([(t) => OrderingTerm(expression: t.createdAt)]);
 
   @override
-  Stream<List<Reminder>> watchAll() => _live.watch().map((rows) => [for (final r in rows) _toReminder(r)]);
+  Stream<List<Reminder>> watchAll() =>
+      _live.watch().map((rows) => [for (final r in rows) _toReminder(r)]);
 
   @override
   Future<List<Reminder>> enabled() async => [

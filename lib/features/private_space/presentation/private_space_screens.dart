@@ -32,7 +32,12 @@ String habitName(AppLocalizations l, PrivateHabitType t) => switch (t.systemKey)
 };
 
 /// Text fields here never learn from what is typed (privacy rules).
-Widget _privateField(BuildContext context, String label, String value, ValueChanged<String> onChanged) => TextFormField(
+Widget _privateField(
+  BuildContext context,
+  String label,
+  String value,
+  ValueChanged<String> onChanged,
+) => TextFormField(
   initialValue: value,
   enableSuggestions: false,
   autocorrect: false,
@@ -52,7 +57,8 @@ class PrivateSpaceScreen extends ConsumerWidget {
     final activities = ref.watch(privateActivitiesProvider).value ?? const <PrivateActivity>[];
     final photos = ref.watch(progressPhotosProvider).value ?? const <ProgressPhoto>[];
     final today = ref.watch(todayProvider);
-    final bowel = ref.watch(bowelLogsProvider((from: today, to: today))).value ?? const <BowelLog>[];
+    final bowel =
+        ref.watch(bowelLogsProvider((from: today, to: today))).value ?? const <BowelLog>[];
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.privateSpace),
@@ -94,8 +100,14 @@ class PrivateSpaceScreen extends ConsumerWidget {
                       title: Text(l10n.addHabitType),
                       content: _privateField(context, l10n.nameLabel, '', (v) => name = v),
                       actions: [
-                        TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancel)),
-                        TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(l10n.add)),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: Text(l10n.cancel),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: Text(l10n.add),
+                        ),
                       ],
                     ),
                   );
@@ -109,7 +121,9 @@ class PrivateSpaceScreen extends ConsumerWidget {
             children: [
               FbListRow(
                 title: l10n.bowelLog,
-                subtitle: bowel.isEmpty ? l10n.nothingToday : l10n.loggedAt(context.time(bowel.first.occurredAt)),
+                subtitle: bowel.isEmpty
+                    ? l10n.nothingToday
+                    : l10n.loggedAt(context.time(bowel.first.occurredAt)),
                 trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () => context.push(Routes.bowel),
               ),
@@ -167,13 +181,18 @@ class _PrivateHabitScreenState extends ConsumerState<PrivateHabitScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final type = (ref.watch(habitTypesProvider).value ?? const []).where((t) => t.id == widget.id).firstOrNull;
+    final type = (ref.watch(habitTypesProvider).value ?? const [])
+        .where((t) => t.id == widget.id)
+        .firstOrNull;
     final today = ref.watch(todayProvider);
     final from = _monthly ? today.addDays(-364) : today.addDays(-55);
     final logs =
-        ref.watch(habitLogsProvider((type: widget.id, from: from, to: today))).value ?? const <PrivateHabitLog>[];
+        ref.watch(habitLogsProvider((type: widget.id, from: from, to: today))).value ??
+        const <PrivateHabitLog>[];
     final mondayThis = today.addDays(1 - today.weekday);
-    final thisWeek = logs.where((l) => !l.localDate.isBefore(mondayThis)).fold(0, (n, l) => n + l.count);
+    final thisWeek = logs
+        .where((l) => !l.localDate.isBefore(mondayThis))
+        .fold(0, (n, l) => n + l.count);
     final buckets = <double>[];
     if (_monthly) {
       for (var i = 11; i >= 0; i--) {
@@ -238,7 +257,10 @@ class _PrivateHabitScreenState extends ConsumerState<PrivateHabitScreen> {
                   runSpacing: FbSpace.sm,
                   children: [
                     FilledButton(onPressed: _record, child: Text(l10n.recordNow)),
-                    OutlinedButton(onPressed: () => _record(details: true), child: Text(l10n.recordWithDetails)),
+                    OutlinedButton(
+                      onPressed: () => _record(details: true),
+                      child: Text(l10n.recordWithDetails),
+                    ),
                   ],
                 ),
               ],
@@ -254,7 +276,11 @@ class _PrivateHabitScreenState extends ConsumerState<PrivateHabitScreen> {
           FbChartCard(
             summary: l10n.habitTrendSummary(buckets.length),
             footer: Text(l10n.countsOnly, style: context.text.caption),
-            chart: FbBarChart(values: buckets, bottomLabel: (i) => '${i + 1}', leftLabel: (y) => '${y.round()}'),
+            chart: FbBarChart(
+              values: buckets,
+              bottomLabel: (i) => '${i + 1}',
+              leftLabel: (y) => '${y.round()}',
+            ),
           ),
           const SizedBox(height: FbSpace.lg),
           FbSectionTitle(l10n.historyTitle),
@@ -266,7 +292,8 @@ class _PrivateHabitScreenState extends ConsumerState<PrivateHabitScreen> {
               children: [
                 for (final log in logs.take(50))
                   FbListRow(
-                    title: '${context.dayLabel(log.localDate, today: today)} ${context.time(log.occurredAt)}',
+                    title:
+                        '${context.dayLabel(log.localDate, today: today)} ${context.time(log.occurredAt)}',
                     subtitle: [l10n.timesCount(log.count), ?log.note].join(' · '),
                     trailing: IconButton(
                       tooltip: l10n.delete,
@@ -395,8 +422,12 @@ class _BowelScreenState extends ConsumerState<BowelScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final today = ref.watch(todayProvider);
-    final logs = ref.watch(bowelLogsProvider((from: today.addDays(-29), to: today))).value ?? const <BowelLog>[];
-    final week = logs.where((l) => l.localDate.isAfter(today.addDays(-7))).fold(0, (n, l) => n + l.count);
+    final logs =
+        ref.watch(bowelLogsProvider((from: today.addDays(-29), to: today))).value ??
+        const <BowelLog>[];
+    final week = logs
+        .where((l) => l.localDate.isAfter(today.addDays(-7)))
+        .fold(0, (n, l) => n + l.count);
     final perDay = logs.fold(0, (n, l) => n + l.count) / 30;
     int of(Consistency c) => logs.where((l) => l.consistency == c).length;
     String label(Consistency c) => switch (c) {
@@ -432,7 +463,11 @@ class _BowelScreenState extends ConsumerState<BowelScreen> {
                       selected: _straining,
                       onTap: () => setState(() => _straining = !_straining),
                     ),
-                    FbToggleChip(label: l10n.pain, selected: _pain, onTap: () => setState(() => _pain = !_pain)),
+                    FbToggleChip(
+                      label: l10n.pain,
+                      selected: _pain,
+                      onTap: () => setState(() => _pain = !_pain),
+                    ),
                     FbToggleChip(
                       label: l10n.bleeding,
                       selected: _bleeding,
@@ -475,7 +510,8 @@ class _BowelScreenState extends ConsumerState<BowelScreen> {
               children: [
                 for (final log in logs.take(30))
                   FbListRow(
-                    title: '${context.dayLabel(log.localDate, today: today)} ${context.time(log.occurredAt)}',
+                    title:
+                        '${context.dayLabel(log.localDate, today: today)} ${context.time(log.occurredAt)}',
                     subtitle: [
                       label(log.consistency),
                       if (log.straining) l10n.straining,
@@ -652,11 +688,13 @@ class PrivateActivityScreen extends ConsumerWidget {
               children: [
                 for (final log in logs)
                   FbListRow(
-                    title: '${context.dayLabel(log.localDate, today: today)} ${context.time(log.occurredAt)}',
+                    title:
+                        '${context.dayLabel(log.localDate, today: today)} ${context.time(log.occurredAt)}',
                     subtitle: log.count == null ? l10n.stateDone : l10n.timesCount(log.count!),
                     trailing: IconButton(
                       tooltip: l10n.delete,
-                      onPressed: () => ref.read(privateRepositoryProvider).deleteActivityLog(log.id),
+                      onPressed: () =>
+                          ref.read(privateRepositoryProvider).deleteActivityLog(log.id),
                       icon: const Icon(Icons.delete_outline_rounded),
                     ),
                   ),
@@ -695,7 +733,9 @@ class ProgressPhotosScreen extends ConsumerWidget {
     if (source == null) return;
     final bytes = await ref.read(photoPickerProvider).pick(source);
     if (bytes == null) return;
-    final r = await ref.read(privateRepositoryProvider).addPhoto(bytes, takenAt: ref.read(clockProvider).now());
+    final r = await ref
+        .read(privateRepositoryProvider)
+        .addPhoto(bytes, takenAt: ref.read(clockProvider).now());
     if (context.mounted) showFbSnackBar(context, r.isOk ? l10n.photoSaved : l10n.errSaveFailed);
   }
 
@@ -823,7 +863,9 @@ class PrivateRemindersScreen extends ConsumerWidget {
     var title = existing?.title ?? (ownerType == 'bowel' ? l10n.routineCheckIn : '');
     var minute = 8 * 60;
     if (existing != null) {
-      final rule = ScheduleRule.fromJson((jsonDecode(existing.ruleJson) as Map).cast<String, Object?>());
+      final rule = ScheduleRule.fromJson(
+        (jsonDecode(existing.ruleJson) as Map).cast<String, Object?>(),
+      );
       if (rule is Daily && rule.times.isNotEmpty) minute = rule.times.first;
     }
     final saved = await showDialog<bool>(
@@ -861,7 +903,10 @@ class PrivateRemindersScreen extends ConsumerWidget {
                 child: Text(l10n.delete),
               ),
             TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancel)),
-            TextButton(onPressed: () => Navigator.of(context).pop(title.trim().isNotEmpty), child: Text(l10n.save)),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(title.trim().isNotEmpty),
+              child: Text(l10n.save),
+            ),
           ],
         ),
       ),
@@ -902,7 +947,9 @@ class PrivateRemindersScreen extends ConsumerWidget {
                   FbListRow(
                     title: r.title,
                     subtitle: () {
-                      final rule = ScheduleRule.fromJson((jsonDecode(r.ruleJson) as Map).cast<String, Object?>());
+                      final rule = ScheduleRule.fromJson(
+                        (jsonDecode(r.ruleJson) as Map).cast<String, Object?>(),
+                      );
                       final m = rule is Daily && rule.times.isNotEmpty ? rule.times.first : 0;
                       return MaterialLocalizations.of(
                         context,
@@ -940,7 +987,10 @@ class PrivateRemindersScreen extends ConsumerWidget {
                   onPressed: () => _edit(context, ref, ownerType: 'bowel'),
                   child: Text(l10n.addBowelReminder),
                 ),
-              OutlinedButton(onPressed: () => _edit(context, ref), child: Text(l10n.newPrivateReminder)),
+              OutlinedButton(
+                onPressed: () => _edit(context, ref),
+                child: Text(l10n.newPrivateReminder),
+              ),
             ],
           ),
           const SizedBox(height: FbSpace.md),

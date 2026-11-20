@@ -4,7 +4,12 @@ import '../../../core/utils/local_date.dart';
 /// A private habit type (§5.12). Seeded types have a [systemKey]; their names
 /// are shown from the app's text, so nothing personal is stored for them.
 final class PrivateHabitType {
-  const PrivateHabitType({required this.id, required this.name, this.systemKey, this.archived = false});
+  const PrivateHabitType({
+    required this.id,
+    required this.name,
+    this.systemKey,
+    this.archived = false,
+  });
   final String id;
   final String name;
   final String? systemKey;
@@ -74,7 +79,12 @@ typedef BowelDraft = ({
 
 /// A private activity: done or counted, optionally at set times (C5).
 final class PrivateActivity {
-  const PrivateActivity({required this.id, required this.name, required this.counted, this.archived = false});
+  const PrivateActivity({
+    required this.id,
+    required this.name,
+    required this.counted,
+    this.archived = false,
+  });
   final String id;
   final String name;
 
@@ -101,7 +111,12 @@ final class PrivateActivityLog {
 }
 
 final class ProgressPhoto {
-  const ProgressPhoto({required this.id, required this.takenAt, required this.localDate, this.note});
+  const ProgressPhoto({
+    required this.id,
+    required this.takenAt,
+    required this.localDate,
+    this.note,
+  });
   final String id;
   final DateTime takenAt;
   final LocalDate localDate;
@@ -114,9 +129,18 @@ abstract interface class PrivateRepository {
   Stream<List<PrivateHabitType>> watchHabitTypes();
   Future<Result<PrivateHabitType>> addHabitType(String name);
   Future<Result<void>> archiveHabitType(String id);
-  Future<Result<void>> recordHabit(String typeId, {required DateTime at, int count = 1, String? note});
+  Future<Result<void>> recordHabit(
+    String typeId, {
+    required DateTime at,
+    int count = 1,
+    String? note,
+  });
   Future<Result<void>> deleteHabitLog(String id);
-  Stream<List<PrivateHabitLog>> watchHabitLogs(String typeId, {required LocalDate from, required LocalDate to});
+  Stream<List<PrivateHabitLog>> watchHabitLogs(
+    String typeId, {
+    required LocalDate from,
+    required LocalDate to,
+  });
 
   Future<Result<void>> addBowel(BowelDraft draft);
   Future<Result<void>> updateBowel(String id, BowelDraft draft);
@@ -130,7 +154,11 @@ abstract interface class PrivateRepository {
   Future<Result<void>> deleteActivityLog(String id);
   Stream<List<PrivateActivityLog>> watchActivityLogs(String id);
 
-  Future<Result<ProgressPhoto>> addPhoto(List<int> bytes, {required DateTime takenAt, String? note});
+  Future<Result<ProgressPhoto>> addPhoto(
+    List<int> bytes, {
+    required DateTime takenAt,
+    String? note,
+  });
   Future<List<int>?> readPhoto(String id);
   Future<Result<void>> deletePhoto(String id);
   Stream<List<ProgressPhoto>> watchPhotos();

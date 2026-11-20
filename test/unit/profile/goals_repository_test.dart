@@ -48,7 +48,10 @@ void main() {
     await goals.saveDailyGoals(const DailyGoals(dailySteps: 8000));
     await goals.saveDailyGoals(const DailyGoals(dailySteps: 9000));
     await goals.saveNutritionGoals(const NutritionTargets(proteinMg: 120000));
-    expect(await outboxEntries(db), [(table: 'user_goals', id: 'id-1'), (table: 'nutrition_goals', id: 'id-2')]);
+    expect(await outboxEntries(db), [
+      (table: 'user_goals', id: 'id-1'),
+      (table: 'nutrition_goals', id: 'id-2'),
+    ]);
   });
 
   test('nutrition goals are optional field by field and effective-dated', () async {

@@ -9,14 +9,22 @@ import 'dart:typed_data' show Float64List, Int32List, Int64List;
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show immutable, protected, visibleForTesting;
 
-Object? _extractReplyValueOrThrow(List<Object?>? replyList, String channelName, {required bool isNullValid}) {
+Object? _extractReplyValueOrThrow(
+  List<Object?>? replyList,
+  String channelName, {
+  required bool isNullValid,
+}) {
   if (replyList == null) {
     throw PlatformException(
       code: 'channel-error',
       message: 'Unable to establish connection on channel: "$channelName".',
     );
   } else if (replyList.length > 1) {
-    throw PlatformException(code: replyList[0]! as String, message: replyList[1] as String?, details: replyList[2]);
+    throw PlatformException(
+      code: replyList[0]! as String,
+      message: replyList[1] as String?,
+      details: replyList[2],
+    );
   } else if (!isNullValid && (replyList.isNotEmpty && replyList[0] == null)) {
     throw PlatformException(
       code: 'null-error',
@@ -37,7 +45,8 @@ bool _deepEquals(Object? a, Object? b) {
     return a == b;
   }
   if (a is List && b is List) {
-    return a.length == b.length && a.indexed.every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
+    return a.length == b.length &&
+        a.indexed.every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
   }
   if (a is Map && b is Map) {
     if (a.length != b.length) {
@@ -115,7 +124,16 @@ class StepReadingMessage {
   String source;
 
   List<Object?> _toList() {
-    return <Object?>[id, cumulativeSteps, bootCount, elapsedRealtimeMs, wallTimeUtcMs, tz, utcOffsetS, source];
+    return <Object?>[
+      id,
+      cumulativeSteps,
+      bootCount,
+      elapsedRealtimeMs,
+      wallTimeUtcMs,
+      tz,
+      utcOffsetS,
+      source,
+    ];
   }
 
   Object encode() {
@@ -197,7 +215,9 @@ class StepApi {
   /// BinaryMessenger will be used which routes to the host platform.
   StepApi({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
     : pigeonVar_binaryMessenger = binaryMessenger,
-      pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+      pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty
+          ? '.$messageChannelSuffix'
+          : '';
 
   final BinaryMessenger? pigeonVar_binaryMessenger;
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
@@ -206,7 +226,8 @@ class StepApi {
 
   /// Whether the phone has `Sensor.TYPE_STEP_COUNTER`.
   Future<bool> hasSensor() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.hasSensor$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.hasSensor$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -224,7 +245,8 @@ class StepApi {
 
   /// `ACTIVITY_RECOGNITION` granted (always true before Android 10's prompt).
   Future<bool> hasPermission() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.hasPermission$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.hasPermission$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -262,7 +284,8 @@ class StepApi {
   /// Takes one reading now and stores it in the native buffer; null when the
   /// sensor gave no value in time.
   Future<StepReadingMessage?> readNow() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.readNow$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.readNow$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -280,7 +303,8 @@ class StepApi {
 
   /// Readings waiting in the native buffer, oldest first.
   Future<List<StepReadingMessage>> pendingReadings() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.pendingReadings$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.pendingReadings$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -298,7 +322,8 @@ class StepApi {
 
   /// Removes buffered readings up to and including [maxId].
   Future<void> acknowledge(int maxId) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.acknowledge$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.acknowledge$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -311,7 +336,8 @@ class StepApi {
 
   /// Starts or stops continuous collection (foreground service).
   Future<void> setContinuous(bool enabled) async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.setContinuous$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.setContinuous$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
@@ -323,7 +349,8 @@ class StepApi {
   }
 
   Future<bool> isContinuous() async {
-    final pigeonVar_channelName = 'dev.flutter.pigeon.fitbuddy.StepApi.isContinuous$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.fitbuddy.StepApi.isContinuous$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,

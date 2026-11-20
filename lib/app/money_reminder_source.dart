@@ -125,7 +125,12 @@ final class MoneyReminderSource implements ExtraReminderSource {
       final d = (await money.debts()).where((d) => d.id == parts[1]).firstOrNull;
       if (d == null || d.emi == null) return;
       // Already paid in the app: the result is a validation failure; fine.
-      await money.addPayment(d.id, amountPaise: d.emi!.emiPaise, at: now, instalmentNo: int.parse(parts[2]));
+      await money.addPayment(
+        d.id,
+        amountPaise: d.emi!.emiPaise,
+        at: now,
+        instalmentNo: int.parse(parts[2]),
+      );
       return;
     }
     final r = (await money.recurring()).where((r) => r.id == parts[1]).firstOrNull;

@@ -59,7 +59,9 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
     final l10n = context.l10n;
     Duration? target;
     if (_kind == TimerKind.countdown) {
-      final m = int.tryParse(_minutes.trim().isEmpty ? '${(a.targetMilli ?? 0) ~/ 60000}' : _minutes.trim());
+      final m = int.tryParse(
+        _minutes.trim().isEmpty ? '${(a.targetMilli ?? 0) ~/ 60000}' : _minutes.trim(),
+      );
       if (m == null || m < 1 || m > 1440) {
         showFbSnackBar(context, l10n.errOutOfRange);
         return;
@@ -248,7 +250,9 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
                   children: [
                     Text(
                       big,
-                      style: context.text.displayMetric.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
+                      style: context.text.displayMetric.copyWith(
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
                     ),
                     Text(caption, style: context.text.caption),
                   ],
@@ -262,7 +266,10 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
       Row(
         children: [
           Expanded(
-            child: OutlinedButton(onPressed: _busy ? null : () => _cancel(a, s), child: Text(l10n.cancelTimer)),
+            child: OutlinedButton(
+              onPressed: _busy ? null : () => _cancel(a, s),
+              child: Text(l10n.cancelTimer),
+            ),
           ),
           const SizedBox(width: FbSpace.md),
           Expanded(
@@ -270,8 +277,11 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
             child: FilledButton(
               onPressed: _busy
                   ? null
-                  : () =>
-                        _transition(a, s, s.state == TimerState.running ? TimerEventType.pause : TimerEventType.resume),
+                  : () => _transition(
+                      a,
+                      s,
+                      s.state == TimerState.running ? TimerEventType.pause : TimerEventType.resume,
+                    ),
               child: Text(s.state == TimerState.running ? l10n.pause : l10n.resume),
             ),
           ),
@@ -281,7 +291,9 @@ class _TimerScreenState extends ConsumerState<TimerScreen> {
       FilledButton.tonal(
         onPressed: _busy || elapsed.inSeconds < 1 ? null : () => _finish(a, s),
         child: Text(
-          l10n.finishAndLog(context.duration(Duration(minutes: math.max(1, (elapsed.inSeconds / 60).round())))),
+          l10n.finishAndLog(
+            context.duration(Duration(minutes: math.max(1, (elapsed.inSeconds / 60).round()))),
+          ),
         ),
       ),
       const SizedBox(height: FbSpace.md),

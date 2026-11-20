@@ -48,7 +48,12 @@ void main() {
     await money.seedCategories(const {});
     service = ReminderService(
       reminders: DriftReminderRepository(db, clock: time.clock, ids: ids),
-      activities: DriftActivityRepository(db, clock: time.clock, ids: ids, timeZone: const FixedTimeZone()),
+      activities: DriftActivityRepository(
+        db,
+        clock: time.clock,
+        ids: ids,
+        timeZone: const FixedTimeZone(),
+      ),
       settings: SettingsRepository(db, clock: time.clock),
       store: store,
       gateway: gateway,
@@ -71,7 +76,12 @@ void main() {
                   kind: DebtKind.bankLoan,
                   principalPaise: 150000000,
                   startDate: LocalDate(2023, 9, 5),
-                  emi: EmiPlan(emiPaise: 1250000, day: 5, count: 240, first: LocalDate(2023, 10, 5)),
+                  emi: EmiPlan(
+                    emiPaise: 1250000,
+                    day: 5,
+                    count: 240,
+                    first: LocalDate(2023, 10, 5),
+                  ),
                   remindDaysBefore: lead,
                   remind: remind,
                 ),
@@ -81,7 +91,8 @@ void main() {
           .value;
 
   List<NotificationRequest> emiNotes() =>
-      gateway.pending.values.where((n) => n.title.contains('EMI')).toList()..sort((a, b) => a.at!.compareTo(b.at!));
+      gateway.pending.values.where((n) => n.title.contains('EMI')).toList()
+        ..sort((a, b) => a.at!.compareTo(b.at!));
 
   test('EMI reminders come 7 days before and 1 day before, at 09:00, without the amount', () async {
     await homeLoan();
@@ -112,7 +123,9 @@ void main() {
     final loan = await homeLoan();
     await service.replan();
     final first = (await store.active()).firstWhere((r) => r.reminderId.startsWith('emi:'));
-    await service.handle(NotificationTap(notificationId: first.id, action: ReminderAction.complete));
+    await service.handle(
+      NotificationTap(notificationId: first.id, action: ReminderAction.complete),
+    );
     final paid = await money.payments(debtId: loan.id);
     expect(paid.first.instalmentNo, 39);
     expect(paid.first.amountPaise, 1250000);
@@ -135,10 +148,16 @@ void main() {
     await service.replan();
     final first = (await store.active()).firstWhere((r) => r.reminderId.startsWith('emi:'));
     time.now = DateTime.utc(2026, 11, 28, 9);
-    await service.handle(NotificationTap(notificationId: first.id, action: ReminderAction.snooze), snoozeMinutes: 60);
+    await service.handle(
+      NotificationTap(notificationId: first.id, action: ReminderAction.snooze),
+      snoozeMinutes: 60,
+    );
     expect(gateway.pending[first.id]!.at, DateTime.utc(2026, 11, 28, 10));
     expect(gateway.pending[first.id]!.title, 'EMI in 7 days: Home loan');
-    expect(await service.handle(NotificationTap(notificationId: first.id)), '/money/debts/${loan.id}');
+    expect(
+      await service.handle(NotificationTap(notificationId: first.id)),
+      '/money/debts/${loan.id}',
+    );
   });
 
   test('no reminders when they are off, the loan is settled, or paid ahead', () async {
@@ -183,7 +202,9 @@ void main() {
     final note = gateway.pending.values.singleWhere((n) => n.title == 'Rent is due today');
     expect(note.at, DateTime.utc(2026, 12, 1, 9));
     final record = (await store.active()).singleWhere((r) => r.reminderId == 'rec:${rent.id}');
-    await service.handle(NotificationTap(notificationId: record.id, action: ReminderAction.complete));
+    await service.handle(
+      NotificationTap(notificationId: record.id, action: ReminderAction.complete),
+    );
     final e = (await db.select(db.expenses).get()).single;
     expect(e.amountPaise, 1800000);
     expect(e.recurringExpenseId, rent.id);

@@ -21,7 +21,9 @@ void main() {
       await tester.scrollUntilVisible(
         f,
         200,
-        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).last,
+        scrollable: find
+            .byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down)
+            .last,
       );
     }
     await tester.pumpAndSettle();
@@ -40,7 +42,10 @@ void main() {
     );
     await app.pump(tester, session: signedInSession);
     await drain(tester);
-    await tap(tester, find.descendant(of: find.byType(NavigationBar), matching: find.text('Money')));
+    await tap(
+      tester,
+      find.descendant(of: find.byType(NavigationBar), matching: find.text('Money')),
+    );
   }
 
   testWidgets('an empty month says so; an expense added from the tab shows up', (tester) async {
@@ -94,7 +99,9 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('a home loan added late marks past EMIs paid; Mark paid records the next one', (tester) async {
+  testWidgets('a home loan added late marks past EMIs paid; Mark paid records the next one', (
+    tester,
+  ) async {
     await openMoney(tester);
     await tapText(tester, 'Debts');
     expect(find.text('Nothing here yet.'), findsOneWidget);

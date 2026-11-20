@@ -31,7 +31,9 @@ void main() {
       await tester.scrollUntilVisible(
         f,
         200,
-        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).last,
+        scrollable: find
+            .byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down)
+            .last,
       );
     }
     await tester.ensureVisible(f.last);
@@ -70,10 +72,16 @@ void main() {
       await app.completeOnboarding();
       await app.pump(tester, session: signedInSession);
       await go(tester, Routes.export);
-      await tester.enterText(find.widgetWithText(TextField, 'Passphrase (at least 8 characters)'), 'short');
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Passphrase (at least 8 characters)'),
+        'short',
+      );
       await tap(tester, find.text('Create export'));
       expect(find.text('Use at least 8 characters.'), findsOneWidget);
-      await tester.enterText(find.widgetWithText(TextField, 'Passphrase (at least 8 characters)'), 'correct horse');
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Passphrase (at least 8 characters)'),
+        'correct horse',
+      );
       await tester.enterText(find.widgetWithText(TextField, 'Repeat passphrase'), 'correct horsy');
       await tap(tester, find.text('Create export'));
       expect(find.text('The two passphrases are different.'), findsOneWidget);
@@ -124,7 +132,9 @@ void main() {
   });
 
   group('deletion', () {
-    testWidgets('deleting phone data erases both databases and the lock, then signs out', (tester) async {
+    testWidgets('deleting phone data erases both databases and the lock, then signs out', (
+      tester,
+    ) async {
       final app = AppHarness();
       await app.completeOnboarding();
       await privateRow(app);
@@ -143,7 +153,9 @@ void main() {
       await app.dispose(tester);
     });
 
-    testWidgets('deleting the account needs the word DELETE and the same Google account', (tester) async {
+    testWidgets('deleting the account needs the word DELETE and the same Google account', (
+      tester,
+    ) async {
       final app = AppHarness(withSync: true);
       await app.completeOnboarding();
       await app.pump(tester, session: signedInSession);

@@ -48,7 +48,10 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
       unawaited(ref.read(workoutRepositoryProvider).seedExercises().catchError((Object _) {}));
       unawaited(ref.read(privateRepositoryProvider).seedHabitTypes().catchError((Object _) {}));
       unawaited(
-        ref.read(moneyRepositoryProvider).seedCategories(categoryNames(context.l10n)).catchError((Object _) {}),
+        ref
+            .read(moneyRepositoryProvider)
+            .seedCategories(categoryNames(context.l10n))
+            .catchError((Object _) {}),
       );
       refreshScreenTime(ref);
       unawaited(ref.read(syncControllerProvider.notifier).syncNow());
@@ -76,7 +79,9 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
     }
     final target = await ref.read(reminderServiceProvider).handle(tap);
     if (target == null || !mounted) return;
-    unawaited(ref.read(routerProvider).push(target.startsWith('/') ? target : Routes.activity(target)));
+    unawaited(
+      ref.read(routerProvider).push(target.startsWith('/') ? target : Routes.activity(target)),
+    );
   }
 
   @override

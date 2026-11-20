@@ -15,7 +15,12 @@ void main() {
   setUp(() async {
     db = memoryDatabase();
     final time = MutableClock(at);
-    money = DriftMoneyRepository(db, clock: time.clock, ids: SequentialIds(), timeZone: const FixedTimeZone());
+    money = DriftMoneyRepository(
+      db,
+      clock: time.clock,
+      ids: SequentialIds(),
+      timeZone: const FixedTimeZone(),
+    );
     await money.seedCategories(const {});
     await db
         .into(db.mealLogs)

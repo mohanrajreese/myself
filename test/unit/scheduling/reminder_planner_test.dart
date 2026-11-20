@@ -134,7 +134,11 @@ void main() {
     final walk = r('k', Daily(times: [hm(8, 0)]));
     final planned = planner.plan([water, walk], now: now, days: 7, zone: const Utc(), budget: 40);
     final waterTimes = planned.where((o) => o.reminderId == 'w').map((o) => o.fireAt);
-    expect(planned.where((o) => o.reminderId == 'k'), hasLength(7), reason: 'daily reminders keep their week');
+    expect(
+      planned.where((o) => o.reminderId == 'k'),
+      hasLength(7),
+      reason: 'daily reminders keep their week',
+    );
     expect(waterTimes.every((t) => t.isBefore(now.add(const Duration(hours: 48)))), isTrue);
     expect(waterTimes, hasLength(26), reason: '13 a day for the first 48 hours');
     expect(planned.length, lessThanOrEqualTo(40));

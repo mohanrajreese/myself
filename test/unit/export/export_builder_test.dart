@@ -19,7 +19,11 @@ void main() {
   setUp(() async {
     db = memoryDatabase();
     privateDb = memoryPrivateDatabase();
-    builder = ExportBuilder(db: db, privateDb: privateDb, clock: MutableClock(DateTime(2026, 11, 18)).clock);
+    builder = ExportBuilder(
+      db: db,
+      privateDb: privateDb,
+      clock: MutableClock(DateTime(2026, 11, 18)).clock,
+    );
     for (final (id, date, g) in [('w1', '2026-11-01', 92000), ('w2', '2026-11-16', 91800)]) {
       await db.customStatement(
         'INSERT INTO weight_logs (id, created_at, updated_at, weight_g, entry_unit, occurred_at, local_date, tz, notes) '
@@ -76,14 +80,20 @@ void main() {
   });
 
   test('a date range applies to logs and to their child rows', () async {
-    final out = json(await builder.build(ExportOptions(from: LocalDate(2026, 11, 10), to: LocalDate(2026, 11, 18))));
+    final out = json(
+      await builder.build(
+        ExportOptions(from: LocalDate(2026, 11, 10), to: LocalDate(2026, 11, 18)),
+      ),
+    );
     final t = out['tables']! as Map<String, Object?>;
     expect([for (final r in t['weight_logs']! as List) (r as Map)['id']], ['w2']);
     expect([for (final r in t['meal_food_items']! as List) (r as Map)['meal_log_id']], ['m2']);
   });
 
   test('CSV export writes one file per table, quoting where needed', () async {
-    final a = ZipDecoder().decodeBytes(await builder.build(const ExportOptions(format: ExportFormat.csv)));
+    final a = ZipDecoder().decodeBytes(
+      await builder.build(const ExportOptions(format: ExportFormat.csv)),
+    );
     final csv = utf8.decode(a.findFile('weight_logs.csv')!.content);
     expect(csv.split('\n').first, startsWith('id,created_at,updated_at'));
     expect(csv, contains('"after ""gym"", tired"'));
@@ -93,6 +103,8 @@ void main() {
 
   test('options are validated', () {
     expect(const ExportOptions(passphrase: 'short').problems, ['passphrase_short']);
-    expect(ExportOptions(from: LocalDate(2026, 11, 2), to: LocalDate(2026, 11, 1)).problems, ['range_reversed']);
+    expect(ExportOptions(from: LocalDate(2026, 11, 2), to: LocalDate(2026, 11, 1)).problems, [
+      'range_reversed',
+    ]);
   });
 }

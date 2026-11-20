@@ -9,7 +9,10 @@ sealed class Failure {
 
   @override
   bool operator ==(Object other) =>
-      other.runtimeType == runtimeType && other is Failure && other.code == code && _extra == other._extra;
+      other.runtimeType == runtimeType &&
+      other is Failure &&
+      other.code == code &&
+      _extra == other._extra;
 
   Object? get _extra => null;
 

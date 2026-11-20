@@ -23,7 +23,9 @@ String soundTitle(AppLocalizations l10n, String? uri, List<({String title, Strin
   final match = system.where((s) => s.uri == uri).firstOrNull;
   if (match != null) return match.title;
   final file = Uri.tryParse(uri)?.pathSegments.lastOrNull ?? '';
-  return file.isEmpty ? l10n.soundCustom : file.replaceAll('_', ' ').replaceFirst(RegExp(r'\.[A-Za-z0-9]+$'), '');
+  return file.isEmpty
+      ? l10n.soundCustom
+      : file.replaceAll('_', ' ').replaceFirst(RegExp(r'\.[A-Za-z0-9]+$'), '');
 }
 
 /// Default, the phone's notification sounds, or a sound file (§5.15F).
@@ -99,7 +101,10 @@ class _SoundPickerSheetState extends ConsumerState<SoundPickerSheet> {
           if (sounds.isLoading) const FbLoading(),
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 280),
-            child: ListView(shrinkWrap: true, children: [for (final s in system) option(s.uri, s.title)]),
+            child: ListView(
+              shrinkWrap: true,
+              children: [for (final s in system) option(s.uri, s.title)],
+            ),
           ),
           const SizedBox(height: FbSpace.sm),
           OutlinedButton.icon(
@@ -110,7 +115,10 @@ class _SoundPickerSheetState extends ConsumerState<SoundPickerSheet> {
           const SizedBox(height: FbSpace.sm),
           Text(l10n.soundPickerNote, style: context.text.caption),
           const SizedBox(height: FbSpace.md),
-          FilledButton(onPressed: () => Navigator.of(context).pop(SoundPick(_selected)), child: Text(l10n.done)),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(SoundPick(_selected)),
+            child: Text(l10n.done),
+          ),
         ],
       ),
     );

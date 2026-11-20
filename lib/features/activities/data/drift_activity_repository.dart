@@ -16,7 +16,12 @@ import '../domain/activity.dart';
 import '../domain/activity_repository.dart';
 
 final class DriftActivityRepository implements ActivityRepository {
-  DriftActivityRepository(this._db, {required this.clock, required this.ids, required this.timeZone});
+  DriftActivityRepository(
+    this._db, {
+    required this.clock,
+    required this.ids,
+    required this.timeZone,
+  });
 
   final AppDatabase _db;
   final Clock clock;
@@ -109,7 +114,9 @@ final class DriftActivityRepository implements ActivityRepository {
       sortOrder: await _nextSortOrder(),
       scheduleHistory: [ScheduleChange(from: _today, rule: a.schedule)],
     );
-    await _db.into(_db.activityDefinitions).insert(_fields(stored, now).copyWith(id: Value(id), createdAt: Value(now)));
+    await _db
+        .into(_db.activityDefinitions)
+        .insert(_fields(stored, now).copyWith(id: Value(id), createdAt: Value(now)));
     await _db.enqueueForSync(_defs, id, now);
     return stored;
   }
@@ -132,7 +139,11 @@ final class DriftActivityRepository implements ActivityRepository {
     if (failure != null) return Err(failure);
     final current = await byId(activity.id);
     if (current == null) return const Err(ValidationFailure('activity', 'not_found'));
-    if (!canChangeTrackingType(current.trackingType, activity.trackingType, hasLogs: await hasLogs(activity.id))) {
+    if (!canChangeTrackingType(
+      current.trackingType,
+      activity.trackingType,
+      hasLogs: await hasLogs(activity.id),
+    )) {
       return const Err(ValidationFailure('trackingType', 'not_allowed'));
     }
     final next = activity.schedule == current.schedule
@@ -140,11 +151,16 @@ final class DriftActivityRepository implements ActivityRepository {
         : current
               .copyWith(scheduleHistory: current.scheduleHistory)
               .rescheduled(activity.schedule, from: scheduleFrom ?? _today);
-    final merged = activity.copyWith(schedule: next.schedule, scheduleHistory: next.scheduleHistory);
+    final merged = activity.copyWith(
+      schedule: next.schedule,
+      scheduleHistory: next.scheduleHistory,
+    );
     return Result.guard(
       () => _db.transaction(() async {
         final now = clock.now().toUtc();
-        await (_db.update(_db.activityDefinitions)..where((t) => t.id.equals(activity.id))).write(_fields(merged, now));
+        await (_db.update(
+          _db.activityDefinitions,
+        )..where((t) => t.id.equals(activity.id))).write(_fields(merged, now));
         await _db.enqueueForSync(_defs, activity.id, now);
       }),
       onError: (_) => const StorageFailure('activity_write'),
@@ -158,7 +174,10 @@ final class DriftActivityRepository implements ActivityRepository {
     return create(source.copyWith(name: name));
   }
 
-  Future<Result<void>> _write(String id, ActivityDefinitionsCompanion Function(DateTime now) change) => Result.guard(
+  Future<Result<void>> _write(
+    String id,
+    ActivityDefinitionsCompanion Function(DateTime now) change,
+  ) => Result.guard(
     () => _db.transaction(() async {
       final now = clock.now().toUtc();
       final changed = await (_db.update(
@@ -172,7 +191,10 @@ final class DriftActivityRepository implements ActivityRepository {
   @override
   Future<Result<void>> setArchived(String id, {required bool archived}) => _write(
     id,
-    (now) => ActivityDefinitionsCompanion(updatedAt: Value(now), status: Value(archived ? 'archived' : 'active')),
+    (now) => ActivityDefinitionsCompanion(
+      updatedAt: Value(now),
+      status: Value(archived ? 'archived' : 'active'),
+    ),
   );
 
   @override
@@ -188,8 +210,10 @@ final class DriftActivityRepository implements ActivityRepository {
         );
         await _db.enqueueForSync(_logs, log.id, now);
       }
-      final changed = await (_db.update(_db.activityDefinitions)..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
-          .write(ActivityDefinitionsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
+      final changed =
+          await (_db.update(_db.activityDefinitions)
+                ..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
+              .write(ActivityDefinitionsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
       if (changed > 0) await _db.enqueueForSync(_defs, id, now);
     }),
     onError: (_) => const StorageFailure('activity_write'),
@@ -214,7 +238,10 @@ final class DriftActivityRepository implements ActivityRepository {
   Stream<List<Activity>> watchAll() =>
       (_db.select(_db.activityDefinitions)
             ..where((t) => t.deletedAt.isNull())
-            ..orderBy([(t) => OrderingTerm(expression: t.sortOrder), (t) => OrderingTerm(expression: t.createdAt)]))
+            ..orderBy([
+              (t) => OrderingTerm(expression: t.sortOrder),
+              (t) => OrderingTerm(expression: t.createdAt),
+            ]))
           .watch()
           .map((rows) => [for (final r in rows) _toActivity(r)]);
 
@@ -252,7 +279,9 @@ final class DriftActivityRepository implements ActivityRepository {
     numericValueMilli: Value(d.numericValueMilli),
     unit: Value(d.unit),
     durationS: Value(d.durationS),
-    checklistState: Value(d.checklistDone == null ? null : jsonEncode(d.checklistDone!.toList()..sort())),
+    checklistState: Value(
+      d.checklistDone == null ? null : jsonEncode(d.checklistDone!.toList()..sort()),
+    ),
     source: Value(d.source.code),
     notes: Value(_clean(d.notes)),
   );
@@ -271,10 +300,11 @@ final class DriftActivityRepository implements ActivityRepository {
         await _db
             .into(_db.activityLogs)
             .insert(
-              _logFields(
-                draft,
-                stamp,
-              ).copyWith(id: Value(id), createdAt: Value(stamp.nowUtc), activityDefinitionId: Value(activityId)),
+              _logFields(draft, stamp).copyWith(
+                id: Value(id),
+                createdAt: Value(stamp.nowUtc),
+                activityDefinitionId: Value(activityId),
+              ),
             );
         await _db.enqueueForSync(_logs, id, stamp.nowUtc);
       });
@@ -302,8 +332,10 @@ final class DriftActivityRepository implements ActivityRepository {
   Future<Result<void>> deleteLog(String logId) => Result.guard(
     () => _db.transaction(() async {
       final now = clock.now().toUtc();
-      final changed = await (_db.update(_db.activityLogs)..where((t) => t.id.equals(logId) & t.deletedAt.isNull()))
-          .write(ActivityLogsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
+      final changed =
+          await (_db.update(_db.activityLogs)
+                ..where((t) => t.id.equals(logId) & t.deletedAt.isNull()))
+              .write(ActivityLogsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
       if (changed > 0) await _db.enqueueForSync(_logs, logId, now);
     }),
     onError: (_) => const StorageFailure('activity_log_write'),
@@ -312,7 +344,11 @@ final class DriftActivityRepository implements ActivityRepository {
   @override
   Stream<List<ActivityLog>> watchLogsBetween(LocalDate from, LocalDate to) =>
       (_db.select(_db.activityLogs)
-            ..where((t) => t.deletedAt.isNull() & t.localDate.isBetweenValues(from.toString(), to.toString()))
+            ..where(
+              (t) =>
+                  t.deletedAt.isNull() &
+                  t.localDate.isBetweenValues(from.toString(), to.toString()),
+            )
             ..orderBy([(t) => OrderingTerm(expression: t.occurredAt)]))
           .watch()
           .map((rows) => [for (final r in rows) _toLog(r)]);

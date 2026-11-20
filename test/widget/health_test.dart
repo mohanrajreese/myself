@@ -14,7 +14,9 @@ void main() {
       draft: const SetupDraft(name: 'Asha Rao', weightText: '91.8', targetWeightText: '80'),
     );
     await app.pump(tester, session: signedInSession);
-    await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text('Health')));
+    await tester.tap(
+      find.descendant(of: find.byType(NavigationBar), matching: find.text('Health')),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -90,7 +92,9 @@ void main() {
   });
 
   group('Sleep', () {
-    testWidgets('last night is saved from the default times and counted on the Health tab', (tester) async {
+    testWidgets('last night is saved from the default times and counted on the Health tab', (
+      tester,
+    ) async {
       await openHealth(tester);
       await tapText(tester, 'Sleep');
       await tester.tap(find.widgetWithText(FilledButton, 'Add'));

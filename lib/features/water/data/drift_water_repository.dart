@@ -19,8 +19,12 @@ final class DriftWaterRepository implements WaterRepository {
   final IdGenerator ids;
   final TimeZoneSource timeZone;
 
-  WaterEntry _toDomain(WaterLogRow row) =>
-      WaterEntry(id: row.id, amountMl: row.amountMl, occurredAt: row.occurredAt, localDate: row.localDate);
+  WaterEntry _toDomain(WaterLogRow row) => WaterEntry(
+    id: row.id,
+    amountMl: row.amountMl,
+    occurredAt: row.occurredAt,
+    localDate: row.localDate,
+  );
 
   @override
   Future<Result<WaterEntry>> add(int amountMl, {DateTime? at}) async {
@@ -45,7 +49,12 @@ final class DriftWaterRepository implements WaterRepository {
             );
         await _db.enqueueForSync('water_logs', id, stamp.nowUtc);
       });
-      return WaterEntry(id: id, amountMl: amountMl, occurredAt: stamp.occurredAt, localDate: stamp.localDate);
+      return WaterEntry(
+        id: id,
+        amountMl: amountMl,
+        occurredAt: stamp.occurredAt,
+        localDate: stamp.localDate,
+      );
     }, onError: (_) => const StorageFailure('water_write'));
   }
 
@@ -53,9 +62,9 @@ final class DriftWaterRepository implements WaterRepository {
   Future<Result<void>> remove(String id) => Result.guard(
     () => _db.transaction(() async {
       final now = clock.now().toUtc();
-      final changed = await (_db.update(_db.waterLogs)..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
-        WaterLogsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
-      );
+      final changed =
+          await (_db.update(_db.waterLogs)..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
+              .write(WaterLogsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
       if (changed > 0) await _db.enqueueForSync('water_logs', id, now);
     }),
     onError: (_) => const StorageFailure('water_write'),

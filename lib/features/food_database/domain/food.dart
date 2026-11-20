@@ -114,20 +114,21 @@ final class FoodDraft {
   final String? householdLabel;
   final int? householdWeightMg;
 
-  FoodDraft copyWith({String? name, NutritionValues? values, JunkCategory? junk, bool? isSaved}) => FoodDraft(
-    name: name ?? this.name,
-    brand: brand,
-    category: category,
-    servingLabel: servingLabel,
-    servingQtyMilli: servingQtyMilli,
-    servingUnit: servingUnit,
-    servingWeightMg: servingWeightMg,
-    values: values ?? this.values,
-    junk: junk ?? this.junk,
-    isSaved: isSaved ?? this.isSaved,
-    householdLabel: householdLabel,
-    householdWeightMg: householdWeightMg,
-  );
+  FoodDraft copyWith({String? name, NutritionValues? values, JunkCategory? junk, bool? isSaved}) =>
+      FoodDraft(
+        name: name ?? this.name,
+        brand: brand,
+        category: category,
+        servingLabel: servingLabel,
+        servingQtyMilli: servingQtyMilli,
+        servingUnit: servingUnit,
+        servingWeightMg: servingWeightMg,
+        values: values ?? this.values,
+        junk: junk ?? this.junk,
+        isSaved: isSaved ?? this.isSaved,
+        householdLabel: householdLabel,
+        householdWeightMg: householdWeightMg,
+      );
 
   ValidationFailure? validate() {
     final trimmed = name.trim();

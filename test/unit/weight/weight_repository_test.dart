@@ -14,7 +14,12 @@ void main() {
   setUp(() {
     db = memoryDatabase();
     time = MutableClock(DateTime(2026, 11, 16, 23, 30));
-    weights = DriftWeightRepository(db, clock: time.clock, ids: SequentialIds(), timeZone: const FixedTimeZone());
+    weights = DriftWeightRepository(
+      db,
+      clock: time.clock,
+      ids: SequentialIds(),
+      timeZone: const FixedTimeZone(),
+    );
   });
   tearDown(() => db.close());
 
@@ -83,7 +88,11 @@ void main() {
     final entry = (await weights.add(weightG: 91800, entryUnit: MassUnit.kg)).valueOrNull!;
     expect((await weights.update(entry.id, weightG: 5)).failureOrNull?.code, 'out_of_range');
     expect(
-      (await weights.update(entry.id, weightG: 91000, occurredAt: DateTime(2026, 11, 18))).failureOrNull?.code,
+      (await weights.update(
+        entry.id,
+        weightG: 91000,
+        occurredAt: DateTime(2026, 11, 18),
+      )).failureOrNull?.code,
       'in_future',
     );
     expect((await db.select(db.weightLogs).getSingle()).weightG, 91800);

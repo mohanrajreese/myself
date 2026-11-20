@@ -5,8 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final t0 = DateTime.utc(2026, 11, 16, 6);
   // About 111 m per 0.001 degree of latitude.
-  RoutePoint p(int i, {int lat = 0, int accuracy = 50}) =>
-      (latE7: 129700000 + lat, lonE7: 775900000, accuracyDm: accuracy, at: t0.add(Duration(seconds: i * 10)));
+  RoutePoint p(int i, {int lat = 0, int accuracy = 50}) => (
+    latE7: 129700000 + lat,
+    lonE7: 775900000,
+    accuracyDm: accuracy,
+    at: t0.add(Duration(seconds: i * 10)),
+  );
 
   test('sums distance between accurate fixes', () {
     final t = GpsTrack(startedAt: t0)

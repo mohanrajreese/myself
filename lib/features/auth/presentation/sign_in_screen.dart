@@ -83,7 +83,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           builder: (context, constraints) => SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(FbSpace.xxl, FbSpace.x4, FbSpace.xxl, FbSpace.x3),
             child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight - FbSpace.x4 - FbSpace.x3),
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight - FbSpace.x4 - FbSpace.x3,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,12 +98,19 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                       const SizedBox(height: FbSpace.x3),
                       Semantics(
                         header: true,
-                        child: Text(l10n.appName, style: t.headline.copyWith(fontSize: 36, height: 42 / 36)),
+                        child: Text(
+                          l10n.appName,
+                          style: t.headline.copyWith(fontSize: 36, height: 42 / 36),
+                        ),
                       ),
                       const SizedBox(height: FbSpace.md),
                       Text(
                         l10n.signInTagline,
-                        style: t.body.copyWith(fontSize: 18, height: 28 / 18, color: c.textSecondary),
+                        style: t.body.copyWith(
+                          fontSize: 18,
+                          height: 28 / 18,
+                          color: c.textSecondary,
+                        ),
                       ),
                       const SizedBox(height: FbSpace.x3),
                       for (final point in [l10n.signInPoint1, l10n.signInPoint2, l10n.signInPoint3])
@@ -122,7 +131,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: FbSpace.xxl),
-                      if (notice != null) ...[FbNotice(notice, isError: true), const SizedBox(height: FbSpace.lg)],
+                      if (notice != null) ...[
+                        FbNotice(notice, isError: true),
+                        const SizedBox(height: FbSpace.lg),
+                      ],
                       _GoogleButton(
                         label: l10n.continueWithGoogle,
                         busy: _busy,
@@ -163,7 +175,10 @@ class _GoogleButton extends StatelessWidget {
       child: busy
           ? SizedBox.square(
               dimension: FbSpace.xxl,
-              child: CircularProgressIndicator(strokeWidth: 2.5, semanticsLabel: context.l10n.loading),
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                semanticsLabel: context.l10n.loading,
+              ),
             )
           : Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -175,7 +190,10 @@ class _GoogleButton extends StatelessWidget {
                     backgroundColor: c.surfaceVariant,
                     child: Text(
                       'G',
-                      style: context.text.bodySmall.copyWith(color: c.textPrimary, fontWeight: FontWeight.w700),
+                      style: context.text.bodySmall.copyWith(
+                        color: c.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),

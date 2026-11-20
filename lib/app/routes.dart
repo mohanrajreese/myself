@@ -29,7 +29,8 @@ abstract final class Routes {
   static const addWeight = '/add-weight';
   static const weight = '/health/weight';
   static const measurements = '/health/measurements';
-  static String measurementHistory(String type) => '/health/measurements/${Uri.encodeComponent(type)}';
+  static String measurementHistory(String type) =>
+      '/health/measurements/${Uri.encodeComponent(type)}';
   static const sleep = '/health/sleep';
   static const addSleep = '/add-sleep';
   static const checkin = '/health/checkin';
@@ -100,7 +101,11 @@ enum SetupStatus { unknown, needed, complete }
 /// The decision uses only what is stored on the device, so it works offline:
 /// no account bound or signed out → sign-in; bound but not set up →
 /// onboarding; otherwise the app.
-String? resolveRedirect({required bool sessionActive, required SetupStatus setup, required String location}) {
+String? resolveRedirect({
+  required bool sessionActive,
+  required SetupStatus setup,
+  required String location,
+}) {
   if (!sessionActive) return location == Routes.signIn ? null : Routes.signIn;
 
   final inOnboarding = location.startsWith(Routes.onboarding);
@@ -108,6 +113,8 @@ String? resolveRedirect({required bool sessionActive, required SetupStatus setup
     SetupStatus.unknown => location == Routes.loading ? null : Routes.loading,
     SetupStatus.needed => inOnboarding ? null : Routes.onboardingProfile,
     SetupStatus.complete =>
-      inOnboarding || location == Routes.signIn || location == Routes.loading || location == '/' ? Routes.home : null,
+      inOnboarding || location == Routes.signIn || location == Routes.loading || location == '/'
+          ? Routes.home
+          : null,
   };
 }

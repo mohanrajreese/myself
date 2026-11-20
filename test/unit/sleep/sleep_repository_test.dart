@@ -29,7 +29,12 @@ void main() {
   ];
 
   test('an overnight record is stored under the wake-up day with its length', () async {
-    final entry = (await sleep.add(kind: SleepKind.night, start: bed, end: wake, quality: 4)).valueOrNull!;
+    final entry = (await sleep.add(
+      kind: SleepKind.night,
+      start: bed,
+      end: wake,
+      quality: 4,
+    )).valueOrNull!;
     expect(entry.period.duration, const Duration(hours: 7, minutes: 5));
     final row = await db.select(db.sleepLogs).getSingle();
     expect(row.localDate, LocalDate(2026, 11, 16));
@@ -40,7 +45,11 @@ void main() {
 
   test('naps and nights are listed newest first', () async {
     await sleep.add(kind: SleepKind.night, start: bed, end: wake);
-    await sleep.add(kind: SleepKind.nap, start: DateTime(2026, 11, 15, 14, 30), end: DateTime(2026, 11, 15, 14, 55));
+    await sleep.add(
+      kind: SleepKind.nap,
+      start: DateTime(2026, 11, 15, 14, 30),
+      end: DateTime(2026, 11, 15, 14, 55),
+    );
     expect(await listed(), ['night 2026-11-16 425', 'nap 2026-11-15 25']);
   });
 

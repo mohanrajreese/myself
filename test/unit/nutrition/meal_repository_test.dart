@@ -9,14 +9,21 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/fakes.dart';
 
-MealItem item(String name, int kcal, {int protein = 0, JunkCategory? junk, String? foodId}) => MealItem(
-  foodItemId: foodId,
-  foodName: name,
-  quantityMilli: 1000,
-  unit: 'serving',
-  values: NutritionValues(energyKcalMilli: kcal * 1000, proteinMg: protein * 1000, carbsMg: 0, fatMg: 0, fibreMg: 0),
-  junk: junk,
-);
+MealItem item(String name, int kcal, {int protein = 0, JunkCategory? junk, String? foodId}) =>
+    MealItem(
+      foodItemId: foodId,
+      foodName: name,
+      quantityMilli: 1000,
+      unit: 'serving',
+      values: NutritionValues(
+        energyKcalMilli: kcal * 1000,
+        proteinMg: protein * 1000,
+        carbsMg: 0,
+        fatMg: 0,
+        fibreMg: 0,
+      ),
+      junk: junk,
+    );
 
 void main() {
   late AppDatabase db;
@@ -27,7 +34,12 @@ void main() {
   setUp(() {
     db = memoryDatabase();
     time = MutableClock(DateTime(2026, 11, 16, 20));
-    meals = DriftMealRepository(db, clock: time.clock, ids: SequentialIds(), timeZone: const FixedTimeZone());
+    meals = DriftMealRepository(
+      db,
+      clock: time.clock,
+      ids: SequentialIds(),
+      timeZone: const FixedTimeZone(),
+    );
   });
   tearDown(() => db.close());
 
@@ -35,7 +47,11 @@ void main() {
     MealDraft(
       category: MealCategory.breakfast,
       at: DateTime(2026, 11, 16, 8),
-      items: [item('Idli', 174, protein: 6), item('Sambar', 150, protein: 7), item('Filter coffee', 96)],
+      items: [
+        item('Idli', 174, protein: 6),
+        item('Sambar', 150, protein: 7),
+        item('Filter coffee', 96),
+      ],
     ),
   )).valueOrNull!;
 
@@ -55,7 +71,12 @@ void main() {
   });
 
   test('validation: at least one item, positive quantity, not in the future', () async {
-    expect((await meals.add(const MealDraft(category: MealCategory.lunch, items: []))).failureOrNull?.code, 'required');
+    expect(
+      (await meals.add(
+        const MealDraft(category: MealCategory.lunch, items: []),
+      )).failureOrNull?.code,
+      'required',
+    );
     expect(
       (await meals.add(
         MealDraft(category: MealCategory.lunch, items: [item('x', 1)], at: DateTime(2026, 11, 17)),
@@ -73,7 +94,13 @@ void main() {
         servingLabel: '1 bowl',
         servingQtyMilli: 1000,
         servingUnit: 'bowl',
-        values: NutritionValues(energyKcalMilli: 230000, proteinMg: 12000, carbsMg: 0, fatMg: 0, fibreMg: 0),
+        values: NutritionValues(
+          energyKcalMilli: 230000,
+          proteinMg: 12000,
+          carbsMg: 0,
+          fatMg: 0,
+          fibreMg: 0,
+        ),
       ),
     )).valueOrNull!;
     await meals.add(
@@ -89,7 +116,13 @@ void main() {
         servingLabel: '1 bowl',
         servingQtyMilli: 1000,
         servingUnit: 'bowl',
-        values: NutritionValues(energyKcalMilli: 400000, proteinMg: 1, carbsMg: 0, fatMg: 0, fibreMg: 0),
+        values: NutritionValues(
+          energyKcalMilli: 400000,
+          proteinMg: 1,
+          carbsMg: 0,
+          fatMg: 0,
+          fibreMg: 0,
+        ),
       ),
     );
     await foods.delete(dal.id);
@@ -99,11 +132,16 @@ void main() {
 
   test('the day view updates when a meal is added, edited or deleted', () async {
     final seen = <int>[];
-    final sub = meals.watchOn(today).listen((list) => seen.add(sumNutrition(list.map((m) => m.total)).energyKcalMilli));
+    final sub = meals
+        .watchOn(today)
+        .listen((list) => seen.add(sumNutrition(list.map((m) => m.total)).energyKcalMilli));
     await pumpEventQueue();
     final meal = await breakfast();
     await pumpEventQueue();
-    await meals.update(meal.id, MealDraft(category: MealCategory.breakfast, items: [item('Idli', 174)]));
+    await meals.update(
+      meal.id,
+      MealDraft(category: MealCategory.breakfast, items: [item('Idli', 174)]),
+    );
     await pumpEventQueue();
     await meals.delete(meal.id);
     await pumpEventQueue();
@@ -118,13 +156,20 @@ void main() {
     final meal = await breakfast();
     await meals.update(
       meal.id,
-      MealDraft(category: MealCategory.lateNight, at: DateTime(2026, 11, 15, 23), items: [item('Toast', 90)]),
+      MealDraft(
+        category: MealCategory.lateNight,
+        at: DateTime(2026, 11, 15, 23),
+        items: [item('Toast', 90)],
+      ),
     );
     expect(await meals.watchOn(today).first, isEmpty);
     final moved = (await meals.watchOn(LocalDate(2026, 11, 15)).first).single;
     expect(moved.category, MealCategory.lateNight);
     expect(moved.items.single.foodName, 'Toast');
-    expect((await db.select(db.mealFoodItems).get()).where((r) => r.deletedAt != null), hasLength(3));
+    expect(
+      (await db.select(db.mealFoodItems).get()).where((r) => r.deletedAt != null),
+      hasLength(3),
+    );
   });
 
   test('duplicate copies items into a new meal at a new time', () async {
@@ -177,6 +222,10 @@ void main() {
 
     await meals.deleteSaved(saved.id);
     expect(await meals.watchSaved().first, isEmpty);
-    expect(await meals.watchOn(LocalDate(2026, 11, 17)).first, hasLength(1), reason: 'logged meals stay');
+    expect(
+      await meals.watchOn(LocalDate(2026, 11, 17)).first,
+      hasLength(1),
+      reason: 'logged meals stay',
+    );
   });
 }

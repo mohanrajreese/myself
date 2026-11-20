@@ -30,6 +30,9 @@ void main() {
 
   test('failures are value-equal and never embed free text', () {
     expect(const NetworkFailure('timeout'), const NetworkFailure('timeout'));
-    expect(const PermissionFailure('activity_recognition', permanentlyDenied: true).code, 'activity_recognition');
+    expect(
+      const PermissionFailure('activity_recognition', permanentlyDenied: true).code,
+      'activity_recognition',
+    );
   });
 }

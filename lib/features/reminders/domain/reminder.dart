@@ -84,7 +84,8 @@ final class Reminder {
     if (title.trim().length > 80) 'title_too_long',
     ...rule.problems,
     if (snoozeMinutes < 1 || snoozeMinutes > 720) 'snooze_out_of_range',
-    if ((kind == ReminderKind.activity || onlyIfIncomplete) && activityId == null) 'activity_required',
+    if ((kind == ReminderKind.activity || onlyIfIncomplete) && activityId == null)
+      'activity_required',
     if (startDate != null && endDate != null && endDate!.isBefore(startDate!)) 'end_before_start',
   ];
 
@@ -135,35 +136,41 @@ final class Reminder {
 }
 
 /// Starting points for the preset reminder types (§5.15A).
-Reminder reminderPreset(ReminderKind kind, {required String title, required LocalDate today}) => switch (kind) {
-  ReminderKind.water => Reminder(
-    id: '',
-    kind: kind,
-    title: title,
-    rule: IntervalRule(everyMinutes: 90, start: 8 * 60, end: 20 * 60),
-  ),
-  ReminderKind.workout => Reminder(
-    id: '',
-    kind: kind,
-    title: title,
-    rule: Weekdays(weekdays: {1, 3, 5}, times: [18 * 60 + 30]),
-  ),
-  ReminderKind.sleep => Reminder(
-    id: '',
-    kind: kind,
-    title: title,
-    rule: Daily(times: [22 * 60 + 15]),
-  ),
-  ReminderKind.posture => Reminder(
-    id: '',
-    kind: kind,
-    title: title,
-    rule: IntervalRule(everyMinutes: 120, start: 9 * 60, end: 17 * 60, weekdays: {1, 2, 3, 4, 5}),
-  ),
-  _ => Reminder(
-    id: '',
-    kind: kind,
-    title: title,
-    rule: OneTime(date: today, time: 9 * 60),
-  ),
-};
+Reminder reminderPreset(ReminderKind kind, {required String title, required LocalDate today}) =>
+    switch (kind) {
+      ReminderKind.water => Reminder(
+        id: '',
+        kind: kind,
+        title: title,
+        rule: IntervalRule(everyMinutes: 90, start: 8 * 60, end: 20 * 60),
+      ),
+      ReminderKind.workout => Reminder(
+        id: '',
+        kind: kind,
+        title: title,
+        rule: Weekdays(weekdays: {1, 3, 5}, times: [18 * 60 + 30]),
+      ),
+      ReminderKind.sleep => Reminder(
+        id: '',
+        kind: kind,
+        title: title,
+        rule: Daily(times: [22 * 60 + 15]),
+      ),
+      ReminderKind.posture => Reminder(
+        id: '',
+        kind: kind,
+        title: title,
+        rule: IntervalRule(
+          everyMinutes: 120,
+          start: 9 * 60,
+          end: 17 * 60,
+          weekdays: {1, 2, 3, 4, 5},
+        ),
+      ),
+      _ => Reminder(
+        id: '',
+        kind: kind,
+        title: title,
+        rule: OneTime(date: today, time: 9 * 60),
+      ),
+    };

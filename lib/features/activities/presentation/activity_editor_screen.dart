@@ -81,7 +81,9 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
         _priority = a.priority;
         _target = switch (a.targetMilli) {
           null => '',
-          final t when a.trackingType == TrackingType.duration || a.trackingType == TrackingType.stopwatch =>
+          final t
+              when a.trackingType == TrackingType.duration ||
+                  a.trackingType == TrackingType.stopwatch =>
             '${t ~/ 60000}',
           final t => '${t ~/ 1000}',
         };
@@ -92,7 +94,9 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
         _showOnHome = a.showOnDashboard;
         _checklist = [...a.checklistItems];
         _linked = reminders
-            .where((r) => r.kind == ReminderKind.activity && r.activityId == a.id && !r.onlyIfIncomplete)
+            .where(
+              (r) => r.kind == ReminderKind.activity && r.activityId == a.id && !r.onlyIfIncomplete,
+            )
             .firstOrNull;
         _remind = _linked?.enabled ?? false;
       }
@@ -124,7 +128,8 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
     if (_rule == null || _rule!.problems.isNotEmpty) {
       errors['schedule'] = l10n.errScheduleIncomplete;
     }
-    if (_type == TrackingType.checklist && _checklist.where((i) => i.label.trim().isNotEmpty).isEmpty) {
+    if (_type == TrackingType.checklist &&
+        _checklist.where((i) => i.label.trim().isNotEmpty).isEmpty) {
       errors['checklist'] = l10n.errChecklistEmpty;
     }
     setState(() => _errors = errors);
@@ -140,7 +145,8 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
       trackingType: _type,
       priority: _priority,
       targetMilli: _type.hasAmount ? targetMilli : null,
-      targetUnit: (_type == TrackingType.count || _type == TrackingType.numeric) && _unit.trim().isNotEmpty
+      targetUnit:
+          (_type == TrackingType.count || _type == TrackingType.numeric) && _unit.trim().isNotEmpty
           ? _unit.trim()
           : null,
       schedule: _rule!,
@@ -185,7 +191,9 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
     setState(() => _errors = errors);
     if (errors.isNotEmpty) return;
     setState(() => _busy = true);
-    final r = await ref.read(privateRepositoryProvider).addActivity(_name.trim(), counted: _type == TrackingType.count);
+    final r = await ref
+        .read(privateRepositoryProvider)
+        .addActivity(_name.trim(), counted: _type == TrackingType.count);
     if (!mounted) return;
     final id = r.valueOrNull?.id;
     if (id == null) return _failed(r.failureOrNull);
@@ -197,12 +205,15 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
   Future<void> _saveReminder(String id, Activity a) async {
     final reminders = ref.read(reminderRepositoryProvider);
     if (_remind) {
-      final base = (_linked ?? Reminder(id: '', kind: ReminderKind.activity, title: a.name, rule: a.schedule)).copyWith(
-        title: a.name.trim(),
-        rule: a.schedule,
-        activityId: () => id,
-        enabled: true,
-      );
+      final base =
+          (_linked ??
+                  Reminder(id: '', kind: ReminderKind.activity, title: a.name, rule: a.schedule))
+              .copyWith(
+                title: a.name.trim(),
+                rule: a.schedule,
+                activityId: () => id,
+                enabled: true,
+              );
       if (_linked == null) {
         await reminders.create(base);
       } else {
@@ -298,7 +309,8 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
               initialValue: _category,
               isExpanded: true,
               items: [
-                for (final c in activityCategories) DropdownMenuItem(value: c, child: Text(categoryName(l10n, c))),
+                for (final c in activityCategories)
+                  DropdownMenuItem(value: c, child: Text(categoryName(l10n, c))),
               ],
               onChanged: (c) => _change(() => _category = c!),
             ),
@@ -380,7 +392,8 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
                           key: ValueKey(item.id),
                           label: l10n.checklistStep(i + 1),
                           value: item.label,
-                          onChanged: (v) => _change(() => _checklist[i] = ChecklistItem(item.id, v)),
+                          onChanged: (v) =>
+                              _change(() => _checklist[i] = ChecklistItem(item.id, v)),
                           textCapitalization: TextCapitalization.sentences,
                         ),
                       ),
@@ -394,8 +407,9 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
                 ),
               if (_errors['checklist'] != null) FbNotice(_errors['checklist']!, isError: true),
               OutlinedButton.icon(
-                onPressed: () =>
-                    _change(() => _checklist.add(ChecklistItem(ref.read(idGeneratorProvider).newId(), ''))),
+                onPressed: () => _change(
+                  () => _checklist.add(ChecklistItem(ref.read(idGeneratorProvider).newId(), '')),
+                ),
                 icon: const Icon(Icons.add_rounded),
                 label: Text(l10n.addStep),
               ),
@@ -404,7 +418,10 @@ class _ActivityEditorScreenState extends ConsumerState<ActivityEditorScreen> {
             Text(l10n.priorityLabel, style: context.text.label),
             const SizedBox(height: FbSpace.sm),
             FbSegmented<ActivityPriority>(
-              options: {ActivityPriority.essential: l10n.essential, ActivityPriority.optional: l10n.optionalPriority},
+              options: {
+                ActivityPriority.essential: l10n.essential,
+                ActivityPriority.optional: l10n.optionalPriority,
+              },
               selected: _priority,
               onChanged: (p) => _change(() => _priority = p),
             ),

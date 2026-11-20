@@ -34,14 +34,23 @@ final workoutRepositoryProvider = Provider<WorkoutRepository>(
 );
 
 final stepServiceProvider = Provider<StepService>(
-  (ref) => StepService(counter: ref.watch(stepCounterProvider), steps: ref.watch(stepRepositoryProvider)),
+  (ref) => StepService(
+    counter: ref.watch(stepCounterProvider),
+    steps: ref.watch(stepRepositoryProvider),
+  ),
 );
 
-final stepStatusProvider = FutureProvider<StepStatus>((ref) => ref.watch(stepServiceProvider).status());
+final stepStatusProvider = FutureProvider<StepStatus>(
+  (ref) => ref.watch(stepServiceProvider).status(),
+);
 
 /// Pulls new readings in without blocking the screen.
-void syncSteps(WidgetRef ref) =>
-    unawaited(ref.read(stepServiceProvider).sync().then((_) => ref.invalidate(stepStatusProvider), onError: (_) {}));
+void syncSteps(WidgetRef ref) => unawaited(
+  ref
+      .read(stepServiceProvider)
+      .sync()
+      .then((_) => ref.invalidate(stepStatusProvider), onError: (_) {}),
+);
 
 final stepDayProvider = StreamProvider.family<StepDay?, LocalDate>(
   (ref, d) => ref.watch(stepRepositoryProvider).watchDay(d),
@@ -63,9 +72,10 @@ final workoutProvider = StreamProvider.family<WorkoutSession?, String>(
   (ref, id) => ref.watch(workoutRepositoryProvider).watchSession(id),
 );
 
-final workoutsBetweenProvider = StreamProvider.family<List<WorkoutSession>, ({LocalDate from, LocalDate to})>(
-  (ref, r) => ref.watch(workoutRepositoryProvider).watchBetween(r.from, r.to),
-);
+final workoutsBetweenProvider =
+    StreamProvider.family<List<WorkoutSession>, ({LocalDate from, LocalDate to})>(
+      (ref, r) => ref.watch(workoutRepositoryProvider).watchBetween(r.from, r.to),
+    );
 
 final templatesProvider = StreamProvider<List<WorkoutTemplate>>(
   (ref) => ref.watch(workoutRepositoryProvider).watchTemplates(),
@@ -73,13 +83,20 @@ final templatesProvider = StreamProvider<List<WorkoutTemplate>>(
 
 /// The unfinished gym workout, if any.
 final activeGymProvider = Provider<WorkoutSession?>(
-  (ref) => ref.watch(workoutsProvider(WorkoutKind.gym)).value?.where((s) => s.inProgress).firstOrNull,
+  (ref) =>
+      ref.watch(workoutsProvider(WorkoutKind.gym)).value?.where((s) => s.inProgress).firstOrNull,
 );
 
-typedef ExerciseProgress = ({List<PersonalRecord> records, List<({DateTime at, int value})> series});
+typedef ExerciseProgress = ({
+  List<PersonalRecord> records,
+  List<({DateTime at, int value})> series,
+});
 
 /// Records and the heaviest (or longest) set per workout for one exercise.
-final exerciseProgressProvider = FutureProvider.family<ExerciseProgress, Exercise>((ref, exercise) async {
+final exerciseProgressProvider = FutureProvider.family<ExerciseProgress, Exercise>((
+  ref,
+  exercise,
+) async {
   ref.watch(workoutsProvider(WorkoutKind.gym));
   final sets = await ref.watch(workoutRepositoryProvider).completedSets(exercise.id);
   final records = strengthRecords([
@@ -114,6 +131,11 @@ final cardioRecordsProvider = Provider.family<List<PersonalRecord>, CardioKind>(
   return cardioRecords(kind, [
     for (final s in sessions)
       if (s.kind.cardio != null)
-        CardioSession(kind: s.kind.cardio!, at: s.startedAt, distanceM: s.distanceM ?? 0, durationS: s.durationS),
+        CardioSession(
+          kind: s.kind.cardio!,
+          at: s.startedAt,
+          distanceM: s.distanceM ?? 0,
+          durationS: s.durationS,
+        ),
   ]);
 });

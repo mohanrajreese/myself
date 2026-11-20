@@ -15,7 +15,13 @@ import '../domain/export.dart';
 /// written to disk or sent anywhere; the caller hands the bytes to the
 /// system "save as" picker.
 final class ExportBuilder {
-  ExportBuilder({required this.db, required this.clock, this.privateDb, this.mealPhotos, this.readProgressPhoto});
+  ExportBuilder({
+    required this.db,
+    required this.clock,
+    this.privateDb,
+    this.mealPhotos,
+    this.readProgressPhoto,
+  });
 
   final AppDatabase db;
   final PrivateDatabase? privateDb;
@@ -25,14 +31,20 @@ final class ExportBuilder {
 
   /// Device-only tables that hold the user's own records (not caches,
   /// cursors, raw readings or the food catalogue).
-  static const localRecordTables = ['local_recovery_logs', 'local_step_daily', 'local_timer_sessions'];
+  static const localRecordTables = [
+    'local_recovery_logs',
+    'local_step_daily',
+    'local_timer_sessions',
+  ];
 
   static const _dateColumns = ['local_date', 'log_date'];
 
   /// Child rows follow their parent's date.
   static const _childFilters = {
-    'meal_food_items': 'meal_log_id IN (SELECT id FROM meal_logs WHERE local_date BETWEEN ?1 AND ?2)',
-    'workout_exercises': 'session_id IN (SELECT id FROM workout_sessions WHERE local_date BETWEEN ?1 AND ?2)',
+    'meal_food_items':
+        'meal_log_id IN (SELECT id FROM meal_logs WHERE local_date BETWEEN ?1 AND ?2)',
+    'workout_exercises':
+        'session_id IN (SELECT id FROM workout_sessions WHERE local_date BETWEEN ?1 AND ?2)',
     'exercise_sets':
         'workout_exercise_id IN (SELECT we.id FROM workout_exercises we JOIN workout_sessions ws '
         'ON ws.id = we.session_id WHERE ws.local_date BETWEEN ?1 AND ?2)',
@@ -51,7 +63,8 @@ final class ExportBuilder {
     }
 
     final archive = Archive();
-    void addText(String name, String text) => archive.add(ArchiveFile.bytes(name, utf8.encode(text)));
+    void addText(String name, String text) =>
+        archive.add(ArchiveFile.bytes(name, utf8.encode(text)));
     final now = clock.now().toUtc().toIso8601String();
     final manifest = {
       'format': 'praxis-export',
@@ -63,7 +76,10 @@ final class ExportBuilder {
       'units': 'Integers in base units: g, mg, ml, mm, m, s; energy in kcal × 1000',
     };
     if (o.format == ExportFormat.json) {
-      addText('praxis.json', const JsonEncoder.withIndent(' ').convert({...manifest, 'tables': tables}));
+      addText(
+        'praxis.json',
+        const JsonEncoder.withIndent(' ').convert({...manifest, 'tables': tables}),
+      );
     } else {
       addText('manifest.json', const JsonEncoder.withIndent(' ').convert(manifest));
       for (final e in tables.entries) {
@@ -84,7 +100,8 @@ final class ExportBuilder {
       }
       final read = readProgressPhoto;
       if (o.includePrivate && read != null) {
-        for (final photo in tables['private.local_progress_photos'] ?? const <Map<String, Object?>>[]) {
+        for (final photo
+            in tables['private.local_progress_photos'] ?? const <Map<String, Object?>>[]) {
           final bytes = await read(photo['id']! as String);
           if (bytes != null) {
             archive.add(ArchiveFile.bytes('photos/progress/${photo['id']}.jpg', bytes));
@@ -95,7 +112,11 @@ final class ExportBuilder {
     return ZipEncoder(password: o.passphrase).encodeBytes(archive);
   }
 
-  Future<List<Map<String, Object?>>> _rows(GeneratedDatabase d, String table, ExportOptions o) async {
+  Future<List<Map<String, Object?>>> _rows(
+    GeneratedDatabase d,
+    String table,
+    ExportOptions o,
+  ) async {
     final info = d.allTables.firstWhere((t) => t.actualTableName == table);
     final child = _childFilters[table];
     if (child != null && d is AppDatabase && (o.from != null || o.to != null)) {

@@ -85,18 +85,21 @@ final class DriftSleepRepository implements SleepRepository {
       () => _db.transaction(() async {
         final now = clock.now().toUtc();
         final period = SleepPeriod(kind: kind, start: start, end: end);
-        final changed = await (_db.update(_db.sleepLogs)..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
-          SleepLogsCompanion(
-            updatedAt: Value(now),
-            kind: Value(kind.code),
-            startAt: Value(start.toUtc()),
-            endAt: Value(end.toUtc()),
-            durationS: Value(period.duration.inSeconds),
-            quality: Value(quality),
-            notes: Value(_clean(notes)),
-            localDate: Value(period.wakeDate),
-          ),
-        );
+        final changed =
+            await (_db.update(
+              _db.sleepLogs,
+            )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
+              SleepLogsCompanion(
+                updatedAt: Value(now),
+                kind: Value(kind.code),
+                startAt: Value(start.toUtc()),
+                endAt: Value(end.toUtc()),
+                durationS: Value(period.duration.inSeconds),
+                quality: Value(quality),
+                notes: Value(_clean(notes)),
+                localDate: Value(period.wakeDate),
+              ),
+            );
         if (changed > 0) await _db.enqueueForSync('sleep_logs', id, now);
       }),
       onError: (_) => const StorageFailure('sleep_write'),
@@ -107,9 +110,9 @@ final class DriftSleepRepository implements SleepRepository {
   Future<Result<void>> delete(String id) => Result.guard(
     () => _db.transaction(() async {
       final now = clock.now().toUtc();
-      final changed = await (_db.update(_db.sleepLogs)..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
-        SleepLogsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
-      );
+      final changed =
+          await (_db.update(_db.sleepLogs)..where((t) => t.id.equals(id) & t.deletedAt.isNull()))
+              .write(SleepLogsCompanion(deletedAt: Value(now), updatedAt: Value(now)));
       if (changed > 0) await _db.enqueueForSync('sleep_logs', id, now);
     }),
     onError: (_) => const StorageFailure('sleep_write'),

@@ -102,16 +102,22 @@ class _StepsScreenState extends ConsumerState<StepsScreen> {
     final from = today.addDays(_month ? -29 : -6);
     final range = ref.watch(stepRangeProvider((from: from, to: today))).value ?? const <StepDay>[];
     final byDate = {for (final d in range) d.date: d};
-    final values = [for (var d = from; !d.isAfter(today); d = d.addDays(1)) (byDate[d]?.total ?? 0).toDouble()];
+    final values = [
+      for (var d = from; !d.isAfter(today); d = d.addDays(1)) (byDate[d]?.total ?? 0).toDouble(),
+    ];
     final past7 = [
       for (final d in range)
         if (d.date.isAfter(today.addDays(-7)) && d.date != today) d.total,
     ];
     final avg7 = past7.isEmpty ? null : past7.reduce((a, b) => a + b) ~/ past7.length;
     final prevFrom = today.addDays(-59);
-    final prevRange = ref.watch(stepRangeProvider((from: prevFrom, to: today.addDays(-30)))).value ?? const <StepDay>[];
+    final prevRange =
+        ref.watch(stepRangeProvider((from: prevFrom, to: today.addDays(-30)))).value ??
+        const <StepDay>[];
     final thisMonth = [
-      for (final d in ref.watch(stepRangeProvider((from: today.addDays(-29), to: today))).value ?? const <StepDay>[])
+      for (final d
+          in ref.watch(stepRangeProvider((from: today.addDays(-29), to: today))).value ??
+              const <StepDay>[])
         d.total,
     ];
     final trend = prevRange.isEmpty || thisMonth.isEmpty
@@ -137,21 +143,36 @@ class _StepsScreenState extends ConsumerState<StepsScreen> {
               size: 160,
             ),
             const SizedBox(height: FbSpace.md),
-            Text('${day?.isUncertain ?? false ? '≈ ' : ''}${context.number(total)}', style: context.text.displayMetric),
+            Text(
+              '${day?.isUncertain ?? false ? '≈ ' : ''}${context.number(total)}',
+              style: context.text.displayMetric,
+            ),
             Text(
               goal == null
                   ? l10n.noTarget
-                  : l10n.stepsPercentOf((total * 100 ~/ (goal == 0 ? 1 : goal)), context.number(goal)),
+                  : l10n.stepsPercentOf(
+                      (total * 100 ~/ (goal == 0 ? 1 : goal)),
+                      context.number(goal),
+                    ),
               style: context.text.caption,
             ),
             if ((day?.manualAdjustment ?? 0) != 0)
-              Text(l10n.stepsAdjusted(_signed(context, day!.manualAdjustment)), style: context.text.caption),
+              Text(
+                l10n.stepsAdjusted(_signed(context, day!.manualAdjustment)),
+                style: context.text.caption,
+              ),
             const SizedBox(height: FbSpace.md),
             Row(
               children: [
-                _Stat(goal == null ? '—' : context.number((goal - total).clamp(0, goal)), l10n.stepsToGo),
+                _Stat(
+                  goal == null ? '—' : context.number((goal - total).clamp(0, goal)),
+                  l10n.stepsToGo,
+                ),
                 _Stat(avg7 == null ? '—' : context.number(avg7), l10n.steps7Avg),
-                _Stat(trend == null ? '—' : '${trend >= 0 ? '+' : ''}$trend%', l10n.stepsVsLastMonth),
+                _Stat(
+                  trend == null ? '—' : '${trend >= 0 ? '+' : ''}$trend%',
+                  l10n.stepsVsLastMonth,
+                ),
               ],
             ),
           ],
@@ -173,12 +194,16 @@ class _StepsScreenState extends ConsumerState<StepsScreen> {
           leftLabel: (y) => context.number(y.round()),
         ),
       ),
-      for (final d in uncertainDays.where((d) => d.gapCount > 0 || d.uncertainSteps > 0).take(3)) ...[
+      for (final d
+          in uncertainDays.where((d) => d.gapCount > 0 || d.uncertainSteps > 0).take(3)) ...[
         const SizedBox(height: FbSpace.xs),
         FbNotice(
           d.gapCount > 0
               ? l10n.stepsGapNotice(context.dayLabel(d.date, today: today))
-              : l10n.stepsUncertainNotice(context.dayLabel(d.date, today: today), context.number(d.uncertainSteps)),
+              : l10n.stepsUncertainNotice(
+                  context.dayLabel(d.date, today: today),
+                  context.number(d.uncertainSteps),
+                ),
         ),
       ],
       const SizedBox(height: FbSpace.lg),
@@ -187,7 +212,11 @@ class _StepsScreenState extends ConsumerState<StepsScreen> {
           FbListRow(
             title: l10n.stepsSensor,
             subtitle: s.continuous ? l10n.stepsSensorContinuous : l10n.stepsSensorSnapshots,
-            leading: Icon(Icons.check_circle_rounded, color: context.colors.success, semanticLabel: l10n.allowed),
+            leading: Icon(
+              Icons.check_circle_rounded,
+              color: context.colors.success,
+              semanticLabel: l10n.allowed,
+            ),
           ),
           FbSwitchRow(
             title: l10n.stepsContinuous,
@@ -217,7 +246,8 @@ class _StepsScreenState extends ConsumerState<StepsScreen> {
     ];
   }
 
-  static String _signed(BuildContext context, int v) => '${v > 0 ? '+' : '−'}${context.number(v.abs())}';
+  static String _signed(BuildContext context, int v) =>
+      '${v > 0 ? '+' : '−'}${context.number(v.abs())}';
 }
 
 class _Stat extends StatelessWidget {
@@ -239,7 +269,12 @@ class _Stat extends StatelessWidget {
 }
 
 class _StateCard extends StatelessWidget {
-  const _StateCard({required this.icon, required this.title, required this.body, required this.action});
+  const _StateCard({
+    required this.icon,
+    required this.title,
+    required this.body,
+    required this.action,
+  });
   final IconData icon;
   final String title;
   final String body;
@@ -300,7 +335,10 @@ class _StepAdjustSheetState extends ConsumerState<StepAdjustSheet> {
       title: l10n.stepsAdjustTitle,
       children: [
         Text(
-          l10n.stepsCountedAndAdjusted(context.number(counted), current == 0 ? l10n.none : context.number(current)),
+          l10n.stepsCountedAndAdjusted(
+            context.number(counted),
+            current == 0 ? l10n.none : context.number(current),
+          ),
           style: context.text.bodySmall,
         ),
         const SizedBox(height: FbSpace.md),

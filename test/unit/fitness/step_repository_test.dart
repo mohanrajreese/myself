@@ -28,7 +28,11 @@ void main() {
 
   setUp(() {
     db = memoryDatabase();
-    repo = DriftStepRepository(db, clock: MutableClock(DateTime.utc(2026, 11, 16, 20)).clock, ids: SequentialIds());
+    repo = DriftStepRepository(
+      db,
+      clock: MutableClock(DateTime.utc(2026, 11, 16, 20)).clock,
+      ids: SequentialIds(),
+    );
   });
   tearDown(() => db.close());
 

@@ -7,14 +7,24 @@ import '../../../core/utils/local_date.dart';
 /// One check-in. Each score is 1 (low) to 5 (high) (PRD §5.10).
 @immutable
 final class WellnessScores {
-  const WellnessScores({required this.energy, required this.mood, required this.stress, required this.wellness});
+  const WellnessScores({
+    required this.energy,
+    required this.mood,
+    required this.stress,
+    required this.wellness,
+  });
   final int energy;
   final int mood;
   final int stress;
   final int wellness;
 
   ValidationFailure? validate() {
-    for (final (field, value) in [('energy', energy), ('mood', mood), ('stress', stress), ('wellness', wellness)]) {
+    for (final (field, value) in [
+      ('energy', energy),
+      ('mood', mood),
+      ('stress', stress),
+      ('wellness', wellness),
+    ]) {
       if (value < 1 || value > 5) return ValidationFailure(field, 'out_of_range');
     }
     return null;

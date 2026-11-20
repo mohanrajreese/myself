@@ -23,7 +23,9 @@ void main() {
       await tester.scrollUntilVisible(
         f,
         200,
-        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).last,
+        scrollable: find
+            .byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down)
+            .last,
       );
     }
     await tester.ensureVisible(f.last);
@@ -65,7 +67,10 @@ void main() {
     await steps('2026-11-16', 9000);
     await steps('2026-11-10', 7800);
     await openInsights(tester);
-    expect(find.text('• Your average daily steps increased by 1,200 compared with the previous week.'), findsOneWidget);
+    expect(
+      find.text('• Your average daily steps increased by 1,200 compared with the previous week.'),
+      findsOneWidget,
+    );
     expect(find.text('9,000'), findsOneWidget);
     expect(find.text('1,200 more'), findsOneWidget);
 
@@ -96,12 +101,16 @@ void main() {
     await openInsights(tester);
     final next = find.byTooltip('Next period');
     expect(
-      tester.widget<IconButton>(find.ancestor(of: next, matching: find.byType(IconButton)).first).onPressed,
+      tester
+          .widget<IconButton>(find.ancestor(of: next, matching: find.byType(IconButton)).first)
+          .onPressed,
       isNull,
     );
     await tap(tester, find.byTooltip('Previous period'));
     expect(
-      tester.widget<IconButton>(find.ancestor(of: next, matching: find.byType(IconButton)).first).onPressed,
+      tester
+          .widget<IconButton>(find.ancestor(of: next, matching: find.byType(IconButton)).first)
+          .onPressed,
       isNotNull,
     );
     await app.dispose(tester);
@@ -122,7 +131,10 @@ void main() {
     ];
     expect(texts, isNotEmpty);
     for (final t in texts) {
-      expect(t.toLowerCase(), isNot(matches(RegExp(r'\b(because|caused|causes|due to|you should|try to|led to)\b'))));
+      expect(
+        t.toLowerCase(),
+        isNot(matches(RegExp(r'\b(because|caused|causes|due to|you should|try to|led to)\b'))),
+      );
     }
   });
 }

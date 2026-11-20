@@ -109,7 +109,9 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
           for (final c in cats)
             FbListRow(
               title: categoryLabel(l10n, c),
-              trailing: c.id == _categoryId ? Icon(Icons.check_rounded, semanticLabel: l10n.selected) : null,
+              trailing: c.id == _categoryId
+                  ? Icon(Icons.check_rounded, semanticLabel: l10n.selected)
+                  : null,
               onTap: () => Navigator.of(context).pop(c.id),
             ),
         ],
@@ -220,9 +222,20 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
           label: l10n.moneyRepeats,
           onChanged: (r) => setState(() => _rule = r),
         ),
-        FbSwitchRow(title: l10n.moneyRemindMe, value: _remind, onChanged: (v) => setState(() => _remind = v)),
-        FbSwitchRow(title: l10n.moneyActive, value: _active, onChanged: (v) => setState(() => _active = v)),
-        if (_error != null) ...[const SizedBox(height: FbSpace.sm), FbNotice(_error!, isError: true)],
+        FbSwitchRow(
+          title: l10n.moneyRemindMe,
+          value: _remind,
+          onChanged: (v) => setState(() => _remind = v),
+        ),
+        FbSwitchRow(
+          title: l10n.moneyActive,
+          value: _active,
+          onChanged: (v) => setState(() => _active = v),
+        ),
+        if (_error != null) ...[
+          const SizedBox(height: FbSpace.sm),
+          FbNotice(_error!, isError: true),
+        ],
         const SizedBox(height: FbSpace.lg),
         FbPrimaryButton(label: l10n.save, onPressed: _save, busy: _busy),
         if (widget.existing != null) ...[

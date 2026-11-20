@@ -70,7 +70,11 @@ class MoneyScreen extends ConsumerWidget {
                   icon: const Icon(Icons.chevron_left_rounded),
                 ),
                 Expanded(
-                  child: Text(monthLabel(month), textAlign: TextAlign.center, style: context.text.bodyStrong),
+                  child: Text(
+                    monthLabel(month),
+                    textAlign: TextAlign.center,
+                    style: context.text.bodyStrong,
+                  ),
                 ),
                 // Hidden rather than disabled in the current month: no future months.
                 if (isCurrent)
@@ -93,8 +97,15 @@ class MoneyScreen extends ConsumerWidget {
                   for (final s in emis.take(3))
                     FbListRow(
                       title: '${s.debt.name} · ${s.debt.counterparty}',
-                      subtitle: l10n.moneyEmiRow(context.shortDate(s.nextDue!), s.nextInstalment!, s.debt.emi!.count),
-                      trailing: Text(formatRupees(s.debt.emi!.emiPaise), style: context.text.bodyStrong),
+                      subtitle: l10n.moneyEmiRow(
+                        context.shortDate(s.nextDue!),
+                        s.nextInstalment!,
+                        s.debt.emi!.count,
+                      ),
+                      trailing: Text(
+                        formatRupees(s.debt.emi!.emiPaise),
+                        style: context.text.bodyStrong,
+                      ),
                       onTap: () => context.push(Routes.moneyDebt(s.debt.id)),
                     ),
                 ],
@@ -105,7 +116,8 @@ class MoneyScreen extends ConsumerWidget {
               FbCard(
                 child: Column(
                   children: [
-                    for (final MapEntry(:key, :value) in report.requireValue.byCategory.entries.take(3))
+                    for (final MapEntry(:key, :value)
+                        in report.requireValue.byCategory.entries.take(3))
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: FbSpace.xs),
                         child: Column(
@@ -113,14 +125,21 @@ class MoneyScreen extends ConsumerWidget {
                           children: [
                             Row(
                               children: [
-                                Expanded(child: Text(categoryLabel(l10n, cats[key]), style: context.text.body)),
+                                Expanded(
+                                  child: Text(
+                                    categoryLabel(l10n, cats[key]),
+                                    style: context.text.body,
+                                  ),
+                                ),
                                 Text(formatRupees(value), style: context.text.bodyStrong),
                               ],
                             ),
                             const SizedBox(height: FbSpace.xs),
                             MoneyBar(
                               fraction: value / report.requireValue.totalPaise,
-                              semanticLabel: l10n.moneyPercentA11y(report.requireValue.sharePercent(value)),
+                              semanticLabel: l10n.moneyPercentA11y(
+                                report.requireValue.sharePercent(value),
+                              ),
                             ),
                           ],
                         ),
@@ -133,7 +152,10 @@ class MoneyScreen extends ConsumerWidget {
               l10n.moneyRecent,
               action: expenses.isEmpty
                   ? null
-                  : TextButton(onPressed: () => context.push(Routes.moneyExpenses), child: Text(l10n.moneySeeAll)),
+                  : TextButton(
+                      onPressed: () => context.push(Routes.moneyExpenses),
+                      child: Text(l10n.moneySeeAll),
+                    ),
             ),
             if (expenses.isEmpty)
               FbEmptyHint(l10n.moneyNothingInMonth, boxed: true)
@@ -157,7 +179,10 @@ class MoneyScreen extends ConsumerWidget {
                     child: _Figure(label: l10n.moneyYouOwe, value: formatRupees(value.iOwePaise)),
                   ),
                   Expanded(
-                    child: _Figure(label: l10n.moneyOwedToYou, value: formatRupees(value.owedToMePaise)),
+                    child: _Figure(
+                      label: l10n.moneyOwedToYou,
+                      value: formatRupees(value.owedToMePaise),
+                    ),
                   ),
                 ],
               ),
@@ -188,7 +213,12 @@ class _Figure extends StatelessWidget {
 }
 
 class _SpentCard extends StatelessWidget {
-  const _SpentCard({required this.report, required this.month, required this.isCurrent, required this.today});
+  const _SpentCard({
+    required this.report,
+    required this.month,
+    required this.isCurrent,
+    required this.today,
+  });
   final MoneyReport report;
   final LocalDate month;
   final bool isCurrent;
@@ -205,21 +235,36 @@ class _SpentCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(isCurrent ? l10n.moneySpentThisMonth : l10n.moneySpentIn(monthName(month)), style: context.text.caption),
+          Text(
+            isCurrent ? l10n.moneySpentThisMonth : l10n.moneySpentIn(monthName(month)),
+            style: context.text.caption,
+          ),
           Text(formatRupees(spent), style: context.text.displayMetric),
           const SizedBox(height: FbSpace.sm),
           if (budget != null) ...[
             MoneyBar(
               fraction: spent / budget,
               over: spent > budget,
-              semanticLabel: l10n.moneyBudgetA11y(formatRupees(spent), formatRupees(budget), _pct(spent, budget)),
+              semanticLabel: l10n.moneyBudgetA11y(
+                formatRupees(spent),
+                formatRupees(budget),
+                _pct(spent, budget),
+              ),
             ),
             const SizedBox(height: FbSpace.sm),
             Text(
               [
                 spent > budget
-                    ? l10n.moneyBudgetOverLine(formatRupees(spent - budget), _pct(spent, budget), formatRupees(budget))
-                    : l10n.moneyBudgetLine(_pct(spent, budget), formatRupees(budget), formatRupees(budget - spent)),
+                    ? l10n.moneyBudgetOverLine(
+                        formatRupees(spent - budget),
+                        _pct(spent, budget),
+                        formatRupees(budget),
+                      )
+                    : l10n.moneyBudgetLine(
+                        _pct(spent, budget),
+                        formatRupees(budget),
+                        formatRupees(budget - spent),
+                      ),
                 if (isCurrent && daysLeft > 0) l10n.moneyDaysToGo(daysLeft),
               ].join(' · '),
               style: context.text.bodySmall,
@@ -229,14 +274,23 @@ class _SpentCard extends StatelessWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Text(l10n.moneyNoBudget, style: context.text.bodySmall),
-                TextButton(onPressed: () => context.push(Routes.moneyBudgets), child: Text(l10n.moneySetBudget)),
+                TextButton(
+                  onPressed: () => context.push(Routes.moneyBudgets),
+                  child: Text(l10n.moneySetBudget),
+                ),
               ],
             ),
           const SizedBox(height: FbSpace.xs),
           Text(
             isCurrent
-                ? l10n.moneyComparedSameDate(monthName(prevMonth), formatRupees(report.previousTotalPaise))
-                : l10n.moneyComparedWhole(monthName(prevMonth), formatRupees(report.previousTotalPaise)),
+                ? l10n.moneyComparedSameDate(
+                    monthName(prevMonth),
+                    formatRupees(report.previousTotalPaise),
+                  )
+                : l10n.moneyComparedWhole(
+                    monthName(prevMonth),
+                    formatRupees(report.previousTotalPaise),
+                  ),
             style: context.text.caption,
           ),
         ],

@@ -93,7 +93,10 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
     if (portions.isEmpty) return;
     final item = await showFbSheet<DraftItem>(
       context,
-      QuantitySheet(item: DraftItem.fromFood(food, portions.first, portions.first.defaultQtyMilli), isNew: true),
+      QuantitySheet(
+        item: DraftItem.fromFood(food, portions.first, portions.first.defaultQtyMilli),
+        isNew: true,
+      ),
     );
     if (item != null) _change(() => _items = [..._items, item]);
   }
@@ -258,7 +261,10 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
           content: Text(l10n.deleteMealLinkedMessage(formatRupees(linked.amountPaise))),
           actions: [
             TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.cancel)),
-            TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.deleteMealKeepExpense)),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.deleteMealKeepExpense),
+            ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: TextButton.styleFrom(foregroundColor: context.colors.error),
@@ -317,8 +323,16 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
                 icon: const Icon(Icons.bookmarks_outlined),
               )
             else ...[
-              IconButton(tooltip: l10n.duplicateMeal, onPressed: _duplicate, icon: const Icon(Icons.copy_rounded)),
-              IconButton(tooltip: l10n.delete, onPressed: _delete, icon: const Icon(Icons.delete_outline_rounded)),
+              IconButton(
+                tooltip: l10n.duplicateMeal,
+                onPressed: _duplicate,
+                icon: const Icon(Icons.copy_rounded),
+              ),
+              IconButton(
+                tooltip: l10n.delete,
+                onPressed: _delete,
+                icon: const Icon(Icons.delete_outline_rounded),
+              ),
             ],
           ],
         ),
@@ -327,7 +341,12 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
             children: [
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(FbSpace.lg, FbSpace.sm, FbSpace.lg, FbSpace.xxl),
+                  padding: const EdgeInsets.fromLTRB(
+                    FbSpace.lg,
+                    FbSpace.sm,
+                    FbSpace.lg,
+                    FbSpace.xxl,
+                  ),
                   children: [
                     FbFieldPair(
                       first: Column(
@@ -391,7 +410,12 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
                     if (photo != null) ...[
                       ClipRRect(
                         borderRadius: BorderRadius.circular(FbRadius.card),
-                        child: Image.memory(photo, height: 160, fit: BoxFit.cover, semanticLabel: l10n.mealPhoto),
+                        child: Image.memory(
+                          photo,
+                          height: 160,
+                          fit: BoxFit.cover,
+                          semanticLabel: l10n.mealPhoto,
+                        ),
                       ),
                       const SizedBox(height: FbSpace.sm),
                     ],
@@ -467,7 +491,10 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (_error != null) ...[FbNotice(_error!, isError: true), const SizedBox(height: FbSpace.md)],
+                    if (_error != null) ...[
+                      FbNotice(_error!, isError: true),
+                      const SizedBox(height: FbSpace.md),
+                    ],
                     FbPrimaryButton(label: l10n.saveMeal, onPressed: _save, busy: _busy),
                   ],
                 ),
@@ -481,7 +508,12 @@ class _MealFormScreenState extends ConsumerState<MealFormScreen> {
 }
 
 class _ItemRow extends StatelessWidget {
-  const _ItemRow({required this.item, required this.onTap, required this.onLess, required this.onMore});
+  const _ItemRow({
+    required this.item,
+    required this.onTap,
+    required this.onLess,
+    required this.onMore,
+  });
   final DraftItem item;
   final VoidCallback onTap;
   final VoidCallback onLess;
@@ -515,8 +547,16 @@ class _ItemRow extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(tooltip: l10n.lessOf(item.name), onPressed: onLess, icon: const Icon(Icons.remove_rounded)),
-            IconButton(tooltip: l10n.moreOf(item.name), onPressed: onMore, icon: const Icon(Icons.add_rounded)),
+            IconButton(
+              tooltip: l10n.lessOf(item.name),
+              onPressed: onLess,
+              icon: const Icon(Icons.remove_rounded),
+            ),
+            IconButton(
+              tooltip: l10n.moreOf(item.name),
+              onPressed: onMore,
+              icon: const Icon(Icons.add_rounded),
+            ),
           ],
         ),
       ),
@@ -612,7 +652,10 @@ class _QuantitySheetState extends State<QuantitySheet> {
             ),
       children: [
         if (food != null && food.hasConflict) ...[
-          FbNotice(l10n.conflictWarning(context.kcal(4 * v.proteinMg + 4 * v.carbsMg + 9 * v.fatMg)), isError: true),
+          FbNotice(
+            l10n.conflictWarning(context.kcal(4 * v.proteinMg + 4 * v.carbsMg + 9 * v.fatMg)),
+            isError: true,
+          ),
           const SizedBox(height: FbSpace.md),
         ],
         if (_item.isEstimate) ...[
@@ -627,7 +670,11 @@ class _QuantitySheetState extends State<QuantitySheet> {
             runSpacing: FbSpace.sm,
             children: [
               for (final p in _item.portions)
-                FbToggleChip(label: p.unit, selected: p.unit == _item.portion.unit, onTap: () => _setPortion(p)),
+                FbToggleChip(
+                  label: p.unit,
+                  selected: p.unit == _item.portion.unit,
+                  onTap: () => _setPortion(p),
+                ),
             ],
           ),
           const SizedBox(height: FbSpace.lg),

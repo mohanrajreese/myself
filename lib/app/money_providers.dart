@@ -13,20 +13,26 @@ typedef DayRange = ({LocalDate from, LocalDate to});
 
 LocalDate monthStart(LocalDate d) => LocalDate(d.year, d.month, 1);
 LocalDate monthEnd(LocalDate d) => LocalDate.fromDateTime(DateTime.utc(d.year, d.month + 1, 0));
-LocalDate addMonths(LocalDate d, int n) => LocalDate.fromDateTime(DateTime.utc(d.year, d.month + n, 1));
+LocalDate addMonths(LocalDate d, int n) =>
+    LocalDate.fromDateTime(DateTime.utc(d.year, d.month + n, 1));
 
 /// The fixed id of a seeded category.
 String seededCategoryId(String key) => DriftMoneyRepository.categoryId(key);
 
 final emiCategoryId = DriftMoneyRepository.categoryId('emi');
-final foodCategoryIds = {DriftMoneyRepository.categoryId('food'), DriftMoneyRepository.categoryId('groceries')};
+final foodCategoryIds = {
+  DriftMoneyRepository.categoryId('food'),
+  DriftMoneyRepository.categoryId('groceries'),
+};
 
 final moneyCategoriesProvider = StreamProvider<List<FinanceCategory>>(
   (ref) => ref.watch(moneyRepositoryProvider).watchCategories(),
 );
 
 final moneyCategoryMapProvider = Provider<Map<String, FinanceCategory>>(
-  (ref) => {for (final c in ref.watch(moneyCategoriesProvider).value ?? const <FinanceCategory>[]) c.id: c},
+  (ref) => {
+    for (final c in ref.watch(moneyCategoriesProvider).value ?? const <FinanceCategory>[]) c.id: c,
+  },
 );
 
 final expensesProvider = StreamProvider.family<List<Expense>, DayRange>(
@@ -41,8 +47,12 @@ final recurringProvider = StreamProvider<List<RecurringExpense>>(
   (ref) => ref.watch(moneyRepositoryProvider).watchRecurring(),
 );
 
-final budgetsProvider = StreamProvider<List<Budget>>((ref) => ref.watch(moneyRepositoryProvider).watchBudgets());
-final debtsProvider = StreamProvider<List<Debt>>((ref) => ref.watch(moneyRepositoryProvider).watchDebts());
+final budgetsProvider = StreamProvider<List<Budget>>(
+  (ref) => ref.watch(moneyRepositoryProvider).watchBudgets(),
+);
+final debtsProvider = StreamProvider<List<Debt>>(
+  (ref) => ref.watch(moneyRepositoryProvider).watchDebts(),
+);
 final debtPaymentsProvider = StreamProvider<List<DebtPayment>>(
   (ref) => ref.watch(moneyRepositoryProvider).watchPayments(),
 );
@@ -76,7 +86,14 @@ final moneyReportProvider = Provider.family<AsyncValue<MoneyReport>, DayRange>((
     ref.watch(debtPaymentsProvider),
     ref.watch(junkMealIdsProvider(r)),
   );
-  final error = [parts.$1, parts.$2, parts.$3, parts.$4, parts.$5, parts.$6].where((a) => a.hasError).firstOrNull;
+  final error = [
+    parts.$1,
+    parts.$2,
+    parts.$3,
+    parts.$4,
+    parts.$5,
+    parts.$6,
+  ].where((a) => a.hasError).firstOrNull;
   if (error != null) return AsyncError(error.error!, error.stackTrace ?? StackTrace.empty);
   final (e, p, b, d, pay, junk) = parts;
   if (!e.hasValue || !p.hasValue || !b.hasValue || !d.hasValue || !pay.hasValue || !junk.hasValue) {
@@ -104,7 +121,9 @@ final debtStatusesProvider = Provider<AsyncValue<List<DebtStatus>>>((ref) {
   final debts = ref.watch(debtsProvider);
   final payments = ref.watch(debtPaymentsProvider);
   if (debts.hasError) return AsyncError(debts.error!, debts.stackTrace ?? StackTrace.empty);
-  if (payments.hasError) return AsyncError(payments.error!, payments.stackTrace ?? StackTrace.empty);
+  if (payments.hasError) {
+    return AsyncError(payments.error!, payments.stackTrace ?? StackTrace.empty);
+  }
   if (!debts.hasValue || !payments.hasValue) return const AsyncLoading();
   return AsyncData([
     for (final d in debts.value!.reversed)
@@ -148,9 +167,18 @@ final class MoneyActions {
     required DateTime at,
     int? instalmentNo,
     String? note,
-  }) => _thenReplan(_repo.addPayment(debtId, amountPaise: amountPaise, at: at, instalmentNo: instalmentNo, note: note));
+  }) => _thenReplan(
+    _repo.addPayment(
+      debtId,
+      amountPaise: amountPaise,
+      at: at,
+      instalmentNo: instalmentNo,
+      note: note,
+    ),
+  );
   Future<Result<void>> deletePayment(String id) => _thenReplan(_repo.deletePayment(id));
-  Future<Result<RecurringExpense>> saveRecurring(RecurringExpense r) => _thenReplan(_repo.saveRecurring(r));
+  Future<Result<RecurringExpense>> saveRecurring(RecurringExpense r) =>
+      _thenReplan(_repo.saveRecurring(r));
   Future<Result<void>> deleteRecurring(String id) => _thenReplan(_repo.deleteRecurring(id));
 }
 

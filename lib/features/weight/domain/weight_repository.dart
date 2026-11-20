@@ -5,7 +5,11 @@ import 'weight_entry.dart';
 
 abstract interface class WeightRepository {
   /// Records a weight taken now.
-  Future<Result<WeightEntry>> add({required int weightG, required MassUnit entryUnit, String? notes});
+  Future<Result<WeightEntry>> add({
+    required int weightG,
+    required MassUnit entryUnit,
+    String? notes,
+  });
 
   /// The most recent entry, or null when there is none.
   Future<WeightEntry?> latest();
@@ -15,7 +19,12 @@ abstract interface class WeightRepository {
   Stream<List<WeightEntry>> watchOn(LocalDate date);
 
   /// Changes an entry's value, time or note. [occurredAt] is wall-clock time.
-  Future<Result<void>> update(String id, {required int weightG, DateTime? occurredAt, String? notes});
+  Future<Result<void>> update(
+    String id, {
+    required int weightG,
+    DateTime? occurredAt,
+    String? notes,
+  });
 
   /// One page of history, newest first. Pass the last entry's time as
   /// [before] to load the next page.

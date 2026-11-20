@@ -27,5 +27,6 @@ final class IanaZone implements TimeZoneRules {
   }
 
   @override
-  Duration offsetAt(DateTime instant) => location.timeZone(instant.toUtc().millisecondsSinceEpoch).offset;
+  Duration offsetAt(DateTime instant) =>
+      location.timeZone(instant.toUtc().millisecondsSinceEpoch).offset;
 }

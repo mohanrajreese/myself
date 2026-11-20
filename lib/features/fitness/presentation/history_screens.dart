@@ -48,7 +48,11 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
             spacing: FbSpace.sm,
             runSpacing: FbSpace.sm,
             children: [
-              FbToggleChip(label: l10n.filterAll, selected: _kind == null, onTap: () => setState(() => _kind = null)),
+              FbToggleChip(
+                label: l10n.filterAll,
+                selected: _kind == null,
+                onTap: () => setState(() => _kind = null),
+              ),
               for (final k in WorkoutKind.values)
                 FbToggleChip(
                   label: workoutKindName(l10n, k),
@@ -69,7 +73,8 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
                   FbListRow(
                     leading: Icon(workoutIcon(s.kind)),
                     title: s.kind == WorkoutKind.gym ? s.name : workoutKindName(l10n, s.kind),
-                    subtitle: '${context.dayLabel(s.localDate, today: today)} · ${workoutSummary(context, s)}',
+                    subtitle:
+                        '${context.dayLabel(s.localDate, today: today)} · ${workoutSummary(context, s)}',
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: () => context.push(Routes.workout(s.id)),
                   ),
@@ -107,7 +112,9 @@ class _WorkoutHistoryScreenState extends ConsumerState<WorkoutHistoryScreen> {
                         FilledButton.tonal(
                           onPressed: () async {
                             final id =
-                                (await ref.read(workoutRepositoryProvider).startGym(name: t.name, templateId: t.id))
+                                (await ref
+                                        .read(workoutRepositoryProvider)
+                                        .startGym(name: t.name, templateId: t.id))
                                     .valueOrNull;
                             if (id != null && context.mounted) {
                               unawaited(context.push(Routes.workout(id)));
@@ -181,7 +188,10 @@ class WorkoutDetailScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(FbSpace.lg, FbSpace.sm, FbSpace.lg, FbSpace.xxl),
         children: [
-          Text('${context.dayLabel(s.localDate)} · ${context.time(s.startedAt)}', style: context.text.caption),
+          Text(
+            '${context.dayLabel(s.localDate)} · ${context.time(s.startedAt)}',
+            style: context.text.caption,
+          ),
           const SizedBox(height: FbSpace.md),
           if (route.length > 1) ...[
             FbCard(
@@ -190,7 +200,9 @@ class WorkoutDetailScreen extends ConsumerWidget {
                 height: 220,
                 child: Semantics(
                   label: l10n.routeSemantics(km(context, s.distanceM ?? 0)),
-                  child: CustomPaint(painter: RoutePainter(route, context.colors.primary, context.colors.outline)),
+                  child: CustomPaint(
+                    painter: RoutePainter(route, context.colors.primary, context.colors.outline),
+                  ),
                 ),
               ),
             ),
@@ -208,9 +220,15 @@ class WorkoutDetailScreen extends ConsumerWidget {
               ],
             ),
           ),
-          if (s.notes != null) ...[const SizedBox(height: FbSpace.md), Text(s.notes!, style: context.text.body)],
+          if (s.notes != null) ...[
+            const SizedBox(height: FbSpace.md),
+            Text(s.notes!, style: context.text.body),
+          ],
           const SizedBox(height: FbSpace.md),
-          Text(s.entryMode == 'gps' ? l10n.gpsStoredNote : l10n.manualEntryNote, style: context.text.caption),
+          Text(
+            s.entryMode == 'gps' ? l10n.gpsStoredNote : l10n.manualEntryNote,
+            style: context.text.caption,
+          ),
         ],
       ),
     );
@@ -246,7 +264,9 @@ class ExerciseDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final e = (ref.watch(exercisesProvider).value ?? const <Exercise>[]).where((x) => x.id == id).firstOrNull;
+    final e = (ref.watch(exercisesProvider).value ?? const <Exercise>[])
+        .where((x) => x.id == id)
+        .firstOrNull;
     if (e == null) return Scaffold(appBar: AppBar(), body: const FbLoading());
     final progress = ref.watch(exerciseProgressProvider(e)).value;
     final series = progress?.series ?? const [];
@@ -303,11 +323,18 @@ class ExerciseDetailScreen extends ConsumerWidget {
           else
             FbChartCard(
               title: l10n.bestPerWorkout,
-              summary: l10n.progressSummary(series.length, value(series.first.value), value(series.last.value)),
+              summary: l10n.progressSummary(
+                series.length,
+                value(series.first.value),
+                value(series.last.value),
+              ),
               chart: FbLineChart(
-                points: [for (final (i, p) in series.indexed) (x: i.toDouble(), y: p.value.toDouble())],
-                bottomLabel: (x) =>
-                    context.shortDate(LocalDateFrom.instant(series[x.round().clamp(0, series.length - 1)].at)),
+                points: [
+                  for (final (i, p) in series.indexed) (x: i.toDouble(), y: p.value.toDouble()),
+                ],
+                bottomLabel: (x) => context.shortDate(
+                  LocalDateFrom.instant(series[x.round().clamp(0, series.length - 1)].at),
+                ),
                 leftLabel: (y) => value(y.round()),
               ),
             ),
@@ -323,7 +350,11 @@ class ExerciseDetailScreen extends ConsumerWidget {
               children: [
                 for (final r in progress.records)
                   FbListRow(
-                    title: recordName(l10n, r.kind, load: r.atLoadG == null ? null : kgLabel(context, r.atLoadG!)),
+                    title: recordName(
+                      l10n,
+                      r.kind,
+                      load: r.atLoadG == null ? null : kgLabel(context, r.atLoadG!),
+                    ),
                     subtitle:
                         '${r.kind == RecordKind.mostRepsAtLoad ? l10n.repsValue(r.value) : value(r.value)} · ${context.shortDate(LocalDateFrom.instant(r.at))}',
                   ),
@@ -380,7 +411,8 @@ class PersonalRecordsScreen extends ConsumerWidget {
                 for (final r in records)
                   FbListRow(
                     title: recordName(l10n, r.kind),
-                    subtitle: '${cardioValue(r)} · ${context.shortDate(LocalDateFrom.instant(r.at))}',
+                    subtitle:
+                        '${cardioValue(r)} · ${context.shortDate(LocalDateFrom.instant(r.at))}',
                   ),
               ],
             ),

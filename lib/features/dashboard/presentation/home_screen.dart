@@ -54,7 +54,11 @@ class HomeScreen extends ConsumerWidget {
             for (final item in layout.where((item) => item.visible)) ...[
               const SizedBox(height: FbSpace.xl),
               switch (item.section) {
-                HomeSection.progress => _Progress(profile: profile, goals: goals, nutrition: nutrition),
+                HomeSection.progress => _Progress(
+                  profile: profile,
+                  goals: goals,
+                  nutrition: nutrition,
+                ),
                 HomeSection.quickAdd => const _QuickAdd(),
                 HomeSection.essentials => const _Essentials(),
                 HomeSection.timeline => _Timeline(entries: entries),
@@ -153,22 +157,31 @@ class _Progress extends ConsumerWidget {
         label: l10n.cardCalories,
         value: context.kcal(eaten.energyKcalMilli),
         caption: target(
-          nutritionTarget?.energyKcalMilli == null ? null : context.kcal(nutritionTarget!.energyKcalMilli!),
+          nutritionTarget?.energyKcalMilli == null
+              ? null
+              : context.kcal(nutritionTarget!.energyKcalMilli!),
         ),
-        fraction: progressFraction(eaten: eaten.energyKcalMilli, target: nutritionTarget?.energyKcalMilli),
+        fraction: progressFraction(
+          eaten: eaten.energyKcalMilli,
+          target: nutritionTarget?.energyKcalMilli,
+        ),
         onTap: () => context.go(Routes.nutrition),
       ),
       _MetricTile(
         label: l10n.cardProtein,
         value: context.grams(eaten.proteinMg),
-        caption: target(nutritionTarget?.proteinMg == null ? null : context.grams(nutritionTarget!.proteinMg!)),
+        caption: target(
+          nutritionTarget?.proteinMg == null ? null : context.grams(nutritionTarget!.proteinMg!),
+        ),
         fraction: progressFraction(eaten: eaten.proteinMg, target: nutritionTarget?.proteinMg),
         onTap: () => context.push(Routes.nutritionSummary),
       ),
       _MetricTile(
         label: l10n.cardFibre,
         value: context.grams(eaten.fibreMg),
-        caption: target(nutritionTarget?.fibreMg == null ? null : context.grams(nutritionTarget!.fibreMg!)),
+        caption: target(
+          nutritionTarget?.fibreMg == null ? null : context.grams(nutritionTarget!.fibreMg!),
+        ),
         fraction: progressFraction(eaten: eaten.fibreMg, target: nutritionTarget?.fibreMg),
         onTap: () => context.push(Routes.nutritionSummary),
       ),
@@ -178,7 +191,9 @@ class _Progress extends ConsumerWidget {
         caption: sleepTarget == null
             ? l10n.noTarget
             : l10n.sleepTargetValue(
-                sleepTarget % 60 == 0 ? '${sleepTarget ~/ 60}' : (sleepTarget / 60).toStringAsFixed(1),
+                sleepTarget % 60 == 0
+                    ? '${sleepTarget ~/ 60}'
+                    : (sleepTarget / 60).toStringAsFixed(1),
               ),
         fraction: slept == null ? 0 : progressFraction(eaten: slept.inMinutes, target: sleepTarget),
         barColor: context.colors.secondary,
@@ -222,7 +237,9 @@ class _Progress extends ConsumerWidget {
                 const SizedBox(width: FbSpace.lg),
                 FbProgressRing(
                   fraction: stepStatus?.permission ?? false
-                      ? (steps == null || steps == 0 ? null : ((stepDay?.total ?? 0) / steps).clamp(0, 1))
+                      ? (steps == null || steps == 0
+                            ? null
+                            : ((stepDay?.total ?? 0) / steps).clamp(0, 1))
                       : null,
                   semanticLabel: l10n.stepsRingLabel,
                   size: 72,
@@ -329,7 +346,9 @@ class _WorkoutRow extends ConsumerWidget {
               ),
             ),
             if (days.isNotEmpty)
-              ExcludeSemantics(child: Text(days.map((d) => names[d % 7]).join(' · '), style: context.text.caption)),
+              ExcludeSemantics(
+                child: Text(days.map((d) => names[d % 7]).join(' · '), style: context.text.caption),
+              ),
           ],
         ),
       ),
@@ -452,11 +471,18 @@ class _Timeline extends ConsumerWidget {
     final checkins = ref.watch(wellnessBetweenProvider((from: today, to: today))).value ?? const [];
 
     final events = <(DateTime, String)>[
-      for (final e in entries) (e.occurredAt, l10n.timelineWeight(context.mass(e.weightG, e.entryUnit))),
-      for (final w in water) (w.occurredAt, l10n.timelineWater(context.volume(w.amountMl, units.volume))),
+      for (final e in entries)
+        (e.occurredAt, l10n.timelineWeight(context.mass(e.weightG, e.entryUnit))),
+      for (final w in water)
+        (w.occurredAt, l10n.timelineWater(context.volume(w.amountMl, units.volume))),
       for (final m in meals)
-        (m.occurredAt, l10n.timelineMeal(mealName(l10n, m.category), context.kcal(m.total.energyKcalMilli))),
-      for (final s in sleep.where((s) => s.period.kind == SleepKind.night && s.period.wakeDate == today))
+        (
+          m.occurredAt,
+          l10n.timelineMeal(mealName(l10n, m.category), context.kcal(m.total.energyKcalMilli)),
+        ),
+      for (final s in sleep.where(
+        (s) => s.period.kind == SleepKind.night && s.period.wakeDate == today,
+      ))
         (s.period.end, l10n.timelineWoke(context.duration(s.period.duration))),
       for (final c in checkins) (c.occurredAt, l10n.timelineCheckin),
     ]..sort((a, b) => a.$1.compareTo(b.$1));

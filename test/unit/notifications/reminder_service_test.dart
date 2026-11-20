@@ -37,7 +37,12 @@ void main() {
     final ids = SequentialIds();
     gateway = FakeNotificationGateway();
     caps = FakeAlarmCapabilities();
-    activities = DriftActivityRepository(db, clock: time.clock, ids: ids, timeZone: const FixedTimeZone());
+    activities = DriftActivityRepository(
+      db,
+      clock: time.clock,
+      ids: ids,
+      timeZone: const FixedTimeZone(),
+    );
     reminders = DriftReminderRepository(db, clock: time.clock, ids: ids);
     store = NotificationStateStore(db);
     service = ReminderService(
@@ -95,7 +100,9 @@ void main() {
     await service.replan();
     final first = (await store.active()).first;
     time.now = DateTime.utc(2026, 11, 16, 8, 1);
-    await service.handle(NotificationTap(notificationId: first.id, action: ReminderAction.complete));
+    await service.handle(
+      NotificationTap(notificationId: first.id, action: ReminderAction.complete),
+    );
     final logs = await activities.watchLogsFor(a.id).first;
     expect(logs.single.status, ActivityLogStatus.completed);
     expect(logs.single.source, LogSource.notification);
@@ -118,7 +125,10 @@ void main() {
     await service.replan();
     final first = (await store.active()).first;
     time.now = DateTime.utc(2026, 11, 16, 8);
-    await service.handle(NotificationTap(notificationId: first.id, action: ReminderAction.snooze), snoozeMinutes: 15);
+    await service.handle(
+      NotificationTap(notificationId: first.id, action: ReminderAction.snooze),
+      snoozeMinutes: 15,
+    );
     expect(gateway.pending[first.id]!.at, DateTime.utc(2026, 11, 16, 8, 15));
     expect((await store.byId(first.id))!.snoozeCount, 1);
     await service.handle(NotificationTap(notificationId: first.id, action: ReminderAction.skip));
@@ -156,7 +166,10 @@ void main() {
     );
     await service.replan();
     expect(gateway.pending.values.where((n) => n.at!.day == 16), hasLength(1));
-    await activities.addLog(a.id, LogDraft(status: ActivityLogStatus.completed, occurredAt: time.now));
+    await activities.addLog(
+      a.id,
+      LogDraft(status: ActivityLogStatus.completed, occurredAt: time.now),
+    );
     await service.replan();
     expect(gateway.pending.values.where((n) => n.at!.day == 16), isEmpty);
   });

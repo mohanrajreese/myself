@@ -14,7 +14,8 @@ enum PaymentMethod {
 
   const PaymentMethod(this.code);
   final String code;
-  static PaymentMethod fromCode(String c) => values.firstWhere((m) => m.code == c, orElse: () => other);
+  static PaymentMethod fromCode(String c) =>
+      values.firstWhere((m) => m.code == c, orElse: () => other);
 }
 
 final class FinanceCategory {
@@ -92,7 +93,12 @@ typedef ExpenseDraft = ({
 });
 
 final class Budget {
-  const Budget({required this.id, required this.effectiveFrom, required this.amountPaise, this.categoryId});
+  const Budget({
+    required this.id,
+    required this.effectiveFrom,
+    required this.amountPaise,
+    this.categoryId,
+  });
   final String id;
   final LocalDate effectiveFrom;
 
@@ -136,7 +142,12 @@ enum DebtKind {
 /// An EMI schedule: [count] instalments of [emiPaise] on day [day], the
 /// first on [first].
 final class EmiPlan {
-  const EmiPlan({required this.emiPaise, required this.day, required this.count, required this.first});
+  const EmiPlan({
+    required this.emiPaise,
+    required this.day,
+    required this.count,
+    required this.first,
+  });
   final int emiPaise;
   final int day;
   final int count;
@@ -199,7 +210,8 @@ final class Debt {
     if (counterparty.trim().isEmpty) 'counterparty_required',
     if (principalPaise <= 0) 'amount_required',
     if (remindDaysBefore < 7 || remindDaysBefore > 30) 'remind_days',
-    if (emi != null && (emi!.emiPaise <= 0 || emi!.count < 1 || emi!.day < 1 || emi!.day > 28)) 'emi_invalid',
+    if (emi != null && (emi!.emiPaise <= 0 || emi!.count < 1 || emi!.day < 1 || emi!.day > 28))
+      'emi_invalid',
   ];
 }
 
@@ -293,7 +305,11 @@ abstract interface class MoneyRepository {
   Future<Result<FinanceCategory>> addCategory(String name, {String iconKey = 'other'});
   Future<Result<void>> archiveCategory(String id, {required bool archived});
 
-  Future<Result<Expense>> addExpense(ExpenseDraft draft, {String? debtPaymentId, String? recurringExpenseId});
+  Future<Result<Expense>> addExpense(
+    ExpenseDraft draft, {
+    String? debtPaymentId,
+    String? recurringExpenseId,
+  });
   Future<Result<void>> updateExpense(String id, ExpenseDraft draft);
   Future<Result<void>> deleteExpense(String id);
   Stream<List<Expense>> watchExpenses({required LocalDate from, required LocalDate to});
@@ -303,7 +319,11 @@ abstract interface class MoneyRepository {
   /// Meals in the range with at least one junk-food item (§5.21D).
   Stream<Set<String>> watchJunkMealIds({required LocalDate from, required LocalDate to});
 
-  Future<Result<void>> setBudget({required String? categoryId, required int amountPaise, required LocalDate from});
+  Future<Result<void>> setBudget({
+    required String? categoryId,
+    required int amountPaise,
+    required LocalDate from,
+  });
   Future<Result<void>> removeBudget({required String? categoryId, required LocalDate from});
   Stream<List<Budget>> watchBudgets();
 

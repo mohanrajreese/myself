@@ -36,7 +36,10 @@ void main() {
 
   test('a short period across midnight is split by time, without uncertainty', () {
     // 23:55 → 00:05 IST, 100 steps.
-    final m = engine.attribute([r(0, DateTime.utc(2026, 11, 16, 18, 25)), r(100, DateTime.utc(2026, 11, 16, 18, 35))]);
+    final m = engine.attribute([
+      r(0, DateTime.utc(2026, 11, 16, 18, 25)),
+      r(100, DateTime.utc(2026, 11, 16, 18, 35)),
+    ]);
     expect(day(m, 16).sensorSteps, 50);
     expect(day(m, 17).sensorSteps, 50);
     expect(day(m, 16).uncertainSteps + day(m, 17).uncertainSteps, 0);
@@ -44,7 +47,10 @@ void main() {
 
   test('a long period across midnight is split by time and marked uncertain on both days', () {
     // 22:30 → 02:30 IST, 800 steps.
-    final m = engine.attribute([r(0, DateTime.utc(2026, 11, 16, 17)), r(800, DateTime.utc(2026, 11, 16, 21))]);
+    final m = engine.attribute([
+      r(0, DateTime.utc(2026, 11, 16, 17)),
+      r(800, DateTime.utc(2026, 11, 16, 21)),
+    ]);
     expect(day(m, 16).sensorSteps, 300);
     expect(day(m, 17).sensorSteps, 500);
     expect(day(m, 16).uncertainSteps, 300);
@@ -73,7 +79,10 @@ void main() {
   });
 
   test('a counter that goes backwards in the same boot is counted from zero and uncertain', () {
-    final m = engine.attribute([r(5000, DateTime.utc(2026, 11, 16, 6)), r(300, DateTime.utc(2026, 11, 16, 7))]);
+    final m = engine.attribute([
+      r(5000, DateTime.utc(2026, 11, 16, 6)),
+      r(300, DateTime.utc(2026, 11, 16, 7)),
+    ]);
     expect(day(m, 16).sensorSteps, 300);
     expect(day(m, 16).uncertainSteps, 300);
   });
@@ -91,7 +100,11 @@ void main() {
     // In IST until 18:20 UTC (23:50 IST), then the phone moves to UTC.
     final m = engine.attribute([
       r(0, DateTime.utc(2026, 11, 16, 18)),
-      r(200, DateTime.utc(2026, 11, 16, 18, 20), offset: 0), // forced reading at the change, now UTC
+      r(
+        200,
+        DateTime.utc(2026, 11, 16, 18, 20),
+        offset: 0,
+      ), // forced reading at the change, now UTC
       r(500, DateTime.utc(2026, 11, 16, 19), offset: 0),
     ]);
     // First period: 23:30 → 23:50 IST, all on the 16th.
@@ -108,7 +121,10 @@ void main() {
   });
 
   test('split rounding keeps every step', () {
-    final m = engine.attribute([r(0, DateTime.utc(2026, 11, 16, 18, 27)), r(7, DateTime.utc(2026, 11, 16, 18, 33))]);
+    final m = engine.attribute([
+      r(0, DateTime.utc(2026, 11, 16, 18, 27)),
+      r(7, DateTime.utc(2026, 11, 16, 18, 33)),
+    ]);
     expect(day(m, 16).sensorSteps + day(m, 17).sensorSteps, 7);
   });
 }

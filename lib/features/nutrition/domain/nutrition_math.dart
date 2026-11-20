@@ -32,7 +32,8 @@ enum JunkCategory {
   const JunkCategory(this.code);
   final String code;
 
-  static JunkCategory? fromCode(String? code) => code == null ? null : values.where((c) => c.code == code).firstOrNull;
+  static JunkCategory? fromCode(String? code) =>
+      code == null ? null : values.where((c) => c.code == code).firstOrNull;
 }
 
 /// Energy and macronutrients in integer base units
@@ -47,7 +48,13 @@ final class NutritionValues {
     required this.fibreMg,
   });
 
-  static const zero = NutritionValues(energyKcalMilli: 0, proteinMg: 0, carbsMg: 0, fatMg: 0, fibreMg: 0);
+  static const zero = NutritionValues(
+    energyKcalMilli: 0,
+    proteinMg: 0,
+    carbsMg: 0,
+    fatMg: 0,
+    fibreMg: 0,
+  );
 
   final int energyKcalMilli;
   final int proteinMg;
@@ -120,14 +127,16 @@ List<MealShare> caloriesByMeal(Map<MealCategory, int> kcalMilliByMeal) {
   final floors = [for (final e in entries) e.$2 * 100 ~/ total];
   final remainders = [for (final e in entries) e.$2 * 100 % total];
   var missing = 100 - floors.fold<int>(0, (a, b) => a + b);
-  final order = List.generate(entries.length, (i) => i)..sort((a, b) => remainders[b].compareTo(remainders[a]));
+  final order = List.generate(entries.length, (i) => i)
+    ..sort((a, b) => remainders[b].compareTo(remainders[a]));
   for (final index in order) {
     if (missing == 0) break;
     floors[index]++;
     missing--;
   }
   return [
-    for (var i = 0; i < entries.length; i++) (category: entries[i].$1, kcalMilli: entries[i].$2, percent: floors[i]),
+    for (var i = 0; i < entries.length; i++)
+      (category: entries[i].$1, kcalMilli: entries[i].$2, percent: floors[i]),
   ];
 }
 

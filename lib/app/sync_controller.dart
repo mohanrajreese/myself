@@ -15,7 +15,11 @@ final syncRemoteProvider = Provider<SyncRemote?>((ref) => null);
 final syncEngineProvider = Provider<SyncEngine?>((ref) {
   final remote = ref.watch(syncRemoteProvider);
   if (remote == null) return null;
-  return SyncEngine(db: ref.watch(appDatabaseProvider), remote: remote, clock: ref.watch(clockProvider));
+  return SyncEngine(
+    db: ref.watch(appDatabaseProvider),
+    remote: remote,
+    clock: ref.watch(clockProvider),
+  );
 });
 
 /// Changes waiting to be uploaded.
@@ -36,12 +40,13 @@ final class SyncStatus {
   final String? errorCode;
   final int failed;
 
-  SyncStatus copyWith({SyncPhase? phase, DateTime? lastSyncedAt, String? errorCode, int? failed}) => SyncStatus(
-    phase: phase ?? this.phase,
-    lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
-    errorCode: errorCode,
-    failed: failed ?? 0,
-  );
+  SyncStatus copyWith({SyncPhase? phase, DateTime? lastSyncedAt, String? errorCode, int? failed}) =>
+      SyncStatus(
+        phase: phase ?? this.phase,
+        lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+        errorCode: errorCode,
+        failed: failed ?? 0,
+      );
 }
 
 /// Runs sync on start, on return to the app, when the network comes back,
@@ -70,7 +75,11 @@ class SyncController extends Notifier<SyncStatus> {
   Future<void> _loadLast() async {
     final v = await ref.read(settingsRepositoryProvider).read(lastSyncKey);
     if (v is String && state.lastSyncedAt == null) {
-      state = SyncStatus(phase: state.phase, lastSyncedAt: DateTime.tryParse(v), errorCode: state.errorCode);
+      state = SyncStatus(
+        phase: state.phase,
+        lastSyncedAt: DateTime.tryParse(v),
+        errorCode: state.errorCode,
+      );
     }
   }
 
@@ -82,7 +91,10 @@ class SyncController extends Notifier<SyncStatus> {
     if (engine == null || account == null) return;
     final db = ref.read(appDatabaseProvider);
     final hasProfile = await db
-        .customSelect('SELECT 1 FROM profiles WHERE id = ?', variables: [Variable.withString(account.id)])
+        .customSelect(
+          'SELECT 1 FROM profiles WHERE id = ?',
+          variables: [Variable.withString(account.id)],
+        )
         .getSingleOrNull();
     if (hasProfile != null) return unawaited(syncNow());
     state = state.copyWith(phase: SyncPhase.restoring);
@@ -114,10 +126,16 @@ class SyncController extends Notifier<SyncStatus> {
         if (r.authPaused) {
           state = state.copyWith(phase: SyncPhase.signedOut, errorCode: r.errorCode);
         } else if (r.failed > 0) {
-          state = state.copyWith(phase: SyncPhase.problem, errorCode: r.errorCode, failed: r.failed);
+          state = state.copyWith(
+            phase: SyncPhase.problem,
+            errorCode: r.errorCode,
+            failed: r.failed,
+          );
         } else {
           final now = ref.read(clockProvider).now();
-          await ref.read(settingsRepositoryProvider).write(lastSyncKey, now.toUtc().toIso8601String());
+          await ref
+              .read(settingsRepositoryProvider)
+              .write(lastSyncKey, now.toUtc().toIso8601String());
           state = state.copyWith(phase: SyncPhase.idle, lastSyncedAt: now);
           unawaited(_report(now));
         }

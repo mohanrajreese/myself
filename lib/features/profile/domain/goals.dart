@@ -45,7 +45,13 @@ final class DailyGoals {
 /// never proposes a calorie target itself (PRD §1.3).
 @immutable
 final class NutritionTargets {
-  const NutritionTargets({this.energyKcalMilli, this.proteinMg, this.carbsMg, this.fatMg, this.fibreMg});
+  const NutritionTargets({
+    this.energyKcalMilli,
+    this.proteinMg,
+    this.carbsMg,
+    this.fatMg,
+    this.fibreMg,
+  });
 
   final int? energyKcalMilli;
   final int? proteinMg;

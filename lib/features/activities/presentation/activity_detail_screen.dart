@@ -58,7 +58,12 @@ class ActivityDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(a.name),
-        actions: [TextButton(onPressed: () => context.push(Routes.editActivity(id)), child: Text(l10n.edit))],
+        actions: [
+          TextButton(
+            onPressed: () => context.push(Routes.editActivity(id)),
+            child: Text(l10n.edit),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(FbSpace.lg, FbSpace.sm, FbSpace.lg, FbSpace.xxl),
@@ -107,7 +112,10 @@ class ActivityDetailScreen extends ConsumerWidget {
                   children: [
                     Expanded(child: FbSectionTitle(l10n.last4Weeks)),
                     if (scheduled.isNotEmpty)
-                      Text(l10n.doneOfScheduledDays(doneDays, scheduled.length), style: context.text.caption),
+                      Text(
+                        l10n.doneOfScheduledDays(doneDays, scheduled.length),
+                        style: context.text.caption,
+                      ),
                   ],
                 ),
                 const SizedBox(height: FbSpace.md),
@@ -138,7 +146,8 @@ class ActivityDetailScreen extends ConsumerWidget {
               children: [
                 for (final log in history)
                   FbListRow(
-                    title: '${context.dayLabel(log.localDate, today: today)} · ${context.time(log.occurredAt)}',
+                    title:
+                        '${context.dayLabel(log.localDate, today: today)} · ${context.time(log.occurredAt)}',
                     subtitle: _logSummary(context, a, log),
                     trailing: IconButton(
                       tooltip: l10n.editEntryLabel(context.shortDate(log.localDate)),
@@ -169,12 +178,19 @@ class ActivityDetailScreen extends ConsumerWidget {
     }
     final value = switch (a.trackingType) {
       TrackingType.count =>
-        log.countValue == null ? null : '${log.countValue}${a.targetUnit == null ? '' : ' ${a.targetUnit}'}',
+        log.countValue == null
+            ? null
+            : '${log.countValue}${a.targetUnit == null ? '' : ' ${a.targetUnit}'}',
       TrackingType.numeric =>
-        log.numericValueMilli == null ? null : '${log.numericValueMilli! / 1000} ${log.unit ?? ''}'.trim(),
-      TrackingType.duration ||
-      TrackingType.stopwatch => log.durationS == null ? null : context.duration(Duration(seconds: log.durationS!)),
-      TrackingType.checklist => l10n.checklistProgress(log.checklistDone?.length ?? 0, a.checklistItems.length),
+        log.numericValueMilli == null
+            ? null
+            : '${log.numericValueMilli! / 1000} ${log.unit ?? ''}'.trim(),
+      TrackingType.duration || TrackingType.stopwatch =>
+        log.durationS == null ? null : context.duration(Duration(seconds: log.durationS!)),
+      TrackingType.checklist => l10n.checklistProgress(
+        log.checklistDone?.length ?? 0,
+        a.checklistItems.length,
+      ),
       _ => null,
     };
     final source = log.source == LogSource.timer
@@ -211,7 +227,11 @@ class _Calendar extends StatelessWidget {
         children: [
           for (final d in days)
             switch (d.summary) {
-              DayState.done => _cell(c.success, c.success, Icon(Icons.check_rounded, size: 14, color: c.onPrimary)),
+              DayState.done => _cell(
+                c.success,
+                c.success,
+                Icon(Icons.check_rounded, size: 14, color: c.onPrimary),
+              ),
               DayState.skipped => _cell(
                 c.surfaceVariant,
                 c.textSecondary,
@@ -219,8 +239,11 @@ class _Calendar extends StatelessWidget {
               ),
               DayState.notScheduled => _cell(Colors.transparent, c.outline, null, dashed: true),
               DayState.missed => _cell(c.surface, c.textSecondary, null, dashed: true),
-              DayState.inProgress ||
-              DayState.due => _cell(c.surface, c.primary, Icon(Icons.schedule_rounded, size: 14, color: c.primary)),
+              DayState.inProgress || DayState.due => _cell(
+                c.surface,
+                c.primary,
+                Icon(Icons.schedule_rounded, size: 14, color: c.primary),
+              ),
             },
         ],
       ),

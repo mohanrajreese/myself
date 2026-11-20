@@ -23,7 +23,10 @@ void main() {
 
   test('derives the local day of an instant from a UTC offset', () {
     final instant = DateTime.utc(2026, 11, 16, 20, 0); // 01:30 next day at +05:30
-    expect(LocalDate.ofInstant(instant, const Duration(hours: 5, minutes: 30)), LocalDate(2026, 11, 17));
+    expect(
+      LocalDate.ofInstant(instant, const Duration(hours: 5, minutes: 30)),
+      LocalDate(2026, 11, 17),
+    );
     expect(LocalDate.ofInstant(instant, const Duration(hours: -8)), LocalDate(2026, 11, 16));
   });
 

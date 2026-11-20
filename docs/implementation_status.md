@@ -8,8 +8,8 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 8 — Money (§5.21): M-01…M-10 built and tested (20 Nov 2026); recurring-expense and category screens drawn and awaiting approval. Phase 7 device test plan and cloud setup are still with the owner |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026; Phase 6 screens approved 18 Nov 2026; Phase 8 (Money) screens approved 20 Nov 2026; recurring expenses and categories drawn 20 Nov, awaiting approval) |
+| Phase | 8 — Money (§5.21): complete in the cloud environment (20 Nov 2026), report `docs/reports/phase-8.md`; device and Supabase checks with the owner. Phase 7 device test plan and cloud setup are still with the owner |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026; Phase 6 screens approved 18 Nov 2026; Phase 8 (Money) screens approved 20 Nov 2026; recurring expenses and categories approved 20 Nov) |
 | Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project (migrations, functions); Google OAuth clients (debug and release fingerprints); Firebase project; release keystore; running `docs/device_test_plan.md` |
 
@@ -24,7 +24,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | 5 Lifestyle and privacy | ⏳ built, phone verification pending | [phase-5.md](reports/phase-5.md) |
 | 6 Reports and synchronisation | ⏳ built, phone and cloud verification pending | [phase-6.md](reports/phase-6.md) |
 | 7 Quality and release | ⏳ automated parts done; device run pending | [phase-7.md](reports/phase-7.md) |
-| 8 Money (PRD §5.21) | ◐ M-01…M-10 built; two screens await approval | — |
+| 8 Money (PRD §5.21) | ☑ built and tested · ⏳ device | `docs/reports/phase-8.md` |
 
 ## Task log
 
@@ -127,14 +127,14 @@ Task definitions are in `docs/blueprint/06-milestones-and-tasks.md`.
 
 | M-01, M-02 schema | ☑ | App database v10 (seven tables), Supabase migration 11 with access rules; budgets allow 0 = "no budget from this month" |
 | M-03 repository | ☑ | Seeded categories (fixed ids), expenses, budgets, debts, payments, recurring; outbox in every write |
-| M-04 expenses | ☑ · ⏳ camera | Add/edit sheet, list with search and filters, encrypted receipt photo, meal link. Category add/archive screen awaits design approval |
+| M-04 expenses | ☑ · ⏳ camera | Add/edit sheet, list with search and filters, encrypted receipt photo, meal link. Categories add/archive/restore |
 | M-05 budgets | ☑ | Overall and per category, effective-dated |
 | M-06 debts | ☑ | Both directions, kinds, ledger, outstanding, settle, delete |
-| M-07 EMI and recurring reminders | ☑ logic · ⏳ delivery | 7 (or 10/14/30), 1 and 0 days before, 09:00; Paid/Snooze/Skip. Recurring-expense screen awaits design approval (reminders and Paid already work) |
+| M-07 EMI and recurring reminders | ☑ logic · ⏳ delivery | 7 (or 10/14/30), 1 and 0 days before, 09:00; Paid/Snooze/Skip. Recurring expenses screen |
 | M-08 meal cost | ☑ | Cost and Paid with on the meal form; delete asks about the linked expense |
 | M-09 analysis | ☑ | Month or custom range, descriptive facts only |
 | M-10 Money tab | ☑ | Replaces Insights; Insights opens from Settings; export and erase include Money |
-| M-11 | ◐ | 716 tests pass; Money screens in the accessibility sweep; report pending the two screens |
+| M-11 | ☑ | 725 tests pass; Money screens in the accessibility sweep; CI format fixed; report written |
 
 ## Device verification backlog
 

@@ -21,7 +21,10 @@ void main() {
   void advance(int seconds) => time.now = time.now.add(Duration(seconds: seconds));
 
   test('a session and every transition survive reopening the store', () async {
-    final s = (await repo.create(kind: TimerKind.countdown, target: const Duration(minutes: 30))).valueOrNull!;
+    final s = (await repo.create(
+      kind: TimerKind.countdown,
+      target: const Duration(minutes: 30),
+    )).valueOrNull!;
     await repo.transition(s.id, TimerEventType.start);
     advance(300);
     await repo.transition(s.id, TimerEventType.pause);
@@ -49,7 +52,10 @@ void main() {
     final history = await repo.watchHistory().first;
     expect(history.map((s) => s.state), containsAll([TimerState.completed, TimerState.cancelled]));
     await repo.linkLog(a.id, 'log1');
-    expect((await db.select(db.localTimerSessions).get()).firstWhere((r) => r.id == a.id).activityLogId, 'log1');
+    expect(
+      (await db.select(db.localTimerSessions).get()).firstWhere((r) => r.id == a.id).activityLogId,
+      'log1',
+    );
   });
 
   test('an impossible transition is refused and stores nothing', () async {

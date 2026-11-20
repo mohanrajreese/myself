@@ -93,7 +93,12 @@ void main() {
     testWidgets('home and settings (${mode.name})', (tester) async {
       final app = AppHarness();
       await app.completeOnboarding(draft: _draft);
-      await app.pump(tester, session: signedInSession, themeMode: mode, size: const Size(390, 1080));
+      await app.pump(
+        tester,
+        session: signedInSession,
+        themeMode: mode,
+        size: const Size(390, 1080),
+      );
       await _shot(tester, '07_home_${mode.name}');
       if (mode == AppThemeMode.light) {
         await tester.tap(find.text('Weight'));

@@ -53,6 +53,9 @@ final class DriftSensitiveReminderRepository implements SensitiveReminderReposit
 
   @override
   Future<List<SensitiveReminder>> enabled() async => [
-    for (final r in await (_db.select(_db.localSensitiveReminders)..where((t) => t.enabled.equals(true))).get()) _to(r),
+    for (final r in await (_db.select(
+      _db.localSensitiveReminders,
+    )..where((t) => t.enabled.equals(true))).get())
+      _to(r),
   ];
 }

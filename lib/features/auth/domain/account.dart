@@ -5,8 +5,11 @@ import 'package:meta/meta.dart';
 final class Account {
   const Account({required this.id, this.email, this.displayName});
 
-  factory Account.fromJson(Map<String, Object?> json) =>
-      Account(id: json['id']! as String, email: json['email'] as String?, displayName: json['name'] as String?);
+  factory Account.fromJson(Map<String, Object?> json) => Account(
+    id: json['id']! as String,
+    email: json['email'] as String?,
+    displayName: json['name'] as String?,
+  );
 
   /// Supabase user id; owns every synced row.
   final String id;
@@ -17,7 +20,10 @@ final class Account {
 
   @override
   bool operator ==(Object other) =>
-      other is Account && other.id == id && other.email == email && other.displayName == displayName;
+      other is Account &&
+      other.id == id &&
+      other.email == email &&
+      other.displayName == displayName;
 
   @override
   int get hashCode => Object.hash(id, email, displayName);

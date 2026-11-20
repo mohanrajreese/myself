@@ -42,7 +42,10 @@ class FbChartCard extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (title != null) ...[Text(title!, style: context.text.bodyStrong), const SizedBox(height: FbSpace.sm)],
+        if (title != null) ...[
+          Text(title!, style: context.text.bodyStrong),
+          const SizedBox(height: FbSpace.sm),
+        ],
         Semantics(
           label: summary,
           image: true,
@@ -131,13 +134,23 @@ class FbLineChart extends StatelessWidget {
           getDrawingHorizontalLine: (_) => FlLine(color: c.surfaceVariant, strokeWidth: 1),
         ),
         borderData: FlBorderData(show: false),
-        titlesData: _titles(context, bottom: bottomLabel, left: leftLabel, bottomInterval: bottomInterval),
+        titlesData: _titles(
+          context,
+          bottom: bottomLabel,
+          left: leftLabel,
+          bottomInterval: bottomInterval,
+        ),
         lineTouchData: const LineTouchData(enabled: false),
         extraLinesData: target == null
             ? null
             : ExtraLinesData(
                 horizontalLines: [
-                  HorizontalLine(y: target!, color: c.secondary, strokeWidth: 1.5, dashArray: [4, 4]),
+                  HorizontalLine(
+                    y: target!,
+                    color: c.secondary,
+                    strokeWidth: 1.5,
+                    dashArray: [4, 4],
+                  ),
                 ],
               ),
         lineBarsData: [
@@ -200,7 +213,12 @@ class FbBarChart extends StatelessWidget {
             ? null
             : ExtraLinesData(
                 horizontalLines: [
-                  HorizontalLine(y: target!, color: c.textPrimary, strokeWidth: 1, dashArray: [4, 4]),
+                  HorizontalLine(
+                    y: target!,
+                    color: c.textPrimary,
+                    strokeWidth: 1,
+                    dashArray: [4, 4],
+                  ),
                 ],
               ),
         barGroups: [

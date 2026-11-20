@@ -16,7 +16,12 @@ void main() {
   setUp(() {
     db = memoryDatabase();
     time = MutableClock(DateTime(2026, 11, 16, 8));
-    wellness = DriftWellnessRepository(db, clock: time.clock, ids: SequentialIds(), timeZone: const FixedTimeZone());
+    wellness = DriftWellnessRepository(
+      db,
+      clock: time.clock,
+      ids: SequentialIds(),
+      timeZone: const FixedTimeZone(),
+    );
   });
   tearDown(() => db.close());
 
@@ -31,7 +36,9 @@ void main() {
   });
 
   test('scores outside 1 to 5 are rejected', () async {
-    final result = await wellness.add(const WellnessScores(energy: 0, mood: 3, stress: 2, wellness: 6));
+    final result = await wellness.add(
+      const WellnessScores(energy: 0, mood: 3, stress: 2, wellness: 6),
+    );
     expect(result.failureOrNull?.code, 'out_of_range');
     expect(await db.select(db.dailyHealthCheckins).get(), isEmpty);
   });
@@ -42,7 +49,9 @@ void main() {
     await wellness.add(const WellnessScores(energy: 3, mood: 3, stress: 4, wellness: 3));
     time.now = DateTime(2026, 11, 17, 9);
     await wellness.add(const WellnessScores(energy: 5, mood: 5, stress: 1, wellness: 5));
-    final means = dailyMeansTenths(await wellness.watchBetween(today, LocalDate(2026, 11, 17)).first);
+    final means = dailyMeansTenths(
+      await wellness.watchBetween(today, LocalDate(2026, 11, 17)).first,
+    );
     expect(means[today], (energy: 35, mood: 30, stress: 30, wellness: 35));
     expect(means[LocalDate(2026, 11, 17)]!.energy, 50);
   });

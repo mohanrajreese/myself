@@ -34,7 +34,9 @@ class CategoriesScreen extends ConsumerWidget {
                 onPressed: () => repo.archiveCategory(c.id, archived: !c.archived),
                 child: Text(
                   c.archived ? l10n.moneyRestore : l10n.moneyArchive,
-                  semanticsLabel: c.archived ? l10n.moneyRestoreA11y(name) : l10n.moneyArchiveA11y(name),
+                  semanticsLabel: c.archived
+                      ? l10n.moneyRestoreA11y(name)
+                      : l10n.moneyArchiveA11y(name),
                 ),
               ),
       );

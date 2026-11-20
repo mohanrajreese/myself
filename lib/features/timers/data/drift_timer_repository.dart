@@ -29,12 +29,21 @@ final class DriftTimerRepository implements TimerRepository {
   );
 
   @override
-  Future<Result<TimerSession>> create({required TimerKind kind, Duration? target, String? activityId}) async {
+  Future<Result<TimerSession>> create({
+    required TimerKind kind,
+    Duration? target,
+    String? activityId,
+  }) async {
     if (target != null && (target.inSeconds < 1 || target.inSeconds > 86400)) {
       return const Err(ValidationFailure('target', 'out_of_range'));
     }
     return Result.guard(() async {
-      final session = TimerSession.ready(id: ids.newId(), kind: kind, targetDuration: target, activityId: activityId);
+      final session = TimerSession.ready(
+        id: ids.newId(),
+        kind: kind,
+        targetDuration: target,
+        activityId: activityId,
+      );
       await _db
           .into(_db.localTimerSessions)
           .insert(
@@ -52,7 +61,9 @@ final class DriftTimerRepository implements TimerRepository {
 
   @override
   Future<Result<TimerSession>> transition(String id, TimerEventType type) async {
-    final row = await (_db.select(_db.localTimerSessions)..where((t) => t.id.equals(id))).getSingleOrNull();
+    final row = await (_db.select(
+      _db.localTimerSessions,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
     if (row == null) return const Err(ValidationFailure('timer', 'not_found'));
     final at = clock.now().toUtc();
     final next = _toSession(row).apply(TimerEvent(type, at));
@@ -71,7 +82,14 @@ final class DriftTimerRepository implements TimerRepository {
         );
         await _db
             .into(_db.localTimerEvents)
-            .insert(LocalTimerEventsCompanion.insert(id: ids.newId(), sessionId: id, type: type.code, at: at));
+            .insert(
+              LocalTimerEventsCompanion.insert(
+                id: ids.newId(),
+                sessionId: id,
+                type: type.code,
+                at: at,
+              ),
+            );
       });
       return session;
     }, onError: (_) => const StorageFailure('timer_write'));
@@ -79,15 +97,16 @@ final class DriftTimerRepository implements TimerRepository {
 
   @override
   Future<Result<void>> linkLog(String id, String activityLogId) => Result.guard(
-    () => (_db.update(
-      _db.localTimerSessions,
-    )..where((t) => t.id.equals(id))).write(LocalTimerSessionsCompanion(activityLogId: Value(activityLogId))),
+    () => (_db.update(_db.localTimerSessions)..where((t) => t.id.equals(id))).write(
+      LocalTimerSessionsCompanion(activityLogId: Value(activityLogId)),
+    ),
     onError: (_) => const StorageFailure('timer_write'),
   );
 
   @override
   Stream<List<TimerSession>> watchActive() =>
-      (_db.select(_db.localTimerSessions)..where((t) => t.state.isIn(const ['ready', 'running', 'paused'])))
+      (_db.select(_db.localTimerSessions)
+            ..where((t) => t.state.isIn(const ['ready', 'running', 'paused'])))
           .watch()
           .map((rows) => [for (final r in rows) _toSession(r)]);
 

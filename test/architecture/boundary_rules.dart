@@ -15,7 +15,14 @@ class Violation {
 }
 
 const _pureCoreDirs = ['core/errors/', 'core/utils/', 'core/units/', 'core/scheduling/'];
-const _purePackages = {'meta', 'collection', 'clock', 'freezed_annotation', 'json_annotation', 'uuid'};
+const _purePackages = {
+  'meta',
+  'collection',
+  'clock',
+  'freezed_annotation',
+  'json_annotation',
+  'uuid',
+};
 const _storagePackages = {
   'drift',
   'drift_flutter',
@@ -49,7 +56,9 @@ String? _feature(String libPath) {
 }
 
 bool _isGenerated(String path) =>
-    path.endsWith('.g.dart') || path.endsWith('.freezed.dart') || path.startsWith('core/platform/generated/');
+    path.endsWith('.g.dart') ||
+    path.endsWith('.freezed.dart') ||
+    path.startsWith('core/platform/generated/');
 
 /// [sources] maps a path relative to `lib/` to the file's content.
 List<Violation> checkBoundaries(Map<String, String> sources) {
@@ -64,7 +73,9 @@ List<Violation> checkBoundaries(Map<String, String> sources) {
     final isDomain = path.contains('/domain/');
     final isPresentation = path.contains('/presentation/') || path.startsWith('core/widgets/');
     final isSyncSide =
-        path.startsWith('core/sync/') || path.startsWith('core/networking/') || path.endsWith('_remote_source.dart');
+        path.startsWith('core/sync/') ||
+        path.startsWith('core/networking/') ||
+        path.endsWith('_remote_source.dart');
     final ownFeature = _feature(path);
 
     for (final uri in imports) {
@@ -73,8 +84,10 @@ List<Violation> checkBoundaries(Map<String, String> sources) {
 
       if (isDomain) {
         final okDart = uri.startsWith('dart:') && uri != 'dart:io' && uri != 'dart:ui';
-        final okPackage = package != null && package != 'fitbuddy' && _purePackages.contains(package);
-        final okInternal = target != null && (target.contains('/domain/') || _pureCoreDirs.any(target.startsWith));
+        final okPackage =
+            package != null && package != 'fitbuddy' && _purePackages.contains(package);
+        final okInternal =
+            target != null && (target.contains('/domain/') || _pureCoreDirs.any(target.startsWith));
         if (!(okDart || okPackage || okInternal)) {
           violations.add(Violation('domain-purity', path, 'imports $uri'));
         }
@@ -107,7 +120,8 @@ List<Violation> checkBoundaries(Map<String, String> sources) {
       violations.add(Violation('presentation-no-platform-channel', path, 'uses MethodChannel'));
     }
 
-    if (path != 'core/utils/clock.dart' && RegExp(r'DateTime\.now\(').hasMatch(_stripComments(content))) {
+    if (path != 'core/utils/clock.dart' &&
+        RegExp(r'DateTime\.now\(').hasMatch(_stripComments(content))) {
       violations.add(Violation('injected-clock', path, 'calls DateTime.now()'));
     }
 

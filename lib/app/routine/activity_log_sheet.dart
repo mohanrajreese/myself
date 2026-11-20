@@ -15,8 +15,15 @@ import '../../core/widgets/tokens.dart';
 import '../../features/activities/domain/activity.dart';
 import '../../features/activities/domain/activity_repository.dart';
 
-Future<void> showActivityLogSheet(BuildContext context, Activity activity, {int? slot, ActivityLog? existing}) =>
-    showFbSheet<void>(context, ActivityLogSheet(activity: activity, slot: slot, existing: existing));
+Future<void> showActivityLogSheet(
+  BuildContext context,
+  Activity activity, {
+  int? slot,
+  ActivityLog? existing,
+}) => showFbSheet<void>(
+  context,
+  ActivityLogSheet(activity: activity, slot: slot, existing: existing),
+);
 
 /// Logs (or edits) one entry, with the input that fits the tracking type
 /// (approved design "Log sheet").
@@ -38,8 +45,8 @@ class _ActivityLogSheetState extends ConsumerState<ActivityLogSheet> {
       widget.existing?.numericValueMilli == null
           ? ''
           : formatScaled(widget.existing!.numericValueMilli!, 3, decimals: 2),
-    TrackingType.duration ||
-    TrackingType.stopwatch => widget.existing?.durationS == null ? '' : '${(widget.existing!.durationS! / 60).round()}',
+    TrackingType.duration || TrackingType.stopwatch =>
+      widget.existing?.durationS == null ? '' : '${(widget.existing!.durationS! / 60).round()}',
     _ => '',
   };
   late final Set<String> _checked = {...?widget.existing?.checklistDone};
@@ -77,11 +84,14 @@ class _ActivityLogSheetState extends ConsumerState<ActivityLogSheet> {
       status: status,
       occurredAt: _at,
       scheduledSlot: widget.slot ?? widget.existing?.scheduledSlot,
-      countValue: status == ActivityLogStatus.completed && _a.trackingType == TrackingType.count ? _count : null,
+      countValue: status == ActivityLogStatus.completed && _a.trackingType == TrackingType.count
+          ? _count
+          : null,
       numericValueMilli: numeric,
       unit: _a.targetUnit,
       durationS: durationS,
-      checklistDone: _a.trackingType == TrackingType.checklist && status == ActivityLogStatus.completed
+      checklistDone:
+          _a.trackingType == TrackingType.checklist && status == ActivityLogStatus.completed
           ? _checked
           : null,
       notes: _note,
@@ -103,7 +113,10 @@ class _ActivityLogSheetState extends ConsumerState<ActivityLogSheet> {
       return;
     }
     replanReminders(ref);
-    showFbSnackBar(context, status == ActivityLogStatus.skipped ? l10n.skippedSaved : l10n.activityLogged(_a.name));
+    showFbSnackBar(
+      context,
+      status == ActivityLogStatus.skipped ? l10n.skippedSaved : l10n.activityLogged(_a.name),
+    );
     Navigator.of(context).pop();
   }
 
@@ -137,7 +150,11 @@ class _ActivityLogSheetState extends ConsumerState<ActivityLogSheet> {
           ? (widget.slot == null
                 ? null
                 : Text(l10n.dueAt(minuteLabel(context, widget.slot!)), style: context.text.caption))
-          : IconButton(tooltip: l10n.delete, onPressed: _delete, icon: const Icon(Icons.delete_outline_rounded)),
+          : IconButton(
+              tooltip: l10n.delete,
+              onPressed: _delete,
+              icon: const Icon(Icons.delete_outline_rounded),
+            ),
       children: [
         ...switch (_a.trackingType) {
           TrackingType.count => [
@@ -186,7 +203,8 @@ class _ActivityLogSheetState extends ConsumerState<ActivityLogSheet> {
                   CheckboxListTile(
                     title: Text(item.label),
                     value: _checked.contains(item.id),
-                    onChanged: (v) => setState(() => v! ? _checked.add(item.id) : _checked.remove(item.id)),
+                    onChanged: (v) =>
+                        setState(() => v! ? _checked.add(item.id) : _checked.remove(item.id)),
                   ),
               ],
             ),
@@ -194,7 +212,12 @@ class _ActivityLogSheetState extends ConsumerState<ActivityLogSheet> {
           _ => const <Widget>[],
         },
         const SizedBox(height: FbSpace.md),
-        FbDateTimeField(label: l10n.timeLabel, value: _at, last: now, onChanged: (v) => setState(() => _at = v)),
+        FbDateTimeField(
+          label: l10n.timeLabel,
+          value: _at,
+          last: now,
+          onChanged: (v) => setState(() => _at = v),
+        ),
         const SizedBox(height: FbSpace.md),
         FbTextField(
           label: l10n.note,
@@ -204,7 +227,10 @@ class _ActivityLogSheetState extends ConsumerState<ActivityLogSheet> {
           optionalLabel: l10n.optional,
           textCapitalization: TextCapitalization.sentences,
         ),
-        if (_error != null) ...[const SizedBox(height: FbSpace.sm), FbNotice(_error!, isError: true)],
+        if (_error != null) ...[
+          const SizedBox(height: FbSpace.sm),
+          FbNotice(_error!, isError: true),
+        ],
         const SizedBox(height: FbSpace.lg),
         Row(
           children: [

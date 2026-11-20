@@ -3,7 +3,11 @@ import 'timer_session.dart';
 
 /// Device-only timer sessions (§5.16). Every transition is stored as an event.
 abstract interface class TimerRepository {
-  Future<Result<TimerSession>> create({required TimerKind kind, Duration? target, String? activityId});
+  Future<Result<TimerSession>> create({
+    required TimerKind kind,
+    Duration? target,
+    String? activityId,
+  });
 
   /// Applies [type] now and stores the event with the new state.
   Future<Result<TimerSession>> transition(String id, TimerEventType type);

@@ -68,15 +68,21 @@ class _ScreenTimeScreenState extends ConsumerState<ScreenTimeScreen> with Widget
       helpText: l10n.dailyTarget,
       initialEntryMode: TimePickerEntryMode.inputOnly,
       initialTime: TimeOfDay(hour: hours, minute: minutes),
-      builder: (context, child) =>
-          MediaQuery(data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), child: child!),
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+        child: child!,
+      ),
     );
     if (picked == null) return;
     hours = picked.hour;
     minutes = picked.minute;
     final total = hours * 60 + minutes;
     await _write(
-      ScreenTimeSettings(targetMinutes: total == 0 ? null : total, alerts: s.alerts, alertedOn: s.alertedOn),
+      ScreenTimeSettings(
+        targetMinutes: total == 0 ? null : total,
+        alerts: s.alerts,
+        alertedOn: s.alertedOn,
+      ),
     );
   }
 
@@ -122,8 +128,10 @@ class _ScreenTimeScreenState extends ConsumerState<ScreenTimeScreen> with Widget
       _Range.week => today.addDays(-6),
       _Range.month => today.addDays(-29),
     };
-    final days = ref.watch(screenTimeDaysProvider((from: from, to: today))).value ?? const <ScreenTimeDay>[];
-    final apps = ref.watch(screenTimeAppsProvider((from: from, to: today))).value ?? const <AppMinutes>[];
+    final days =
+        ref.watch(screenTimeDaysProvider((from: from, to: today))).value ?? const <ScreenTimeDay>[];
+    final apps =
+        ref.watch(screenTimeAppsProvider((from: from, to: today))).value ?? const <AppMinutes>[];
     final settings = ref.watch(screenTimeSettingsProvider).value ?? const ScreenTimeSettings();
     final total = days.fold(0, (n, d) => n + d.totalMs);
     final count = _range == _Range.day ? 1 : (_range == _Range.week ? 7 : 30);
@@ -145,10 +153,16 @@ class _ScreenTimeScreenState extends ConsumerState<ScreenTimeScreen> with Widget
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(_range == _Range.day ? l10n.screenTimeToday : l10n.dailyAverage, style: context.text.bodySmall),
+                  Text(
+                    _range == _Range.day ? l10n.screenTimeToday : l10n.dailyAverage,
+                    style: context.text.bodySmall,
+                  ),
                   Text(dur(total ~/ count), style: context.text.title),
                   if (settings.targetMinutes != null)
-                    Text(l10n.targetIs(dur(settings.targetMinutes! * 60000)), style: context.text.caption),
+                    Text(
+                      l10n.targetIs(dur(settings.targetMinutes! * 60000)),
+                      style: context.text.caption,
+                    ),
                 ],
               ),
             ),
@@ -188,7 +202,9 @@ class _ScreenTimeScreenState extends ConsumerState<ScreenTimeScreen> with Widget
               children: [
                 FbListRow(
                   title: l10n.dailyTarget,
-                  subtitle: settings.targetMinutes == null ? l10n.noTarget : dur(settings.targetMinutes! * 60000),
+                  subtitle: settings.targetMinutes == null
+                      ? l10n.noTarget
+                      : dur(settings.targetMinutes! * 60000),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => _editTarget(settings),
                 ),

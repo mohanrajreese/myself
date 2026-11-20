@@ -41,7 +41,13 @@ void main() {
     String? activityId,
     bool ifIncomplete = false,
   }) => SchedulableReminder(
-    plan: PlannerReminder(id: id, rule: rule, alarm: alarm, activityId: activityId, onlyIfIncomplete: ifIncomplete),
+    plan: PlannerReminder(
+      id: id,
+      rule: rule,
+      alarm: alarm,
+      activityId: activityId,
+      onlyIfIncomplete: ifIncomplete,
+    ),
     channelId: 'routines_v1',
     title: 'Walk',
   );
@@ -68,19 +74,22 @@ void main() {
     expect(gateway.pending, isEmpty);
   });
 
-  test('a timezone change moves notifications to the same wall-clock time, without duplicates', () async {
-    final rs = [
-      reminder('a', Daily(times: [hm(8, 0)])),
-    ];
-    final zone = Zone(0);
-    await scheduler.run(rs, zone: zone);
-    zone.hours = 5;
-    final r = await scheduler.run(rs, zone: zone);
-    // 08:00 today has already passed in the new zone; next Monday enters the window.
-    expect((r.cancelled, r.scheduled, r.moved), (1, 1, 6));
-    expect(gateway.pending, hasLength(7));
-    expect(gateway.pending.values.map((n) => n.at!.hour).toSet(), {3});
-  });
+  test(
+    'a timezone change moves notifications to the same wall-clock time, without duplicates',
+    () async {
+      final rs = [
+        reminder('a', Daily(times: [hm(8, 0)])),
+      ];
+      final zone = Zone(0);
+      await scheduler.run(rs, zone: zone);
+      zone.hours = 5;
+      final r = await scheduler.run(rs, zone: zone);
+      // 08:00 today has already passed in the new zone; next Monday enters the window.
+      expect((r.cancelled, r.scheduled, r.moved), (1, 1, 6));
+      expect(gateway.pending, hasLength(7));
+      expect(gateway.pending.values.map((n) => n.at!.hour).toSet(), {3});
+    },
+  );
 
   test('without exact-alarm access, alarms are scheduled inexactly', () async {
     await scheduler.run(
@@ -94,7 +103,11 @@ void main() {
     await scheduler.run([
       reminder('a', Daily(times: [hm(8, 0)]), alarm: true),
     ], zone: Zone(0));
-    expect(gateway.pending.values.every((n) => n.exact), isTrue, reason: 'granted later: moved to exact');
+    expect(
+      gateway.pending.values.every((n) => n.exact),
+      isTrue,
+      reason: 'granted later: moved to exact',
+    );
   });
 
   test('completing the activity cancels today\'s "if not done" reminder', () async {
@@ -120,7 +133,11 @@ void main() {
 
     final db2 = memoryDatabase();
     addTearDown(db2.close);
-    final s2 = ReminderScheduler(store: NotificationStateStore(db2), gateway: gateway, clock: time.clock);
+    final s2 = ReminderScheduler(
+      store: NotificationStateStore(db2),
+      gateway: gateway,
+      clock: time.clock,
+    );
     await s2.run(rs, zone: Zone(0), days: 1);
     time.now = DateTime.utc(2026, 11, 16, 9);
     final r = await s2.run(rs, zone: Zone(0), days: 1);

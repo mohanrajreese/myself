@@ -71,7 +71,12 @@ class _CheckinScreenState extends ConsumerState<CheckinScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.checkinTitle),
-        actions: [TextButton(onPressed: () => context.push(Routes.checkinHistory), child: Text(l10n.history))],
+        actions: [
+          TextButton(
+            onPressed: () => context.push(Routes.checkinHistory),
+            child: Text(l10n.history),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -92,7 +97,11 @@ class _CheckinScreenState extends ConsumerState<CheckinScreen> {
                           onChanged: (v) => setState(() => _energy = v),
                         ),
                         const SizedBox(height: FbSpace.lg),
-                        FbScoreRow(label: l10n.scaleMood, value: _mood, onChanged: (v) => setState(() => _mood = v)),
+                        FbScoreRow(
+                          label: l10n.scaleMood,
+                          value: _mood,
+                          onChanged: (v) => setState(() => _mood = v),
+                        ),
                         const SizedBox(height: FbSpace.lg),
                         FbScoreRow(
                           label: l10n.scaleStress,
@@ -247,7 +256,10 @@ class _CheckinHistoryScreenState extends ConsumerState<CheckinHistoryScreen> {
                   height: 120,
                   summary: l10n.sleepHoursChart,
                   chart: FbBarChart(
-                    values: [for (var i = 0; i < _range.days; i++) (sleepPerDay[start.addDays(i)] ?? 0) / 60],
+                    values: [
+                      for (var i = 0; i < _range.days; i++)
+                        (sleepPerDay[start.addDays(i)] ?? 0) / 60,
+                    ],
                     bottomLabel: (i) => context.shortDate(start.addDays(i)),
                     color: context.colors.secondary,
                   ),
@@ -257,7 +269,12 @@ class _CheckinHistoryScreenState extends ConsumerState<CheckinHistoryScreen> {
                   children: [
                     for (final c in list)
                       FbListRow(
-                        title: l10n.checkinRow(c.scores.energy, c.scores.mood, c.scores.stress, c.scores.wellness),
+                        title: l10n.checkinRow(
+                          c.scores.energy,
+                          c.scores.mood,
+                          c.scores.stress,
+                          c.scores.wellness,
+                        ),
                         subtitle: [
                           '${context.dayLabel(c.localDate, today: today)} · ${context.time(c.occurredAt)}',
                           ?c.notes,

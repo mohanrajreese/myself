@@ -30,9 +30,13 @@ final class DifferentAccount extends SignInOutcome {
 /// Erases everything this phone holds for the account. Defaults to the main
 /// database; the app replaces it with the full eraser (private data, photos,
 /// notifications, app lock).
-final localDataEraserProvider = Provider<Future<void> Function()>((ref) => ref.read(appDatabaseProvider).eraseAllData);
+final localDataEraserProvider = Provider<Future<void> Function()>(
+  (ref) => ref.read(appDatabaseProvider).eraseAllData,
+);
 
-final sessionControllerProvider = NotifierProvider<SessionController, SessionState>(SessionController.new);
+final sessionControllerProvider = NotifierProvider<SessionController, SessionState>(
+  SessionController.new,
+);
 
 class SessionController extends Notifier<SessionState> {
   @override

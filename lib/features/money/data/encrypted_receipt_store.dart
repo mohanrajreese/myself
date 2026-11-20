@@ -32,8 +32,9 @@ final class EncryptedReceiptStore implements ReceiptStore {
 
   File _file(String name) => File('${directory.path}/$name');
 
-  Future<ExpenseReceiptRow?> _row(String expenseId) =>
-      (_db.select(_db.localExpenseReceipts)..where((t) => t.expenseId.equals(expenseId))).getSingleOrNull();
+  Future<ExpenseReceiptRow?> _row(String expenseId) => (_db.select(
+    _db.localExpenseReceipts,
+  )..where((t) => t.expenseId.equals(expenseId))).getSingleOrNull();
 
   @override
   Future<Result<void>> attach(String expenseId, List<int> imageBytes) async {

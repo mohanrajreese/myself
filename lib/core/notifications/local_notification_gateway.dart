@@ -49,7 +49,9 @@ final class LocalNotificationGateway implements NotificationGateway {
     ensureTimeZonesLoaded();
     _labels = channels;
     await _plugin.initialize(
-      settings: const InitializationSettings(android: AndroidInitializationSettings('@mipmap/ic_launcher')),
+      settings: const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      ),
       onDidReceiveNotificationResponse: (r) {
         final tap = tapFrom(r);
         if (tap != null) onTap(tap);
@@ -66,7 +68,9 @@ final class LocalNotificationGateway implements NotificationGateway {
               ? Importance.max
               : (entry.key == 'system' ? Importance.low : Importance.high),
           playSound: entry.key != 'system',
-          audioAttributesUsage: entry.key == 'alarms' ? AudioAttributesUsage.alarm : AudioAttributesUsage.notification,
+          audioAttributesUsage: entry.key == 'alarms'
+              ? AudioAttributesUsage.alarm
+              : AudioAttributesUsage.notification,
         ),
       );
     }
@@ -119,7 +123,9 @@ final class LocalNotificationGateway implements NotificationGateway {
         description: labels?.description,
         importance: key == 'alarms' ? Importance.max : Importance.high,
         sound: UriAndroidNotificationSound(uri),
-        audioAttributesUsage: key == 'alarms' ? AudioAttributesUsage.alarm : AudioAttributesUsage.notification,
+        audioAttributesUsage: key == 'alarms'
+            ? AudioAttributesUsage.alarm
+            : AudioAttributesUsage.notification,
       ),
     );
   }
@@ -134,15 +140,22 @@ final class LocalNotificationGateway implements NotificationGateway {
     id: r.id,
     scheduledDate: tz.TZDateTime.from(r.at!.toUtc(), tz.UTC),
     notificationDetails: _details(r),
-    androidScheduleMode: r.exact ? AndroidScheduleMode.exactAllowWhileIdle : AndroidScheduleMode.inexactAllowWhileIdle,
+    androidScheduleMode: r.exact
+        ? AndroidScheduleMode.exactAllowWhileIdle
+        : AndroidScheduleMode.inexactAllowWhileIdle,
     title: r.title,
     body: r.body,
     payload: '${r.id}',
   );
 
   @override
-  Future<void> show(NotificationRequest r) =>
-      _plugin.show(id: r.id, title: r.title, body: r.body, notificationDetails: _details(r), payload: '${r.id}');
+  Future<void> show(NotificationRequest r) => _plugin.show(
+    id: r.id,
+    title: r.title,
+    body: r.body,
+    notificationDetails: _details(r),
+    payload: '${r.id}',
+  );
 
   @override
   Future<void> cancel(int id) => _plugin.cancel(id: id);
@@ -151,7 +164,8 @@ final class LocalNotificationGateway implements NotificationGateway {
   Future<bool> notificationsAllowed() async => await _android?.areNotificationsEnabled() ?? true;
 
   @override
-  Future<bool> requestPermission() async => await _android?.requestNotificationsPermission() ?? true;
+  Future<bool> requestPermission() async =>
+      await _android?.requestNotificationsPermission() ?? true;
 
   @override
   Future<bool> canScheduleExact() async => await _android?.canScheduleExactNotifications() ?? false;

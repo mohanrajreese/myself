@@ -81,7 +81,12 @@ void main() {
   test('a month and a year of reports load within budget', () async {
     final reports = DriftReportRepository(
       db,
-      activities: DriftActivityRepository(db, clock: time.clock, ids: SequentialIds(), timeZone: const FixedTimeZone()),
+      activities: DriftActivityRepository(
+        db,
+        clock: time.clock,
+        ids: SequentialIds(),
+        timeZone: const FixedTimeZone(),
+      ),
       clock: time.clock,
     );
     final month = await timed(
@@ -99,8 +104,10 @@ void main() {
   });
 
   test('day and range queries on log tables use an index, never a full scan', () async {
-    Future<String> plan(String sql) async =>
-        [for (final r in await db.customSelect('EXPLAIN QUERY PLAN $sql').get()) r.read<String>('detail')].join(' | ');
+    Future<String> plan(String sql) async => [
+      for (final r in await db.customSelect('EXPLAIN QUERY PLAN $sql').get())
+        r.read<String>('detail'),
+    ].join(' | ');
     for (final table in [
       'weight_logs',
       'water_logs',
@@ -110,7 +117,9 @@ void main() {
       'activity_logs',
       'workout_sessions',
     ]) {
-      final p = await plan("SELECT * FROM $table WHERE local_date BETWEEN '2026-11-01' AND '2026-11-30'");
+      final p = await plan(
+        "SELECT * FROM $table WHERE local_date BETWEEN '2026-11-01' AND '2026-11-30'",
+      );
       expect(p, contains('USING INDEX'), reason: '$table: $p');
     }
     expect(
@@ -127,7 +136,10 @@ void main() {
   test('exporting three years stays within budget', () async {
     final bytes = await timed(
       'export json',
-      () => ExportBuilder(db: db, clock: time.clock).build(const ExportOptions(passphrase: 'long enough')),
+      () => ExportBuilder(
+        db: db,
+        clock: time.clock,
+      ).build(const ExportOptions(passphrase: 'long enough')),
     );
     expect(bytes.length, greaterThan(10000));
     expect(timings['export json'], lessThan(20000));

@@ -73,7 +73,12 @@ final class DriftPrivateRepository implements PrivateRepository {
           .map(
             (rows) => [
               for (final r in rows)
-                PrivateHabitType(id: r.id, name: r.name, systemKey: r.systemKey, archived: r.archived),
+                PrivateHabitType(
+                  id: r.id,
+                  name: r.name,
+                  systemKey: r.systemKey,
+                  archived: r.archived,
+                ),
             ],
           );
 
@@ -108,12 +113,20 @@ final class DriftPrivateRepository implements PrivateRepository {
     onError: (_) => _write,
   );
 
-  Failure? _future(DateTime at) =>
-      at.isAfter(clock.now().add(const Duration(minutes: 1))) ? const ValidationFailure('at', 'in_future') : null;
+  Failure? _future(DateTime at) => at.isAfter(clock.now().add(const Duration(minutes: 1)))
+      ? const ValidationFailure('at', 'in_future')
+      : null;
 
   @override
-  Future<Result<void>> recordHabit(String typeId, {required DateTime at, int count = 1, String? note}) async {
-    final f = _future(at) ?? (count < 1 || count > 100 ? const ValidationFailure('count', 'out_of_range') : null);
+  Future<Result<void>> recordHabit(
+    String typeId, {
+    required DateTime at,
+    int count = 1,
+    String? note,
+  }) async {
+    final f =
+        _future(at) ??
+        (count < 1 || count > 100 ? const ValidationFailure('count', 'out_of_range') : null);
     if (f != null) return Err(f);
     return Result.guard(() async {
       final s = await stampFor(clock, timeZone, at: at);
@@ -142,9 +155,17 @@ final class DriftPrivateRepository implements PrivateRepository {
   );
 
   @override
-  Stream<List<PrivateHabitLog>> watchHabitLogs(String typeId, {required LocalDate from, required LocalDate to}) =>
+  Stream<List<PrivateHabitLog>> watchHabitLogs(
+    String typeId, {
+    required LocalDate from,
+    required LocalDate to,
+  }) =>
       (_db.select(_db.localPrivateHabitLogs)
-            ..where((t) => t.definitionId.equals(typeId) & t.localDate.isBetweenValues(from.toString(), to.toString()))
+            ..where(
+              (t) =>
+                  t.definitionId.equals(typeId) &
+                  t.localDate.isBetweenValues(from.toString(), to.toString()),
+            )
             ..orderBy([(t) => OrderingTerm(expression: t.occurredAt, mode: OrderingMode.desc)]))
           .watch()
           .map(
@@ -164,7 +185,8 @@ final class DriftPrivateRepository implements PrivateRepository {
   // ------------------------------------------------------------ bowel
 
   Failure? _bowelProblem(BowelDraft d) =>
-      _future(d.at) ?? (d.count < 1 || d.count > 20 ? const ValidationFailure('count', 'out_of_range') : null);
+      _future(d.at) ??
+      (d.count < 1 || d.count > 20 ? const ValidationFailure('count', 'out_of_range') : null);
 
   @override
   Future<Result<void>> addBowel(BowelDraft d) async {
@@ -216,8 +238,10 @@ final class DriftPrivateRepository implements PrivateRepository {
   }
 
   @override
-  Future<Result<void>> deleteBowel(String id) =>
-      Result.guard(() => (_db.delete(_db.localBowelLogs)..where((t) => t.id.equals(id))).go(), onError: (_) => _write);
+  Future<Result<void>> deleteBowel(String id) => Result.guard(
+    () => (_db.delete(_db.localBowelLogs)..where((t) => t.id.equals(id))).go(),
+    onError: (_) => _write,
+  );
 
   @override
   Stream<List<BowelLog>> watchBowel({required LocalDate from, required LocalDate to}) =>
@@ -278,15 +302,23 @@ final class DriftPrivateRepository implements PrivateRepository {
           .watch()
           .map(
             (rows) => [
-              for (final r in rows) PrivateActivity(id: r.id, name: r.name, counted: r.trackingType == 'count'),
+              for (final r in rows)
+                PrivateActivity(id: r.id, name: r.name, counted: r.trackingType == 'count'),
             ],
           );
 
   @override
-  Future<Result<void>> logActivity(String id, {required DateTime at, int? count, String? notes}) async {
+  Future<Result<void>> logActivity(
+    String id, {
+    required DateTime at,
+    int? count,
+    String? notes,
+  }) async {
     final f =
         _future(at) ??
-        (count != null && (count < 1 || count > 999) ? const ValidationFailure('count', 'out_of_range') : null);
+        (count != null && (count < 1 || count > 999)
+            ? const ValidationFailure('count', 'out_of_range')
+            : null);
     if (f != null) return Err(f);
     return Result.guard(() async {
       final s = await stampFor(clock, timeZone, at: at);
@@ -341,7 +373,11 @@ final class DriftPrivateRepository implements PrivateRepository {
   File _file(String id) => File('${photoDir!.path}/$id.bin');
 
   @override
-  Future<Result<ProgressPhoto>> addPhoto(List<int> bytes, {required DateTime takenAt, String? note}) async {
+  Future<Result<ProgressPhoto>> addPhoto(
+    List<int> bytes, {
+    required DateTime takenAt,
+    String? note,
+  }) async {
     if (photoDir == null || cipher == null) {
       return const Err(StorageFailure('photo_store_unavailable'));
     }
@@ -366,7 +402,12 @@ final class DriftPrivateRepository implements PrivateRepository {
               note: Value(_clean(note)),
             ),
           );
-      return ProgressPhoto(id: id, takenAt: s.occurredAt, localDate: s.localDate, note: _clean(note));
+      return ProgressPhoto(
+        id: id,
+        takenAt: s.occurredAt,
+        localDate: s.localDate,
+        note: _clean(note),
+      );
     }, onError: (_) => const StorageFailure('photo_write'));
   }
 
@@ -392,12 +433,18 @@ final class DriftPrivateRepository implements PrivateRepository {
 
   @override
   Stream<List<ProgressPhoto>> watchPhotos() =>
-      (_db.select(
-        _db.localProgressPhotos,
-      )..orderBy([(t) => OrderingTerm(expression: t.takenAt, mode: OrderingMode.desc)])).watch().map(
-        (rows) => [
-          for (final r in rows)
-            ProgressPhoto(id: r.id, takenAt: r.takenAt.toUtc(), localDate: r.localDate, note: r.note),
-        ],
-      );
+      (_db.select(_db.localProgressPhotos)
+            ..orderBy([(t) => OrderingTerm(expression: t.takenAt, mode: OrderingMode.desc)]))
+          .watch()
+          .map(
+            (rows) => [
+              for (final r in rows)
+                ProgressPhoto(
+                  id: r.id,
+                  takenAt: r.takenAt.toUtc(),
+                  localDate: r.localDate,
+                  note: r.note,
+                ),
+            ],
+          );
 }

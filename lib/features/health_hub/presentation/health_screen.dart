@@ -26,7 +26,8 @@ class HealthScreen extends ConsumerWidget {
     final target = ref.watch(currentDailyGoalsProvider).value?.targetWeightG;
     final measurements = ref.watch(latestMeasurementsProvider).value ?? const [];
     final lastNight = ref.watch(sleepOnProvider(today));
-    final weekSleep = ref.watch(sleepBetweenProvider((from: today.addDays(-6), to: today))).value ?? const [];
+    final weekSleep =
+        ref.watch(sleepBetweenProvider((from: today.addDays(-6), to: today))).value ?? const [];
     final weekAverage = averageNightLength(weekSleep.map((e) => e.period));
     final checkins = ref.watch(wellnessBetweenProvider((from: today, to: today))).value ?? const [];
 
@@ -57,7 +58,9 @@ class HealthScreen extends ConsumerWidget {
           ),
           _HubCard(
             label: l10n.cardMeasurements,
-            value: lastMeasured == null ? l10n.measurementsNone : l10n.measurementsTracked(measurements.length),
+            value: lastMeasured == null
+                ? l10n.measurementsNone
+                : l10n.measurementsTracked(measurements.length),
             detail: lastMeasured == null ? null : context.shortDate(lastMeasured.localDate),
             onTap: () => context.push(Routes.measurements),
           ),
@@ -72,7 +75,9 @@ class HealthScreen extends ConsumerWidget {
           ),
           _HubCard(
             label: l10n.cardCheckin,
-            value: checkins.isEmpty ? l10n.checkinNotToday : l10n.checkinCountToday(checkins.length),
+            value: checkins.isEmpty
+                ? l10n.checkinNotToday
+                : l10n.checkinCountToday(checkins.length),
             detail: l10n.checkinSubtitle,
             onTap: () => context.push(Routes.checkin),
           ),

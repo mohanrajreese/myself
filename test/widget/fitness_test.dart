@@ -24,12 +24,19 @@ void main() {
     }
   }
 
-  Future<void> tap(WidgetTester tester, Finder finder, {bool last = false, bool settle = true}) async {
+  Future<void> tap(
+    WidgetTester tester,
+    Finder finder, {
+    bool last = false,
+    bool settle = true,
+  }) async {
     if (finder.evaluate().isEmpty) {
       await tester.scrollUntilVisible(
         finder,
         200,
-        scrollable: find.byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down).last,
+        scrollable: find
+            .byWidgetPredicate((w) => w is Scrollable && w.axisDirection == AxisDirection.down)
+            .last,
       );
     }
     final f = last ? finder.last : finder.first;
@@ -42,10 +49,14 @@ void main() {
     }
   }
 
-  Future<void> tapText(WidgetTester tester, String text) => tap(tester, find.text(text), last: true);
+  Future<void> tapText(WidgetTester tester, String text) =>
+      tap(tester, find.text(text), last: true);
 
   Future<void> openFitness(WidgetTester tester) async {
-    await tap(tester, find.descendant(of: find.byType(NavigationBar), matching: find.text('Fitness')));
+    await tap(
+      tester,
+      find.descendant(of: find.byType(NavigationBar), matching: find.text('Fitness')),
+    );
   }
 
   testWidgets('steps: explains, asks, then shows the dashboard', (tester) async {
@@ -85,7 +96,9 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('steps: buffered readings become today\'s total; an adjustment is labelled', (tester) async {
+  testWidgets('steps: buffered readings become today\'s total; an adjustment is labelled', (
+    tester,
+  ) async {
     final now = DateTime(2026, 11, 16, 9).toUtc();
     app.stepCounter.buffer.addAll([
       (
@@ -160,7 +173,9 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('GPS tracking records distance from fixes and saves the route locally', (tester) async {
+  testWidgets('GPS tracking records distance from fixes and saves the route locally', (
+    tester,
+  ) async {
     await start(tester);
     await openFitness(tester);
     await tap(tester, find.widgetWithText(OutlinedButton, 'Ride'));
@@ -170,7 +185,12 @@ void main() {
     }
     final t0 = app.time.now.toUtc();
     for (var i = 0; i < 3; i++) {
-      app.location.fixes.add((latE7: 129700000 + i * 10000, lonE7: 775900000, accuracyDm: 50, at: t0));
+      app.location.fixes.add((
+        latE7: 129700000 + i * 10000,
+        lonE7: 775900000,
+        accuracyDm: 50,
+        at: t0,
+      ));
       await tester.pump(const Duration(milliseconds: 100));
     }
     app.time.now = app.time.now.add(const Duration(minutes: 2));
@@ -185,7 +205,9 @@ void main() {
     await app.dispose(tester);
   });
 
-  testWidgets('a gym workout: add an exercise, fill and complete sets, finish, save as template', (tester) async {
+  testWidgets('a gym workout: add an exercise, fill and complete sets, finish, save as template', (
+    tester,
+  ) async {
     await start(tester);
     await drain(tester);
     await openFitness(tester);

@@ -62,7 +62,8 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
     _mealId = e?.mealLogId;
   }
 
-  bool get _hasReceipt => _newReceipt != null || (widget.existing?.hasReceipt == true && !_removeReceipt);
+  bool get _hasReceipt =>
+      _newReceipt != null || (widget.existing?.hasReceipt == true && !_removeReceipt);
 
   Future<void> _pickCategory(List<FinanceCategory> all) async {
     final l10n = context.l10n;
@@ -74,7 +75,9 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
           for (final c in all)
             FbListRow(
               title: categoryLabel(l10n, c),
-              trailing: c.id == _categoryId ? Icon(Icons.check_rounded, semanticLabel: l10n.selected) : null,
+              trailing: c.id == _categoryId
+                  ? Icon(Icons.check_rounded, semanticLabel: l10n.selected)
+                  : null,
               onTap: () => Navigator.of(context).pop(c.id),
             ),
         ],
@@ -138,7 +141,9 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
             FbListRow(
               title: mealName(l10n, m.category),
               subtitle: context.time(m.occurredAt),
-              trailing: m.id == _mealId ? Icon(Icons.check_rounded, semanticLabel: l10n.selected) : null,
+              trailing: m.id == _mealId
+                  ? Icon(Icons.check_rounded, semanticLabel: l10n.selected)
+                  : null,
               onTap: () => Navigator.of(context).pop(m.id),
             ),
         ],
@@ -221,12 +226,15 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
     final selected = _categoryId ?? cats.where((c) => c.systemKey == 'food').firstOrNull?.id;
     final quick = [
       for (final k in _quickKeys) ...cats.where((c) => c.systemKey == k),
-      if (selected != null && !cats.any((c) => c.id == selected && _quickKeys.contains(c.systemKey)))
+      if (selected != null &&
+          !cats.any((c) => c.id == selected && _quickKeys.contains(c.systemKey)))
         ...cats.where((c) => c.id == selected),
     ];
     final linkable = selected != null && foodCategoryIds.contains(selected);
     final day = LocalDate.fromDateTime(_at);
-    final meals = linkable ? (ref.watch(mealsOnProvider(day)).value ?? const <Meal>[]) : const <Meal>[];
+    final meals = linkable
+        ? (ref.watch(mealsOnProvider(day)).value ?? const <Meal>[])
+        : const <Meal>[];
     final linkedMeal = meals.where((m) => m.id == _mealId).firstOrNull;
     return FbSheetBody(
       title: widget.existing == null ? l10n.moneyAddExpenseLabel : l10n.moneyEditExpense,
@@ -307,12 +315,17 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
                   onPressed: () => _pickMeal(meals),
                   icon: Icon(linkedMeal == null ? Icons.restaurant_outlined : Icons.check_rounded),
                   label: Text(
-                    linkedMeal == null ? l10n.moneyLinkMeal : l10n.moneyLinkedTo(mealName(l10n, linkedMeal.category)),
+                    linkedMeal == null
+                        ? l10n.moneyLinkMeal
+                        : l10n.moneyLinkedTo(mealName(l10n, linkedMeal.category)),
                   ),
                 )
               : const SizedBox.shrink(),
         ),
-        if (_error != null) ...[const SizedBox(height: FbSpace.md), FbNotice(_error!, isError: true)],
+        if (_error != null) ...[
+          const SizedBox(height: FbSpace.md),
+          FbNotice(_error!, isError: true),
+        ],
         const SizedBox(height: FbSpace.lg),
         FbPrimaryButton(label: l10n.save, onPressed: _save, busy: _busy),
       ],
@@ -367,7 +380,9 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
           for (final c in cats)
             FbListRow(
               title: categoryLabel(l10n, c),
-              trailing: c.id == _categoryId ? Icon(Icons.check_rounded, semanticLabel: l10n.selected) : null,
+              trailing: c.id == _categoryId
+                  ? Icon(Icons.check_rounded, semanticLabel: l10n.selected)
+                  : null,
               onTap: () => Navigator.of(context).pop(c.id),
             ),
         ],
@@ -387,13 +402,17 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
           for (final m in PaymentMethod.values)
             FbListRow(
               title: paymentMethodLabel(l10n, m),
-              trailing: m == _method ? Icon(Icons.check_rounded, semanticLabel: l10n.selected) : null,
+              trailing: m == _method
+                  ? Icon(Icons.check_rounded, semanticLabel: l10n.selected)
+                  : null,
               onTap: () => Navigator.of(context).pop(m.code),
             ),
         ],
       ),
     );
-    if (chosen != null) setState(() => _method = chosen.isEmpty ? null : PaymentMethod.fromCode(chosen));
+    if (chosen != null) {
+      setState(() => _method = chosen.isEmpty ? null : PaymentMethod.fromCode(chosen));
+    }
   }
 
   @override
@@ -461,12 +480,16 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                 children: [
                   FbToggleChip(label: monthLabel(_month), selected: true, onTap: _chooseMonth),
                   FbToggleChip(
-                    label: _categoryId == null ? l10n.moneyAllCategories : categoryLabel(l10n, cats[_categoryId]),
+                    label: _categoryId == null
+                        ? l10n.moneyAllCategories
+                        : categoryLabel(l10n, cats[_categoryId]),
                     selected: _categoryId != null,
                     onTap: () => _chooseCategory(cats.values.toList()),
                   ),
                   FbToggleChip(
-                    label: _method == null ? l10n.moneyAnyMethod : paymentMethodLabel(l10n, _method!),
+                    label: _method == null
+                        ? l10n.moneyAnyMethod
+                        : paymentMethodLabel(l10n, _method!),
                     selected: _method != null,
                     onTap: _chooseMethod,
                   ),
@@ -474,12 +497,18 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
               ),
               const SizedBox(height: FbSpace.md),
               Text(
-                l10n.moneyCountTotal(shown.length, formatRupees(shown.fold(0, (s, e) => s + e.amountPaise))),
+                l10n.moneyCountTotal(
+                  shown.length,
+                  formatRupees(shown.fold(0, (s, e) => s + e.amountPaise)),
+                ),
                 style: context.text.bodySmall,
               ),
               if (shown.isEmpty) ...[
                 const SizedBox(height: FbSpace.md),
-                FbEmptyHint(value.isEmpty ? l10n.moneyNothingInMonth : l10n.moneyNoMatch, boxed: true),
+                FbEmptyHint(
+                  value.isEmpty ? l10n.moneyNothingInMonth : l10n.moneyNoMatch,
+                  boxed: true,
+                ),
               ],
               for (final MapEntry(key: day, value: list) in byDay.entries) ...[
                 MoneySectionHeader(

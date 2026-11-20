@@ -6,7 +6,13 @@ import 'package:flutter_test/flutter_test.dart';
 LocalDate d(int y, int m, int day) => LocalDate(y, m, day);
 
 var _n = 0;
-Expense e(int rupees, String cat, LocalDate day, {PaymentMethod m = PaymentMethod.upi, String? meal}) => Expense(
+Expense e(
+  int rupees,
+  String cat,
+  LocalDate day, {
+  PaymentMethod m = PaymentMethod.upi,
+  String? meal,
+}) => Expense(
   id: 'e${_n++}',
   amountPaise: rupees * 100,
   categoryId: cat,
@@ -89,10 +95,19 @@ void main() {
   );
 
   test('the previous period of a month-to-date range is the same days of the month before', () {
-    expect(MoneyReport.previousRange(d(2026, 11, 1), d(2026, 11, 20)), (from: d(2026, 10, 1), to: d(2026, 10, 20)));
-    expect(MoneyReport.previousRange(d(2026, 3, 1), d(2026, 3, 31)), (from: d(2026, 2, 1), to: d(2026, 2, 28)));
+    expect(MoneyReport.previousRange(d(2026, 11, 1), d(2026, 11, 20)), (
+      from: d(2026, 10, 1),
+      to: d(2026, 10, 20),
+    ));
+    expect(MoneyReport.previousRange(d(2026, 3, 1), d(2026, 3, 31)), (
+      from: d(2026, 2, 1),
+      to: d(2026, 2, 28),
+    ));
     expect(MoneyReport.previousRange(d(2026, 1, 1), d(2026, 1, 31)).from, d(2025, 12, 1));
-    expect(MoneyReport.previousRange(d(2026, 11, 10), d(2026, 11, 16)), (from: d(2026, 11, 3), to: d(2026, 11, 9)));
+    expect(MoneyReport.previousRange(d(2026, 11, 10), d(2026, 11, 16)), (
+      from: d(2026, 11, 3),
+      to: d(2026, 11, 9),
+    ));
   });
 
   test('totals by category, by method and per day', () {

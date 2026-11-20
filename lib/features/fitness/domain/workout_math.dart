@@ -75,7 +75,9 @@ List<PersonalRecord> strengthRecords(List<SetRecordInput> sets) {
       // Ties keep the earliest, so a record is the first time it was reached.
       if (current == null || v > current || (v == current && s.at.isBefore(top!.at))) top = s;
     }
-    return top == null ? null : PersonalRecord(kind: kind, value: value(top)!, at: top.at, atLoadG: load);
+    return top == null
+        ? null
+        : PersonalRecord(kind: kind, value: value(top)!, at: top.at, atLoadG: load);
   }
 
   final withReps = sets.where((s) => (s.reps ?? 0) >= 1);
@@ -83,7 +85,12 @@ List<PersonalRecord> strengthRecords(List<SetRecordInput> sets) {
   if (load != null) out.add(load);
   final loads = {for (final s in withReps) ?s.loadG}.toList()..sort();
   for (final l in loads.reversed) {
-    final r = best(RecordKind.mostRepsAtLoad, withReps.where((s) => s.loadG == l), (s) => s.reps, load: l);
+    final r = best(
+      RecordKind.mostRepsAtLoad,
+      withReps.where((s) => s.loadG == l),
+      (s) => s.reps,
+      load: l,
+    );
     if (r != null) out.add(r);
   }
   final duration = best(RecordKind.longestDuration, sets, (s) => s.durationS);
@@ -95,7 +102,12 @@ List<PersonalRecord> strengthRecords(List<SetRecordInput> sets) {
 
 /// A finished walk, run or ride.
 final class CardioSession {
-  const CardioSession({required this.kind, required this.at, required this.distanceM, required this.durationS});
+  const CardioSession({
+    required this.kind,
+    required this.at,
+    required this.distanceM,
+    required this.durationS,
+  });
   final CardioKind kind;
   final DateTime at;
   final int distanceM;
@@ -116,17 +128,27 @@ List<PersonalRecord> cardioRecords(CardioKind kind, List<CardioSession> sessions
     if (s.durationS > 0 && (longestTime == null || s.durationS > longestTime.durationS)) {
       longestTime = s;
     }
-    final pace = s.distanceM >= 1000 ? paceSecondsPerKm(distanceM: s.distanceM, durationS: s.durationS) : null;
+    final pace = s.distanceM >= 1000
+        ? paceSecondsPerKm(distanceM: s.distanceM, durationS: s.durationS)
+        : null;
     if (pace != null && (fastestPace == null || pace < fastestPace)) {
       fastestPace = pace;
       fastest = s;
     }
   }
   if (longest != null) {
-    out.add(PersonalRecord(kind: RecordKind.longestDistance, value: longest.distanceM, at: longest.at));
+    out.add(
+      PersonalRecord(kind: RecordKind.longestDistance, value: longest.distanceM, at: longest.at),
+    );
   }
   if (longestTime != null) {
-    out.add(PersonalRecord(kind: RecordKind.longestDuration, value: longestTime.durationS, at: longestTime.at));
+    out.add(
+      PersonalRecord(
+        kind: RecordKind.longestDuration,
+        value: longestTime.durationS,
+        at: longestTime.at,
+      ),
+    );
   }
   if (fastest != null) {
     out.add(PersonalRecord(kind: RecordKind.fastestPace, value: fastestPace!, at: fastest.at));

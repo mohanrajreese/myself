@@ -39,7 +39,11 @@ class MemorySyncRemote implements SyncRemote {
     upserts++;
     conflictKeys[table] = onConflict;
     for (final r in rows) {
-      (_tables[table] ??= {})[r['id']! as String] = {...r, 'user_id': 'user-1', 'server_updated_at': _stamp()};
+      (_tables[table] ??= {})[r['id']! as String] = {
+        ...r,
+        'user_id': 'user-1',
+        'server_updated_at': _stamp(),
+      };
     }
   }
 

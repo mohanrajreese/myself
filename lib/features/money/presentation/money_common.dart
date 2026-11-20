@@ -23,7 +23,12 @@ String monthName(LocalDate month) => DateFormat.MMMM().format(DateTime(month.yea
 
 /// A labelled bar: the percentage is spoken, never shown by colour alone.
 class MoneyBar extends StatelessWidget {
-  const MoneyBar({required this.fraction, required this.semanticLabel, this.over = false, super.key});
+  const MoneyBar({
+    required this.fraction,
+    required this.semanticLabel,
+    this.over = false,
+    super.key,
+  });
   final double fraction;
   final String semanticLabel;
   final bool over;
@@ -32,14 +37,23 @@ class MoneyBar extends StatelessWidget {
   Widget build(BuildContext context) => Semantics(
     label: semanticLabel,
     child: ExcludeSemantics(
-      child: FbProgressBar(fraction: fraction.clamp(0, 1), color: over ? context.colors.error : null),
+      child: FbProgressBar(
+        fraction: fraction.clamp(0, 1),
+        color: over ? context.colors.error : null,
+      ),
     ),
   );
 }
 
 /// One expense in a list.
 class ExpenseRow extends StatelessWidget {
-  const ExpenseRow({required this.expense, required this.category, this.showDay = false, this.onTap, super.key});
+  const ExpenseRow({
+    required this.expense,
+    required this.category,
+    this.showDay = false,
+    this.onTap,
+    super.key,
+  });
   final Expense expense;
   final FinanceCategory? category;
   final bool showDay;
@@ -66,7 +80,9 @@ class ExpenseRow extends StatelessWidget {
 }
 
 /// Rupees with up to 2 decimals, at most 8 digits before the point.
-final rupeeInputFormatters = <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'^\d{0,8}([.,]\d{0,2})?'))];
+final rupeeInputFormatters = <TextInputFormatter>[
+  FilteringTextInputFormatter.allow(RegExp(r'^\d{0,8}([.,]\d{0,2})?')),
+];
 
 /// A section heading with an optional action on the right.
 class MoneySectionHeader extends StatelessWidget {

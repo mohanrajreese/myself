@@ -17,12 +17,16 @@ final pushMessagingProvider = Provider<PushMessaging>((ref) => const DisabledPus
 final pushRegistryProvider = Provider<PushRegistry?>((ref) => null);
 
 /// Push messages tapped while the app was in the background.
-final pushOpenedProvider = StreamProvider<PushMessage>((ref) => ref.watch(pushMessagingProvider).opened);
+final pushOpenedProvider = StreamProvider<PushMessage>(
+  (ref) => ref.watch(pushMessagingProvider).opened,
+);
 
 final appVersionProvider = Provider<String>((ref) => '0.6.0');
 
 final pushPreferencesProvider = FutureProvider<PushPreferences>((ref) async {
-  return PushPreferences.fromJson(await ref.watch(settingsRepositoryProvider).read(PushPreferences.key));
+  return PushPreferences.fromJson(
+    await ref.watch(settingsRepositoryProvider).read(PushPreferences.key),
+  );
 });
 
 /// Notification ids used for push messages; tapping one opens Account and sync.

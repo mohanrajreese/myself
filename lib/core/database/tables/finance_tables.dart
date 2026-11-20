@@ -28,17 +28,22 @@ class Debts extends Table with SyncedColumns {
   TextColumn get direction => text().check(direction.isIn(const ['i_owe', 'owed_to_me']))();
   TextColumn get name => text()();
   TextColumn get counterparty => text()();
-  TextColumn get kind => text().check(kind.isIn(const ['personal', 'bank_loan', 'credit_card', 'other']))();
+  TextColumn get kind =>
+      text().check(kind.isIn(const ['personal', 'bank_loan', 'credit_card', 'other']))();
   IntColumn get principalPaise => integer().check(principalPaise.isBiggerThanValue(0))();
 
   /// Basis points a year, for reference only (850 = 8.5 %).
-  IntColumn get interestRateBp =>
-      integer().nullable().check(interestRateBp.isNull() | interestRateBp.isBetweenValues(0, 10000))();
+  IntColumn get interestRateBp => integer().nullable().check(
+    interestRateBp.isNull() | interestRateBp.isBetweenValues(0, 10000),
+  )();
   TextColumn get startDate => text().map(const LocalDateConverter())();
   TextColumn get dueDate => text().map(const LocalDateConverter()).nullable()();
-  IntColumn get emiPaise => integer().nullable().check(emiPaise.isNull() | emiPaise.isBiggerThanValue(0))();
-  IntColumn get emiDay => integer().nullable().check(emiDay.isNull() | emiDay.isBetweenValues(1, 28))();
-  IntColumn get emiCount => integer().nullable().check(emiCount.isNull() | emiCount.isBetweenValues(1, 600))();
+  IntColumn get emiPaise =>
+      integer().nullable().check(emiPaise.isNull() | emiPaise.isBiggerThanValue(0))();
+  IntColumn get emiDay =>
+      integer().nullable().check(emiDay.isNull() | emiDay.isBetweenValues(1, 28))();
+  IntColumn get emiCount =>
+      integer().nullable().check(emiCount.isNull() | emiCount.isBetweenValues(1, 600))();
   TextColumn get firstEmiDate => text().map(const LocalDateConverter()).nullable()();
   BoolColumn get remind => boolean().withDefault(const Constant(true))();
 
@@ -64,7 +69,8 @@ class DebtPayments extends Table with SyncedColumns {
   DateTimeColumn get paidAt => dateTime()();
   TextColumn get localDate => text().map(const LocalDateConverter())();
   TextColumn get tz => text()();
-  IntColumn get instalmentNo => integer().nullable().check(instalmentNo.isNull() | instalmentNo.isBiggerThanValue(0))();
+  IntColumn get instalmentNo =>
+      integer().nullable().check(instalmentNo.isNull() | instalmentNo.isBiggerThanValue(0))();
   TextColumn get note => text().nullable()();
 }
 
@@ -92,8 +98,10 @@ class Expenses extends Table with SyncedColumns {
   TextColumn get localDate => text().map(const LocalDateConverter())();
   TextColumn get tz => text()();
   TextColumn get note => text().nullable()();
-  TextColumn get mealLogId => text().nullable().references(MealLogs, #id, onDelete: KeyAction.setNull)();
-  TextColumn get debtPaymentId => text().nullable().references(DebtPayments, #id, onDelete: KeyAction.setNull)();
+  TextColumn get mealLogId =>
+      text().nullable().references(MealLogs, #id, onDelete: KeyAction.setNull)();
+  TextColumn get debtPaymentId =>
+      text().nullable().references(DebtPayments, #id, onDelete: KeyAction.setNull)();
   TextColumn get recurringExpenseId =>
       text().nullable().references(RecurringExpenses, #id, onDelete: KeyAction.setNull)();
   BoolColumn get hasReceipt => boolean().withDefault(const Constant(false))();

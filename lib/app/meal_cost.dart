@@ -31,7 +31,11 @@ Future<Result<void>> syncMealCost(
 }
 
 /// After a meal is deleted: drop its expense, or keep it unlinked.
-Future<void> afterMealDeleted(MoneyRepository money, Expense linked, {required bool deleteExpense}) async {
+Future<void> afterMealDeleted(
+  MoneyRepository money,
+  Expense linked, {
+  required bool deleteExpense,
+}) async {
   if (deleteExpense) {
     await money.deleteExpense(linked.id);
     return;

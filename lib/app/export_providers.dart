@@ -20,7 +20,9 @@ final exportBuilderProvider = Provider<ExportBuilder>((ref) {
     db: ref.watch(appDatabaseProvider),
     privateDb: privateDb,
     mealPhotos: ref.watch(mealPhotoStoreProvider),
-    readProgressPhoto: privateDb == null ? null : (id) => ref.read(privateRepositoryProvider).readPhoto(id),
+    readProgressPhoto: privateDb == null
+        ? null
+        : (id) => ref.read(privateRepositoryProvider).readPhoto(id),
     clock: ref.watch(clockProvider),
   );
 });
