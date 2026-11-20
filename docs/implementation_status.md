@@ -24,6 +24,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | 5 Lifestyle and privacy | ⏳ built, phone verification pending | [phase-5.md](reports/phase-5.md) |
 | 6 Reports and synchronisation | ⏳ built, phone and cloud verification pending | [phase-6.md](reports/phase-6.md) |
 | 7 Quality and release | ⏳ automated parts done; device run pending | [phase-7.md](reports/phase-7.md) |
+| 8 Money (PRD §5.21, proposed) | ✋ PRD addendum awaiting approval | — |
 
 ## Task log
 

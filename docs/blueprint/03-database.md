@@ -108,6 +108,18 @@ Present in `AppDatabase` and in Supabase with the same columns, plus `user_id` a
 | `device_notification_tokens` | `fcm_token` (unique), `device_label`, `app_version`, `last_seen_at`, `revoked_at?` | Cloud-only in practice; the device keeps its own token in settings |
 | `cloud_sync_metadata` | `device_id`, `last_push_at`, `last_pull_at`, `schema_version`, `app_version` | One row per device. Used for sync status and backup-status pushes |
 
+### 2.8 Money (PRD §5.21, proposed)
+
+| Table | Columns | Notes |
+|---|---|---|
+| `finance_categories` | `name`, `system_key?`, `icon_key`, `archived`, `sort_order` | Seeded defaults with fixed ids (like exercises, C10); own categories added |
+| `expenses` | `amount_paise` (> 0), `category_id`, `method` (cash/upi/debit_card/credit_card/net_banking/other), `occurred_at`, `local_date`, `tz`, `note?`, `meal_log_id?`, `debt_payment_id?`, `has_receipt` | `meal_log_id` and `debt_payment_id` are owner-scoped composite foreign keys, set null on delete |
+| `budgets` | `effective_from`, `category_id?` (null = overall), `amount_paise` | Effective-dated, like goals; the row in force on a month is the latest whose `effective_from` is on or before its first day |
+| `debts` | `direction` (i_owe/owed_to_me), `counterparty`, `kind` (personal/bank_loan/credit_card/other), `principal_paise`, `interest_rate_bp?`, `start_date`, `due_date?`, `emi_paise?`, `emi_day?` (1–28), `emi_count?`, `first_emi_date?`, `status` (open/settled), `notes?` | EMI fields all set or all null (`CHECK`) |
+| `debt_payments` | `debt_id`, `amount_paise`, `paid_at`, `local_date`, `tz`, `instalment_no?`, `note?` | Child of `debts`; outstanding = principal − sum of payments |
+
+EMI and recurring-expense reminders are rows in `reminders` with new kinds `emi` and `expense` and a nullable `debt_id` (composite foreign key, set null on delete). Receipt photos: local-only `local_expense_receipts` (encrypted files, like `local_meal_photos`).
+
 ## 3. Local operational tables (`AppDatabase`, never synced)
 
 | Table | Columns | Purpose |
@@ -160,6 +172,7 @@ SQL-first (§13.2). One file per logical step in `supabase/migrations/`, applied
 | 8 | `…_fitness.sql` | `step_logs`, `exercises`, `workout_sessions`, `workout_exercises`, `exercise_sets`, `workout_templates` | 4 |
 | 9 | `…_hygiene.sql` | `hygiene_logs` | 5 |
 | 10 | `…_devices_and_sync.sql` | `device_notification_tokens`, `cloud_sync_metadata` | 6 |
+| 11 | `…_money.sql` | `finance_categories`, `expenses`, `budgets`, `debts`, `debt_payments`; `reminders` kinds `emi`/`expense` and `debt_id` | 8 (proposed) |
 
 `supabase/seed.sql` holds only development fixtures for local testing. It never runs against the real project.
 

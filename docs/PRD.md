@@ -1241,6 +1241,57 @@ Avoid claims that one activity caused another health outcome.
 
 ---
 
+## 5.21 Money: expenses, budgets, debts and EMIs
+
+> Addendum v2.1, requested by the owner on 20 November 2026. **Status: proposed, awaiting owner approval.** Decisions: reached from a Home card (no new tab); synced like other ordinary records; Indian rupees only; no bill splitting.
+
+### Placement
+- A **Money** card on Home shows this month's spending, the budget left, and the next EMI due. Tapping it opens the Money section (its own screens, not a bottom tab).
+- Money is ordinary data (§7.2): synced, not behind the app lock.
+
+### A. Expenses
+- Add an expense: amount, category, payment method, date and time, note, optional receipt photo.
+- Default categories, editable: Food, Groceries, Transport, Fuel, Bills and utilities, Rent, Shopping, Health, Entertainment, Education, Travel, Gifts, EMI and loan repayments, Other. Custom categories may be added and archived.
+- Payment methods: Cash, UPI, Debit card, Credit card, Net banking, Other.
+- Edit and delete (with confirmation); search and filter by date, category and method.
+- Recurring expenses (for example rent): a schedule (existing reminder rules) with a reminder that offers one-tap "Paid", which records the expense.
+- Receipt photos are encrypted on the phone and never uploaded, as meal photos are (decision C2).
+
+### B. Budgets
+- An overall monthly budget and optional per-category monthly budgets.
+- Changing a budget does not change past months (effective-dated, like goals).
+- Progress against budget is shown with a number and a word, never colour alone.
+
+### C. Debts and loans
+- Two directions: **I owe** and **Owed to me**.
+- Counterparty: a person's name, or a bank or lender.
+- Kinds: Personal, Bank loan, Credit card, Other.
+- Fields: original amount, start date, optional due date, optional annual interest rate (for reference only; no interest is calculated), notes.
+- Payments ledger: each repayment (paid by me, or received by me) with amount, date and note. Outstanding = original amount minus payments recorded. A debt can be marked settled.
+- **EMI loans:** EMI amount, day of the month it is due, number of instalments, first EMI date. The app shows instalments paid, instalments left, and remaining amount (EMI × instalments left), with a note that the bank's own figure may differ.
+- **EMI reminders** use the existing reminder engine: a notification on the due day (and optionally a day before) with Paid, Snooze, Skip. "Paid" records the instalment against the loan and, by default, an expense in "EMI and loan repayments".
+- Notifications show "EMI due today" and the lender's name; the amount is shown only when the phone is unlocked.
+
+### D. Analysis
+- For a month or a custom range: total spent, by category, by payment method, daily trend, against budget, compared with the previous period.
+- EMI and loan repayments as a share of spending.
+- Debts summary: total I owe, total owed to me, upcoming EMIs in the next 30 days.
+- Food: spending on food, cost per linked meal, spending on junk-food meals.
+- Wording is descriptive only (as §5.20). No financial advice, credit scores or predictions.
+
+### E. Link with food
+- When adding or editing a meal, an optional **Cost** field records a linked expense in Food.
+- An expense in Food or Groceries may be linked to a meal from the same day.
+- Deleting a meal asks whether to delete its linked expense too.
+
+### Out of scope
+Reading bank SMS, connecting to bank accounts, making payments, income tracking, investments, other currencies, splitting bills with others.
+
+### Storage
+Amounts are integers in paise. Displayed as ₹ with Indian digit grouping (₹1,23,456.50).
+
+---
+
 # PART 6 — DATABASE AND DATA MODEL
 
 ## 6.1 Storage strategy
@@ -1300,6 +1351,13 @@ Create the following PostgreSQL tables:
 ### Synchronization
 - sync_outbox (local implementation)
 - cloud_sync_metadata
+
+### Money (addendum v2.1, proposed)
+- finance_categories
+- expenses
+- budgets
+- debts
+- debt_payments
 
 ## 6.3 Local-only tables
 
@@ -1406,6 +1464,7 @@ The following must remain local-only by default:
 
 The following may be synchronized:
 
+- Money: expenses, budgets, debts, debt payments, categories (addendum v2.1, proposed). Receipt photos stay on the phone.
 - Profile.
 - Goals.
 - Weight.
