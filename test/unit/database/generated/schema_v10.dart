@@ -5200,7 +5200,7 @@ class Budgets extends Table with TableInfo {
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (amount_paise > 0)',
+    $customConstraints: 'NOT NULL CHECK (amount_paise >= 0)',
   );
   @override
   List<GeneratedColumn> get $columns => [

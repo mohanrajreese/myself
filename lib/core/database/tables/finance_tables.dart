@@ -115,7 +115,9 @@ class Budgets extends Table with SyncedColumns {
 
   /// Null: the overall monthly budget.
   TextColumn get categoryId => text().nullable().references(FinanceCategories, #id)();
-  IntColumn get amountPaise => integer().check(amountPaise.isBiggerThanValue(0))();
+
+  /// 0 means "no budget from this month" (removing never changes past months).
+  IntColumn get amountPaise => integer().check(amountPaise.isBiggerOrEqualValue(0))();
 }
 
 /// Index of encrypted receipt photos (local only, like meal photos, C2).

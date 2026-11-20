@@ -1205,7 +1205,7 @@ create table public.budgets (
   user_id           uuid not null default auth.uid() references auth.users (id) on delete cascade,
   effective_from    date not null,
   category_id       uuid,
-  amount_paise      bigint not null check (amount_paise > 0),
+  amount_paise      bigint not null check (amount_paise >= 0), -- 0: no budget from effective_from
   created_at        timestamptz not null,
   updated_at        timestamptz not null,
   deleted_at        timestamptz,
