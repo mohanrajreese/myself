@@ -166,3 +166,5 @@ Features implemented but not yet confirmed on the phone. Test numbers refer to `
 | EMI and recurring reminders | Add a loan due in 7 days; reminder at 09:00; Paid records instalment and expense; lock screen shows no amount | Pending |
 | Receipt photo | Attach a receipt; stored file is not a readable image | Pending |
 | Overdue EMIs, card and personal due reminders, budget alerts | Phase 9 device list in `docs/reports/phase-9.md` §9 | Pending |
+
+Supabase (23 Nov 2026): all 13 migrations applied to project `ianhjkyuklmqoodubrwp` through the Supabase MCP server; 34 public tables, all with row-level security. Recorded versions are the apply times (20261123084146…), not the file names, so use `supabase migration repair` before any `supabase db push`. Edge Functions (`delete-account`, `send-push`) not yet deployed.
