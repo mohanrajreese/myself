@@ -8,8 +8,8 @@ Resume point for every work session. Update it when a task changes state; keep i
 
 | Item | Value |
 |---|---|
-| Phase | 8 — Money (§5.21): complete in the cloud environment (20 Nov 2026), report `docs/reports/phase-8.md`; device and Supabase checks with the owner. Phase 7 device test plan and cloud setup are still with the owner |
-| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026; Phase 6 screens approved 18 Nov 2026; Phase 8 (Money) screens approved 20 Nov 2026; recurring expenses and categories approved 20 Nov) |
+| Phase | 9 — Money additions (§5.22): complete in the cloud environment (23 Nov 2026), report `docs/reports/phase-9.md`; device and Supabase checks with the owner |
+| Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026; Phase 6 screens approved 18 Nov 2026; Phase 8 (Money) screens approved 20 Nov 2026; recurring expenses and categories approved 20 Nov; Phase 9 screens approved 23 Nov) |
 | Blocked on | Owner's Supabase and Google OAuth setup for a phone build |
 | Waiting on owner | Phone model; Supabase project (migrations, functions); Google OAuth clients (debug and release fingerprints); Firebase project; release keystore; running `docs/device_test_plan.md` |
 
@@ -25,6 +25,7 @@ Resume point for every work session. Update it when a task changes state; keep i
 | 6 Reports and synchronisation | ⏳ built, phone and cloud verification pending | [phase-6.md](reports/phase-6.md) |
 | 7 Quality and release | ⏳ automated parts done; device run pending | [phase-7.md](reports/phase-7.md) |
 | 8 Money (PRD §5.21) | ☑ built and tested · ⏳ device | `docs/reports/phase-8.md` |
+| 9 Money additions (PRD §5.22) | ☑ built and tested · ⏳ device | `docs/reports/phase-9.md` |
 
 ## Task log
 
@@ -164,3 +165,4 @@ Features implemented but not yet confirmed on the phone. Test numbers refer to `
 | Account deletion removes the cloud rows | Delete account, then check the project tables | Pending |
 | EMI and recurring reminders | Add a loan due in 7 days; reminder at 09:00; Paid records instalment and expense; lock screen shows no amount | Pending |
 | Receipt photo | Attach a receipt; stored file is not a readable image | Pending |
+| Overdue EMIs, card and personal due reminders, budget alerts | Phase 9 device list in `docs/reports/phase-9.md` §9 | Pending |
