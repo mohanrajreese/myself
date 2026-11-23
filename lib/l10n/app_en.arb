@@ -3774,5 +3774,118 @@
         "type": "String"
       }
     }
-  }
+  },
+  "moneyCardDue": "{days, plural, =0{Card payment due today: {name}} =1{Card payment due tomorrow: {name}} other{Card payment in {days} days: {name}}}",
+  "@moneyCardDue": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyCardDueBody": "Statement of {statement} · due {due}",
+  "@moneyCardDueBody": {
+    "placeholders": {
+      "statement": {
+        "type": "String"
+      },
+      "due": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyDueOwe": "{days, plural, =0{{name}: due today} =1{{name}: due tomorrow} other{{name}: due in {days} days}}",
+  "@moneyDueOwe": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyDueOweBody": "Money you owe {person}",
+  "@moneyDueOweBody": {
+    "placeholders": {
+      "person": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyDueLent": "{days, plural, =0{Money you lent to {name}: due today} =1{Money you lent to {name}: due tomorrow} other{Money you lent to {name}: due in {days} days}}",
+  "@moneyDueLent": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyDueLentBody": "Tap to record what you received",
+  "moneyIncomeDue": "{name}: expected today",
+  "@moneyIncomeDue": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyBudgetAlert": "{name} budget: {percent}% used",
+  "@moneyBudgetAlert": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyBudgetAlertFull": "{name} budget: all used",
+  "@moneyBudgetAlertFull": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyBudgetAlertBody": "{month} · tap to see your budgets",
+  "@moneyBudgetAlertBody": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyFactSaved": "You saved {amount}, {percent}% of your income.",
+  "@moneyFactSaved": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyFactOverspent": "You spent {amount} more than your income.",
+  "@moneyFactOverspent": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyIncSalary": "Salary",
+  "moneyIncBusiness": "Business",
+  "moneyIncInterest": "Interest",
+  "moneyIncGift": "Gift",
+  "moneyIncRefund": "Refund",
+  "moneyIncOther": "Other"
 }

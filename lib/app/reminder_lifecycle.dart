@@ -6,7 +6,9 @@ import 'package:material_ui/material_ui.dart';
 import '../core/notifications/notification_gateway.dart';
 import '../core/widgets/l10n.dart';
 import 'fitness_providers.dart';
+import 'budget_alert_providers.dart';
 import 'money_labels.dart';
+import 'money_providers.dart';
 import 'providers.dart';
 import 'private_providers.dart';
 import 'sync_controller.dart';
@@ -53,6 +55,12 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
             .seedCategories(categoryNames(context.l10n))
             .catchError((Object _) {}),
       );
+      unawaited(
+        ref
+            .read(moneyRepositoryProvider)
+            .seedIncomeSources(incomeSourceNames(context.l10n))
+            .catchError((Object _) {}),
+      );
       refreshScreenTime(ref);
       unawaited(ref.read(syncControllerProvider.notifier).syncNow());
       unawaited(ref.read(pushControllerProvider.notifier).start());
@@ -86,6 +94,13 @@ class _ReminderLifecycleState extends ConsumerState<ReminderLifecycle> {
 
   @override
   Widget build(BuildContext context) {
+    // Budget alerts (§5.22K): check whenever this month's spending changes.
+    final today = ref.watch(todayProvider);
+    ref.listen(expensesProvider(monthRange(monthStart(today), today)), (_, next) {
+      if (next.hasValue) {
+        unawaited(ref.read(budgetAlertsProvider).check().catchError((Object _) {}));
+      }
+    });
     ref.listen(pushOpenedProvider, (_, next) {
       if (next.value != null) unawaited(ref.read(routerProvider).push(Routes.accountSync));
     });

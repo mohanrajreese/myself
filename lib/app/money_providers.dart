@@ -26,18 +26,47 @@ final foodCategoryIds = {
   DriftMoneyRepository.categoryId('groceries'),
 };
 
-final moneyCategoriesProvider = StreamProvider<List<FinanceCategory>>(
+final allMoneyCategoriesProvider = StreamProvider<List<FinanceCategory>>(
   (ref) => ref.watch(moneyRepositoryProvider).watchCategories(),
+);
+
+/// Expense categories only.
+final moneyCategoriesProvider = Provider<AsyncValue<List<FinanceCategory>>>(
+  (ref) => ref
+      .watch(allMoneyCategoriesProvider)
+      .whenData(
+        (all) => [
+          for (final c in all)
+            if (!c.isIncome) c,
+        ],
+      ),
+);
+
+/// Income sources only.
+final incomeSourcesProvider = Provider<AsyncValue<List<FinanceCategory>>>(
+  (ref) => ref
+      .watch(allMoneyCategoriesProvider)
+      .whenData(
+        (all) => [
+          for (final c in all)
+            if (c.isIncome) c,
+        ],
+      ),
 );
 
 final moneyCategoryMapProvider = Provider<Map<String, FinanceCategory>>(
   (ref) => {
-    for (final c in ref.watch(moneyCategoriesProvider).value ?? const <FinanceCategory>[]) c.id: c,
+    for (final c in ref.watch(allMoneyCategoriesProvider).value ?? const <FinanceCategory>[])
+      c.id: c,
   },
 );
 
 final expensesProvider = StreamProvider.family<List<Expense>, DayRange>(
   (ref, r) => ref.watch(moneyRepositoryProvider).watchExpenses(from: r.from, to: r.to),
+);
+
+final incomesProvider = StreamProvider.family<List<Income>, DayRange>(
+  (ref, r) => ref.watch(moneyRepositoryProvider).watchIncomes(from: r.from, to: r.to),
 );
 
 final junkMealIdsProvider = StreamProvider.family<Set<String>, DayRange>(
@@ -118,6 +147,7 @@ final moneyReportProvider = Provider.family<AsyncValue<MoneyReport>, DayRange>((
       payments: pay.value!,
       changes: ref.watch(loanChangesProvider).value ?? const [],
       skips: ref.watch(instalmentSkipsProvider).value ?? const [],
+      incomes: ref.watch(incomesProvider(r)).value ?? const [],
       emiCategoryId: emiCategoryId,
       foodCategoryIds: foodCategoryIds,
       junkMealIds: junk.value!,

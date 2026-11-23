@@ -29,6 +29,13 @@ final text = MoneyReminderText(
   recurringDue: (name) => '$name is due today',
   emiOverdue: (name) => 'EMI overdue: $name',
   emiOverdueBody: (lender, n, due) => '$lender · instalment $n was due on $due',
+  card: (name, days) => 'Card payment in $days days: $name',
+  cardBody: (st, due) => 'Statement of $st · due $due',
+  dueOwe: (name, days) => '$name: due in $days days',
+  dueOweBody: (person) => 'Money you owe $person',
+  dueLent: (name, days) => 'Money you lent to $name: due in $days days',
+  dueLentBody: 'Tap to record what you received',
+  incomeDue: (name) => '$name: expected today',
 );
 
 void main() {
@@ -238,5 +245,96 @@ void main() {
       NotificationTap(notificationId: first.id, action: ReminderAction.complete),
     );
     expect((await money.payments(debtId: loan.id)).first.instalmentNo, 39);
+  });
+
+  test('a card statement reminds before its due date and Paid pays what is left', () async {
+    final card =
+        ((await money.saveDebt(
+                  Debt(
+                    id: '',
+                    direction: DebtDirection.iOwe,
+                    name: 'HDFC Millennia',
+                    counterparty: 'HDFC',
+                    kind: DebtKind.creditCard,
+                    principalPaise: 2348000,
+                    startDate: LocalDate(2026, 11, 18),
+                    statementDay: 18,
+                    cardDueDay: 7,
+                    recordAsExpense: false,
+                  ),
+                ))
+                as Ok<Debt>)
+            .value;
+    await money.saveStatement(
+      CardStatement(
+        id: '',
+        debtId: card.id,
+        statementDate: LocalDate(2026, 11, 18),
+        dueDate: LocalDate(2026, 12, 3),
+        totalDuePaise: 2348000,
+        minDuePaise: 118000,
+      ),
+    );
+    await money.addPayment(card.id, amountPaise: 1000000, at: DateTime.utc(2026, 11, 25));
+    await service.replan();
+    final notes = gateway.pending.values.where((n) => n.title.startsWith('Card payment')).toList();
+    expect(
+      notes.map((n) => n.at),
+      containsAll([DateTime.utc(2026, 12, 2, 9), DateTime.utc(2026, 12, 3, 9)]),
+    );
+    final rec = (await store.active()).firstWhere((r) => r.reminderId.startsWith('card:'));
+    await service.handle(NotificationTap(notificationId: rec.id, action: ReminderAction.complete));
+    final paid = await money.payments(debtId: card.id);
+    expect(paid.map((p) => p.amountPaise), containsAll([1000000, 1348000]));
+    expect(gateway.pending.values.where((n) => n.title.startsWith('Card payment')), isEmpty);
+  });
+
+  test('a personal debt reminds on its due date (and the day before when chosen)', () async {
+    await money.saveDebt(
+      Debt(
+        id: '',
+        direction: DebtDirection.owedToMe,
+        name: 'Priya',
+        counterparty: 'Priya',
+        kind: DebtKind.personal,
+        principalPaise: 850000,
+        startDate: LocalDate(2026, 11, 1),
+        dueDate: LocalDate(2026, 12, 1),
+        dueRemind: true,
+        dueRemindDays: 1,
+      ),
+    );
+    await service.replan();
+    final notes = gateway.pending.values.where((n) => n.title.startsWith('Money you lent')).toList()
+      ..sort((a, b) => a.at!.compareTo(b.at!));
+    expect(notes.map((n) => n.at), [DateTime.utc(2026, 11, 30, 9), DateTime.utc(2026, 12, 1, 9)]);
+    expect(notes.every((n) => !'${n.title}${n.body}'.contains('8,500')), isTrue);
+  });
+
+  test('recurring income reminds and Received records the income', () async {
+    await money.seedIncomeSources(const {});
+    final salary =
+        ((await money.saveRecurring(
+                  RecurringExpense(
+                    id: '',
+                    name: 'Salary',
+                    amountPaise: 8000000,
+                    categoryId: DriftMoneyRepository.categoryId('salary'),
+                    method: PaymentMethod.netBanking,
+                    rule: Monthly.dayOfMonth(1, times: const [540]),
+                    isIncome: true,
+                  ),
+                ))
+                as Ok<RecurringExpense>)
+            .value;
+    await service.replan();
+    final rec = (await store.active()).singleWhere((r) => r.reminderId == 'rec:${salary.id}');
+    expect(gateway.pending[rec.id]!.title, 'Salary: expected today');
+    await service.handle(NotificationTap(notificationId: rec.id, action: ReminderAction.complete));
+    final incomes = await money
+        .watchIncomes(from: LocalDate(2026, 11, 1), to: LocalDate(2026, 12, 31))
+        .first;
+    expect(incomes.single.amountPaise, 8000000);
+    expect(await db.select(db.expenses).get(), isEmpty);
   });
 }

@@ -296,4 +296,67 @@ void main() {
     await money.unskipInstalment(skips.single.id);
     expect(await money.skips(), isEmpty);
   });
+
+  test(
+    'a split creates Owed-to-me debts; editing updates unpaid shares; removing can delete them',
+    () async {
+      final e = ((await money.addExpense(draft(240000))) as Ok<Expense>).value;
+      await money.saveSplit(
+        e.id,
+        label: 'Dinner at Paradise',
+        shares: [(person: 'Ravi', sharePaise: 80000), (person: 'Priya', sharePaise: 80000)],
+      );
+      var debts = await money.debts();
+      expect(debts.map((d) => (d.counterparty, d.principalPaise, d.direction)), [
+        ('Ravi', 80000, DebtDirection.owedToMe),
+        ('Priya', 80000, DebtDirection.owedToMe),
+      ]);
+      expect(debts.first.name, 'Dinner at Paradise');
+      final priya = debts.firstWhere((d) => d.counterparty == 'Priya');
+      await money.addPayment(priya.id, amountPaise: 80000, at: time.now);
+      // Ravi's share changes; Priya leaves the split but has already paid.
+      await money.saveSplit(
+        e.id,
+        label: 'Dinner at Paradise',
+        shares: [(person: 'ravi', sharePaise: 90000)],
+      );
+      debts = await money.debts();
+      expect(debts.firstWhere((d) => d.counterparty == 'Ravi').principalPaise, 90000);
+      expect(debts.any((d) => d.id == priya.id), isTrue, reason: 'a paid share keeps its debt');
+      expect(await money.splitsFor(e.id), hasLength(1));
+      await money.removeSplit(e.id, deleteDebts: true);
+      expect(await money.splitsFor(e.id), isEmpty);
+      expect((await money.debts()).map((d) => d.counterparty), ['Priya']);
+    },
+  );
+
+  test('equal shares give the extra paise to you', () {
+    expect(equalShares(100000, 3), [33334, 33333, 33333]);
+    expect(equalShares(240000, 3), [80000, 80000, 80000]);
+  });
+
+  test('income is recorded under seeded sources and counted in its range', () async {
+    await money.seedIncomeSources({'salary': 'Salary'});
+    final cats = await money.watchCategories().first;
+    expect(cats.where((c) => c.isIncome).map((c) => c.systemKey), contains('salary'));
+    await money.addIncome((
+      amountPaise: 8500000,
+      categoryId: DriftMoneyRepository.categoryId('salary'),
+      at: time.now,
+      note: null,
+    ));
+    final list = await money
+        .watchIncomes(from: LocalDate(2026, 11, 1), to: LocalDate(2026, 11, 30))
+        .first;
+    expect(list.single.amountPaise, 8500000);
+    expect(
+      (await money.addIncome((
+        amountPaise: 0,
+        categoryId: 'x',
+        at: time.now,
+        note: null,
+      ))).failureOrNull?.code,
+      'amount_invalid',
+    );
+  });
 }

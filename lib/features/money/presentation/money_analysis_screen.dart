@@ -58,6 +58,10 @@ class _MoneyAnalysisScreenState extends ConsumerState<MoneyAnalysisScreen> {
         formatRupees(-differencePaise),
       ),
       SpendVsPrevious() => l10n.moneyFactSame,
+      Saved(:final savedPaise, :final percent) =>
+        savedPaise >= 0
+            ? l10n.moneyFactSaved(formatRupees(savedPaise), percent)
+            : l10n.moneyFactOverspent(formatRupees(-savedPaise)),
       EmiShare(:final percent) => l10n.moneyFactEmi(percent),
       final FoodPerMeal f => l10n.moneyFactFood(
         formatRupees(f.totalPaise),

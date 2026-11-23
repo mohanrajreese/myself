@@ -15,7 +15,7 @@ import '../domain/money.dart';
 /// Seeded categories follow the app language; custom ones keep their name.
 String categoryLabel(AppLocalizations l10n, FinanceCategory? c) {
   if (c == null) return l10n.moneyCatOther;
-  return categoryNames(l10n)[c.systemKey] ?? c.name;
+  return categoryNames(l10n)[c.systemKey] ?? incomeSourceNames(l10n)[c.systemKey] ?? c.name;
 }
 
 String monthLabel(LocalDate month) => DateFormat.yMMMM().format(DateTime(month.year, month.month));

@@ -29,6 +29,7 @@ final class FinanceCategory {
     this.systemKey,
     this.archived = false,
     this.sortOrder = 0,
+    this.isIncome = false,
   });
   final String id;
   final String name;
@@ -36,7 +37,20 @@ final class FinanceCategory {
   final String iconKey;
   final bool archived;
   final int sortOrder;
+
+  /// An income source rather than an expense category (§5.22L).
+  final bool isIncome;
 }
+
+/// Seeded income sources (§5.22L). Keys differ from expense keys.
+const defaultIncomeKeys = [
+  ('salary', 'salary'),
+  ('business', 'business'),
+  ('interest', 'interest'),
+  ('gift_income', 'gift'),
+  ('refund', 'refund'),
+  ('other_income', 'other'),
+];
 
 /// Seeded categories, in order (§5.21A). Names come from l10n by key.
 /// Categories that every expense can fall back on; never archived.
@@ -72,6 +86,7 @@ final class Expense {
     this.debtPaymentId,
     this.recurringExpenseId,
     this.hasReceipt = false,
+    this.cardDebtId,
   });
   final String id;
   final int amountPaise;
@@ -84,6 +99,9 @@ final class Expense {
   final String? debtPaymentId;
   final String? recurringExpenseId;
   final bool hasReceipt;
+
+  /// The credit card charged (§5.22I).
+  final String? cardDebtId;
 }
 
 typedef ExpenseDraft = ({
@@ -189,6 +207,11 @@ final class Debt {
     this.recordAsExpense = true,
     this.settled = false,
     this.notes,
+    this.creditLimitPaise,
+    this.statementDay,
+    this.cardDueDay,
+    this.dueRemind = false,
+    this.dueRemindDays = 0,
   });
   final String id;
   final DebtDirection direction;
@@ -208,6 +231,47 @@ final class Debt {
   final bool settled;
   final String? notes;
 
+  // Credit cards (§5.22I).
+  final int? creditLimitPaise;
+  final int? statementDay;
+  final int? cardDueDay;
+
+  // Due-date reminder for debts without EMIs (§5.22J): 0, 1 or 7 days before too.
+  final bool dueRemind;
+  final int dueRemindDays;
+
+  bool get isCard => kind == DebtKind.creditCard;
+
+  Debt copyWith({
+    String? id,
+    bool? remind,
+    bool? recordAsExpense,
+    bool? settled,
+    bool? dueRemind,
+    int? dueRemindDays,
+  }) => Debt(
+    id: id ?? this.id,
+    direction: direction,
+    name: name,
+    counterparty: counterparty,
+    kind: kind,
+    principalPaise: principalPaise,
+    startDate: startDate,
+    interestRateBp: interestRateBp,
+    dueDate: dueDate,
+    emi: emi,
+    remind: remind ?? this.remind,
+    remindDaysBefore: remindDaysBefore,
+    recordAsExpense: recordAsExpense ?? this.recordAsExpense,
+    settled: settled ?? this.settled,
+    notes: notes,
+    creditLimitPaise: creditLimitPaise,
+    statementDay: statementDay,
+    cardDueDay: cardDueDay,
+    dueRemind: dueRemind ?? this.dueRemind,
+    dueRemindDays: dueRemindDays ?? this.dueRemindDays,
+  );
+
   List<String> get problems => [
     if (name.trim().isEmpty) 'name_required',
     if (counterparty.trim().isEmpty) 'counterparty_required',
@@ -215,6 +279,11 @@ final class Debt {
     if (remindDaysBefore < 7 || remindDaysBefore > 30) 'remind_days',
     if (emi != null && (emi!.emiPaise <= 0 || emi!.count < 1 || emi!.day < 1 || emi!.day > 28))
       'emi_invalid',
+    if (!const [0, 1, 7].contains(dueRemindDays)) 'due_remind_days',
+    if ((statementDay != null && (statementDay! < 1 || statementDay! > 28)) ||
+        (cardDueDay != null && (cardDueDay! < 1 || cardDueDay! > 28)))
+      'card_days',
+    if (creditLimitPaise != null && creditLimitPaise! <= 0) 'credit_limit',
   ];
 }
 
@@ -352,6 +421,7 @@ final class RecurringExpense {
     required this.rule,
     this.remind = true,
     this.active = true,
+    this.isIncome = false,
   });
   final String id;
   final String name;
@@ -361,6 +431,9 @@ final class RecurringExpense {
   final ScheduleRule rule;
   final bool remind;
   final bool active;
+
+  /// Recurring income (for example a salary), whose reminder offers Received.
+  final bool isIncome;
 }
 
 abstract interface class MoneyRepository {
@@ -420,8 +493,165 @@ abstract interface class MoneyRepository {
   Stream<List<InstalmentSkip>> watchSkips();
   Future<List<InstalmentSkip>> skips();
 
+  // Credit cards (§5.22I).
+  Future<Result<void>> setExpenseCard(String expenseId, String? cardDebtId);
+  Future<Result<CardStatement>> saveStatement(CardStatement s);
+  Future<Result<void>> deleteStatement(String id);
+  Stream<List<CardStatement>> watchStatements();
+  Future<List<CardStatement>> statements();
+  Future<List<Expense>> expensesOnCards();
+
+  // Income (§5.22L).
+  Future<void> seedIncomeSources(Map<String, String> namesByKey);
+  Future<Result<Income>> addIncome(IncomeDraft draft, {String? recurringId});
+  Future<Result<void>> updateIncome(String id, IncomeDraft draft);
+  Future<Result<void>> deleteIncome(String id);
+  Stream<List<Income>> watchIncomes({required LocalDate from, required LocalDate to});
+
+  // Bill splitting (§5.22M): each share becomes an Owed-to-me debt.
+  Future<Result<void>> saveSplit(
+    String expenseId, {
+    required String label,
+    required List<SplitShare> shares,
+  });
+  Future<Result<void>> removeSplit(String expenseId, {required bool deleteDebts});
+  Stream<List<ExpenseSplit>> watchSplits();
+  Future<List<ExpenseSplit>> splitsFor(String expenseId);
+
+  // Budget alerts already shown (local).
+  Future<bool> alertShown(String month, String categoryKey, int threshold);
+  Future<void> markAlertShown(String month, String categoryKey, int threshold);
+
   Future<Result<RecurringExpense>> saveRecurring(RecurringExpense r);
   Future<Result<void>> deleteRecurring(String id);
   Stream<List<RecurringExpense>> watchRecurring();
   Future<List<RecurringExpense>> recurring();
+}
+
+/// A credit-card statement (§5.22I).
+final class CardStatement {
+  const CardStatement({
+    required this.id,
+    required this.debtId,
+    required this.statementDate,
+    required this.dueDate,
+    required this.totalDuePaise,
+    required this.minDuePaise,
+    this.remind = true,
+  });
+  final String id;
+  final String debtId;
+  final LocalDate statementDate;
+  final LocalDate dueDate;
+  final int totalDuePaise;
+  final int minDuePaise;
+  final bool remind;
+
+  List<String> get problems => [
+    if (totalDuePaise < 0 || minDuePaise < 0) 'amount',
+    if (minDuePaise > totalDuePaise) 'min_over_total',
+    if (dueDate.isBefore(statementDate)) 'due_before_statement',
+  ];
+}
+
+/// Where a card stands against its latest statement.
+final class CardStatus {
+  CardStatus(
+    this.card,
+    List<CardStatement> statements,
+    List<DebtPayment> payments,
+    List<Expense> expenses,
+  ) : latest = _latest(card.id, statements),
+      _payments = [
+        for (final p in payments)
+          if (p.debtId == card.id) p,
+      ],
+      _expenses = [
+        for (final e in expenses)
+          if (e.cardDebtId == card.id) e,
+      ];
+  final Debt card;
+  final CardStatement? latest;
+  final List<DebtPayment> _payments;
+  final List<Expense> _expenses;
+
+  static CardStatement? _latest(String id, List<CardStatement> all) {
+    CardStatement? best;
+    for (final s in all) {
+      if (s.debtId != id) continue;
+      if (best == null || s.statementDate.isAfter(best.statementDate)) best = s;
+    }
+    return best;
+  }
+
+  /// Paid against the latest statement: payments dated after it.
+  int get paidPaise {
+    final s = latest;
+    if (s == null) return 0;
+    return _payments
+        .where((p) => p.localDate.isAfter(s.statementDate))
+        .fold(0, (n, p) => n + p.amountPaise);
+  }
+
+  int get leftPaise => latest == null ? 0 : math.max(0, latest!.totalDuePaise - paidPaise);
+  bool get minimumMet => latest == null || paidPaise >= latest!.minDuePaise;
+
+  Iterable<Expense> get _since =>
+      _expenses.where((e) => latest == null || e.localDate.isAfter(latest!.statementDate));
+
+  /// Spending charged to the card since the latest statement (or ever).
+  int get spentSincePaise => _since.fold(0, (n, e) => n + e.amountPaise);
+  int get spentSinceCount => _since.length;
+
+  /// An estimate: limit − what is left on the statement − spending since.
+  int? get unusedLimitPaise => card.creditLimitPaise == null
+      ? null
+      : math.max(0, card.creditLimitPaise! - leftPaise - spentSincePaise);
+}
+
+final class Income {
+  const Income({
+    required this.id,
+    required this.amountPaise,
+    required this.categoryId,
+    required this.occurredAt,
+    required this.localDate,
+    this.note,
+    this.recurringId,
+  });
+  final String id;
+  final int amountPaise;
+  final String categoryId;
+  final DateTime occurredAt;
+  final LocalDate localDate;
+  final String? note;
+  final String? recurringId;
+}
+
+typedef IncomeDraft = ({int amountPaise, String categoryId, DateTime at, String? note});
+
+/// One other person's share of a split expense (§5.22M).
+final class ExpenseSplit {
+  const ExpenseSplit({
+    required this.id,
+    required this.expenseId,
+    required this.person,
+    required this.sharePaise,
+    this.debtId,
+  });
+  final String id;
+  final String expenseId;
+  final String person;
+  final int sharePaise;
+  final String? debtId;
+}
+
+typedef SplitShare = ({String person, int sharePaise});
+
+/// Equal shares of [totalPaise] for [count] people (you first); your share
+/// takes the paise left over.
+List<int> equalShares(int totalPaise, int count) {
+  if (count <= 0) return const [];
+  final each = totalPaise ~/ count;
+  return [totalPaise - each * (count - 1), for (var i = 1; i < count; i++) each];
 }

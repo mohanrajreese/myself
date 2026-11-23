@@ -46,6 +46,7 @@ final class DriftMoneyRepository implements MoneyRepository {
     systemKey: r.systemKey,
     archived: r.archived,
     sortOrder: r.sortOrder,
+    isIncome: r.kind == 'income',
   );
 
   static Expense _expense(ExpenseRow r) => Expense(
@@ -60,6 +61,7 @@ final class DriftMoneyRepository implements MoneyRepository {
     debtPaymentId: r.debtPaymentId,
     recurringExpenseId: r.recurringExpenseId,
     hasReceipt: r.hasReceipt,
+    cardDebtId: r.cardDebtId,
   );
 
   static Debt _debt(DebtRow r) => Debt(
@@ -85,6 +87,11 @@ final class DriftMoneyRepository implements MoneyRepository {
     recordAsExpense: r.recordAsExpense,
     settled: r.status == 'settled',
     notes: r.notes,
+    creditLimitPaise: r.creditLimitPaise,
+    statementDay: r.statementDay,
+    cardDueDay: r.cardDueDay,
+    dueRemind: r.dueRemind,
+    dueRemindDays: r.dueRemindDays,
   );
 
   static DebtPayment _payment(DebtPaymentRow r) => DebtPayment(
@@ -106,6 +113,7 @@ final class DriftMoneyRepository implements MoneyRepository {
     rule: ScheduleRule.fromJson((jsonDecode(r.schedule) as Map).cast<String, Object?>()),
     remind: r.remind,
     active: r.active,
+    isIncome: r.kind == 'income',
   );
 
   // ---- categories ----
@@ -312,6 +320,13 @@ final class DriftMoneyRepository implements MoneyRepository {
     () => _db.transaction(() async {
       await _deleteExpenseRows((t) => t.id.equals(id));
       await (_db.delete(_db.localExpenseReceipts)..where((t) => t.expenseId.equals(id))).go();
+      await _tombstone(
+        _db.expenseSplits,
+        'expense_splits',
+        (t) => t.expenseId.equals(id) & t.deletedAt.isNull(),
+        (now) => ExpenseSplitsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+        (r) => r.id,
+      );
     }),
     onError: (_) => _fail,
   );
@@ -452,6 +467,11 @@ final class DriftMoneyRepository implements MoneyRepository {
     recordAsExpense: Value(d.recordAsExpense),
     status: Value(d.settled ? 'settled' : 'open'),
     notes: Value(_note(d.notes)),
+    creditLimitPaise: Value(d.isCard ? d.creditLimitPaise : null),
+    statementDay: Value(d.isCard ? d.statementDay : null),
+    cardDueDay: Value(d.isCard ? d.cardDueDay : null),
+    dueRemind: Value(d.dueRemind),
+    dueRemindDays: Value(d.dueRemindDays),
   );
 
   @override
@@ -511,23 +531,7 @@ final class DriftMoneyRepository implements MoneyRepository {
           }
         }
       });
-      return Debt(
-        id: id,
-        direction: debt.direction,
-        name: debt.name.trim(),
-        counterparty: debt.counterparty.trim(),
-        kind: debt.kind,
-        principalPaise: debt.principalPaise,
-        startDate: debt.startDate,
-        interestRateBp: debt.interestRateBp,
-        dueDate: debt.emi == null ? debt.dueDate : null,
-        emi: debt.emi,
-        remind: debt.remind,
-        remindDaysBefore: debt.remindDaysBefore,
-        recordAsExpense: debt.recordAsExpense,
-        settled: debt.settled,
-        notes: _note(debt.notes),
-      );
+      return _debt(await (_db.select(_db.debts)..where((t) => t.id.equals(id))).getSingle());
     }, onError: (e) => e is Failure ? e : _fail);
   }
 
@@ -878,6 +882,378 @@ final class DriftMoneyRepository implements MoneyRepository {
     _db.instalmentSkips,
   )..where((t) => t.deletedAt.isNull())).get()).map(_skip).toList();
 
+  // ---- credit cards ----
+
+  @override
+  Future<Result<void>> setExpenseCard(String expenseId, String? cardDebtId) => Result.guard(
+    () => _db.transaction(() async {
+      final now = _now;
+      final n =
+          await (_db.update(_db.expenses)
+                ..where((t) => t.id.equals(expenseId) & t.deletedAt.isNull()))
+              .write(ExpensesCompanion(cardDebtId: Value(cardDebtId), updatedAt: Value(now)));
+      if (n > 0) await _sync('expenses', expenseId);
+    }),
+    onError: (_) => _fail,
+  );
+
+  static CardStatement _statement(CardStatementRow r) => CardStatement(
+    id: r.id,
+    debtId: r.debtId,
+    statementDate: r.statementDate,
+    dueDate: r.dueDate,
+    totalDuePaise: r.totalDuePaise,
+    minDuePaise: r.minDuePaise,
+    remind: r.remind,
+  );
+
+  @override
+  Future<Result<CardStatement>> saveStatement(CardStatement st) async {
+    if (st.problems.isNotEmpty || st.totalDuePaise > maxRupeePaise) {
+      return Err(ValidationFailure('statement', st.problems.firstOrNull ?? 'amount'));
+    }
+    return Result.guard(() async {
+      final now = _now;
+      final id = st.id.isEmpty ? ids.newId() : st.id;
+      final values = CardStatementsCompanion(
+        updatedAt: Value(now),
+        debtId: Value(st.debtId),
+        statementDate: Value(st.statementDate),
+        dueDate: Value(st.dueDate),
+        totalDuePaise: Value(st.totalDuePaise),
+        minDuePaise: Value(st.minDuePaise),
+        remind: Value(st.remind),
+      );
+      await _db.transaction(() async {
+        final existing = await (_db.select(
+          _db.cardStatements,
+        )..where((t) => t.id.equals(id))).getSingleOrNull();
+        if (existing == null) {
+          await _db
+              .into(_db.cardStatements)
+              .insert(values.copyWith(id: Value(id), createdAt: Value(now)));
+        } else {
+          await (_db.update(_db.cardStatements)..where((t) => t.id.equals(id))).write(values);
+        }
+        await _sync('card_statements', id);
+      });
+      return _statement(
+        await (_db.select(_db.cardStatements)..where((t) => t.id.equals(id))).getSingle(),
+      );
+    }, onError: (_) => _fail);
+  }
+
+  @override
+  Future<Result<void>> deleteStatement(String id) => Result.guard(
+    () => _db.transaction(
+      () => _tombstone(
+        _db.cardStatements,
+        'card_statements',
+        (t) => t.id.equals(id) & t.deletedAt.isNull(),
+        (now) => CardStatementsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+        (r) => r.id,
+      ),
+    ),
+    onError: (_) => _fail,
+  );
+
+  SimpleSelectStatement<$CardStatementsTable, CardStatementRow> get _liveStatements =>
+      _db.select(_db.cardStatements)
+        ..where((t) => t.deletedAt.isNull())
+        ..orderBy([(t) => OrderingTerm.desc(t.statementDate)]);
+
+  @override
+  Stream<List<CardStatement>> watchStatements() =>
+      _liveStatements.watch().map((r) => r.map(_statement).toList());
+
+  @override
+  Future<List<CardStatement>> statements() async =>
+      (await _liveStatements.get()).map(_statement).toList();
+
+  @override
+  Future<List<Expense>> expensesOnCards() async => (await (_db.select(
+    _db.expenses,
+  )..where((t) => t.cardDebtId.isNotNull() & t.deletedAt.isNull())).get()).map(_expense).toList();
+
+  // ---- income ----
+
+  @override
+  Future<void> seedIncomeSources(Map<String, String> namesByKey) => _db.transaction(() async {
+    final now = _now;
+    for (final (i, (key, icon)) in defaultIncomeKeys.indexed) {
+      final id = categoryId(key);
+      final exists = await (_db.select(
+        _db.financeCategories,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      if (exists != null) continue;
+      await _db
+          .into(_db.financeCategories)
+          .insert(
+            FinanceCategoriesCompanion.insert(
+              id: id,
+              createdAt: now,
+              updatedAt: now,
+              name: namesByKey[key] ?? key,
+              systemKey: Value(key),
+              iconKey: icon,
+              sortOrder: Value(i),
+              kind: const Value('income'),
+            ),
+          );
+      await _sync('finance_categories', id);
+    }
+  });
+
+  static Income _income(IncomeRow r) => Income(
+    id: r.id,
+    amountPaise: r.amountPaise,
+    categoryId: r.categoryId,
+    occurredAt: r.occurredAt,
+    localDate: r.localDate,
+    note: r.note,
+    recurringId: r.recurringId,
+  );
+
+  @override
+  Future<Result<Income>> addIncome(IncomeDraft draft, {String? recurringId}) async {
+    if (!_validAmount(draft.amountPaise)) {
+      return const Err(ValidationFailure('amount', 'amount_invalid'));
+    }
+    return Result.guard(() async {
+      final stamp = await stampFor(clock, timeZone, at: draft.at);
+      final id = ids.newId();
+      await _db.transaction(() async {
+        await _db
+            .into(_db.incomes)
+            .insert(
+              IncomesCompanion.insert(
+                id: id,
+                createdAt: stamp.nowUtc,
+                updatedAt: stamp.nowUtc,
+                amountPaise: draft.amountPaise,
+                categoryId: draft.categoryId,
+                occurredAt: stamp.occurredAt,
+                localDate: stamp.localDate,
+                tz: stamp.tz,
+                note: Value(_note(draft.note)),
+                recurringId: Value(recurringId),
+              ),
+            );
+        await _sync('incomes', id);
+      });
+      return _income(await (_db.select(_db.incomes)..where((t) => t.id.equals(id))).getSingle());
+    }, onError: (_) => _fail);
+  }
+
+  @override
+  Future<Result<void>> updateIncome(String id, IncomeDraft draft) async {
+    if (!_validAmount(draft.amountPaise)) {
+      return const Err(ValidationFailure('amount', 'amount_invalid'));
+    }
+    return Result.guard(() async {
+      final stamp = await stampFor(clock, timeZone, at: draft.at);
+      await _db.transaction(() async {
+        final n =
+            await (_db.update(
+              _db.incomes,
+            )..where((t) => t.id.equals(id) & t.deletedAt.isNull())).write(
+              IncomesCompanion(
+                updatedAt: Value(stamp.nowUtc),
+                amountPaise: Value(draft.amountPaise),
+                categoryId: Value(draft.categoryId),
+                occurredAt: Value(stamp.occurredAt),
+                localDate: Value(stamp.localDate),
+                tz: Value(stamp.tz),
+                note: Value(_note(draft.note)),
+              ),
+            );
+        if (n == 0) throw StateError('missing');
+        await _sync('incomes', id);
+      });
+    }, onError: (_) => _fail);
+  }
+
+  @override
+  Future<Result<void>> deleteIncome(String id) => Result.guard(
+    () => _db.transaction(
+      () => _tombstone(
+        _db.incomes,
+        'incomes',
+        (t) => t.id.equals(id) & t.deletedAt.isNull(),
+        (now) => IncomesCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+        (r) => r.id,
+      ),
+    ),
+    onError: (_) => _fail,
+  );
+
+  @override
+  Stream<List<Income>> watchIncomes({required LocalDate from, required LocalDate to}) =>
+      (_db.select(_db.incomes)
+            ..where(
+              (t) =>
+                  t.localDate.isBiggerOrEqualValue(from.toString()) &
+                  t.localDate.isSmallerOrEqualValue(to.toString()) &
+                  t.deletedAt.isNull(),
+            )
+            ..orderBy([(t) => OrderingTerm.desc(t.occurredAt)]))
+          .watch()
+          .map((rows) => rows.map(_income).toList());
+
+  // ---- bill splitting ----
+
+  static ExpenseSplit _split(ExpenseSplitRow r) => ExpenseSplit(
+    id: r.id,
+    expenseId: r.expenseId,
+    person: r.person,
+    sharePaise: r.sharePaise,
+    debtId: r.debtId,
+  );
+
+  @override
+  Future<List<ExpenseSplit>> splitsFor(String expenseId) async =>
+      (await (_db.select(
+            _db.expenseSplits,
+          )..where((t) => t.expenseId.equals(expenseId) & t.deletedAt.isNull())).get())
+          .map(_split)
+          .toList();
+
+  @override
+  Stream<List<ExpenseSplit>> watchSplits() => (_db.select(
+    _db.expenseSplits,
+  )..where((t) => t.deletedAt.isNull())).watch().map((r) => r.map(_split).toList());
+
+  Future<bool> _debtHasPayments(String debtId) async => (await payments(debtId: debtId)).isNotEmpty;
+
+  @override
+  Future<Result<void>> saveSplit(
+    String expenseId, {
+    required String label,
+    required List<SplitShare> shares,
+  }) async {
+    final clean = [
+      for (final s in shares)
+        if (s.person.trim().isNotEmpty) (person: s.person.trim(), sharePaise: s.sharePaise),
+    ];
+    if (clean.any((s) => !_validAmount(s.sharePaise))) {
+      return const Err(ValidationFailure('split', 'amount_invalid'));
+    }
+    return Result.guard(() async {
+      final expense = await (_db.select(
+        _db.expenses,
+      )..where((t) => t.id.equals(expenseId))).getSingle();
+      final existing = await splitsFor(expenseId);
+      String key(String p) => p.toLowerCase();
+      final wanted = {for (final s in clean) key(s.person): s};
+      final now = _now;
+      for (final old in existing) {
+        final want = wanted.remove(key(old.person));
+        final paid = old.debtId != null && await _debtHasPayments(old.debtId!);
+        if (want == null) {
+          // Removed from the split: drop an unpaid debt; keep a paid one.
+          if (old.debtId != null && !paid) await deleteDebt(old.debtId!);
+          await _db.transaction(
+            () => _tombstone(
+              _db.expenseSplits,
+              'expense_splits',
+              (t) => t.id.equals(old.id) & t.deletedAt.isNull(),
+              (n) => ExpenseSplitsCompanion(deletedAt: Value(n), updatedAt: Value(n)),
+              (r) => r.id,
+            ),
+          );
+          continue;
+        }
+        if (want.sharePaise == old.sharePaise) continue;
+        await _db.transaction(() async {
+          await (_db.update(_db.expenseSplits)..where((t) => t.id.equals(old.id))).write(
+            ExpenseSplitsCompanion(sharePaise: Value(want.sharePaise), updatedAt: Value(now)),
+          );
+          await _sync('expense_splits', old.id);
+          if (old.debtId != null && !paid) {
+            await (_db.update(_db.debts)..where((t) => t.id.equals(old.debtId!))).write(
+              DebtsCompanion(principalPaise: Value(want.sharePaise), updatedAt: Value(now)),
+            );
+            await _sync('debts', old.debtId!);
+          }
+        });
+      }
+      for (final s in wanted.values) {
+        final debt = await saveDebt(
+          Debt(
+            id: '',
+            direction: DebtDirection.owedToMe,
+            name: label.trim().isEmpty ? s.person : label,
+            counterparty: s.person,
+            kind: DebtKind.personal,
+            principalPaise: s.sharePaise,
+            startDate: expense.localDate,
+          ),
+        );
+        final debtId = debt.valueOrNull?.id;
+        if (debtId == null) throw StateError('debt');
+        final id = ids.newId();
+        await _db.transaction(() async {
+          await _db
+              .into(_db.expenseSplits)
+              .insert(
+                ExpenseSplitsCompanion.insert(
+                  id: id,
+                  createdAt: now,
+                  updatedAt: now,
+                  expenseId: expenseId,
+                  person: s.person,
+                  sharePaise: s.sharePaise,
+                  debtId: Value(debtId),
+                ),
+              );
+          await _sync('expense_splits', id);
+        });
+      }
+    }, onError: (_) => _fail);
+  }
+
+  @override
+  Future<Result<void>> removeSplit(String expenseId, {required bool deleteDebts}) =>
+      Result.guard(() async {
+        for (final s in await splitsFor(expenseId)) {
+          if (deleteDebts && s.debtId != null) await deleteDebt(s.debtId!);
+        }
+        await _db.transaction(
+          () => _tombstone(
+            _db.expenseSplits,
+            'expense_splits',
+            (t) => t.expenseId.equals(expenseId) & t.deletedAt.isNull(),
+            (n) => ExpenseSplitsCompanion(deletedAt: Value(n), updatedAt: Value(n)),
+            (r) => r.id,
+          ),
+        );
+      }, onError: (_) => _fail);
+
+  // ---- budget alerts (local) ----
+
+  @override
+  Future<bool> alertShown(String month, String categoryKey, int threshold) async =>
+      await (_db.select(_db.localBudgetAlerts)..where(
+            (t) =>
+                t.month.equals(month) &
+                t.categoryKey.equals(categoryKey) &
+                t.threshold.equals(threshold),
+          ))
+          .getSingleOrNull() !=
+      null;
+
+  @override
+  Future<void> markAlertShown(String month, String categoryKey, int threshold) => _db
+      .into(_db.localBudgetAlerts)
+      .insertOnConflictUpdate(
+        LocalBudgetAlertsCompanion.insert(
+          month: month,
+          categoryKey: categoryKey,
+          threshold: threshold,
+          shownAt: _now,
+        ),
+      );
+
   // ---- recurring ----
 
   @override
@@ -898,6 +1274,7 @@ final class DriftMoneyRepository implements MoneyRepository {
         schedule: Value(jsonEncode(r.rule.toJson())),
         remind: Value(r.remind),
         active: Value(r.active),
+        kind: Value(r.isIncome ? 'income' : 'expense'),
       );
       await _db.transaction(() async {
         final existing = await (_db.select(
@@ -921,6 +1298,7 @@ final class DriftMoneyRepository implements MoneyRepository {
         rule: r.rule,
         remind: r.remind,
         active: r.active,
+        isIncome: r.isIncome,
       );
     }, onError: (_) => _fail);
   }

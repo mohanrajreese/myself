@@ -21,6 +21,13 @@ final class MoneyReminderText {
     required this.recurringDue,
     required this.emiOverdue,
     required this.emiOverdueBody,
+    required this.card,
+    required this.cardBody,
+    required this.dueOwe,
+    required this.dueOweBody,
+    required this.dueLent,
+    required this.dueLentBody,
+    required this.incomeDue,
   });
   final String Function(String name, int days) emiInDays;
   final String Function(String name) emiTomorrow;
@@ -29,6 +36,13 @@ final class MoneyReminderText {
   final String Function(String name) recurringDue;
   final String Function(String name) emiOverdue;
   final String Function(String lender, int instalment, LocalDate due) emiOverdueBody;
+  final String Function(String card, int daysBefore) card;
+  final String Function(LocalDate statement, LocalDate due) cardBody;
+  final String Function(String name, int daysBefore) dueOwe;
+  final String Function(String person) dueOweBody;
+  final String Function(String name, int daysBefore) dueLent;
+  final String dueLentBody;
+  final String Function(String name) incomeDue;
 }
 
 MoneyReminderText moneyReminderText(AppLocalizations l10n) => MoneyReminderText(
@@ -38,12 +52,17 @@ MoneyReminderText moneyReminderText(AppLocalizations l10n) => MoneyReminderText(
   emiBody: l10n.moneyEmiBody,
   recurringDue: l10n.moneyRecurringDue,
   emiOverdue: l10n.moneyEmiOverdue,
-  emiOverdueBody: (lender, n, due) => l10n.moneyEmiOverdueBody(
-    lender,
-    n,
-    DateFormat('d MMM').format(DateTime(due.year, due.month, due.day)),
-  ),
+  emiOverdueBody: (lender, n, due) => l10n.moneyEmiOverdueBody(lender, n, _day(due)),
+  card: (name, days) => l10n.moneyCardDue(days, name),
+  cardBody: (st, due) => l10n.moneyCardDueBody(_day(st), _day(due)),
+  dueOwe: (name, days) => l10n.moneyDueOwe(days, name),
+  dueOweBody: l10n.moneyDueOweBody,
+  dueLent: (name, days) => l10n.moneyDueLent(days, name),
+  dueLentBody: l10n.moneyDueLentBody,
+  incomeDue: l10n.moneyIncomeDue,
 );
+
+String _day(LocalDate d) => DateFormat('d MMM').format(DateTime(d.year, d.month, d.day));
 
 /// EMI reminders (lead days, 1 day and the due day, at 09:00, for the next
 /// unpaid instalment) and recurring-expense reminders (§5.21A, C).
@@ -58,7 +77,11 @@ final class MoneyReminderSource implements ExtraReminderSource {
   static const remindAt = 9 * 60;
 
   @override
-  bool owns(String reminderId) => reminderId.startsWith('emi:') || reminderId.startsWith('rec:');
+  bool owns(String reminderId) =>
+      reminderId.startsWith('emi:') ||
+      reminderId.startsWith('rec:') ||
+      reminderId.startsWith('card:') ||
+      reminderId.startsWith('due:');
 
   Future<List<DebtStatus>> _statuses() async {
     final payments = await money.payments();
@@ -104,9 +127,61 @@ final class MoneyReminderSource implements ExtraReminderSource {
           SchedulableReminder(
             plan: PlannerReminder(id: 'rec:${r.id}', rule: r.rule),
             channelId: channelIdFor('routines'),
-            title: text.recurringDue(r.name),
+            title: r.isIncome ? text.incomeDue(r.name) : text.recurringDue(r.name),
           ),
+      ...await _cards(),
+      for (final s in await _statuses())
+        if (s.debt.emi == null &&
+            !s.debt.isCard &&
+            s.debt.dueRemind &&
+            !s.debt.settled &&
+            s.debt.dueDate != null)
+          ..._due(s.debt),
     ];
+  }
+
+  Future<List<CardStatus>> _cardStatuses() async {
+    final statements = await money.statements();
+    final payments = await money.payments();
+    final spent = await money.expensesOnCards();
+    return [
+      for (final d in await money.debts())
+        if (d.isCard && !d.settled) CardStatus(d, statements, payments, spent),
+    ];
+  }
+
+  Future<List<SchedulableReminder>> _cards() async => [
+    for (final c in await _cardStatuses())
+      if (c.latest != null && c.latest!.remind && c.leftPaise > 0)
+        for (final r in emiReminderDays(c.latest!.dueDate, c.card.remindDaysBefore))
+          SchedulableReminder(
+            plan: PlannerReminder(
+              id: 'card:${c.card.id}:${c.latest!.id}:${r.daysBefore}',
+              rule: OneTime(date: r.day, time: remindAt),
+            ),
+            channelId: channelIdFor('routines'),
+            title: text.card(c.card.name, r.daysBefore),
+            body: text.cardBody(c.latest!.statementDate, c.latest!.dueDate),
+          ),
+  ];
+
+  Iterable<SchedulableReminder> _due(Debt d) sync* {
+    final due = d.dueDate!;
+    for (final before in {d.dueRemindDays, 0}) {
+      yield SchedulableReminder(
+        plan: PlannerReminder(
+          id: 'due:${d.id}:$before',
+          rule: OneTime(date: due.addDays(-before), time: remindAt),
+        ),
+        channelId: channelIdFor('routines'),
+        title: d.direction == DebtDirection.iOwe
+            ? text.dueOwe(d.name, before)
+            : text.dueLent(d.name, before),
+        body: d.direction == DebtDirection.iOwe
+            ? text.dueOweBody(d.counterparty)
+            : text.dueLentBody,
+      );
+    }
   }
 
   Iterable<SchedulableReminder> _emi(DebtStatus s, LocalDate today) sync* {
@@ -152,7 +227,24 @@ final class MoneyReminderSource implements ExtraReminderSource {
     final parts = reminderId.split(':');
     if (parts.first == 'rec') {
       final r = (await money.recurring()).where((r) => r.id == parts[1]).firstOrNull;
-      return (title: text.recurringDue(r?.name ?? ''), body: null);
+      if (r == null) return (title: '', body: null);
+      return (title: r.isIncome ? text.incomeDue(r.name) : text.recurringDue(r.name), body: null);
+    }
+    if (parts.first == 'card') {
+      final c = (await _cardStatuses()).where((c) => c.card.id == parts[1]).firstOrNull;
+      if (c == null || c.latest == null) return (title: '', body: null);
+      return (
+        title: text.card(c.card.name, int.parse(parts[3])),
+        body: text.cardBody(c.latest!.statementDate, c.latest!.dueDate),
+      );
+    }
+    if (parts.first == 'due') {
+      final d = (await money.debts()).where((d) => d.id == parts[1]).firstOrNull;
+      if (d == null) return (title: '', body: null);
+      final before = int.parse(parts[2]);
+      return d.direction == DebtDirection.iOwe
+          ? (title: text.dueOwe(d.name, before), body: text.dueOweBody(d.counterparty))
+          : (title: text.dueLent(d.name, before), body: text.dueLentBody);
     }
     final st = await _status(parts[1]);
     if (st == null || st.debt.emi == null) return (title: '', body: null);
@@ -172,7 +264,10 @@ final class MoneyReminderSource implements ExtraReminderSource {
   @override
   String route(String reminderId) {
     final parts = reminderId.split(':');
-    return parts.first == 'emi' ? '/money/debts/${parts[1]}' : '/money';
+    return switch (parts.first) {
+      'emi' || 'card' || 'due' => '/money/debts/${parts[1]}',
+      _ => '/money',
+    };
   }
 
   /// Paid records the instalment (and its expense, per the loan) or the
@@ -200,8 +295,29 @@ final class MoneyReminderSource implements ExtraReminderSource {
       return;
     }
     if (!completed) return;
+    if (parts.first == 'card') {
+      final c = (await _cardStatuses()).where((c) => c.card.id == parts[1]).firstOrNull;
+      if (c == null || c.leftPaise <= 0) return;
+      await money.addPayment(c.card.id, amountPaise: c.leftPaise, at: now);
+      return;
+    }
+    if (parts.first == 'due') {
+      final st = await _status(parts[1]);
+      if (st == null || st.outstandingPaise <= 0) return;
+      await money.addPayment(st.debt.id, amountPaise: st.outstandingPaise, at: now);
+      return;
+    }
     final r = (await money.recurring()).where((r) => r.id == parts[1]).firstOrNull;
     if (r == null) return;
+    if (r.isIncome) {
+      await money.addIncome((
+        amountPaise: r.amountPaise,
+        categoryId: r.categoryId,
+        at: now,
+        note: r.name,
+      ), recurringId: r.id);
+      return;
+    }
     await money.addExpense((
       amountPaise: r.amountPaise,
       categoryId: r.categoryId,

@@ -25,6 +25,7 @@ final class MoneyReport {
     required this.owedToMePaise,
     required this.upcomingEmis,
     required this.upcomingEmiPaise,
+    required this.incomePaise,
   });
 
   final LocalDate from;
@@ -56,6 +57,13 @@ final class MoneyReport {
   final int upcomingEmis;
   final int upcomingEmiPaise;
 
+  /// Income in the range (§5.22L).
+  final int incomePaise;
+  int get savedPaise => incomePaise - totalPaise;
+
+  /// Saved as a whole percent of income, or null without income.
+  int? get savingsRate => incomePaise <= 0 ? null : (savedPaise * 100 / incomePaise).round();
+
   int get days => to.daysSince(from) + 1;
 
   /// The same number of days just before [from].
@@ -86,6 +94,7 @@ final class MoneyReport {
     required List<DebtPayment> payments,
     List<LoanChange> changes = const [],
     List<InstalmentSkip> skips = const [],
+    List<Income> incomes = const [],
     required String emiCategoryId,
     required Set<String> foodCategoryIds,
     Set<String> junkMealIds = const {},
@@ -189,6 +198,9 @@ final class MoneyReport {
       owedToMePaise: owed,
       upcomingEmis: upcoming,
       upcomingEmiPaise: upcomingPaise,
+      incomePaise: incomes
+          .where((i) => !i.localDate.isBefore(from) && !i.localDate.isAfter(to))
+          .fold(0, (n, i) => n + i.amountPaise),
     );
   }
 
@@ -198,6 +210,7 @@ final class MoneyReport {
   /// Descriptive facts, most useful first (§5.21D: no advice).
   List<MoneyFact> get facts => [
     if (totalPaise > 0 || previousTotalPaise > 0) SpendVsPrevious(totalPaise - previousTotalPaise),
+    if (savingsRate != null) Saved(savedPaise, savingsRate!),
     if (emiPaise > 0) EmiShare(sharePercent(emiPaise)),
     if (linkedMeals > 0) FoodPerMeal(linkedMealPaise, linkedMeals),
     for (final MapEntry(:key, :value) in categoryBudgets.entries)
@@ -239,4 +252,11 @@ final class BudgetUsed extends MoneyFact {
   final int spentPaise;
   final int budgetPaise;
   int get percent => (spentPaise * 100 / budgetPaise).round();
+}
+
+/// Saved this period: income − spending, and its share of income.
+final class Saved extends MoneyFact {
+  const Saved(this.savedPaise, this.percent);
+  final int savedPaise;
+  final int percent;
 }

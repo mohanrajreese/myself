@@ -169,4 +169,39 @@ void main() {
     expect(r.facts, isEmpty);
     expect(r.sharePercent(0), 0);
   });
+
+  test('income and savings for the period', () {
+    final r = MoneyReport.build(
+      from: d(2026, 11, 1),
+      to: d(2026, 11, 20),
+      today: d(2026, 11, 20),
+      expenses: [e(26850, 'food', d(2026, 11, 3))],
+      previous: const [],
+      budgets: const [],
+      debts: const [],
+      payments: const [],
+      emiCategoryId: 'emi',
+      foodCategoryIds: const {'food'},
+      incomes: [
+        Income(
+          id: 'i',
+          amountPaise: 8500000,
+          categoryId: 'salary',
+          occurredAt: DateTime.utc(2026, 11, 1),
+          localDate: d(2026, 11, 1),
+        ),
+        Income(
+          id: 'j',
+          amountPaise: 100,
+          categoryId: 'salary',
+          occurredAt: DateTime.utc(2026, 10, 1),
+          localDate: d(2026, 10, 1),
+        ),
+      ],
+    );
+    expect(r.incomePaise, 8500000);
+    expect(r.savedPaise, 8500000 - 2685000);
+    expect(r.savingsRate, 68);
+    expect(r.facts.whereType<Saved>().single.percent, 68);
+  });
 }

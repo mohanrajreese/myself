@@ -31,6 +31,16 @@ Map<String, String> categoryNames(AppLocalizations l10n) => {
   'other': l10n.moneyCatOther,
 };
 
+/// Names for the seeded income sources, by system key (§5.22L).
+Map<String, String> incomeSourceNames(AppLocalizations l10n) => {
+  'salary': l10n.moneyIncSalary,
+  'business': l10n.moneyIncBusiness,
+  'interest': l10n.moneyIncInterest,
+  'gift_income': l10n.moneyIncGift,
+  'refund': l10n.moneyIncRefund,
+  'other_income': l10n.moneyIncOther,
+};
+
 /// Lets the user choose how they paid; null when dismissed.
 Future<PaymentMethod?> pickPaymentMethod(BuildContext context, PaymentMethod current) {
   final l10n = context.l10n;

@@ -11,7 +11,7 @@ import 'tracking_providers.dart';
 
 /// Fixed notification ids outside the reminder store (timer, screen time,
 /// push messages).
-const _fixedNotificationIds = [900, 901, 902, 903, 904, 905];
+const _fixedNotificationIds = [900, 901, 902, 903, 904, 905, 906];
 
 /// Erases everything Praxis holds on this phone (§7.3, §11.4): scheduled
 /// notifications, photos, the private database, the main database and the
