@@ -86,6 +86,18 @@ final debtsProvider = StreamProvider<List<Debt>>(
 final debtPaymentsProvider = StreamProvider<List<DebtPayment>>(
   (ref) => ref.watch(moneyRepositoryProvider).watchPayments(),
 );
+final cardStatementsProvider = StreamProvider<List<CardStatement>>(
+  (ref) => ref.watch(moneyRepositoryProvider).watchStatements(),
+);
+final cardExpensesProvider = FutureProvider<List<Expense>>((ref) {
+  // Re-read when any expense in the current month changes.
+  final today = ref.watch(todayProvider);
+  ref.watch(expensesProvider(monthRange(monthStart(today), today)));
+  return ref.watch(moneyRepositoryProvider).expensesOnCards();
+});
+final splitsProvider = StreamProvider<List<ExpenseSplit>>(
+  (ref) => ref.watch(moneyRepositoryProvider).watchSplits(),
+);
 final loanChangesProvider = StreamProvider<List<LoanChange>>(
   (ref) => ref.watch(moneyRepositoryProvider).watchLoanChanges(),
 );
@@ -237,6 +249,8 @@ final class MoneyActions {
   Future<Result<void>> skipInstalment(String debtId, int n) =>
       _thenReplan(_repo.skipInstalment(debtId, n, on: ref.read(todayProvider)));
   Future<Result<void>> unskipInstalment(String id) => _thenReplan(_repo.unskipInstalment(id));
+  Future<Result<CardStatement>> saveStatement(CardStatement s) =>
+      _thenReplan(_repo.saveStatement(s));
   Future<Result<RecurringExpense>> saveRecurring(RecurringExpense r) =>
       _thenReplan(_repo.saveRecurring(r));
   Future<Result<void>> deleteRecurring(String id) => _thenReplan(_repo.deleteRecurring(id));

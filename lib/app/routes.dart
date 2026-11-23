@@ -23,6 +23,9 @@ abstract final class Routes {
   static const moneyNewDebt = '/money/debts/new';
   static String moneyDebt(String id) => '/money/debts/$id';
   static String moneyEditDebt(String id) => '/money/debts/$id/edit';
+  static String moneySchedule(String id) => '/money/debts/$id/schedule';
+  static const moneyIncome = '/money/income';
+  static const moneySettings = '/money/settings';
   static const moneyAnalysis = '/money/analysis';
   static const moneyRecurring = '/money/recurring';
   static const moneyCategories = '/money/categories';

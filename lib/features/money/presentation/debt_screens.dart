@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../../../app/money_providers.dart';
@@ -28,9 +27,6 @@ String kindLabel(AppLocalizations l10n, DebtKind k) => switch (k) {
   DebtKind.creditCard => l10n.moneyKindCreditCard,
   DebtKind.other => l10n.moneyKindOther,
 };
-
-String _monthYear(LocalDate d) => DateFormat('MMM yyyy').format(DateTime(d.year, d.month));
-String _longDate(LocalDate d) => DateFormat('d MMM yyyy').format(DateTime(d.year, d.month, d.day));
 
 enum _DebtTab { iOwe, owedToMe, settled }
 
@@ -201,260 +197,18 @@ class _DebtRow extends StatelessWidget {
   }
 }
 
-/// One debt with its payments (board P8DebtDetail).
-class DebtDetailScreen extends ConsumerWidget {
-  const DebtDetailScreen({required this.id, super.key});
-  final String id;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final async = ref.watch(debtStatusesProvider);
-    final status = async.value?.where((s) => s.debt.id == id).firstOrNull;
-    if (async.hasError) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: FbErrorState(message: l10n.moneyLoadFailed),
-      );
-    }
-    if (status == null) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: async.isLoading ? const FbLoading() : FbEmptyHint(l10n.moneyNoDebts),
-      );
-    }
-    final d = status.debt;
-    final emi = d.emi;
-    final iOwe = d.direction == DebtDirection.iOwe;
-    final payments = [
-      for (final p in ref.watch(debtPaymentsProvider).value ?? const <DebtPayment>[])
-        if (p.debtId == id) p,
-    ];
-    final actions = ref.read(moneyActionsProvider);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(d.name),
-        actions: [
-          TextButton(
-            onPressed: () => context.push(Routes.moneyEditDebt(id)),
-            child: Text(l10n.edit),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(FbSpace.lg, 0, FbSpace.lg, FbSpace.xxl),
-        children: [
-          Text(
-            [
-              iOwe ? l10n.moneyIOwe : l10n.moneyOwedToMe,
-              if (d.counterparty != d.name) d.counterparty,
-              kindLabel(l10n, d.kind),
-              l10n.moneyStartedOn(_longDate(d.startDate)),
-              if (d.interestRateBp != null) l10n.moneyRateReference(_rate(d.interestRateBp!)),
-            ].join(' · '),
-            style: context.text.bodySmall,
-          ),
-          const SizedBox(height: FbSpace.md),
-          FbCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  emi != null ? l10n.moneyRemainingEmi : l10n.moneyOutstanding,
-                  style: context.text.caption,
-                ),
-                Text(formatRupees(status.remainingPaise), style: context.text.displayMetric),
-                if (emi != null) ...[
-                  const SizedBox(height: FbSpace.sm),
-                  MoneyBar(
-                    fraction: status.paidInstalments.length / emi.count,
-                    semanticLabel: l10n.moneyInstalmentsA11y(
-                      status.paidInstalments.length,
-                      emi.count,
-                    ),
-                  ),
-                  const SizedBox(height: FbSpace.sm),
-                  Text(
-                    l10n.moneyEmiProgress(
-                      status.paidInstalments.length,
-                      emi.count,
-                      status.instalmentsLeft,
-                      _monthYear(emi.dueDate(emi.count)),
-                    ),
-                    style: context.text.bodySmall,
-                  ),
-                  Text(
-                    l10n.moneyEmiPaidSoFar(
-                      formatRupees(d.principalPaise),
-                      formatRupees(status.paidPaise),
-                    ),
-                    style: context.text.caption,
-                  ),
-                ] else
-                  Text(
-                    [
-                      iOwe
-                          ? l10n.moneyOriginalRepaid(
-                              formatRupees(d.principalPaise),
-                              formatRupees(status.paidPaise),
-                            )
-                          : l10n.moneyOriginalReceived(
-                              formatRupees(d.principalPaise),
-                              formatRupees(status.paidPaise),
-                            ),
-                      if (d.dueDate != null) l10n.moneyDueOn(_longDate(d.dueDate!)),
-                    ].join(' · '),
-                    style: context.text.bodySmall,
-                  ),
-              ],
-            ),
-          ),
-          if (emi != null && status.nextInstalment != null && !d.settled) ...[
-            const SizedBox(height: FbSpace.md),
-            FbCard(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: MergeSemantics(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.moneyNextEmi(formatRupees(emi.emiPaise)),
-                            style: context.text.bodyStrong,
-                          ),
-                          Text(
-                            l10n.moneyNextEmiLine(
-                              context.shortDate(status.nextDue!),
-                              status.nextInstalment!,
-                            ),
-                            style: context.text.caption,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  FilledButton(
-                    onPressed: () async {
-                      final r = await actions.addPayment(
-                        id,
-                        amountPaise: emi.emiPaise,
-                        at: ref.read(clockProvider).now(),
-                        instalmentNo: status.nextInstalment,
-                      );
-                      if (context.mounted) {
-                        showFbSnackBar(
-                          context,
-                          r.isOk ? l10n.moneyPaymentSaved : l10n.errSaveFailed,
-                        );
-                      }
-                    },
-                    child: Text(l10n.moneyMarkPaid),
-                  ),
-                ],
-              ),
-            ),
-          ],
-          if (emi != null || iOwe) ...[
-            const SizedBox(height: FbSpace.md),
-            FbListCard(
-              children: [
-                if (emi != null && iOwe)
-                  FbSwitchRow(
-                    title: l10n.moneyEmiReminder,
-                    subtitle: l10n.moneyEmiReminderLine(d.remindDaysBefore, emi.day),
-                    value: d.remind,
-                    onChanged: (v) => actions.saveDebt(_copy(d, remind: v)),
-                  ),
-                if (iOwe)
-                  FbSwitchRow(
-                    title: l10n.moneyRecordAsExpense,
-                    subtitle: l10n.moneyRecordAsExpenseLine,
-                    value: d.recordAsExpense,
-                    onChanged: (v) => actions.saveDebt(_copy(d, recordAsExpense: v)),
-                  ),
-              ],
-            ),
-          ],
-          MoneySectionHeader(
-            l10n.moneyPayments,
-            action: OutlinedButton.icon(
-              onPressed: () => showFbSheet<void>(context, _PaymentSheet(debtId: id)),
-              icon: const Icon(Icons.add_rounded),
-              label: Text(l10n.moneyOtherPayment),
-            ),
-          ),
-          if (payments.isEmpty)
-            FbEmptyHint(l10n.moneyNoPayments, boxed: true)
-          else
-            FbListCard(
-              children: [
-                for (final p in payments)
-                  FbListRow(
-                    title: p.instalmentNo == null
-                        ? l10n.moneyPayment
-                        : l10n.moneyInstalmentN(p.instalmentNo!),
-                    subtitle: [_longDate(p.localDate), ?p.note].join(' · '),
-                    trailing: Text(formatRupees(p.amountPaise), style: context.text.bodyStrong),
-                    onTap: () async {
-                      final ok = await showFbConfirm(
-                        context,
-                        title: l10n.moneyDeletePaymentTitle,
-                        message: l10n.moneyDeletePaymentMessage,
-                        confirmLabel: l10n.delete,
-                        cancelLabel: l10n.cancel,
-                        destructive: true,
-                      );
-                      if (ok) await actions.deletePayment(p.id);
-                    },
-                  ),
-              ],
-            ),
-          if (emi != null) ...[
-            const SizedBox(height: FbSpace.sm),
-            Text(l10n.moneyPartPaymentNote, style: context.text.caption),
-          ],
-          const SizedBox(height: FbSpace.lg),
-          OutlinedButton(
-            onPressed: () => actions.setSettled(id, settled: !d.settled),
-            child: Text(d.settled ? l10n.moneyReopen : l10n.moneyMarkSettled),
-          ),
-        ],
-      ),
-    );
-  }
-
-  static String _rate(int bp) => NumberFormat('0.##').format(bp / 100);
-
-  static Debt _copy(Debt d, {bool? remind, bool? recordAsExpense}) => Debt(
-    id: d.id,
-    direction: d.direction,
-    name: d.name,
-    counterparty: d.counterparty,
-    kind: d.kind,
-    principalPaise: d.principalPaise,
-    startDate: d.startDate,
-    interestRateBp: d.interestRateBp,
-    dueDate: d.dueDate,
-    emi: d.emi,
-    remind: remind ?? d.remind,
-    remindDaysBefore: d.remindDaysBefore,
-    recordAsExpense: recordAsExpense ?? d.recordAsExpense,
-    settled: d.settled,
-    notes: d.notes,
-  );
-}
-
-class _PaymentSheet extends ConsumerStatefulWidget {
-  const _PaymentSheet({required this.debtId});
+/// Records a payment against a debt (any amount, date and note).
+class PaymentSheet extends ConsumerStatefulWidget {
+  const PaymentSheet({required this.debtId, this.initialPaise, super.key});
   final String debtId;
+  final int? initialPaise;
 
   @override
-  ConsumerState<_PaymentSheet> createState() => _PaymentSheetState();
+  ConsumerState<PaymentSheet> createState() => _PaymentSheetState();
 }
 
-class _PaymentSheetState extends ConsumerState<_PaymentSheet> {
-  String _amount = '';
+class _PaymentSheetState extends ConsumerState<PaymentSheet> {
+  late String _amount = widget.initialPaise == null ? '' : rupeesInput(widget.initialPaise!);
   String _note = '';
   late DateTime _at = ref.read(clockProvider).now().toLocal();
   String? _error;
@@ -561,7 +315,7 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
     _counterparty = d.counterparty;
     _amount = rupeesInput(d.principalPaise);
     _start = d.startDate;
-    _rate = d.interestRateBp == null ? '' : DebtDetailScreen._rate(d.interestRateBp!);
+    _rate = d.interestRateBp == null ? '' : rateLabel(d.interestRateBp!);
     final emi = d.emi;
     _emiOn = emi != null;
     if (emi != null) {
@@ -712,7 +466,7 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
     children: [
       FbPickerField(
         label: label,
-        valueText: value == null ? null : _longDate(value),
+        valueText: value == null ? null : longDate(value),
         hint: context.l10n.moneyChooseDate,
         optionalLabel: onClear == null ? null : context.l10n.optional,
         onClear: value == null ? null : onClear,

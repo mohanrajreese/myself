@@ -244,6 +244,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                             builder: (context, state) =>
                                 DebtFormScreen(id: state.pathParameters['id']),
                           ),
+                          GoRoute(
+                            path: 'schedule',
+                            builder: (context, state) =>
+                                ScheduleScreen(id: state.pathParameters['id']!),
+                          ),
                         ],
                       ),
                     ],

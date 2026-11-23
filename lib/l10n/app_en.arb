@@ -3887,5 +3887,378 @@
   "moneyIncInterest": "Interest",
   "moneyIncGift": "Gift",
   "moneyIncRefund": "Refund",
-  "moneyIncOther": "Other"
+  "moneyIncOther": "Other",
+  "moneyOverdue": "Overdue",
+  "moneyOverdueLine": "Was due {date} · {days, plural, =1{1 day ago} other{{days} days ago}} · reminded daily at 09:00",
+  "@moneyOverdueLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyInstalmentAmount": "Instalment {n}: {amount}",
+  "@moneyInstalmentAmount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneySkip": "Skip",
+  "moneySkipTitle": "Skip instalment {n}?",
+  "@moneySkipTitle": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "moneySkipMessage": "It is marked as not paid and no money is recorded. The next instalment becomes due.",
+  "moneySkipped": "Skipped",
+  "moneyUndoSkip": "Undo skip",
+  "moneyOutstandingFrom": "Outstanding (from your {date} statement)",
+  "@moneyOutstandingFrom": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyEmiProgress2": "{paid} of {count} paid · {left} left · ends {month}",
+  "@moneyEmiProgress2": {
+    "placeholders": {
+      "paid": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      },
+      "left": {
+        "type": "int"
+      },
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyOverdueCount": "{count} overdue",
+  "@moneyOverdueCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moneySchedule": "Schedule",
+  "moneyPartPayment": "Part-payment",
+  "moneyChangeRate": "Change rate or EMI",
+  "moneyCorrectOutstanding": "Correct outstanding",
+  "moneyPaymentsAndChanges": "Payments and changes",
+  "moneyBalanceCorrected": "Balance corrected",
+  "moneyCorrectionLine": "{date} · statement says {amount}",
+  "@moneyCorrectionLine": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyCorrection": "Correction",
+  "moneyRateChanged": "Rate or EMI changed",
+  "moneyRateChangeLine": "From instalment {n} · {details}",
+  "@moneyRateChangeLine": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "details": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyChange": "Change",
+  "moneyPartPaymentFewer": "Part-payment · fewer EMIs",
+  "moneyPartPaymentLower": "Part-payment · lower EMI",
+  "moneyDeleteChangeTitle": "Delete this change?",
+  "moneyDeleteChangeMessage": "The schedule is worked out again without it. A part-payment's payment and expense are deleted too.",
+  "moneyOverdueNote": "Overdue: an instalment past its due date with no payment. Skip marks it as not paid; it stays listed as Skipped and the next one becomes due.",
+  "moneyScheduleTitle": "Repayment schedule",
+  "moneyInterestLeft": "Interest still to pay",
+  "moneyPrincipalLeft": "Principal left",
+  "moneyUpcoming": "Upcoming",
+  "moneyPaidTab": "Paid",
+  "moneyColNo": "#",
+  "moneyColDue": "Due",
+  "moneyColEmi": "EMI",
+  "moneyColInterest": "Interest",
+  "moneyColPrincipal": "Principal",
+  "moneyColBalance": "Balance",
+  "moneyScheduleNote": "Estimated with the reducing-balance method (monthly rate = annual rate ÷ 12), from the latest correction. The bank statement may differ.",
+  "moneyScheduleNoRate": "Add the interest rate to the loan to see the interest and principal in each EMI.",
+  "moneyRateSummary": "{rate}% a year · EMI {emi}",
+  "@moneyRateSummary": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      },
+      "emi": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyPaidOn": "Paid on",
+  "moneyAfterwards": "Afterwards",
+  "moneyFewerEmis": "Fewer EMIs, same EMI",
+  "moneyLowerEmi": "Lower EMI, same end date",
+  "moneyPreviewFewer": "Ends {month} instead of {was} · {count, plural, =1{1 EMI fewer} other{{count} EMIs fewer}}",
+  "@moneyPreviewFewer": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      },
+      "was": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyPreviewLower": "EMI {amount} instead of {was} · same end date",
+  "@moneyPreviewLower": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "was": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyPartPaymentNote2": "Also recorded as a payment and, if the loan says so, an expense.",
+  "moneyFromInstalment": "From instalment",
+  "moneyNewRate": "New rate, % a year",
+  "moneyNewEmi": "New EMI",
+  "moneyInstalmentsLeft": "Instalments left",
+  "moneyInstalmentsLeftHint": "Worked out if empty",
+  "moneyRateChangeNote": "Earlier instalments keep their figures.",
+  "moneyStatementOutstanding": "Outstanding on the statement",
+  "moneyStatementDate": "Statement date",
+  "moneyCorrectionNote": "The outstanding amount and schedule start from this figure. Payments after this date reduce it.",
+  "errRateOrEmi": "Enter a new rate or a new EMI.",
+  "errInstalmentRange": "Enter an instalment from 1 to {max}.",
+  "@errInstalmentRange": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyChangeSaved": "Saved",
+  "moneyCardLine": "Credit card · limit {limit} · statement on day {statement} · due on day {due}",
+  "@moneyCardLine": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      },
+      "statement": {
+        "type": "int"
+      },
+      "due": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyCardLineNoLimit": "Credit card · statement on day {statement} · due on day {due}",
+  "@moneyCardLineNoLimit": {
+    "placeholders": {
+      "statement": {
+        "type": "int"
+      },
+      "due": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyStatementOf": "Statement of {statement} · due {due}",
+  "@moneyStatementOf": {
+    "placeholders": {
+      "statement": {
+        "type": "String"
+      },
+      "due": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyTotalDue": "Total due",
+  "moneyMinimumDue": "Minimum due",
+  "moneyCardPaidLine": "Paid {paid} · {left} left",
+  "@moneyCardPaidLine": {
+    "placeholders": {
+      "paid": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyMinimumMet": "minimum met",
+  "moneyMinimumNotMet": "minimum not yet met",
+  "moneyCardPaidA11y": "{paid} of {total} paid",
+  "@moneyCardPaidA11y": {
+    "placeholders": {
+      "paid": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyRecordPayment": "Record payment",
+  "moneyNewStatement": "New statement",
+  "moneyNoStatement": "No statement recorded yet. Add one when your card statement arrives.",
+  "moneySpentOnCard": "Spent on this card since {date}",
+  "@moneySpentOnCard": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "moneySpentOnCardEver": "Spent on this card",
+  "moneyCardSpendLine": "{count, plural, =1{1 expense} other{{count} expenses}} paid with this card",
+  "@moneyCardSpendLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyUnusedLimit": "{amount} of the limit unused (estimate)",
+  "@moneyUnusedLimit": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyDueDate": "Due date",
+  "moneyRemindDueLine": "7 days before, 1 day before and on the day, at 09:00",
+  "moneyStatementSaved": "Statement saved",
+  "errMinOverTotal": "The minimum due cannot be more than the total due.",
+  "errDueBeforeStatement": "The due date must be on or after the statement date.",
+  "moneyCreditLimit": "Credit limit",
+  "moneyStatementDay": "Statement day (1–28)",
+  "moneyCardDueDay": "Payment due day (1–28)",
+  "moneyRemindOn": "On the day",
+  "moneyRemind1": "1 day before too",
+  "moneyRemind7": "7 days before too",
+  "moneyCard": "Card",
+  "moneyNoCard": "No card chosen",
+  "moneySplit": "Split with others",
+  "moneySplitEqual": "Equally",
+  "moneySplitAmount": "By amount",
+  "moneyYou": "You",
+  "moneyAddPerson": "Person",
+  "moneyAddPersonTitle": "Add a person",
+  "moneyPersonName": "Name",
+  "moneyRemovePerson": "Remove {name}",
+  "@moneyRemovePerson": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyYourShare": "Your share",
+  "moneyOwesYou": "Owes you",
+  "moneySplitSum": "Shares add up to {amount}",
+  "@moneySplitSum": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneySplitMismatch": "Shares add up to {sum}, not {total}",
+  "@moneySplitMismatch": {
+    "placeholders": {
+      "sum": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "moneySplitNote": "The full amount is your expense. Each other person's share becomes an Owed-to-me debt named after this expense.",
+  "errSplitPeople": "Add at least one other person.",
+  "moneyDeleteSplitTitle": "Delete this expense?",
+  "moneyDeleteSplitMessage": "It was split with {people}. Delete their Owed-to-me debts too?",
+  "@moneyDeleteSplitMessage": {
+    "placeholders": {
+      "people": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyDeleteExpenseAndDebts": "Delete expense and debts",
+  "moneyDeleteExpenseKeepDebts": "Delete expense, keep debts",
+  "moneyIncome": "Income",
+  "moneySpent": "Spent",
+  "moneySaved": "Saved",
+  "moneySavedLine": "You saved {percent}% of your income this month.",
+  "@moneySavedLine": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyOverspentLine": "You spent {amount} more than your income this month.",
+  "@moneyOverspentLine": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyAddIncome": "Income",
+  "moneyAddIncomeLabel": "Add income",
+  "moneyEditIncome": "Edit income",
+  "moneySource": "Source",
+  "moneyReceivedOn": "Received on",
+  "moneyIncomeSaved": "Income saved",
+  "moneyDeleteIncomeTitle": "Delete this income?",
+  "moneyNoIncome": "No income recorded this month. Add your salary or other income to see what you saved.",
+  "moneyIncomeNote": "Recurring income, such as a monthly salary, is set up under Recurring expenses with Income chosen; its reminder offers Received. Loan amounts received are not income.",
+  "moneyKindExpense": "Expense",
+  "moneyKindIncome": "Income",
+  "moneySettings": "Money settings",
+  "moneyBudgetAlerts": "Budget alerts",
+  "moneyBudgetAlertsLine": "When a budget reaches {percent}% and 100% in a month",
+  "@moneyBudgetAlertsLine": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "moneyFirstAlertAt": "First alert at",
+  "moneySettingsNote": "Each threshold alerts once per month. Personal-debt reminders are set on each debt.",
+  "moneyIncomeAnalysis": "Income and savings",
+  "moneySavingsRate": "Savings rate"
 }

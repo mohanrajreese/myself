@@ -19,6 +19,13 @@ String categoryLabel(AppLocalizations l10n, FinanceCategory? c) {
 }
 
 String monthLabel(LocalDate month) => DateFormat.yMMMM().format(DateTime(month.year, month.month));
+
+String monthYear(LocalDate d) => DateFormat('MMM yyyy').format(DateTime(d.year, d.month));
+String longDate(LocalDate d) => DateFormat('d MMM yyyy').format(DateTime(d.year, d.month, d.day));
+
+/// 8.5 for 850 basis points.
+String rateLabel(int bp) => NumberFormat('0.##').format(bp / 100);
+
 String monthName(LocalDate month) => DateFormat.MMMM().format(DateTime(month.year, month.month));
 
 /// A labelled bar: the percentage is spoken, never shown by colour alone.
