@@ -187,6 +187,8 @@ final List<_Screen> _screens = [
   (name: 'money: analysis', setUp: true, open: (tester) => _go(tester, Routes.moneyAnalysis)),
   (name: 'money: recurring', setUp: true, open: (tester) => _go(tester, Routes.moneyRecurring)),
   (name: 'money: categories', setUp: true, open: (tester) => _go(tester, Routes.moneyCategories)),
+  (name: 'money: income', setUp: true, open: (tester) => _go(tester, Routes.moneyIncome)),
+  (name: 'money: settings', setUp: true, open: (tester) => _go(tester, Routes.moneySettings)),
   (
     name: 'report: nutrition',
     setUp: true,
