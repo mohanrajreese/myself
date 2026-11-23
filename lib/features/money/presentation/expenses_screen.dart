@@ -47,7 +47,14 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
   String? _amountError;
   String? _error;
   bool _busy = false;
+  String? _cardId;
+  bool _split = false;
+  bool _byAmount = false;
+  final List<String> _people = [];
+  final Map<String, String> _shares = {};
+  List<ExpenseSplit> _existingSplits = const [];
 
+  static const _you = '';
   static const _quickKeys = ['food', 'groceries', 'transport', 'bills', 'shopping'];
 
   @override
@@ -60,6 +67,112 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
     _at = (e?.occurredAt ?? ref.read(clockProvider).now()).toLocal();
     _note = e?.note ?? '';
     _mealId = e?.mealLogId;
+    _cardId = e?.cardDebtId;
+    if (e != null) {
+      ref.read(moneyRepositoryProvider).splitsFor(e.id).then((splits) {
+        if (!mounted || splits.isEmpty) return;
+        setState(() {
+          _existingSplits = splits;
+          _split = true;
+          _people.addAll(splits.map((s) => s.person));
+          final total = e.amountPaise;
+          final others = splits.fold(0, (n, s) => n + s.sharePaise);
+          final equal = equalShares(total, splits.length + 1);
+          _byAmount =
+              !(splits.every((s) => equal.skip(1).contains(s.sharePaise)) &&
+                  equal.first == total - others);
+          for (final s in splits) {
+            _shares[s.person] = rupeesInput(s.sharePaise);
+          }
+          _shares[_you] = rupeesInput(total - others);
+        });
+      });
+    }
+  }
+
+  /// Each person's share in paise (you first), or null when invalid.
+  List<int>? _splitShares(int total) {
+    if (!_byAmount) return equalShares(total, _people.length + 1);
+    final out = <int>[];
+    for (final who in [_you, ..._people]) {
+      final v = parseRupees((_shares[who] ?? '').replaceAll(',', '.'));
+      if (v == null || v < 0) return null;
+      out.add(v);
+    }
+    return out;
+  }
+
+  Future<void> _addPerson() async {
+    final l10n = context.l10n;
+    final known = {
+      for (final d in ref.read(debtsProvider).value ?? const <Debt>[])
+        if (d.kind == DebtKind.personal) d.counterparty,
+    }.toList()..sort();
+    var name = '';
+    final added = await showFbSheet<String>(
+      context,
+      FbSheetBody(
+        title: l10n.moneyAddPersonTitle,
+        children: [
+          FbTextField(
+            label: l10n.moneyPersonName,
+            value: '',
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.done,
+            onChanged: (v) => name = v,
+          ),
+          const SizedBox(height: FbSpace.md),
+          if (known.isNotEmpty)
+            Wrap(
+              spacing: FbSpace.sm,
+              runSpacing: FbSpace.sm,
+              children: [
+                for (final k in known.where((k) => !_people.contains(k)).take(8))
+                  FbToggleChip(
+                    label: k,
+                    selected: false,
+                    onTap: () => Navigator.of(context).pop(k),
+                  ),
+              ],
+            ),
+          const SizedBox(height: FbSpace.md),
+          Builder(
+            builder: (ctx) => FbPrimaryButton(
+              label: l10n.save,
+              onPressed: () => Navigator.of(ctx).pop(name.trim()),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (added == null ||
+        added.isEmpty ||
+        _people.any((p) => p.toLowerCase() == added.toLowerCase())) {
+      return;
+    }
+    setState(() => _people.add(added));
+  }
+
+  Future<void> _pickCard(List<Debt> cards) async {
+    final l10n = context.l10n;
+    final id = await showFbSheet<String>(
+      context,
+      FbSheetBody(
+        title: l10n.moneyCard,
+        children: [
+          FbListRow(title: l10n.moneyNoCard, onTap: () => Navigator.of(context).pop('')),
+          for (final c in cards)
+            FbListRow(
+              title: c.name,
+              trailing: c.id == _cardId
+                  ? Icon(Icons.check_rounded, semanticLabel: l10n.selected)
+                  : null,
+              onTap: () => Navigator.of(context).pop(c.id),
+            ),
+        ],
+      ),
+    );
+    if (id != null) setState(() => _cardId = id.isEmpty ? null : id);
   }
 
   bool get _hasReceipt =>
@@ -165,6 +278,25 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
     }
     final categoryId = _categoryId ?? foodCategoryIds.first;
     final linkable = foodCategoryIds.contains(categoryId);
+    List<int>? shares;
+    if (_split) {
+      if (_people.isEmpty) {
+        setState(() => _error = l10n.errSplitPeople);
+        return;
+      }
+      shares = _splitShares(paise);
+      if (shares == null ||
+          shares.fold(0, (a, b) => a + b) != paise ||
+          shares.skip(1).any((v) => v <= 0)) {
+        setState(
+          () => _error = l10n.moneySplitMismatch(
+            formatRupees(shares?.fold<int>(0, (a, b) => a + b) ?? 0),
+            formatRupees(paise),
+          ),
+        );
+        return;
+      }
+    }
     setState(() => _busy = true);
     final money = ref.read(moneyRepositoryProvider);
     final draft = (
@@ -186,6 +318,19 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
       if (mounted) setState(() => (_busy = false, _error = l10n.errSaveFailed));
       return;
     }
+    await money.setExpenseCard(id, _method == PaymentMethod.creditCard ? _cardId : null);
+    if (shares != null) {
+      final label = _note.trim().isNotEmpty
+          ? _note.trim()
+          : categoryLabel(l10n, ref.read(moneyCategoryMapProvider)[categoryId]);
+      await money.saveSplit(
+        id,
+        label: label,
+        shares: [for (final (i, p) in _people.indexed) (person: p, sharePaise: shares[i + 1])],
+      );
+    } else if (_existingSplits.isNotEmpty) {
+      await money.saveSplit(id, label: '', shares: const []);
+    }
     final receipts = ref.read(receiptStoreProvider);
     if (_newReceipt != null) {
       await receipts.attach(id, _newReceipt!);
@@ -199,16 +344,43 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
 
   Future<void> _delete() async {
     final l10n = context.l10n;
-    final ok = await showFbConfirm(
-      context,
-      title: l10n.moneyDeleteExpenseTitle,
-      message: l10n.deleteEntryMessage,
-      confirmLabel: l10n.delete,
-      cancelLabel: l10n.cancel,
-      destructive: true,
-    );
-    if (!ok || !mounted) return;
     final id = widget.existing!.id;
+    final money = ref.read(moneyRepositoryProvider);
+    if (_existingSplits.isNotEmpty) {
+      final deleteDebts = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(l10n.moneyDeleteSplitTitle),
+          content: Text(
+            l10n.moneyDeleteSplitMessage(_existingSplits.map((s) => s.person).join(', ')),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(l10n.cancel)),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(l10n.moneyDeleteExpenseKeepDebts),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              style: TextButton.styleFrom(foregroundColor: ctx.colors.error),
+              child: Text(l10n.moneyDeleteExpenseAndDebts),
+            ),
+          ],
+        ),
+      );
+      if (deleteDebts == null || !mounted) return;
+      await money.removeSplit(id, deleteDebts: deleteDebts);
+    } else {
+      final ok = await showFbConfirm(
+        context,
+        title: l10n.moneyDeleteExpenseTitle,
+        message: l10n.deleteEntryMessage,
+        confirmLabel: l10n.delete,
+        cancelLabel: l10n.cancel,
+        destructive: true,
+      );
+      if (!ok || !mounted) return;
+    }
     await ref.read(receiptStoreProvider).remove(id);
     await ref.read(moneyRepositoryProvider).deleteExpense(id);
     if (!mounted) return;
@@ -236,6 +408,13 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
         ? (ref.watch(mealsOnProvider(day)).value ?? const <Meal>[])
         : const <Meal>[];
     final linkedMeal = meals.where((m) => m.id == _mealId).firstOrNull;
+    final cards = [
+      for (final d in ref.watch(debtsProvider).value ?? const <Debt>[])
+        if (d.isCard && !d.settled) d,
+    ];
+    final total = parseRupees(_amount.replaceAll(',', '.')) ?? 0;
+    final shares = _split ? _splitShares(total) : null;
+    final shareSum = shares?.fold<int>(0, (a, b) => a + b) ?? 0;
     return FbSheetBody(
       title: widget.existing == null ? l10n.moneyAddExpenseLabel : l10n.moneyEditExpense,
       trailing: widget.existing == null
@@ -286,6 +465,14 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
               ),
           ],
         ),
+        if (_method == PaymentMethod.creditCard && cards.isNotEmpty) ...[
+          const SizedBox(height: FbSpace.md),
+          FbPickerField(
+            label: l10n.moneyCard,
+            valueText: cards.where((c) => c.id == _cardId).firstOrNull?.name ?? l10n.moneyNoCard,
+            onTap: () => _pickCard(cards),
+          ),
+        ],
         const SizedBox(height: FbSpace.lg),
         FbDateTimeField(
           label: l10n.moneyWhen,
@@ -322,6 +509,92 @@ class _ExpenseSheetState extends ConsumerState<_ExpenseSheet> {
                 )
               : const SizedBox.shrink(),
         ),
+        const SizedBox(height: FbSpace.md),
+        FbSwitchRow(
+          title: l10n.moneySplit,
+          value: _split,
+          onChanged: (v) => setState(() => (_split = v, _error = null)),
+        ),
+        if (_split) ...[
+          FbSegmented<bool>(
+            options: {false: l10n.moneySplitEqual, true: l10n.moneySplitAmount},
+            selected: _byAmount,
+            onChanged: (v) => setState(() => _byAmount = v),
+          ),
+          const SizedBox(height: FbSpace.md),
+          Wrap(
+            spacing: FbSpace.sm,
+            runSpacing: FbSpace.sm,
+            children: [
+              FbToggleChip(label: l10n.moneyYou, selected: true, onTap: () {}),
+              for (final p in _people)
+                FbToggleChip(
+                  label: p,
+                  selected: true,
+                  onTap: () {},
+                  semanticLabel: p,
+                  onDeleted: () => setState(() => _people.remove(p)),
+                ),
+              FbToggleChip(label: '+ ${l10n.moneyAddPerson}', selected: false, onTap: _addPerson),
+            ],
+          ),
+          if (_people.isNotEmpty) ...[
+            const SizedBox(height: FbSpace.md),
+            FbListCard(
+              children: [
+                for (final (i, who) in [_you, ..._people].indexed)
+                  _byAmount
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: FbSpace.lg,
+                            vertical: FbSpace.sm,
+                          ),
+                          child: FbTextField(
+                            label: who == _you ? l10n.moneyYourShare : who,
+                            value: _shares[who] ?? '',
+                            suffix: '₹',
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            inputFormatters: rupeeInputFormatters,
+                            onChanged: (v) => setState(() => (_shares[who] = v, _error = null)),
+                          ),
+                        )
+                      : FbListRow(
+                          title: who == _you ? l10n.moneyYou : who,
+                          subtitle: who == _you ? l10n.moneyYourShare : l10n.moneyOwesYou,
+                          trailing: Text(
+                            formatRupees(shares?[i] ?? 0),
+                            style: context.text.bodyStrong,
+                          ),
+                        ),
+              ],
+            ),
+            if (_byAmount) ...[
+              const SizedBox(height: FbSpace.xs),
+              Row(
+                children: [
+                  Icon(
+                    shareSum == total
+                        ? Icons.check_circle_outline_rounded
+                        : Icons.error_outline_rounded,
+                    size: 16,
+                    color: shareSum == total ? context.colors.primary : context.colors.error,
+                  ),
+                  const SizedBox(width: FbSpace.xs),
+                  Expanded(
+                    child: Text(
+                      shareSum == total
+                          ? l10n.moneySplitSum(formatRupees(total))
+                          : l10n.moneySplitMismatch(formatRupees(shareSum), formatRupees(total)),
+                      style: context.text.caption,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+          const SizedBox(height: FbSpace.xs),
+          Text(l10n.moneySplitNote, style: context.text.caption),
+        ],
         if (_error != null) ...[
           const SizedBox(height: FbSpace.md),
           FbNotice(_error!, isError: true),

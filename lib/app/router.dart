@@ -229,6 +229,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'categories',
                     builder: (context, state) => const CategoriesScreen(),
                   ),
+                  GoRoute(path: 'income', builder: (context, state) => const IncomeScreen()),
+                  GoRoute(
+                    path: 'settings',
+                    builder: (context, state) => const MoneySettingsScreen(),
+                  ),
                   GoRoute(
                     path: 'debts',
                     builder: (context, state) => const DebtsScreen(),

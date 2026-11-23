@@ -19,6 +19,7 @@ import '../../../core/widgets/fb_states.dart';
 import '../../../core/widgets/l10n.dart';
 import '../../../core/widgets/tokens.dart';
 import '../domain/money.dart';
+import 'debt_detail_screen.dart';
 import 'money_common.dart';
 
 String kindLabel(AppLocalizations l10n, DebtKind k) => switch (k) {
@@ -107,7 +108,11 @@ class _DebtsScreenState extends ConsumerState<DebtsScreen> {
               if (shown.isEmpty)
                 FbEmptyHint(l10n.moneyNoDebts, boxed: true)
               else
-                FbListCard(children: [for (final s in shown) _DebtRow(status: s)]),
+                FbListCard(
+                  children: [
+                    for (final s in shown) _DebtRow(status: s, today: ref.watch(todayProvider)),
+                  ],
+                ),
               const SizedBox(height: FbSpace.md),
               Text(l10n.moneyDebtsNote, style: context.text.caption),
             ],
@@ -143,8 +148,9 @@ class _Total extends StatelessWidget {
 }
 
 class _DebtRow extends StatelessWidget {
-  const _DebtRow({required this.status});
+  const _DebtRow({required this.status, required this.today});
   final DebtStatus status;
+  final LocalDate today;
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +161,7 @@ class _DebtRow extends StatelessWidget {
       kindLabel(l10n, d.kind),
       if (emi != null) ...[
         l10n.moneyEmiOnDay(formatRupees(emi.emiPaise), emi.day),
-        l10n.moneyPaidOf(status.paidInstalments.length, emi.count),
+        l10n.moneyPaidOf(status.paidInstalments.length, status.instalmentCount),
         if (status.nextDue != null) l10n.moneyNextOn(context.shortDate(status.nextDue!)),
       ] else ...[
         d.direction == DebtDirection.iOwe
@@ -183,11 +189,18 @@ class _DebtRow extends StatelessWidget {
               ],
             ),
             Text(parts.join(' · '), style: context.text.caption),
-            if (emi != null) ...[
+            if (emi != null && status.overdueOn(today)) ...[
+              const SizedBox(height: FbSpace.xs),
+              const Align(alignment: Alignment.centerLeft, child: OverdueLabel()),
+            ],
+            if (emi != null && status.instalmentCount > 0) ...[
               const SizedBox(height: FbSpace.xs),
               MoneyBar(
-                fraction: status.paidInstalments.length / emi.count,
-                semanticLabel: l10n.moneyInstalmentsA11y(status.paidInstalments.length, emi.count),
+                fraction: status.paidInstalments.length / status.instalmentCount,
+                semanticLabel: l10n.moneyInstalmentsA11y(
+                  status.paidInstalments.length,
+                  status.instalmentCount,
+                ),
               ),
             ],
           ],
@@ -302,6 +315,11 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
   LocalDate? _due;
   String _notes = '';
   bool _recordAsExpense = true;
+  String _limit = '';
+  String _statementDay = '';
+  String _cardDueDay = '';
+  bool _dueRemind = false;
+  int _dueRemindDays = 0;
   final Map<String, String> _errors = {};
   bool _busy = false;
 
@@ -329,6 +347,11 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
     _due = d.dueDate;
     _notes = d.notes ?? '';
     _recordAsExpense = d.recordAsExpense;
+    _limit = d.creditLimitPaise == null ? '' : rupeesInput(d.creditLimitPaise!);
+    _statementDay = d.statementDay?.toString() ?? '';
+    _cardDueDay = d.cardDueDay?.toString() ?? '';
+    _dueRemind = d.dueRemind;
+    _dueRemindDays = d.dueRemindDays;
     _markPast = false;
   }
 
@@ -370,7 +393,18 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
     if (_rate.trim().isNotEmpty && (rate == null || rate < 0 || rate > 100)) {
       errors['rate'] = l10n.errRate;
     }
-    final emiEnabled = _emiOn && _kind != DebtKind.personal;
+    final isCard = _kind == DebtKind.creditCard;
+    final limit = _limit.trim().isEmpty ? null : parseRupees(_limit.replaceAll(',', '.'));
+    final stDay = int.tryParse(_statementDay);
+    final dueDay = int.tryParse(_cardDueDay);
+    if (isCard) {
+      if (_limit.trim().isNotEmpty && (limit == null || limit <= 0)) {
+        errors['limit'] = l10n.errAmountInvalid;
+      }
+      if (stDay == null || stDay < 1 || stDay > 28) errors['stDay'] = l10n.errDueDay;
+      if (dueDay == null || dueDay < 1 || dueDay > 28) errors['dueDay'] = l10n.errDueDay;
+    }
+    final emiEnabled = _emiOn && _kind != DebtKind.personal && !isCard;
     EmiPlan? plan;
     if (emiEnabled) {
       final paise = parseRupees(_emiAmount.replaceAll(',', '.'));
@@ -401,13 +435,18 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
       startDate: _start,
       // Basis points: an integer, never a stored double.
       interestRateBp: rate == null ? null : (rate * 100).round(),
-      dueDate: emiEnabled ? null : _due,
+      dueDate: emiEnabled || isCard ? null : _due,
       emi: plan,
       remind: _remind,
       remindDaysBefore: _lead,
       recordAsExpense: _recordAsExpense,
       settled: _existing?.settled ?? false,
       notes: _notes,
+      creditLimitPaise: isCard ? limit : null,
+      statementDay: isCard ? stDay : null,
+      cardDueDay: isCard ? dueDay : null,
+      dueRemind: !emiEnabled && !isCard && _due != null && _dueRemind,
+      dueRemindDays: _dueRemindDays,
     );
     final r = await ref
         .read(moneyActionsProvider)
@@ -490,7 +529,8 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
       _load(found);
       _loaded = true;
     }
-    final emiAllowed = _kind != DebtKind.personal;
+    final isCard = _kind == DebtKind.creditCard;
+    final emiAllowed = _kind != DebtKind.personal && !isCard;
     final past = _existing == null && emiAllowed && _emiOn ? _pastCount : 0;
     return Scaffold(
       appBar: AppBar(
@@ -528,7 +568,11 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
                 FbToggleChip(
                   label: kindLabel(l10n, k),
                   selected: k == _kind,
-                  onTap: () => setState(() => _kind = k),
+                  onTap: () => setState(() {
+                    _kind = k;
+                    // Card bills repay spending already recorded as expenses.
+                    if (_existing == null) _recordAsExpense = k != DebtKind.creditCard;
+                  }),
                 ),
             ],
           ),
@@ -654,7 +698,67 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
                 ],
               ),
             ),
-          if (!emiAllowed || !_emiOn) ...[
+          if (isCard) ...[
+            FbCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  FbTextField(
+                    label: l10n.moneyCreditLimit,
+                    value: _limit,
+                    suffix: '₹',
+                    optional: true,
+                    optionalLabel: l10n.optional,
+                    errorText: _errors['limit'],
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: rupeeInputFormatters,
+                    onChanged: (v) => _limit = v,
+                  ),
+                  const SizedBox(height: FbSpace.md),
+                  FbFieldPair(
+                    first: FbTextField(
+                      label: l10n.moneyStatementDay,
+                      value: _statementDay,
+                      errorText: _errors['stDay'],
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(2),
+                      ],
+                      onChanged: (v) => _statementDay = v,
+                    ),
+                    second: FbTextField(
+                      label: l10n.moneyCardDueDay,
+                      value: _cardDueDay,
+                      errorText: _errors['dueDay'],
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(2),
+                      ],
+                      onChanged: (v) => _cardDueDay = v,
+                    ),
+                  ),
+                  const SizedBox(height: FbSpace.md),
+                  Text(l10n.moneyFirstReminder, style: context.text.label),
+                  const SizedBox(height: FbSpace.xs),
+                  Wrap(
+                    spacing: FbSpace.sm,
+                    runSpacing: FbSpace.sm,
+                    children: [
+                      for (final d in _leadOptions)
+                        FbToggleChip(
+                          label: l10n.moneyDaysBefore(d),
+                          selected: d == _lead,
+                          onTap: () => setState(() => _lead = d),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+          if (!isCard && (!emiAllowed || !_emiOn)) ...[
             const SizedBox(height: FbSpace.lg),
             _date(
               l10n.moneyDueDateOptional,
@@ -662,6 +766,30 @@ class _DebtFormScreenState extends ConsumerState<DebtFormScreen> {
               (d) => _due = d,
               onClear: () => setState(() => _due = null),
             ),
+            if (_due != null) ...[
+              FbSwitchRow(
+                title: l10n.moneyRemindMe,
+                value: _dueRemind,
+                onChanged: (v) => setState(() => _dueRemind = v),
+              ),
+              if (_dueRemind)
+                Wrap(
+                  spacing: FbSpace.sm,
+                  runSpacing: FbSpace.sm,
+                  children: [
+                    for (final (days, label) in [
+                      (0, l10n.moneyRemindOn),
+                      (1, l10n.moneyRemind1),
+                      (7, l10n.moneyRemind7),
+                    ])
+                      FbToggleChip(
+                        label: label,
+                        selected: _dueRemindDays == days,
+                        onTap: () => setState(() => _dueRemindDays = days),
+                      ),
+                  ],
+                ),
+            ],
           ],
           const SizedBox(height: FbSpace.lg),
           FbTextField(

@@ -50,7 +50,11 @@ class RecurringExpensesScreen extends ConsumerWidget {
                 children: [
                   for (final r in value)
                     FbListRow(
-                      title: '${r.name} · ${formatRupees(r.amountPaise)}',
+                      title: [
+                        r.name,
+                        formatRupees(r.amountPaise),
+                        if (r.isIncome) l10n.moneyKindIncome,
+                      ].join(' · '),
                       subtitle: [
                         l10n.moneyRecurringRow(
                           categoryLabel(l10n, cats[r.categoryId]),
@@ -90,6 +94,7 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
   late ScheduleRule? _rule = widget.existing?.rule ?? Monthly.dayOfMonth(1, times: const [9 * 60]);
   late bool _remind = widget.existing?.remind ?? true;
   late bool _active = widget.existing?.active ?? true;
+  late bool _income = widget.existing?.isIncome ?? false;
   String? _nameError;
   String? _amountError;
   String? _error;
@@ -98,7 +103,9 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
   Future<void> _pickCategory() async {
     final l10n = context.l10n;
     final cats = [
-      for (final c in ref.read(moneyCategoriesProvider).value ?? const <FinanceCategory>[])
+      for (final c
+          in ref.read(_income ? incomeSourcesProvider : moneyCategoriesProvider).value ??
+              const <FinanceCategory>[])
         if (!c.archived || c.id == _categoryId) c,
     ];
     final id = await showFbSheet<String>(
@@ -142,6 +149,7 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
             rule: _rule!,
             remind: _remind,
             active: _active,
+            isIncome: _income,
           ),
         );
     if (!mounted) return;
@@ -177,6 +185,15 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
     return FbSheetBody(
       title: l10n.moneyRecurringSheet,
       children: [
+        FbSegmented<bool>(
+          options: {false: l10n.moneyKindExpense, true: l10n.moneyKindIncome},
+          selected: _income,
+          onChanged: (v) => setState(() {
+            _income = v;
+            _categoryId = v ? seededCategoryId('salary') : seededCategoryId('rent');
+          }),
+        ),
+        const SizedBox(height: FbSpace.lg),
         FbTextField(
           label: l10n.moneyDebtName,
           value: _name,
@@ -196,7 +213,7 @@ class _RecurringSheetState extends ConsumerState<_RecurringSheet> {
         ),
         const SizedBox(height: FbSpace.lg),
         FbPickerField(
-          label: l10n.moneyCategory,
+          label: _income ? l10n.moneySource : l10n.moneyCategory,
           valueText: categoryLabel(l10n, cats[_categoryId]),
           onTap: _pickCategory,
         ),

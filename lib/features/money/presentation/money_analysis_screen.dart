@@ -195,6 +195,16 @@ class _MoneyAnalysisScreenState extends ConsumerState<MoneyAnalysisScreen> {
             ],
           ),
         ],
+        MoneySectionHeader(l10n.moneyIncomeAnalysis),
+        FbListCard(
+          children: [
+            MoneyValueRow(label: l10n.moneyIncome, value: formatRupees(r.incomePaise)),
+            MoneyValueRow(label: l10n.moneySpent, value: formatRupees(r.totalPaise)),
+            MoneyValueRow(label: l10n.moneySaved, value: formatRupees(r.savedPaise)),
+            if (r.savingsRate != null)
+              MoneyValueRow(label: l10n.moneySavingsRate, value: '${r.savingsRate}%'),
+          ],
+        ),
         MoneySectionHeader(l10n.moneyFoodAndMeals),
         FbListCard(
           children: [

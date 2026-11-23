@@ -4200,7 +4200,7 @@
         "type": "String"
       },
       "total": {
-        "type": "int"
+        "type": "String"
       }
     }
   },

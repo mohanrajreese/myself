@@ -15,6 +15,7 @@ import '../../../core/widgets/l10n.dart';
 import '../../../core/widgets/tokens.dart';
 import '../domain/money_report.dart';
 import 'expenses_screen.dart';
+import 'income_screens.dart';
 import 'money_common.dart';
 
 /// The Money tab: the month at a glance (board P8Money).
@@ -36,20 +37,36 @@ class MoneyScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.tabMoney),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: FbSpace.md),
-            // Large text keeps the title readable: the button shrinks to its icon.
-            child: MediaQuery.textScalerOf(context).scale(1) > 1.5
-                ? IconButton.filled(
-                    tooltip: l10n.moneyAddExpenseLabel,
-                    onPressed: () => showExpenseSheet(context),
-                    icon: const Icon(Icons.add_rounded),
-                  )
-                : FilledButton.icon(
-                    onPressed: () => showExpenseSheet(context),
-                    icon: const Icon(Icons.add_rounded),
-                    label: Text(l10n.moneyAddExpense, semanticsLabel: l10n.moneyAddExpenseLabel),
-                  ),
+          // Large text keeps the title readable: buttons shrink to icons.
+          if (MediaQuery.textScalerOf(context).scale(1) > 1.5) ...[
+            IconButton(
+              tooltip: l10n.moneyAddIncomeLabel,
+              onPressed: () => showIncomeSheet(context),
+              icon: const Icon(Icons.savings_outlined),
+            ),
+            IconButton.filled(
+              tooltip: l10n.moneyAddExpenseLabel,
+              onPressed: () => showExpenseSheet(context),
+              icon: const Icon(Icons.add_rounded),
+            ),
+          ] else ...[
+            OutlinedButton(
+              onPressed: () => showIncomeSheet(context),
+              child: Text('+ ${l10n.moneyAddIncome}', semanticsLabel: l10n.moneyAddIncomeLabel),
+            ),
+            const SizedBox(width: FbSpace.xs),
+            FilledButton.icon(
+              onPressed: () => showExpenseSheet(context),
+              icon: const Icon(Icons.add_rounded),
+              label: Text(l10n.moneyAddExpense, semanticsLabel: l10n.moneyAddExpenseLabel),
+            ),
+          ],
+          PopupMenuButton<String>(
+            tooltip: l10n.moneyMenu,
+            onSelected: (route) => context.push(route),
+            itemBuilder: (_) => [
+              PopupMenuItem(value: Routes.moneySettings, child: Text(l10n.moneySettings)),
+            ],
           ),
         ],
       ),
@@ -87,6 +104,8 @@ class MoneyScreen extends ConsumerWidget {
                   ),
               ],
             ),
+            _IncomeCard(report: value, isCurrent: isCurrent),
+            const SizedBox(height: FbSpace.md),
             _SpentCard(report: value, month: month, isCurrent: isCurrent, today: today),
             const SizedBox(height: FbSpace.md),
             const _Shortcuts(),
@@ -97,13 +116,16 @@ class MoneyScreen extends ConsumerWidget {
                   for (final s in emis.take(3))
                     FbListRow(
                       title: '${s.debt.name} · ${s.debt.counterparty}',
-                      subtitle: l10n.moneyEmiRow(
-                        context.shortDate(s.nextDue!),
-                        s.nextInstalment!,
-                        s.debt.emi!.count,
-                      ),
+                      subtitle: [
+                        l10n.moneyEmiRow(
+                          context.shortDate(s.nextDue!),
+                          s.nextInstalment!,
+                          s.instalmentCount,
+                        ),
+                        if (s.overdueOn(today)) '! ${l10n.moneyOverdue}',
+                      ].join(' · '),
                       trailing: Text(
-                        formatRupees(s.debt.emi!.emiPaise),
+                        formatRupees(s.nextEmiPaise ?? s.debt.emi!.emiPaise),
                         style: context.text.bodyStrong,
                       ),
                       onTap: () => context.push(Routes.moneyDebt(s.debt.id)),
@@ -312,6 +334,7 @@ class _Shortcuts extends StatelessWidget {
       (Icons.pie_chart_outline_rounded, l10n.moneyBudgets, Routes.moneyBudgets),
       (Icons.swap_horiz_rounded, l10n.moneyDebts, Routes.moneyDebts),
       (Icons.bar_chart_rounded, l10n.moneyAnalysis, Routes.moneyAnalysis),
+      (Icons.savings_outlined, l10n.moneyIncome, Routes.moneyIncome),
     ];
     return Wrap(
       spacing: FbSpace.sm,
@@ -319,7 +342,7 @@ class _Shortcuts extends StatelessWidget {
       children: [
         for (final (icon, label, route) in items)
           SizedBox(
-            width: (MediaQuery.sizeOf(context).width - 2 * FbSpace.lg - 3 * FbSpace.sm) / 4,
+            width: (MediaQuery.sizeOf(context).width - 2 * FbSpace.lg - 4 * FbSpace.sm) / 5,
             child: FbCard(
               padding: EdgeInsets.zero,
               child: InkWell(
@@ -342,6 +365,55 @@ class _Shortcuts extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// Income, spending and what was saved (board P9Income, §5.22L).
+class _IncomeCard extends StatelessWidget {
+  const _IncomeCard({required this.report, required this.isCurrent});
+  final MoneyReport report;
+  final bool isCurrent;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final rate = report.savingsRate;
+    Widget figure(String label, int paise) => MergeSemantics(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: context.text.caption),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(formatRupees(paise), style: context.text.title),
+          ),
+        ],
+      ),
+    );
+    return FbCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(child: figure(l10n.moneyIncome, report.incomePaise)),
+              Expanded(child: figure(l10n.moneySpent, report.totalPaise)),
+              Expanded(child: figure(l10n.moneySaved, report.savedPaise)),
+            ],
+          ),
+          if (rate != null) ...[
+            const SizedBox(height: FbSpace.xs),
+            Text(
+              report.savedPaise >= 0
+                  ? l10n.moneySavedLine(rate)
+                  : l10n.moneyOverspentLine(formatRupees(-report.savedPaise)),
+              style: context.text.bodySmall,
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
