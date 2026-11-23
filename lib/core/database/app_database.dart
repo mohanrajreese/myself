@@ -56,6 +56,12 @@ part 'app_database.g.dart';
     Expenses,
     Budgets,
     LocalExpenseReceipts,
+    LoanChanges,
+    InstalmentSkips,
+    CardStatements,
+    Incomes,
+    ExpenseSplits,
+    LocalBudgetAlerts,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -76,6 +82,14 @@ class AppDatabase extends _$AppDatabase {
 
   static const _version10Indexes = {'debt_payments_debt', 'expenses_local_date', 'expenses_meal'};
 
+  static const _version11Indexes = {
+    'loan_changes_debt',
+    'instalment_skips_debt',
+    'card_statements_debt',
+    'incomes_local_date',
+    'expense_splits_expense',
+  };
+
   static const _version7Indexes = {
     'workout_sessions_local_date',
     'workout_exercises_session',
@@ -85,7 +99,7 @@ class AppDatabase extends _$AppDatabase {
   };
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -112,6 +126,7 @@ class AppDatabase extends _$AppDatabase {
             ..._version6Indexes,
             ..._version7Indexes,
             ..._version10Indexes,
+            ..._version11Indexes,
           };
           if (!notInVersion2.contains(index.entityName)) await migrator.create(index);
         }
@@ -202,6 +217,34 @@ class AppDatabase extends _$AppDatabase {
         }
         for (final index in allSchemaEntities.whereType<Index>()) {
           if (_version10Indexes.contains(index.entityName)) await migrator.create(index);
+        }
+      }
+      if (from < 11) {
+        // Phase 9: money additions (PRD §5.22).
+        // Tables created at v10 already have the v11 columns when the
+        // database is created fresh, so only add them on a real upgrade.
+        if (from == 10) {
+          await migrator.addColumn(financeCategories, financeCategories.kind);
+          await migrator.addColumn(debts, debts.creditLimitPaise);
+          await migrator.addColumn(debts, debts.statementDay);
+          await migrator.addColumn(debts, debts.cardDueDay);
+          await migrator.addColumn(debts, debts.dueRemind);
+          await migrator.addColumn(debts, debts.dueRemindDays);
+          await migrator.addColumn(recurringExpenses, recurringExpenses.kind);
+          await migrator.addColumn(expenses, expenses.cardDebtId);
+        }
+        for (final table in <TableInfo<Table, Object?>>[
+          loanChanges,
+          instalmentSkips,
+          cardStatements,
+          incomes,
+          expenseSplits,
+          localBudgetAlerts,
+        ]) {
+          await migrator.createTable(table);
+        }
+        for (final index in allSchemaEntities.whereType<Index>()) {
+          if (_version11Indexes.contains(index.entityName)) await migrator.create(index);
         }
       }
     },

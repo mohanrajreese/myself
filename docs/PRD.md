@@ -1294,7 +1294,7 @@ Amounts are integers in paise. Displayed as ₹ with Indian digit grouping (₹1
 
 ## 5.22 Money additions: loans in depth, credit cards, income, bill splitting
 
-> Addendum v2.2, requested by the owner on 23 November 2026. **Status: proposed, awaiting the owner's approval.** Decisions: bill splitting returns (reverses the 20 Nov removal); bank SMS, bank linking and other currencies stay out of scope; investments stay out of scope.
+> Addendum v2.2, requested by the owner on 23 November 2026. **Status: approved by the owner on 23 November 2026.** Decisions: bill splitting returns (reverses the 20 Nov removal); bank SMS, bank linking and other currencies stay out of scope; investments stay out of scope.
 
 ### F. Overdue instalments
 - An instalment whose due date has passed without a payment is **Overdue**, shown with an icon and the word, never colour alone, on the Money tab, the Debts list and the loan.

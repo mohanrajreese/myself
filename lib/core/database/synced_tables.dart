@@ -31,4 +31,9 @@ const syncedTableNames = <String>[
   'recurring_expenses',
   'expenses',
   'budgets',
+  'loan_changes',
+  'instalment_skips',
+  'card_statements',
+  'incomes',
+  'expense_splits',
 ];

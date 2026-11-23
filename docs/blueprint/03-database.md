@@ -120,7 +120,7 @@ Present in `AppDatabase` and in Supabase with the same columns, plus `user_id` a
 
 | `recurring_expenses` | `name`, `amount_paise`, `category_id`, `method`, `schedule` (JSON rule), `remind`, `active` | Rent and similar; Paid on its reminder records an expense with `recurring_expense_id` |
 
-### 2.9 Money additions (PRD §5.22, proposed 23 Nov 2026)
+### 2.9 Money additions (PRD §5.22, approved 23 Nov 2026)
 
 | Table or change | Columns | Notes |
 |---|---|---|
@@ -191,7 +191,7 @@ SQL-first (§13.2). One file per logical step in `supabase/migrations/`, applied
 | 9 | `…_hygiene.sql` | `hygiene_logs` | 5 |
 | 10 | `…_devices_and_sync.sql` | `device_notification_tokens`, `cloud_sync_metadata` | 6 |
 | 11 | `…_money.sql` | `finance_categories`, `debts`, `debt_payments`, `recurring_expenses`, `expenses`, `budgets` | 8 |
-| 12 | `…_money_additions.sql` | `loan_changes`, `instalment_skips`, `card_statements`, `incomes`, `expense_splits`; new columns on `debts`, `finance_categories`, `recurring_expenses`, `expenses` | 9 (proposed) |
+| 12 | `…_money_additions.sql` | `loan_changes`, `instalment_skips`, `card_statements`, `incomes`, `expense_splits`; new columns on `debts`, `finance_categories`, `recurring_expenses`, `expenses` | 9 |
 
 `supabase/seed.sql` holds only development fixtures for local testing. It never runs against the real project.
 

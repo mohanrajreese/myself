@@ -372,9 +372,55 @@ select t.refused('select 1 from public.expenses', 'anon cannot read expenses');
 select t.refused('select 1 from public.debts', 'anon cannot read debts');
 reset role;
 select t.login('a');
+-- Phase 9: money additions.
+insert into public.loan_changes (id, debt_id, kind, effective_date, from_instalment, rate_bp, emi_paise, instalments_left,
+                                 created_at, updated_at)
+values ('76000000-0000-0000-0000-000000000001', '71000000-0000-0000-0000-000000000001', 'rate_change', '2026-05-05', 30,
+        850, 1250000, 211, now(), now());
+insert into public.instalment_skips (id, debt_id, instalment_no, skipped_on, created_at, updated_at)
+values ('77000000-0000-0000-0000-000000000001', '71000000-0000-0000-0000-000000000001', 39, '2026-12-08', now(), now());
+insert into public.card_statements (id, debt_id, statement_date, due_date, total_due_paise, min_due_paise, created_at, updated_at)
+values ('78000000-0000-0000-0000-000000000001', '71000000-0000-0000-0000-000000000001', '2026-11-18', '2026-12-07',
+        2348000, 118000, now(), now());
+insert into public.finance_categories (id, name, icon_key, kind, created_at, updated_at)
+values ('70000000-0000-0000-0000-000000000002', 'Salary', 'salary', 'income', now(), now());
+insert into public.incomes (id, amount_paise, category_id, occurred_at, local_date, tz, created_at, updated_at)
+values ('79000000-0000-0000-0000-000000000001', 8000000, '70000000-0000-0000-0000-000000000002', now(), '2026-11-01',
+        'Asia/Kolkata', now(), now());
+insert into public.expense_splits (id, expense_id, person, share_paise, debt_id, created_at, updated_at)
+values ('7a000000-0000-0000-0000-000000000001', '74000000-0000-0000-0000-000000000001', 'Ravi', 8000,
+        '71000000-0000-0000-0000-000000000001', now(), now());
+select t.eq((select count(*) from public.loan_changes), 1, 'owner sees own loan changes');
+select t.eq((select count(*) from public.instalment_skips), 1, 'owner sees own skipped instalments');
+select t.eq((select count(*) from public.card_statements), 1, 'owner sees own card statements');
+select t.eq((select count(*) from public.incomes), 1, 'owner sees own income');
+select t.eq((select count(*) from public.expense_splits), 1, 'owner sees own splits');
+select t.refused($$insert into public.card_statements (id, debt_id, statement_date, due_date, total_due_paise,
+  min_due_paise, created_at, updated_at) values ('78000000-0000-0000-0000-000000000002',
+  '71000000-0000-0000-0000-000000000001', '2026-11-18', '2026-12-07', 100, 200, now(), now())$$,
+  'a minimum due cannot exceed the total due');
+select t.refused($$update public.debts set due_remind_days = 3 where id = '71000000-0000-0000-0000-000000000001'$$,
+  'a due reminder is on the day, 1 or 7 days before');
+reset role;
+select t.login('b');
+select t.eq((select count(*) from public.loan_changes), 0, 'other user cannot read loan changes');
+select t.eq((select count(*) from public.card_statements), 0, 'other user cannot read card statements');
+select t.eq((select count(*) from public.incomes), 0, 'other user cannot read income');
+select t.eq((select count(*) from public.expense_splits), 0, 'other user cannot read splits');
+select t.refused($$insert into public.loan_changes (id, debt_id, kind, effective_date, created_at, updated_at)
+  values ('76000000-0000-0000-0000-0000000000b1', '71000000-0000-0000-0000-000000000001', 'balance_correction',
+  '2026-11-30', now(), now())$$, 'a loan change cannot point at another user''s debt');
+reset role;
+select t.login('anon');
+select t.refused('select 1 from public.incomes', 'anon cannot read income');
+reset role;
+select t.login('a');
 -- Deleting a debt removes its payments; the linked expense stays, unlinked.
 delete from public.debts where id = '71000000-0000-0000-0000-000000000001';
 select t.eq((select count(*) from public.debt_payments), 0, 'deleting a debt removes its payments');
+select t.eq((select count(*) from public.loan_changes), 0, 'deleting a debt removes its changes');
+select t.eq((select count(*) from public.card_statements), 0, 'deleting a debt removes its statements');
+select t.eq((select count(*) from public.expense_splits where debt_id is null), 1, 'a split keeps its row when its debt goes');
 select t.eq((select count(*) from public.expenses where debt_payment_id is null), 1,
             'an expense linked to a removed payment stays, unlinked');
 
@@ -388,6 +434,7 @@ select t.eq((select count(*) from public.weight_logs), 0, 'deleting the account 
 select t.eq((select count(*) from public.device_notification_tokens), 0, 'deleting the account removes push tokens');
 select t.eq((select count(*) from public.cloud_sync_metadata), 0, 'deleting the account removes sync status');
 select t.eq((select count(*) from public.expenses), 0, 'deleting the account removes expenses');
+select t.eq((select count(*) from public.incomes), 0, 'deleting the account removes income');
 select t.eq((select count(*) from public.finance_categories where user_id = '00000000-0000-0000-0000-00000000000a'), 0, 'deleting the account removes categories');
 
 rollback;

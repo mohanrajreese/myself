@@ -53,7 +53,7 @@ Toolchain facts checked on 16 November 2026 (orientation only; versions are re-r
 | D9 | Money module (PRD §5.21, addendum v2.1) | **Expenses, budgets, debts with EMI reminders, analysis and a food link**, as a **bottom tab in place of Insights**, which moves to the profile menu; nothing on Home; EMI reminders start at least 7 days before the due date; no bill splitting; EMI and recurring notifications never carry the amount (owner, 20 Nov 2026) | Decided |
 | D10 | Money privacy tier | **Synced** like ordinary records (§7.2), not behind the app lock; receipt photos stay on the phone (owner, 20 Nov 2026) | Decided |
 | D11 | Currency | **Indian rupees only**, stored as integer paise (owner, 20 Nov 2026; confirmed 23 Nov 2026) | Decided |
-| D12 | Money additions (PRD §5.22, addendum v2.2) | Overdue EMIs, loan schedule, part-payments, rate changes, balance corrections, credit-card statements, personal-debt and budget alerts, income and savings, and **bill splitting returns** (reverses D9's "no split"); bank SMS, bank linking, other currencies and investments stay out (owner, 23 Nov 2026) | Proposed |
+| D12 | Money additions (PRD §5.22, addendum v2.2) | Overdue EMIs, loan schedule, part-payments, rate changes, balance corrections, credit-card statements, personal-debt and budget alerts, income and savings, and **bill splitting returns** (reverses D9's "no split"); bank SMS, bank linking, other currencies and investments stay out (owner, 23 Nov 2026) | Decided |
 
 ### Consequences of D1 and D2 worth knowing
 
