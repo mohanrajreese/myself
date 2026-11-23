@@ -14,5 +14,11 @@ final class UnconfiguredAuthRepository implements AuthRepository {
   Future<Result<Account>> signInWithGoogle() async => const Err(AuthFailure('not_configured'));
 
   @override
+  Account? get cloudAccount => null;
+
+  @override
+  Future<Result<Account>> signInAnonymously() async => const Err(AuthFailure('not_configured'));
+
+  @override
   Future<void> signOut() async {}
 }

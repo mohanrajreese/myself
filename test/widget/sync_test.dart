@@ -6,6 +6,8 @@ import 'package:fitbuddy/app/routes.dart';
 import 'package:fitbuddy/core/database/synced_tables.dart';
 import 'package:fitbuddy/core/sync/sync_engine.dart';
 import 'package:fitbuddy/core/sync/sync_remote.dart';
+import 'package:fitbuddy/core/errors/result.dart';
+import 'package:fitbuddy/features/auth/domain/account.dart';
 import 'package:fitbuddy/features/onboarding/application/setup_draft.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -43,6 +45,23 @@ void main() {
     await drain(tester);
     await tester.pumpAndSettle();
   }
+
+  testWidgets('with no sign-in, the phone gets an anonymous cloud user and uploads to it', (
+    tester,
+  ) async {
+    const cloud = Account(id: 'cloud-9');
+    final app = AppHarness(withSync: true);
+    await app.completeOnboarding();
+    app.auth
+      ..cloudAccount = null
+      ..nextAnonymous = const Ok(cloud);
+    await app.pump(tester, session: signedInSession);
+    await drain(tester);
+    expect(app.auth.anonymousSignIns, 1);
+    expect(app.remote!.rows('profiles').map((r) => r['id']), [cloud.id]);
+    expect(app.auth.signIns, 0);
+    await app.dispose(tester);
+  });
 
   testWidgets('records made on the phone upload; the status says so', (tester) async {
     final app = AppHarness(withSync: true);
@@ -126,7 +145,7 @@ void main() {
   });
 
   group('push', () {
-    testWidgets('registers the token, follows preferences, revokes on sign-out', (tester) async {
+    testWidgets('registers the token and follows preferences', (tester) async {
       final app = AppHarness(withSync: true, withPush: true);
       await app.completeOnboarding();
       await app.pump(tester, session: signedInSession);

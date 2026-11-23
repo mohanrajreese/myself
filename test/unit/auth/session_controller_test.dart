@@ -3,6 +3,8 @@ import 'package:fitbuddy/core/database/app_database.dart';
 import 'package:fitbuddy/core/errors/failure.dart';
 import 'package:fitbuddy/core/errors/result.dart';
 import 'package:fitbuddy/core/units/units.dart';
+import 'package:fitbuddy/features/auth/domain/account.dart';
+import 'package:fitbuddy/features/profile/domain/profile.dart';
 import 'package:fitbuddy/features/auth/application/session.dart';
 import 'package:fitbuddy/features/auth/application/session_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,6 +74,66 @@ void main() {
       expect(state().account!.id, isNot(testAccount.id));
       final reloaded = await loadSession(container.read(settingsRepositoryProvider));
       expect(reloaded.account, state().account);
+    });
+  });
+
+  group('anonymous cloud user (D2 revised)', () {
+    const cloud = Account(id: 'cloud-1');
+
+    Future<Account> startLocal() async {
+      final session = await ensureLocalSession(container.read(settingsRepositoryProvider));
+      container.dispose();
+      container = build(session);
+      return session.account!;
+    }
+
+    test('first connection creates an anonymous user and moves the profile to it', () async {
+      final local = await startLocal();
+      await container
+          .read(profileRepositoryProvider)
+          .save(local.id, const ProfileDraft(displayName: 'Asha'));
+      auth
+        ..cloudAccount = null
+        ..nextAnonymous = const Ok(cloud);
+
+      expect(await controller().connectCloud(), isTrue);
+
+      expect(auth.anonymousSignIns, 1);
+      expect(state().account, cloud);
+      expect(state().active, isTrue);
+      final profiles = container.read(profileRepositoryProvider);
+      expect((await profiles.current(cloud.id))!.displayName, 'Asha');
+      expect(await profiles.current(local.id), isNull);
+      final outbox = await db.select(db.syncOutbox).get();
+      expect(outbox.where((e) => e.entityTable == 'profiles').map((e) => e.entityId), [cloud.id]);
+      expect((await loadSession(container.read(settingsRepositoryProvider))).account, cloud);
+    });
+
+    test('a kept cloud session is reused without creating another user', () async {
+      await startLocal();
+      auth.cloudAccount = cloud;
+      expect(await controller().connectCloud(), isTrue);
+      expect(await controller().connectCloud(), isTrue);
+      expect(auth.anonymousSignIns, 0);
+      expect(state().account, cloud);
+    });
+
+    test('offline: stays on the device account and tries again later', () async {
+      final local = await startLocal();
+      auth
+        ..cloudAccount = null
+        ..nextAnonymous = const Err(NetworkFailure('offline'));
+      expect(await controller().connectCloud(), isFalse);
+      expect(state().account, local);
+      expect(state().active, isTrue);
+    });
+
+    test('a build without a cloud project never connects', () async {
+      final local = await startLocal();
+      auth.isConfigured = false;
+      expect(await controller().connectCloud(), isFalse);
+      expect(auth.anonymousSignIns, 0);
+      expect(state().account, local);
     });
   });
 

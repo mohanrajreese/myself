@@ -83,6 +83,29 @@ final class SupabaseGoogleAuthRepository implements AuthRepository {
   }
 
   @override
+  Account? get cloudAccount {
+    final user = client.auth.currentUser;
+    return user == null ? null : Account(id: user.id);
+  }
+
+  @override
+  Future<Result<Account>> signInAnonymously() async {
+    try {
+      final user = (await client.auth.signInAnonymously()).user;
+      if (user == null) return const Err(AuthFailure('backend_rejected'));
+      return Ok(Account(id: user.id));
+    } on SocketException {
+      return const Err(NetworkFailure('offline'));
+    } on AuthRetryableFetchException {
+      return const Err(NetworkFailure('offline'));
+    } on AuthException {
+      return const Err(AuthFailure('backend_rejected'));
+    } on Object {
+      return const Err(AuthFailure('backend_rejected'));
+    }
+  }
+
+  @override
   Future<void> signOut() async {
     try {
       await client.auth.signOut(scope: SignOutScope.local);

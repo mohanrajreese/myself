@@ -87,6 +87,21 @@ final class DriftProfileRepository implements ProfileRepository {
     });
   }, onError: (_) => const StorageFailure('profile_write'));
 
+  @override
+  Future<Result<void>> moveTo({required String fromId, required String toId}) =>
+      Result.guard(() async {
+        final now = _clock.now().toUtc();
+        await _db.transaction(() async {
+          final moved =
+              await (_db.update(_db.profiles)..where((t) => t.id.equals(fromId)))
+                  .write(ProfilesCompanion(id: Value(toId), updatedAt: Value(now)));
+          await (_db.delete(_db.syncOutbox)
+                ..where((t) => t.entityTable.equals('profiles') & t.entityId.equals(fromId)))
+              .go();
+          if (moved > 0) await _db.enqueueForSync('profiles', toId, now);
+        });
+      }, onError: (_) => const StorageFailure('profile_write'));
+
   Profile _toDomain(ProfileRow row) => Profile(
     id: row.id,
     displayName: row.displayName,

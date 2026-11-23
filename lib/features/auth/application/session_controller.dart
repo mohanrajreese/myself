@@ -62,6 +62,36 @@ class SessionController extends Notifier<SessionState> {
     await _bind(incoming);
   }
 
+  Future<bool>? _connecting;
+
+  /// Connects this phone to its cloud user, creating an anonymous one the
+  /// first time (D2 revised). A device account made offline is moved to the
+  /// cloud user's id. False when offline or not configured; call again later.
+  Future<bool> connectCloud() => _connecting ??= _connectCloud().whenComplete(
+    () => _connecting = null,
+  );
+
+  Future<bool> _connectCloud() async {
+    final auth = ref.read(authRepositoryProvider);
+    if (!auth.isConfigured) return false;
+    var cloud = auth.cloudAccount;
+    if (cloud == null) {
+      final result = await auth.signInAnonymously();
+      cloud = result.valueOrNull;
+      if (cloud == null) return false;
+    }
+    final local = state.account;
+    if (local?.id == cloud.id) return true;
+    if (local != null) {
+      final moved = await ref
+          .read(profileRepositoryProvider)
+          .moveTo(fromId: local.id, toId: cloud.id);
+      if (moved.failureOrNull != null) return false;
+    }
+    await _bind(cloud);
+    return true;
+  }
+
   /// The user declined to replace the existing data.
   Future<void> cancelReplace() => ref.read(authRepositoryProvider).signOut();
 

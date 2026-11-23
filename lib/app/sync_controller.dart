@@ -115,6 +115,11 @@ class SyncController extends Notifier<SyncStatus> {
         .timeout(const Duration(seconds: 2), onTimeout: () => true)
         .catchError((Object _) => true);
     if (!online) return;
+    // No sign-in (D2 revised): connect to, or create, the anonymous cloud user.
+    if (!await ref.read(sessionControllerProvider.notifier).connectCloud()) {
+      state = state.copyWith(phase: SyncPhase.signedOut);
+      return;
+    }
     if (state.phase != SyncPhase.restoring) state = state.copyWith(phase: SyncPhase.syncing);
     return _run(engine.syncNow);
   }

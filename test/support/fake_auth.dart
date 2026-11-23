@@ -14,6 +14,12 @@ class FakeAuthRepository implements AuthRepository {
   int signIns = 0;
   int signOuts = 0;
 
+  /// The cloud session kept on the phone; null means none yet.
+  @override
+  Account? cloudAccount = testAccount;
+  Result<Account> nextAnonymous = const Ok(testAccount);
+  int anonymousSignIns = 0;
+
   @override
   bool isConfigured;
 
@@ -24,7 +30,18 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> signOut() async => signOuts++;
+  Future<Result<Account>> signInAnonymously() async {
+    anonymousSignIns++;
+    final r = nextAnonymous;
+    if (r.valueOrNull != null) cloudAccount = r.valueOrNull;
+    return r;
+  }
+
+  @override
+  Future<void> signOut() async {
+    signOuts++;
+    cloudAccount = null;
+  }
 
   void failWith(Failure failure) => next = Err(failure);
 }

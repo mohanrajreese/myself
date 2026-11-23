@@ -10,4 +10,8 @@ abstract interface class ProfileRepository {
 
   /// Records that onboarding finished. Later edits do not undo it.
   Future<Result<void>> completeOnboarding(String accountId);
+
+  /// Re-keys the profile from a device account to its cloud user, queued for
+  /// upload. Nothing happens when there is no profile under [fromId].
+  Future<Result<void>> moveTo({required String fromId, required String toId});
 }

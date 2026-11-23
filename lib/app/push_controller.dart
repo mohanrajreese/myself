@@ -74,7 +74,9 @@ class PushController extends Notifier<bool> {
       }
     });
     ref.listen(sessionControllerProvider, (prev, next) {
-      if (next.active && !(prev?.active ?? false)) unawaited(start());
+      // Also when the phone moves to its anonymous cloud user (D2 revised).
+      final changed = !(prev?.active ?? false) || prev?.account?.id != next.account?.id;
+      if (next.active && changed) unawaited(start());
     });
     return ref.read(pushMessagingProvider).available;
   }

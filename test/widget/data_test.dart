@@ -155,7 +155,7 @@ void main() {
       await app.dispose(tester);
     });
 
-    testWidgets('deleting the account needs the word DELETE and the same Google account', (
+    testWidgets('deleting the cloud copy needs the word DELETE and this phone\'s cloud session', (
       tester,
     ) async {
       final app = AppHarness(withSync: true);
@@ -164,7 +164,7 @@ void main() {
       await drain(tester);
       expect(app.remote!.rows('profiles'), isNotEmpty);
       await go(tester, Routes.deleteData);
-      await tap(tester, find.text('Keep records here, signed out'));
+      await tap(tester, find.text('Keep records on this phone'));
       await tap(tester, find.text('Delete account…'));
       await tester.enterText(find.byType(TextField).last, 'delete');
       await tester.pump();
@@ -173,12 +173,13 @@ void main() {
       await tester.enterText(find.byType(TextField).last, 'DELETE');
       await tester.pump();
 
-      app.auth.next = const Ok(otherAccount);
+      // The phone holds a different cloud user's session: nothing is deleted.
+      app.auth.cloudAccount = otherAccount;
       await tap(tester, confirm);
-      expect(find.text('Sign in with the same Google account to confirm.'), findsOneWidget);
+      expect(find.textContaining('not connected to its cloud copy'), findsOneWidget);
       expect(app.remote!.rows('profiles'), isNotEmpty);
 
-      app.auth.next = const Ok(testAccount);
+      app.auth.cloudAccount = testAccount;
       // Let the message close; it covers the button.
       await tester.pump(const Duration(seconds: 5));
       await tester.pumpAndSettle();
@@ -186,9 +187,11 @@ void main() {
       await tester.enterText(find.byType(TextField).last, 'DELETE');
       await tester.pump();
       await tap(tester, find.widgetWithText(TextButton, 'Delete account'));
-      expect(find.text('About you'), findsOneWidget);
       expect(app.remote!.rows('profiles'), isEmpty);
-      // Kept on the phone, with nothing left to upload.
+      expect(app.auth.signIns, 0);
+      expect(app.auth.cloudAccount, isNull);
+      // Kept on the phone, still usable, with nothing queued for the old user.
+      expect(find.text('About you'), findsNothing);
       expect(await app.db.select(app.db.weightLogs).get(), hasLength(1));
       expect(await app.db.select(app.db.syncOutbox).get(), isEmpty);
       await app.dispose(tester);

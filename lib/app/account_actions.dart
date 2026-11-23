@@ -53,9 +53,10 @@ Future<void> erasePhoneData(Ref ref) async {
 
 enum DeleteAccountOutcome { deleted, offline, notConfigured, reauthFailed, failed }
 
-/// Deletes the cloud account after the user signs in with Google again.
-/// [erasePhone] also erases this phone; otherwise records stay here,
-/// signed out, and nothing more is uploaded.
+/// Deletes the cloud user and its records. The typed DELETE is the
+/// confirmation; the phone must hold that user's session (D2 revised: no
+/// sign-in). [erasePhone] also erases this phone and starts again; otherwise
+/// records stay here and later changes go to a new anonymous cloud user.
 Future<DeleteAccountOutcome> deleteAccount(Ref ref, {required bool erasePhone}) async {
   final remote = ref.read(syncRemoteProvider);
   if (remote == null) return DeleteAccountOutcome.notConfigured;
@@ -66,8 +67,8 @@ Future<DeleteAccountOutcome> deleteAccount(Ref ref, {required bool erasePhone}) 
   if (!online) return DeleteAccountOutcome.offline;
   final session = ref.read(sessionControllerProvider.notifier);
   final current = ref.read(sessionControllerProvider).account;
-  final again = await ref.read(authRepositoryProvider).signInWithGoogle();
-  if (current == null || again.valueOrNull?.id != current.id) {
+  final auth = ref.read(authRepositoryProvider);
+  if (current == null || auth.cloudAccount?.id != current.id) {
     return DeleteAccountOutcome.reauthFailed;
   }
 
@@ -80,11 +81,12 @@ Future<DeleteAccountOutcome> deleteAccount(Ref ref, {required bool erasePhone}) 
   final db = ref.read(appDatabaseProvider);
   if (erasePhone) {
     await erasePhoneData(ref);
+    await session.forget();
   } else {
-    // The account is gone: nothing left to upload to.
+    // The cloud user is gone: drop its session and what was queued for it.
     await db.customUpdate('DELETE FROM sync_outbox', updates: {db.syncOutbox});
+    await auth.signOut();
   }
-  await session.forget();
   return DeleteAccountOutcome.deleted;
 }
 
