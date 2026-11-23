@@ -3752,5 +3752,27 @@
         "type": "String"
       }
     }
+  },
+  "moneyEmiOverdue": "EMI overdue: {name}",
+  "@moneyEmiOverdue": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "moneyEmiOverdueBody": "{lender} · instalment {instalment} was due on {date}",
+  "@moneyEmiOverdueBody": {
+    "placeholders": {
+      "lender": {
+        "type": "String"
+      },
+      "instalment": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }

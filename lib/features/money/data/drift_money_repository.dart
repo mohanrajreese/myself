@@ -14,6 +14,7 @@ import '../../../core/units/rupees.dart';
 import '../../../core/utils/clock.dart';
 import '../../../core/utils/id_generator.dart';
 import '../../../core/utils/local_date.dart';
+import '../domain/loans.dart';
 import '../domain/money.dart';
 
 final class DriftMoneyRepository implements MoneyRepository {
@@ -535,6 +536,20 @@ final class DriftMoneyRepository implements MoneyRepository {
     () => _db.transaction(() async {
       // Expenses already recorded from payments stay: the money was spent.
       await _tombstone(
+        _db.loanChanges,
+        'loan_changes',
+        (t) => t.debtId.equals(id) & t.deletedAt.isNull(),
+        (now) => LoanChangesCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+        (r) => r.id,
+      );
+      await _tombstone(
+        _db.instalmentSkips,
+        'instalment_skips',
+        (t) => t.debtId.equals(id) & t.deletedAt.isNull(),
+        (now) => InstalmentSkipsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+        (r) => r.id,
+      );
+      await _tombstone(
         _db.debtPayments,
         'debt_payments',
         (t) => t.debtId.equals(id) & t.deletedAt.isNull(),
@@ -682,6 +697,186 @@ final class DriftMoneyRepository implements MoneyRepository {
   @override
   Future<List<DebtPayment>> payments({String? debtId}) async =>
       (await _livePayments(debtId).get()).map(_payment).toList();
+
+  // ---- loan changes and skips ----
+
+  static LoanChange _change(LoanChangeRow r) => LoanChange(
+    id: r.id,
+    debtId: r.debtId,
+    kind: LoanChangeKind.fromCode(r.kind),
+    effectiveDate: r.effectiveDate,
+    fromInstalment: r.fromInstalment,
+    amountPaise: r.amountPaise,
+    rateBp: r.rateBp,
+    emiPaise: r.emiPaise,
+    instalmentsLeft: r.instalmentsLeft,
+    mode: PrepayMode.fromCode(r.mode),
+    paymentId: r.paymentId,
+    note: r.note,
+  );
+
+  @override
+  Future<Result<LoanChange>> addLoanChange(LoanChange c, {DateTime? at}) async {
+    final amount = c.amountPaise;
+    final bad = switch (c.kind) {
+      LoanChangeKind.prepayment => amount == null || !_validAmount(amount) || c.mode == null,
+      LoanChangeKind.balanceCorrection => amount == null || amount < 0 || amount > maxRupeePaise,
+      LoanChangeKind.rateChange =>
+        (c.rateBp == null && c.emiPaise == null) ||
+            c.fromInstalment == null ||
+            (c.rateBp != null && (c.rateBp! < 0 || c.rateBp! > 10000)) ||
+            (c.emiPaise != null && !_validAmount(c.emiPaise!)),
+    };
+    if (bad) return const Err(ValidationFailure('change', 'invalid'));
+    String? paymentId;
+    if (c.kind == LoanChangeKind.prepayment) {
+      final paid = await addPayment(
+        c.debtId,
+        amountPaise: amount!,
+        at: at ?? DateTime(c.effectiveDate.year, c.effectiveDate.month, c.effectiveDate.day, 12),
+        note: c.note,
+      );
+      paymentId = paid.valueOrNull?.id;
+      if (paymentId == null) return Err(paid.failureOrNull!);
+    }
+    final result = await Result.guard(() async {
+      final id = ids.newId();
+      final now = _now;
+      await _db.transaction(() async {
+        await _db
+            .into(_db.loanChanges)
+            .insert(
+              LoanChangesCompanion.insert(
+                id: id,
+                createdAt: now,
+                updatedAt: now,
+                debtId: c.debtId,
+                kind: c.kind.code,
+                effectiveDate: c.effectiveDate,
+                fromInstalment: Value(c.fromInstalment),
+                amountPaise: Value(c.amountPaise),
+                rateBp: Value(c.rateBp),
+                emiPaise: Value(c.emiPaise),
+                instalmentsLeft: Value(c.instalmentsLeft),
+                mode: Value(c.mode?.code),
+                paymentId: Value(paymentId),
+                note: Value(_note(c.note)),
+              ),
+            );
+        await _sync('loan_changes', id);
+      });
+      return LoanChange(
+        id: id,
+        debtId: c.debtId,
+        kind: c.kind,
+        effectiveDate: c.effectiveDate,
+        fromInstalment: c.fromInstalment,
+        amountPaise: c.amountPaise,
+        rateBp: c.rateBp,
+        emiPaise: c.emiPaise,
+        instalmentsLeft: c.instalmentsLeft,
+        mode: c.mode,
+        paymentId: paymentId,
+        note: _note(c.note),
+      );
+    }, onError: (_) => _fail);
+    // Keep the two writes together: no orphan payment on failure.
+    if (!result.isOk && paymentId != null) await deletePayment(paymentId);
+    return result;
+  }
+
+  @override
+  Future<Result<void>> deleteLoanChange(String id) => Result.guard(() async {
+    final row = await (_db.select(
+      _db.loanChanges,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
+    if (row == null) return;
+    await _db.transaction(
+      () => _tombstone(
+        _db.loanChanges,
+        'loan_changes',
+        (t) => t.id.equals(id) & t.deletedAt.isNull(),
+        (now) => LoanChangesCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+        (r) => r.id,
+      ),
+    );
+    if (row.paymentId != null) await deletePayment(row.paymentId!);
+  }, onError: (_) => _fail);
+
+  SimpleSelectStatement<$LoanChangesTable, LoanChangeRow> get _liveChanges =>
+      _db.select(_db.loanChanges)
+        ..where((t) => t.deletedAt.isNull())
+        ..orderBy([(t) => OrderingTerm.asc(t.effectiveDate)]);
+
+  @override
+  Stream<List<LoanChange>> watchLoanChanges() =>
+      _liveChanges.watch().map((r) => r.map(_change).toList());
+
+  @override
+  Future<List<LoanChange>> loanChanges() async => (await _liveChanges.get()).map(_change).toList();
+
+  @override
+  Future<Result<void>> skipInstalment(String debtId, int instalmentNo, {required LocalDate on}) =>
+      Result.guard(
+        () => _db.transaction(() async {
+          final exists =
+              await (_db.select(_db.instalmentSkips)..where(
+                    (t) =>
+                        t.debtId.equals(debtId) &
+                        t.instalmentNo.equals(instalmentNo) &
+                        t.deletedAt.isNull(),
+                  ))
+                  .getSingleOrNull();
+          if (exists != null) return;
+          final id = ids.newId();
+          final now = _now;
+          await _db
+              .into(_db.instalmentSkips)
+              .insert(
+                InstalmentSkipsCompanion.insert(
+                  id: id,
+                  createdAt: now,
+                  updatedAt: now,
+                  debtId: debtId,
+                  instalmentNo: instalmentNo,
+                  skippedOn: on,
+                ),
+              );
+          await _sync('instalment_skips', id);
+        }),
+        onError: (_) => _fail,
+      );
+
+  @override
+  Future<Result<void>> unskipInstalment(String id) => Result.guard(
+    () => _db.transaction(
+      () => _tombstone(
+        _db.instalmentSkips,
+        'instalment_skips',
+        (t) => t.id.equals(id) & t.deletedAt.isNull(),
+        (now) => InstalmentSkipsCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+        (r) => r.id,
+      ),
+    ),
+    onError: (_) => _fail,
+  );
+
+  static InstalmentSkip _skip(InstalmentSkipRow r) => InstalmentSkip(
+    id: r.id,
+    debtId: r.debtId,
+    instalmentNo: r.instalmentNo,
+    skippedOn: r.skippedOn,
+  );
+
+  @override
+  Stream<List<InstalmentSkip>> watchSkips() => (_db.select(
+    _db.instalmentSkips,
+  )..where((t) => t.deletedAt.isNull())).watch().map((r) => r.map(_skip).toList());
+
+  @override
+  Future<List<InstalmentSkip>> skips() async => (await (_db.select(
+    _db.instalmentSkips,
+  )..where((t) => t.deletedAt.isNull())).get()).map(_skip).toList();
 
   // ---- recurring ----
 

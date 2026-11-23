@@ -27,6 +27,8 @@ final text = MoneyReminderText(
   emiToday: (name) => 'EMI due today: $name',
   emiBody: (lender, n, count) => '$lender · instalment $n of $count',
   recurringDue: (name) => '$name is due today',
+  emiOverdue: (name) => 'EMI overdue: $name',
+  emiOverdueBody: (lender, n, due) => '$lender · instalment $n was due on $due',
 );
 
 void main() {
@@ -209,5 +211,32 @@ void main() {
     expect(e.amountPaise, 1800000);
     expect(e.recurringExpenseId, rent.id);
     expect(e.method, 'net_banking');
+  });
+
+  test('an overdue instalment reminds daily until Paid or Skipped', () async {
+    final loan = await homeLoan();
+    time.now = DateTime.utc(2026, 12, 8, 6); // instalment 39 was due on 5 Dec
+    await service.replan();
+    final notes = emiNotes();
+    expect(notes.first.title, 'EMI overdue: Home loan');
+    expect(notes.first.body, 'SBI · instalment 39 was due on 2026-12-05');
+    expect(notes.map((n) => n.at!.day).take(3), [8, 9, 10]);
+    final first = (await store.active()).firstWhere((r) => r.reminderId.endsWith(':od'));
+    await service.handle(NotificationTap(notificationId: first.id, action: ReminderAction.skip));
+    expect((await money.skips()).single.instalmentNo, 39);
+    expect(emiNotes().where((n) => n.title.startsWith('EMI overdue')), isEmpty);
+    final payments = await money.payments(debtId: loan.id);
+    expect(payments, hasLength(38), reason: 'Skip records no money');
+  });
+
+  test('Paid on an overdue reminder records the instalment', () async {
+    final loan = await homeLoan();
+    time.now = DateTime.utc(2026, 12, 8, 6);
+    await service.replan();
+    final first = (await store.active()).firstWhere((r) => r.reminderId.endsWith(':od'));
+    await service.handle(
+      NotificationTap(notificationId: first.id, action: ReminderAction.complete),
+    );
+    expect((await money.payments(debtId: loan.id)).first.instalmentNo, 39);
   });
 }

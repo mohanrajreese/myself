@@ -3,6 +3,7 @@ import 'package:fitbuddy/core/errors/result.dart';
 import 'package:fitbuddy/core/scheduling/schedule_rule.dart';
 import 'package:fitbuddy/core/utils/local_date.dart';
 import 'package:fitbuddy/features/money/data/drift_money_repository.dart';
+import 'package:fitbuddy/features/money/domain/loans.dart';
 import 'package:fitbuddy/features/money/domain/money.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -251,5 +252,48 @@ void main() {
     expect(back.rule.toJson(), rent.rule.toJson());
     await money.deleteRecurring(rent.id);
     expect(await money.recurring(), isEmpty);
+  });
+
+  test(
+    'a part-payment records a payment and its expense; deleting the change removes both',
+    () async {
+      final loan = ((await money.saveDebt(homeLoan())) as Ok<Debt>).value;
+      final r = await money.addLoanChange(
+        LoanChange(
+          id: '',
+          debtId: loan.id,
+          kind: LoanChangeKind.prepayment,
+          effectiveDate: LocalDate(2026, 11, 20),
+          amountPaise: 5000000,
+          mode: PrepayMode.reduceTenure,
+        ),
+      );
+      final change = (r as Ok<LoanChange>).value;
+      expect(change.paymentId, isNotNull);
+      expect((await money.payments(debtId: loan.id)).single.amountPaise, 5000000);
+      expect((await db.select(db.expenses).get()).single.amountPaise, 5000000);
+      await money.deleteLoanChange(change.id);
+      expect(await money.loanChanges(), isEmpty);
+      expect(await money.payments(debtId: loan.id), isEmpty);
+    },
+  );
+
+  test('invalid changes are refused; skips are recorded once and can be undone', () async {
+    final loan = ((await money.saveDebt(homeLoan())) as Ok<Debt>).value;
+    final bad = await money.addLoanChange(
+      LoanChange(
+        id: '',
+        debtId: loan.id,
+        kind: LoanChangeKind.rateChange,
+        effectiveDate: LocalDate(2026, 11, 1),
+      ),
+    );
+    expect(bad.failureOrNull?.code, 'invalid');
+    await money.skipInstalment(loan.id, 39, on: LocalDate(2026, 12, 8));
+    await money.skipInstalment(loan.id, 39, on: LocalDate(2026, 12, 9));
+    final skips = await money.skips();
+    expect(skips, hasLength(1));
+    await money.unskipInstalment(skips.single.id);
+    expect(await money.skips(), isEmpty);
   });
 }

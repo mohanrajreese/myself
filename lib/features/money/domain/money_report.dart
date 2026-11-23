@@ -1,4 +1,5 @@
 import '../../../core/utils/local_date.dart';
+import 'loans.dart';
 import 'money.dart';
 
 /// Money analysis for a range (§5.21D). Pure: callers pass the records.
@@ -83,6 +84,8 @@ final class MoneyReport {
     required List<Budget> budgets,
     required List<Debt> debts,
     required List<DebtPayment> payments,
+    List<LoanChange> changes = const [],
+    List<InstalmentSkip> skips = const [],
     required String emiCategoryId,
     required Set<String> foodCategoryIds,
     Set<String> junkMealIds = const {},
@@ -132,10 +135,21 @@ final class MoneyReport {
     final horizon = today.addDays(30);
     for (final d in debts) {
       if (d.settled) continue;
-      final status = DebtStatus(d, [
-        for (final p in payments)
-          if (p.debtId == d.id) p,
-      ]);
+      final status = DebtStatus(
+        d,
+        [
+          for (final p in payments)
+            if (p.debtId == d.id) p,
+        ],
+        changes: [
+          for (final c in changes)
+            if (c.debtId == d.id) c,
+        ],
+        skips: [
+          for (final s in skips)
+            if (s.debtId == d.id) s,
+        ],
+      );
       if (d.direction == DebtDirection.iOwe) {
         owe += status.remainingPaise;
       } else {
@@ -143,12 +157,12 @@ final class MoneyReport {
       }
       final emi = d.emi;
       if (emi == null || d.direction != DebtDirection.iOwe) continue;
-      for (var n = 1; n <= emi.count; n++) {
-        final due = emi.dueDate(n);
-        if (due.isAfter(horizon)) break;
-        if (due.isBefore(today) || status.paidInstalments.contains(n)) continue;
+      for (final row in status.schedule) {
+        if (row.due.isAfter(horizon)) break;
+        if (row.due.isBefore(today) || status.paidInstalments.contains(row.n)) continue;
+        if (status.skippedInstalments.contains(row.n)) continue;
         upcoming++;
-        upcomingPaise += emi.emiPaise;
+        upcomingPaise += row.emiPaise;
       }
     }
 

@@ -1,6 +1,9 @@
+import 'dart:math' as math;
+
 import '../../../core/errors/result.dart';
 import '../../../core/scheduling/schedule_rule.dart';
 import '../../../core/utils/local_date.dart';
+import 'loans.dart';
 
 /// Money module (PRD §5.21). Amounts are integer paise.
 
@@ -234,40 +237,101 @@ final class DebtPayment {
   final String? note;
 }
 
-/// What a debt stands at, from its payments.
+/// What a debt stands at, from its payments, loan changes and skipped
+/// instalments (§5.21C, §5.22F–H).
 final class DebtStatus {
-  DebtStatus(this.debt, List<DebtPayment> payments)
-    : paidPaise = payments.fold(0, (n, p) => n + p.amountPaise),
-      paidInstalments = {for (final p in payments) ?p.instalmentNo};
+  DebtStatus(
+    this.debt,
+    List<DebtPayment> payments, {
+    List<LoanChange> changes = const [],
+    List<InstalmentSkip> skips = const [],
+  }) : paidPaise = payments.fold(0, (n, p) => n + p.amountPaise),
+       paidInstalments = {for (final p in payments) ?p.instalmentNo},
+       skippedInstalments = {for (final s in skips) s.instalmentNo},
+       changes = [
+         for (final c in changes)
+           if (c.debtId == debt.id) c,
+       ],
+       _payments = payments;
   final Debt debt;
   final int paidPaise;
   final Set<int> paidInstalments;
+  final Set<int> skippedInstalments;
+  final List<LoanChange> changes;
+  final List<DebtPayment> _payments;
 
-  /// Original amount minus payments recorded, never below zero.
-  int get outstandingPaise => (debt.principalPaise - paidPaise).clamp(0, debt.principalPaise);
+  late final List<ScheduleRow> schedule = loanSchedule(debt, changes);
 
-  int get instalmentsLeft => debt.emi == null ? 0 : debt.emi!.count - paidInstalments.length;
+  LoanChange? get _lastCorrection {
+    LoanChange? last;
+    for (final c in changes) {
+      if (c.kind != LoanChangeKind.balanceCorrection) continue;
+      if (last == null || c.effectiveDate.isAfter(last.effectiveDate)) last = c;
+    }
+    return last;
+  }
 
-  /// EMI × instalments left (the bank's own figure may differ).
-  int get remainingByEmiPaise => debt.emi == null ? 0 : debt.emi!.emiPaise * instalmentsLeft;
+  /// Original amount (or the latest corrected balance) minus payments made
+  /// since, never below zero.
+  int get outstandingPaise {
+    final fix = _lastCorrection;
+    if (fix == null) return (debt.principalPaise - paidPaise).clamp(0, debt.principalPaise);
+    final after = _payments
+        .where((p) => p.localDate.isAfter(fix.effectiveDate))
+        .fold(0, (n, p) => n + p.amountPaise);
+    return math.max(0, (fix.amountPaise ?? 0) - after);
+  }
+
+  int get instalmentCount => schedule.length;
+
+  int get instalmentsLeft =>
+      debt.emi == null ? 0 : schedule.where((r) => !paidInstalments.contains(r.n)).length;
+
+  /// The EMIs still to pay (the bank's own figure may differ).
+  int get remainingByEmiPaise => debt.emi == null
+      ? 0
+      : schedule.where((r) => !paidInstalments.contains(r.n)).fold(0, (s, r) => s + r.emiPaise);
 
   /// What the lists show: EMI loans by instalments, others by payments.
   int get remainingPaise => debt.emi == null ? outstandingPaise : remainingByEmiPaise;
 
-  /// The lowest instalment not yet paid, or null when all are.
+  /// The lowest instalment neither paid nor skipped, or null when none is.
   int? get nextInstalment {
-    final emi = debt.emi;
-    if (emi == null) return null;
-    for (var n = 1; n <= emi.count; n++) {
-      if (!paidInstalments.contains(n)) return n;
+    for (final r in schedule) {
+      if (!paidInstalments.contains(r.n) && !skippedInstalments.contains(r.n)) return r.n;
     }
     return null;
   }
 
+  ScheduleRow? rowFor(int n) => schedule.where((r) => r.n == n).firstOrNull;
+
   LocalDate? get nextDue {
     final n = nextInstalment;
-    return n == null ? null : debt.emi!.dueDate(n);
+    return n == null ? null : rowFor(n)?.due;
   }
+
+  int? get nextEmiPaise {
+    final n = nextInstalment;
+    return n == null ? null : rowFor(n)?.emiPaise;
+  }
+
+  /// The next instalment is past its due date without a payment.
+  bool overdueOn(LocalDate today) {
+    final due = nextDue;
+    return !debt.settled && due != null && due.isBefore(today);
+  }
+
+  /// Instalments past due and neither paid nor skipped.
+  int overdueCount(LocalDate today) => schedule
+      .where(
+        (r) =>
+            r.due.isBefore(today) &&
+            !paidInstalments.contains(r.n) &&
+            !skippedInstalments.contains(r.n),
+      )
+      .length;
+
+  LocalDate? get endsOn => schedule.isEmpty ? null : schedule.last.due;
 }
 
 /// Days on which an EMI reminder fires for an instalment due on [due]:
@@ -345,6 +409,16 @@ abstract interface class MoneyRepository {
   Future<Result<void>> deletePayment(String id);
   Stream<List<DebtPayment>> watchPayments({String? debtId});
   Future<List<DebtPayment>> payments({String? debtId});
+
+  /// A part-payment also records a payment (and its expense, per the loan).
+  Future<Result<LoanChange>> addLoanChange(LoanChange change, {DateTime? at});
+  Future<Result<void>> deleteLoanChange(String id);
+  Stream<List<LoanChange>> watchLoanChanges();
+  Future<List<LoanChange>> loanChanges();
+  Future<Result<void>> skipInstalment(String debtId, int instalmentNo, {required LocalDate on});
+  Future<Result<void>> unskipInstalment(String id);
+  Stream<List<InstalmentSkip>> watchSkips();
+  Future<List<InstalmentSkip>> skips();
 
   Future<Result<RecurringExpense>> saveRecurring(RecurringExpense r);
   Future<Result<void>> deleteRecurring(String id);

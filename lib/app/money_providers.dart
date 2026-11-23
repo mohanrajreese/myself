@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/errors/result.dart';
 import '../core/utils/local_date.dart';
 import '../features/money/data/drift_money_repository.dart';
+import '../features/money/domain/loans.dart';
 import '../features/money/domain/money.dart';
 import '../features/money/domain/money_report.dart';
 import '../features/money/domain/receipts.dart';
@@ -55,6 +56,12 @@ final debtsProvider = StreamProvider<List<Debt>>(
 );
 final debtPaymentsProvider = StreamProvider<List<DebtPayment>>(
   (ref) => ref.watch(moneyRepositoryProvider).watchPayments(),
+);
+final loanChangesProvider = StreamProvider<List<LoanChange>>(
+  (ref) => ref.watch(moneyRepositoryProvider).watchLoanChanges(),
+);
+final instalmentSkipsProvider = StreamProvider<List<InstalmentSkip>>(
+  (ref) => ref.watch(moneyRepositoryProvider).watchSkips(),
 );
 
 /// The month shown on the Money tab (its first day).
@@ -109,6 +116,8 @@ final moneyReportProvider = Provider.family<AsyncValue<MoneyReport>, DayRange>((
       budgets: b.value!,
       debts: d.value!,
       payments: pay.value!,
+      changes: ref.watch(loanChangesProvider).value ?? const [],
+      skips: ref.watch(instalmentSkipsProvider).value ?? const [],
       emiCategoryId: emiCategoryId,
       foodCategoryIds: foodCategoryIds,
       junkMealIds: junk.value!,
@@ -118,19 +127,35 @@ final moneyReportProvider = Provider.family<AsyncValue<MoneyReport>, DayRange>((
 
 /// Each open debt with its status, newest first.
 final debtStatusesProvider = Provider<AsyncValue<List<DebtStatus>>>((ref) {
-  final debts = ref.watch(debtsProvider);
-  final payments = ref.watch(debtPaymentsProvider);
-  if (debts.hasError) return AsyncError(debts.error!, debts.stackTrace ?? StackTrace.empty);
-  if (payments.hasError) {
-    return AsyncError(payments.error!, payments.stackTrace ?? StackTrace.empty);
-  }
-  if (!debts.hasValue || !payments.hasValue) return const AsyncLoading();
+  final parts = [
+    ref.watch(debtsProvider),
+    ref.watch(debtPaymentsProvider),
+    ref.watch(loanChangesProvider),
+    ref.watch(instalmentSkipsProvider),
+  ];
+  final failed = parts.where((a) => a.hasError).firstOrNull;
+  if (failed != null) return AsyncError(failed.error!, failed.stackTrace ?? StackTrace.empty);
+  if (parts.any((a) => !a.hasValue)) return const AsyncLoading();
+  final payments = ref.watch(debtPaymentsProvider).requireValue;
+  final changes = ref.watch(loanChangesProvider).requireValue;
+  final skips = ref.watch(instalmentSkipsProvider).requireValue;
   return AsyncData([
-    for (final d in debts.value!.reversed)
-      DebtStatus(d, [
-        for (final p in payments.value!)
-          if (p.debtId == d.id) p,
-      ]),
+    for (final d in ref.watch(debtsProvider).requireValue.reversed)
+      DebtStatus(
+        d,
+        [
+          for (final p in payments)
+            if (p.debtId == d.id) p,
+        ],
+        changes: [
+          for (final c in changes)
+            if (c.debtId == d.id) c,
+        ],
+        skips: [
+          for (final s in skips)
+            if (s.debtId == d.id) s,
+        ],
+      ),
   ]);
 });
 
@@ -177,6 +202,11 @@ final class MoneyActions {
     ),
   );
   Future<Result<void>> deletePayment(String id) => _thenReplan(_repo.deletePayment(id));
+  Future<Result<LoanChange>> addLoanChange(LoanChange c) => _thenReplan(_repo.addLoanChange(c));
+  Future<Result<void>> deleteLoanChange(String id) => _thenReplan(_repo.deleteLoanChange(id));
+  Future<Result<void>> skipInstalment(String debtId, int n) =>
+      _thenReplan(_repo.skipInstalment(debtId, n, on: ref.read(todayProvider)));
+  Future<Result<void>> unskipInstalment(String id) => _thenReplan(_repo.unskipInstalment(id));
   Future<Result<RecurringExpense>> saveRecurring(RecurringExpense r) =>
       _thenReplan(_repo.saveRecurring(r));
   Future<Result<void>> deleteRecurring(String id) => _thenReplan(_repo.deleteRecurring(id));
