@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/database/app_database.dart';
 import '../core/database/encrypted_connection.dart';
@@ -30,23 +29,15 @@ import '../features/money/data/encrypted_receipt_store.dart';
 import '../features/nutrition/data/encrypted_meal_photo_store.dart';
 import 'money_providers.dart';
 import '../features/auth/application/session_controller.dart';
-import '../features/auth/data/supabase_google_auth_repository.dart';
 import '../features/auth/data/unconfigured_auth_repository.dart';
-import '../features/auth/domain/auth_repository.dart';
 import '../features/settings/application/theme_mode_controller.dart';
-import '../features/settings/presentation/settings_screen.dart';
 import 'app.dart';
-import 'app_config.dart';
 import 'background.dart';
-import 'sync_controller.dart';
 import 'account_actions.dart';
 import 'push_controller.dart';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../core/platform/push_messaging.dart';
-import '../core/sync/push_registry.dart';
-import '../core/sync/supabase_sync_remote.dart';
 import 'notification_setup.dart';
 import 'private_providers.dart';
 import 'private_reminder_source.dart';
@@ -170,31 +161,16 @@ Future<void> bootstrap() async {
       (Object error) => logger.failure('reminder_top_up_failed', error),
     ),
   );
-  final session = await loadSession(settings);
+  final session = await ensureLocalSession(settings);
   final themeMode = themeModeFromSetting(await settings.read(themeModeSettingKey));
-  final (auth, supabaseClient) = await _createAuth(AppConfig.fromEnvironment, secrets, logger);
-  PushMessaging push = const DisabledPushMessaging();
-  if (AppConfig.fromEnvironment.hasPush && supabaseClient != null) {
-    try {
-      push = await FirebasePushMessaging.create(firebaseOptions(AppConfig.fromEnvironment));
-      FirebaseMessaging.onBackgroundMessage(pushBackgroundHandler);
-    } on Object catch (error) {
-      logger.failure('push_init_failed', error);
-    }
-  }
+  // No sign-in (D2 revised): no backend session, so no sync and no push.
 
   runApp(
     ProviderScope(
       overrides: [
         appDatabaseProvider.overrideWithValue(database),
-        authRepositoryProvider.overrideWithValue(auth),
-        if (supabaseClient != null) ...[
-          syncRemoteProvider.overrideWithValue(SupabaseSyncRemote(supabaseClient)),
-          pushRegistryProvider.overrideWithValue(
-            SupabasePushRegistry(supabaseClient, () => systemClock.now()),
-          ),
-        ],
-        pushMessagingProvider.overrideWithValue(push),
+        authRepositoryProvider.overrideWithValue(const UnconfiguredAuthRepository()),
+        pushMessagingProvider.overrideWithValue(const DisabledPushMessaging()),
         localDataEraserProvider.overrideWith(
           (ref) =>
               () => erasePhoneData(ref),
@@ -220,42 +196,12 @@ Future<void> bootstrap() async {
         progressPhotoDirProvider.overrideWithValue(Directory('${supportDir.path}/progress_photos')),
         fileCipherProvider.overrideWithValue(fileCipher),
         screenTimeAlertTitleProvider.overrideWithValue(l10n.genericReminderTitle),
-        signOutActionProvider.overrideWith(
-          (ref) => () async {
-            await ref.read(pushControllerProvider.notifier).stop();
-            await ref.read(sessionControllerProvider.notifier).signOut();
-          },
-        ),
       ],
       child: const PraxisApp(),
     ),
   );
 }
 
-Future<(AuthRepository, SupabaseClient?)> _createAuth(
-  AppConfig config,
-  SecureSecretStore secrets,
-  AppLogger logger,
-) async {
-  if (!config.hasBackend) return (const UnconfiguredAuthRepository(), null);
-  try {
-    final supabase = await Supabase.initialize(
-      url: config.supabaseUrl,
-      publishableKey: config.supabasePublishableKey,
-      authOptions: FlutterAuthClientOptions(localStorage: SecureSessionStorage(secrets)),
-    );
-    return (
-      SupabaseGoogleAuthRepository(
-        client: supabase.client,
-        googleWebClientId: config.googleWebClientId,
-      ),
-      supabase.client,
-    );
-  } on Object catch (error) {
-    logger.failure('backend_init_failed', error);
-    return (const UnconfiguredAuthRepository(), null);
-  }
-}
 
 Stream<bool> _online() async* {
   final connectivity = Connectivity();

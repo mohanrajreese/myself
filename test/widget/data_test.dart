@@ -132,7 +132,7 @@ void main() {
   });
 
   group('deletion', () {
-    testWidgets('deleting phone data erases both databases and the lock, then signs out', (
+    testWidgets('deleting phone data erases both databases and the lock, then starts setup again', (
       tester,
     ) async {
       final app = AppHarness();
@@ -145,7 +145,9 @@ void main() {
       await tap(tester, find.widgetWithText(TextButton, 'Delete phone data'));
       await drain(tester);
       await tester.pumpAndSettle();
-      expect(find.text('Continue with Google'), findsOneWidget);
+      // No sign-in (D2 revised): a new local account goes straight to setup.
+      expect(find.text('About you'), findsOneWidget);
+      expect(find.text('Continue with Google'), findsNothing);
       expect(await app.db.select(app.db.weightLogs).get(), isEmpty);
       expect(await app.privateDb.select(app.privateDb.localBowelLogs).get(), isEmpty);
       expect(await app.secrets.read('app_lock_pin'), isNull);
@@ -184,7 +186,7 @@ void main() {
       await tester.enterText(find.byType(TextField).last, 'DELETE');
       await tester.pump();
       await tap(tester, find.widgetWithText(TextButton, 'Delete account'));
-      expect(find.text('Continue with Google'), findsOneWidget);
+      expect(find.text('About you'), findsOneWidget);
       expect(app.remote!.rows('profiles'), isEmpty);
       // Kept on the phone, with nothing left to upload.
       expect(await app.db.select(app.db.weightLogs).get(), hasLength(1));

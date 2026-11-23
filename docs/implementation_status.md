@@ -10,8 +10,8 @@ Resume point for every work session. Update it when a task changes state; keep i
 |---|---|
 | Phase | 9 — Money additions (§5.22): complete in the cloud environment (23 Nov 2026), report `docs/reports/phase-9.md`; device and Supabase checks with the owner |
 | Design canvas | https://claude.ai/artifact/NbteH4bFd6RxKXDceTkBz6 (Phase 1 approved 16 Nov 2026; Phase 2 screens approved 17 Nov 2026; Phase 3 screens approved 17 Nov 2026; Phase 4 screens approved 18 Nov 2026; Phase 5 screens approved 18 Nov 2026; Phase 6 screens approved 18 Nov 2026; Phase 8 (Money) screens approved 20 Nov 2026; recurring expenses and categories approved 20 Nov; Phase 9 screens approved 23 Nov) |
-| Blocked on | Google web client ID and OAuth clients (Supabase project, migrations, Edge Functions and Firebase app are done, 23 Nov 2026) |
-| Waiting on owner | Google OAuth consent screen and clients (web + Android, debug and release fingerprints) and the Supabase Google provider; `FIREBASE_SERVICE_ACCOUNT` secret; review `public.rls_auto_enable()`; release keystore; phone model; running `docs/device_test_plan.md` and the Phase 8–9 device lists |
+| Blocked on | Nothing for local use. Sign-in removed at the owner's request (D2 revised, 23 Nov 2026): the app opens without an account; sync and push are off |
+| Waiting on owner | Back up the release keystore (`~/fitbuddy-release.jks`, password in `android/key.properties`); review `public.rls_auto_enable()`; phone model; running `docs/device_test_plan.md` and the Phase 8–9 device lists |
 
 ## Phases
 

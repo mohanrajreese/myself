@@ -43,7 +43,7 @@ Toolchain facts checked on 16 November 2026 (orientation only; versions are re-r
 | # | Decision | Outcome | Status |
 |---|---|---|---|
 | D1 | Phone and Android version | **Android 10.** `minSdk 29`. Phone model still unknown (wanted for battery-manager guidance, not blocking) | Decided |
-| D2 | Sign-in model | **Mandatory sign-in with Google** before onboarding. See 01-architecture.md §7 | Decided |
+| D2 | Sign-in model | **No sign-in** (revised by the owner, 23 Nov 2026). The app opens straight into onboarding with a device-only account; cloud sync, push and cloud account deletion are off because they need a Google session. Was: mandatory Google sign-in (01-architecture.md §7); that code is kept but not started | Decided |
 | D3 | Starter food catalogue | **INDB plus a USDA subset**, bundled read-only. INDB's data licence is confirmed before its file enters the repository (09-food-dataset-options.md §5) | Decided |
 | D4 | Project location | Flutter project at the repository root | Decided |
 | D5 | Distribution | Personal sideloaded APK (plus a signed AAB build). No Play Store work | Decided |

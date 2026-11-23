@@ -19,7 +19,6 @@ import 'package:fitbuddy/features/auth/application/session_controller.dart';
 import 'package:fitbuddy/features/onboarding/application/setup_controller.dart';
 import 'package:fitbuddy/features/onboarding/application/setup_draft.dart';
 import 'package:fitbuddy/features/settings/application/theme_mode_controller.dart';
-import 'package:fitbuddy/features/settings/presentation/settings_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -121,12 +120,6 @@ class AppHarness {
     ),
     documentSaverProvider.overrideWithValue(saver),
     pushRegistryProvider.overrideWithValue(pushRegistry),
-    signOutActionProvider.overrideWith(
-      (ref) => () async {
-        await ref.read(pushControllerProvider.notifier).stop();
-        await ref.read(sessionControllerProvider.notifier).signOut();
-      },
-    ),
   ];
 
   /// Starts the app. Call again to simulate a restart on the same data.

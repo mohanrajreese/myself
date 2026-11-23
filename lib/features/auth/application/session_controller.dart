@@ -73,10 +73,11 @@ class SessionController extends Notifier<SessionState> {
     state = SessionState(account: state.account);
   }
 
-  /// After the phone's data is erased: signed out and unbound.
+  /// After the phone's data is erased: unbound from the old account and
+  /// started again with a new local one (no sign-in, D2 revised).
   Future<void> forget() async {
     await ref.read(authRepositoryProvider).signOut();
-    state = const SessionState();
+    await _bind(newLocalAccount());
   }
 
   Future<void> _bind(Account account) async {

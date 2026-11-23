@@ -151,14 +151,6 @@ void main() {
       await drain(tester);
       expect(app.notifications.shown, hasLength(1));
 
-      await tester.pageBack();
-      await drain(tester);
-      await tester.pumpAndSettle();
-      await tap(tester, find.byTooltip('Profile and settings'));
-      await tap(tester, find.text('Sign out'));
-      await tap(tester, find.widgetWithText(TextButton, 'Sign out'));
-      expect(app.pushRegistry.revoked, ['token-1']);
-      expect(app.push.deleted, 1);
       await app.dispose(tester);
     });
   });

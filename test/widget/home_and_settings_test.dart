@@ -218,28 +218,12 @@ void main() {
       await app.dispose(tester);
     });
 
-    testWidgets('sign out asks first, then returns to sign-in and keeps the data', (tester) async {
+    testWidgets('settings offers no sign-out: the app has no sign-in (D2 revised)', (tester) async {
       await start(tester);
       await openSettings(tester);
-      await tester.scrollUntilVisible(find.text('Sign out'), 200);
-      await tester.ensureVisible(find.text('Sign out'));
+      await tester.scrollUntilVisible(find.text('Delete data or account'), 200);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign out'));
-      await tester.pumpAndSettle();
-      expect(find.text('Sign out?'), findsOneWidget);
-      await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
-      expect(find.text('Settings'), findsOneWidget);
-
-      await tester.tap(find.text('Sign out'));
-      await tester.pumpAndSettle();
-      await tester.tap(
-        find.descendant(of: find.byType(AlertDialog), matching: find.text('Sign out')),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('Continue with Google'), findsOneWidget);
-      expect(app.auth.signOuts, 1);
-      expect(await app.db.select(app.db.weightLogs).get(), hasLength(1));
+      expect(find.text('Sign out'), findsNothing);
       await app.dispose(tester);
     });
   });

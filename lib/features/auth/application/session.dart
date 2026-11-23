@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../../../core/database/settings_repository.dart';
+import '../../../core/utils/id_generator.dart';
 import '../domain/account.dart';
 
 /// Who this device belongs to and whether they are currently signed in.
@@ -30,4 +31,19 @@ Future<SessionState> loadSession(SettingsRepository settings) async {
     account: stored is Map<String, Object?> ? Account.fromJson(stored) : null,
     signedIn: signedIn == true,
   );
+}
+
+/// A device-only account: the app opens without sign-in (D2 revised).
+Account newLocalAccount() => Account(id: const UuidV7Generator().newId());
+
+/// Loads the session and makes it active, binding a new local account on a
+/// fresh install. An account already bound (even signed out) is kept, so its
+/// records stay visible.
+Future<SessionState> ensureLocalSession(SettingsRepository settings) async {
+  final loaded = await loadSession(settings);
+  if (loaded.active) return loaded;
+  final account = loaded.account ?? newLocalAccount();
+  await settings.write(SessionKeys.account, account.toJson());
+  await settings.write(SessionKeys.signedIn, true);
+  return SessionState(account: account, signedIn: true);
 }

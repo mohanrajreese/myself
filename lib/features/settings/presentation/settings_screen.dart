@@ -7,15 +7,12 @@ import '../../../app/routes.dart';
 import '../../../core/widgets/fb_card.dart';
 import '../../../core/widgets/fb_sheet.dart';
 import '../../../core/widgets/fb_choice.dart';
-import '../../../core/widgets/fb_states.dart';
 import '../../../core/widgets/l10n.dart';
 import '../../../core/widgets/tokens.dart';
 import '../application/theme_mode_controller.dart';
 
 /// Signs the user out. Supplied by the app so this feature does not depend on
 /// the sign-in feature's internals.
-final signOutActionProvider = Provider<Future<void> Function()>((ref) => () async {});
-
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -29,18 +26,6 @@ class SettingsScreen extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final name = profile?.displayName ?? account?.displayName ?? '';
     final syncText = pending == 0 ? l10n.syncNothingWaiting : l10n.syncPending(pending);
-
-    Future<void> signOut() async {
-      final agreed = await showFbConfirm(
-        context,
-        title: l10n.signOutTitle,
-        message: l10n.signOutMessage,
-        confirmLabel: l10n.signOut,
-        cancelLabel: l10n.cancel,
-        destructive: true,
-      );
-      if (agreed) await ref.read(signOutActionProvider)();
-    }
 
     Widget group(String title, List<Widget> rows) => Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -182,33 +167,6 @@ class SettingsScreen extends ConsumerWidget {
             ),
             FbNavRow(title: l10n.deleteDataTitle, onTap: () => context.push(Routes.deleteData)),
           ]),
-          const SizedBox(height: FbSpace.xl),
-          group(l10n.sectionAccount, [
-            InkWell(
-              onTap: signOut,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 56),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: FbSpace.lg),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Semantics(
-                      button: true,
-                      child: Text(
-                        l10n.signOut,
-                        style: context.text.bodyStrong.copyWith(color: c.error),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ]),
-          const SizedBox(height: FbSpace.sm),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: FbSpace.xs),
-            child: Text(l10n.signOutNote, style: context.text.caption),
-          ),
         ],
       ),
     );

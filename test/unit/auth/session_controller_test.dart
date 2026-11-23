@@ -43,6 +43,38 @@ void main() {
     expect(state().account, isNull);
   });
 
+  group('without sign-in (D2 revised)', () {
+    test('a fresh install opens with a local account, no sign-in', () async {
+      final settings = container.read(settingsRepositoryProvider);
+      final session = await ensureLocalSession(settings);
+      expect(session.active, isTrue);
+      expect(session.account!.id, isNotEmpty);
+
+      final reloaded = await loadSession(settings);
+      expect(reloaded.active, isTrue);
+      expect(reloaded.account, session.account);
+      expect((await ensureLocalSession(settings)).account, session.account);
+    });
+
+    test('an account left signed out is reopened with its data', () async {
+      final settings = container.read(settingsRepositoryProvider);
+      await controller().signIn();
+      await controller().signOut();
+      final session = await ensureLocalSession(settings);
+      expect(session.active, isTrue);
+      expect(session.account, testAccount);
+    });
+
+    test('erasing the phone starts a new local account instead of a sign-in', () async {
+      await controller().signIn();
+      await controller().forget();
+      expect(state().active, isTrue);
+      expect(state().account!.id, isNot(testAccount.id));
+      final reloaded = await loadSession(container.read(settingsRepositoryProvider));
+      expect(reloaded.account, state().account);
+    });
+  });
+
   test('a successful sign-in binds the account and is remembered', () async {
     expect(await controller().signIn(), isA<SignedIn>());
     expect(state().active, isTrue);
