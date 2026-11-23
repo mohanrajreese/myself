@@ -1287,10 +1287,47 @@ Avoid claims that one activity caused another health outcome.
 - Deleting a meal asks whether to delete its linked expense too.
 
 ### Out of scope
-Reading bank SMS, connecting to bank accounts, making payments, income tracking, investments, other currencies, splitting bills with others.
+Reading bank SMS, connecting to bank accounts, making payments, investments, other currencies. (Income and bill splitting were added by §5.22.)
 
 ### Storage
 Amounts are integers in paise. Displayed as ₹ with Indian digit grouping (₹1,23,456.50).
+
+## 5.22 Money additions: loans in depth, credit cards, income, bill splitting
+
+> Addendum v2.2, requested by the owner on 23 November 2026. **Status: proposed, awaiting the owner's approval.** Decisions: bill splitting returns (reverses the 20 Nov removal); bank SMS, bank linking and other currencies stay out of scope; investments stay out of scope.
+
+### F. Overdue instalments
+- An instalment whose due date has passed without a payment is **Overdue**, shown with an icon and the word, never colour alone, on the Money tab, the Debts list and the loan.
+- An overdue EMI reminds again at 09:00 every day until it is marked Paid or Skipped. Skip ("skip this instalment") marks it as not paid without recording money, and it stays listed as Skipped.
+
+### G. Loan schedule
+- With an interest rate entered, a loan shows its **repayment schedule**: for each instalment the date, EMI, interest part, principal part and balance after it (reducing-balance method, monthly rate = annual rate ÷ 12, rounded to the paisa).
+- Without a rate the schedule shows dates and EMIs only, with a note that the split needs the rate. Figures are estimates; the bank's statement may differ.
+
+### H. Changing a loan
+- **Part-payment** (prepayment): an amount and date, then a choice: *reduce the number of EMIs* (keep the EMI) or *reduce the EMI* (keep the end date). The schedule from the next instalment is recomputed; earlier instalments are unchanged.
+- **Rate or EMI change** (floating rate): a new rate and/or EMI from a chosen instalment onward; the number of instalments left is recomputed, or entered by hand. Earlier instalments and their figures are unchanged.
+- **Correct the outstanding amount**: enter the balance shown on a bank statement and its date. The app records it as a correction; the outstanding amount and schedule start from it. Corrections are listed with the payments and can be deleted.
+
+### I. Credit cards
+- A debt of kind *Credit card* has a **credit limit**, **statement day** and **payment due day** (both 1–28).
+- Each month the user records a **statement**: statement date, total due, minimum due. The card shows the latest statement, the amount paid against it (payments after the statement date), and what is left of the total and the minimum.
+- Reminders for the statement's due date: 7 days before (or the chosen lead), 1 day before, and on the day, with Paid (records a payment of the amount entered or the total due), Snooze and Skip; amounts are never in the notification text.
+- Card spending is recorded as ordinary expenses with payment method *Credit card*; the card may be chosen on the expense, and its spending since the last statement is shown.
+
+### J. Personal debt reminders
+- A personal or other debt with a due date can remind on that date at 09:00 (and optionally 1 or 7 days before): "Ravi: due today" or "Money you lent to Ravi: due today". The amount is never in the notification text.
+
+### K. Budget alerts
+- When an expense takes a budget (overall or a category) to **80%** and again to **100%** of its amount for the month, a notification says so once per threshold per month, e.g. "Food budget: 80% used". Thresholds can be turned off, or set (50–95%) in Money settings. The amount is not in the notification text.
+
+### L. Income, savings and balance
+- Record **income**: amount, source (Salary, Business, Interest, Gift, Refund, Other, or a custom source), date, note; recurring income (for example a monthly salary) uses the recurring rules and a reminder with Received.
+- The Money tab and Analysis show, for the month or range: income, spending, and **saved** (income − spending), with the savings rate as a percentage when income is above zero. Debt repayments recorded as expenses count as spending; loan disbursements are not income.
+
+### M. Bill splitting
+- An expense can be **split**: equally or by amount among the user and named people. The full amount stays the user's expense; each other person's share becomes an *Owed to me* personal debt named after the expense and linked to it.
+- Editing the split updates those debts while unpaid; deleting the expense asks whether to delete the linked debts. People are names typed by the user (suggested from earlier debts); no contacts access and nothing is sent to anyone.
 
 ---
 

@@ -120,6 +120,22 @@ Present in `AppDatabase` and in Supabase with the same columns, plus `user_id` a
 
 | `recurring_expenses` | `name`, `amount_paise`, `category_id`, `method`, `schedule` (JSON rule), `remind`, `active` | Rent and similar; Paid on its reminder records an expense with `recurring_expense_id` |
 
+### 2.9 Money additions (PRD §5.22, proposed 23 Nov 2026)
+
+| Table or change | Columns | Notes |
+|---|---|---|
+| `debts` + | `credit_limit_paise?`, `statement_day?` (1–28), `card_due_day?` (1–28), `due_remind` (bool), `due_remind_days` (0, 1 or 7) | Card fields only for kind `credit_card` |
+| `loan_changes` | `debt_id`, `kind` (prepayment/rate_change/balance_correction), `effective_date`, `from_instalment?`, `amount_paise?`, `rate_bp?`, `emi_paise?`, `instalments_left?`, `mode?` (reduce_tenure/reduce_emi), `payment_id?`, `note?` | Applied in date order to compute the schedule; a prepayment also has a `debt_payments` row |
+| `instalment_skips` | `debt_id`, `instalment_no`, `skipped_on` | Unique per debt and instalment |
+| `card_statements` | `debt_id`, `statement_date`, `due_date`, `total_due_paise`, `min_due_paise`, `remind` | Paid against a statement = payments dated after `statement_date` |
+| `finance_categories` + | `kind` (expense/income) | Seeded income sources: salary, business, interest, gift, refund, other |
+| `incomes` | `amount_paise`, `category_id`, `occurred_at`, `local_date`, `tz`, `note?`, `recurring_id?` | |
+| `recurring_expenses` + | `kind` (expense/income) | Recurring income uses the same rules; its reminder offers Received |
+| `expenses` + | `card_debt_id?` | The credit card an expense was charged to |
+| `expense_splits` | `expense_id`, `person`, `share_paise`, `debt_id` | One Owed-to-me debt per person's share |
+
+Budget alerts already sent are remembered in a local table `local_budget_alerts` (month, category, threshold), not synced.
+
 **Reminders (changed 20 Nov 2026, during the build):** EMI and recurring-expense reminders are not rows in `reminders`. They are derived on the phone from `debts` (next unpaid instalment; `remind`, `remind_days_before` 7–30, default 7) and `recurring_expenses` at each re-plan, and scheduled with the ordinary reminders. This avoids rebuilding `reminders` (SQLite cannot alter a `CHECK`) and its cloud table, and an instalment paid early cancels its remaining reminders automatically. Receipt photos: local-only `local_expense_receipts` (encrypted files, like `local_meal_photos`).
 
 ## 3. Local operational tables (`AppDatabase`, never synced)
@@ -175,6 +191,7 @@ SQL-first (§13.2). One file per logical step in `supabase/migrations/`, applied
 | 9 | `…_hygiene.sql` | `hygiene_logs` | 5 |
 | 10 | `…_devices_and_sync.sql` | `device_notification_tokens`, `cloud_sync_metadata` | 6 |
 | 11 | `…_money.sql` | `finance_categories`, `debts`, `debt_payments`, `recurring_expenses`, `expenses`, `budgets` | 8 |
+| 12 | `…_money_additions.sql` | `loan_changes`, `instalment_skips`, `card_statements`, `incomes`, `expense_splits`; new columns on `debts`, `finance_categories`, `recurring_expenses`, `expenses` | 9 (proposed) |
 
 `supabase/seed.sql` holds only development fixtures for local testing. It never runs against the real project.
 

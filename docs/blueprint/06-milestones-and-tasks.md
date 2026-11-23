@@ -215,6 +215,28 @@ Screen tasks (F-07, F-08, F-09, F-12, F-13, F-14a, F-15) wait for design approva
 
 ---
 
+## Phase 9 — Money additions (PRD §5.22, addendum v2.2)
+
+**Deliverable:** loans in depth, credit cards, personal-debt and budget alerts, income and savings, bill splitting.
+
+| ID | Task | PRD |
+|---|---|---|
+| N-01 | Schema: app database v11 and Supabase migration 12 (loan changes, instalment skips, card statements, income, expense splits; new debt and category columns); access-rule checks | §5.22, §6.2 |
+| N-02 | Overdue instalments: status, labels, daily reminder until Paid or Skipped; Skip recorded | §5.22F |
+| N-03 | Loan schedule: reducing-balance split per instalment, with and without a rate | §5.22G |
+| N-04 | Part-payment (reduce EMIs or reduce EMI), rate/EMI change from an instalment, balance correction; schedule recomputed from the change | §5.22H |
+| N-05 | Credit cards: limit, statement and due days, statements, paid against statement, due reminders, card on expenses | §5.22I |
+| N-06 | Personal debt due reminders | §5.22J |
+| N-07 | Budget alerts at thresholds, once per month, settings | §5.22K |
+| N-08 | Income: sources, add/edit/delete, recurring income with Received; saved and savings rate on the Money tab and in Analysis | §5.22L |
+| N-09 | Bill splitting: equal or by amount, shares as Owed-to-me debts, edit and delete rules | §5.22M |
+| N-10 | Screens per approved boards; export, deletion and erase include the new tables | §5.22 |
+| N-11 | Tests (unit, widget, accessibility), docs, Phase 9 report | §11 |
+
+**Exit criteria:** an overdue EMI is labelled and reminded daily until resolved; a part-payment recomputes only later instalments; a credit-card statement's due reminder records a payment; a split creates the right Owed-to-me debts; income and savings appear for the month; all new tables sync with no duplicates.
+
+---
+
 ## PRD traceability
 
 Every functional section of the PRD maps to at least one task.
